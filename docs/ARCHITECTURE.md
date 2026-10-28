@@ -400,7 +400,7 @@ Verified 2026-10-28 against Maven Central, Google Maven, GitHub releases and npm
 | kotlinx.serialization | | 1.12.0 | |
 | kotlinx.coroutines | | 1.11.0 | |
 | kotlinx-datetime | | 0.8.0 | only for `TimeZone`/`LocalDate`. `Instant`/`Clock` come from stdlib `kotlin.time` |
-| kotlinx-collections-immutable | | _verify at scaffold_ | |
+| kotlinx-collections-immutable | | 0.5.2 | |
 | DataStore | `androidx.datastore:datastore-preferences-core` | 1.3.0 | |
 | Coil 3 | `io.coil-kt.coil3` | 3.6.3 | exercise images |
 | Kermit | `co.touchlab:kermit` | 2.2.0 | |
