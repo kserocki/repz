@@ -52,8 +52,12 @@ design/     git-ignored local design export
 - **Strings:** Compose Resources, EN + PL. No hard-coded user-facing text. Numbers are formatted per locale (`82.5` / `82,5`).
 - **Tests:** `commonTest`, kotlin.test + Turbine, hand-written fakes from `core:testing` (no mocking libraries). Name tests `given…_when…_then…`.
 - **API (TS):** routes → service → repository. Zod schemas are the contract. Errors are RFC 9457 Problem Details.
-- **Comments:** explain *why*, not *what*. Keep KDoc on public domain APIs only.
-- **Commits:** Conventional Commits, referencing the Linear issue (`feat(workout): log set offline REP-12`).
+- **Language:** English only in code, comments, commits and docs.
+- **Naming over comments:** functions, variables and classes are named so precisely that comments are unnecessary. Extract a well-named function instead of writing a comment.
+- **Comments only for non-obvious logic:** 1–3 plain lines on what the code does and how it behaves, understandable to any developer. No essays.
+- **No ticket numbers in comments**, except `// TODO(REP-xx): …` pointing to an existing Linear issue.
+- **Commits:** Conventional Commits with the Linear key in the message (`feat(workout): log set offline (REP-12)`).
+- **Workflow:** every Linear issue is implemented with the `implement` skill (plan → approval → implementation → manual test → review → PR).
 
 ## 5. Commands
 
@@ -71,6 +75,7 @@ design/     git-ignored local design export
 
 | Skill | Use when |
 |---|---|
+| `implement` | implementing any Linear issue (REP-xx): the full agent pipeline |
 | `new-feature` | adding a screen or a feature module |
 | `new-endpoint` | adding or changing an API endpoint |
 | `sync-entity` | making a new entity offline-first and syncable |
@@ -78,7 +83,22 @@ design/     git-ignored local design export
 | `animation` | implementing any MOT-xx animation or haptic |
 | `verify` | before every commit or PR |
 
-## 7. Definition of done
+## 7. Agent team (`.claude/agents/`)
+
+Implementation runs through the `implement` skill with a team of agents. Every agent follows rule zero (§0) and routes questions through the orchestrator.
+
+| Area | Implementer (Sonnet 5) | Consultant (Opus 5.5) |
+|---|---|---|
+| Shared core | `forge` | `anvil` |
+| Design system & UI | `flex` | `muse` |
+| Android | `bolt` | `volt` |
+| iOS | `swift` | `falcon` |
+| Backend | `iron` | `steel` |
+| QA (manual tests, media) | `spotter` | `hawk` |
+
+Leadership (Opus 5.5): `atlas` (plans, splits work into packages), `coach` (code and media review), `captain` (PO; keeps the [knowledge base](https://linear.app/repz-app/document/repz-knowledge-base-a407b9b0e724) in Linear and asks the user when unsure).
+
+## 8. Definition of done
 
 - `verify` skill passes (Kotlin: detekt, ktlint, Konsist, unit tests, compile-time Koin graph; TS: lint, typecheck, tests).
 - New UI has previews for each state, light and dark, plus a PL string check.
