@@ -34,5 +34,30 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = "repz"
 
-// Module `include(...)` lines are added in WP-3, once the module directories exist
-// (Gradle 9 rejects an included project whose directory is missing).
+include(":app:android")
+include(":app:shared")
+
+include(":core:common")
+include(":core:domain")
+include(":core:data")
+include(":core:database")
+include(":core:network")
+include(":core:sync")
+include(":core:datastore")
+include(":core:designsystem")
+include(":core:ui")
+include(":core:navigation")
+include(":core:testing")
+
+include(":feature:auth:api")
+include(":feature:auth:impl")
+include(":feature:workout:api")
+include(":feature:workout:impl")
+include(":feature:exercises:api")
+include(":feature:exercises:impl")
+include(":feature:history:api")
+include(":feature:history:impl")
+include(":feature:templates:api")
+include(":feature:templates:impl")
+include(":feature:settings:api")
+include(":feature:settings:impl")
