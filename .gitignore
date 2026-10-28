@@ -1,0 +1,48 @@
+# --- Design exports (local only, never committed) ---
+/design/
+brand/logo/renders/
+*.fig
+
+# --- OS / editors ---
+.DS_Store
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# --- Claude Code local state ---
+.claude/settings.local.json
+
+# --- Gradle / Kotlin / Android ---
+.gradle/
+.kotlin/
+build/
+local.properties
+captures/
+*.apk
+*.aab
+*.keystore
+!debug.keystore
+
+# --- Xcode / iOS ---
+mobile/iosApp/build/
+xcuserdata/
+DerivedData/
+*.xcuserstate
+Pods/
+
+# --- Node / API ---
+node_modules/
+dist/
+coverage/
+.env
+.env.*
+!.env.example
+*.log
+
+# --- Python helpers (brand generators) ---
+__pycache__/
+.venv/
+
+# Packages sent to designers (duplicates of brand/logo)
+brand/*.zip

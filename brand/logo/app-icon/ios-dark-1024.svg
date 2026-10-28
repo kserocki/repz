@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><title>Repz ios-dark</title><rect width="1024" height="1024" rx="0" fill="#0E1416"/><g transform="translate(179.89 345.95) scale(2.0757)">
+  <path id="bar" fill="#00C2E0" d="M110,70 L210,70 A10 10 0 0 1 220,80 L220,80 A10 10 0 0 1 210,90 L110,90 A10 10 0 0 1 100,80 L100,80 A10 10 0 0 1 110,70 Z"/>
+  <path id="plate-inner-left" fill="#00C2E0" d="M86,16 L86,16 A14 14 0 0 1 100,30 L100,130 A14 14 0 0 1 86,144 L86,144 A14 14 0 0 1 72,130 L72,30 A14 14 0 0 1 86,16 Z"/>
+  <path id="plate-inner-right" fill="#00C2E0" d="M234,16 L234,16 A14 14 0 0 1 248,30 L248,130 A14 14 0 0 1 234,144 L234,144 A14 14 0 0 1 220,130 L220,30 A14 14 0 0 1 234,16 Z"/>
+  <path id="plate-middle-left" fill="#00C2E0" d="M52,32 L52,32 A12 12 0 0 1 64,44 L64,116 A12 12 0 0 1 52,128 L52,128 A12 12 0 0 1 40,116 L40,44 A12 12 0 0 1 52,32 Z"/>
+  <path id="plate-middle-right" fill="#00C2E0" d="M268,32 L268,32 A12 12 0 0 1 280,44 L280,116 A12 12 0 0 1 268,128 L268,128 A12 12 0 0 1 256,116 L256,44 A12 12 0 0 1 268,32 Z"/>
+  <path id="plate-outer-left" fill="#00C2E0" d="M22,56 L22,56 A10 10 0 0 1 32,66 L32,94 A10 10 0 0 1 22,104 L22,104 A10 10 0 0 1 12,94 L12,66 A10 10 0 0 1 22,56 Z"/>
+  <path id="plate-outer-right" fill="#00C2E0" d="M298,56 L298,56 A10 10 0 0 1 308,66 L308,94 A10 10 0 0 1 298,104 L298,104 A10 10 0 0 1 288,94 L288,66 A10 10 0 0 1 298,56 Z"/>
+</g></svg>
