@@ -1,10 +1,9 @@
+import pino from "pino";
 import { describe, expect, it } from "vitest";
 import { errorHandler, notFoundHandler } from "./errors.ts";
 import { requestIdMiddleware } from "./request-id.ts";
 import { requestLoggerMiddleware } from "./request-logger.ts";
 import { createRouter } from "./router.ts";
-
-import pino from "pino";
 
 function createTestApp(generateId: () => string) {
   const app = createRouter();
@@ -22,7 +21,7 @@ describe("requestIdMiddleware", () => {
     const res = await app.request("/nope");
 
     expect(res.headers.get("x-request-id")).toBe("generated-id");
-    const body = await res.json();
+    const body = (await res.json()) as { requestId: string };
     expect(body.requestId).toBe("generated-id");
   });
 

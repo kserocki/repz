@@ -9,6 +9,16 @@ import { createRouter } from "./router.ts";
 
 const EmptyResponseSchema = z.object({});
 
+type ProblemDetailsBody = {
+  type: string;
+  title: string;
+  status: number;
+  detail?: string;
+  instance?: string;
+  requestId: string;
+  errors?: Array<{ path: string; message: string }>;
+};
+
 /** A throwaway app wiring the shared pieces plus test-only routes; never part of `createApp`. */
 function createTestApp() {
   const app = createRouter();
@@ -19,7 +29,12 @@ function createTestApp() {
     createRoute({
       method: "get",
       path: "/boom",
-      responses: { 200: { description: "never", content: { "application/json": { schema: EmptyResponseSchema } } } },
+      responses: {
+        200: {
+          description: "never",
+          content: { "application/json": { schema: EmptyResponseSchema } },
+        },
+      },
     }),
     () => {
       throw new Error("secret detail");
@@ -30,7 +45,12 @@ function createTestApp() {
     createRoute({
       method: "get",
       path: "/forbidden",
-      responses: { 200: { description: "never", content: { "application/json": { schema: EmptyResponseSchema } } } },
+      responses: {
+        200: {
+          description: "never",
+          content: { "application/json": { schema: EmptyResponseSchema } },
+        },
+      },
     }),
     () => {
       throw new HTTPException(403, { message: "Not allowed" });
@@ -111,7 +131,11 @@ describe("errorHandler", () => {
     const text = await res.text();
     expect(text).not.toContain("secret detail");
     const body = JSON.parse(text);
-    expect(body).toMatchObject({ type: "about:blank", title: "Internal Server Error", status: 500 });
+    expect(body).toMatchObject({
+      type: "about:blank",
+      title: "Internal Server Error",
+      status: 500,
+    });
     expect(body.requestId).toBe("test-request-id");
   });
 
@@ -141,7 +165,7 @@ describe("errorHandler", () => {
 
     expect(res.status).toBe(400);
     expect(res.headers.get("content-type")).toBe("application/problem+json");
-    const body = await res.json();
+    const body = (await res.json()) as ProblemDetailsBody;
     expect(body).toMatchObject({ type: "about:blank", status: 400 });
     expect(body.detail).toMatch(/Malformed JSON/i);
   });
@@ -154,10 +178,10 @@ describe("validationErrorHook", () => {
     const res = await app.request("/items?limit=abc");
 
     expect(res.status).toBe(400);
-    const body = await res.json();
+    const body = (await res.json()) as ProblemDetailsBody;
     expect(body.type).toBe("urn:repz:problem:validation-error");
     expect(body.status).toBe(400);
-    expect(body.errors[0].path).toBe("query.limit");
+    expect(body.errors?.[0]?.path).toBe("query.limit");
     expect(body.requestId).toBe("test-request-id");
   });
 });

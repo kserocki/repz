@@ -24,26 +24,26 @@ pnpm dev                      # http://localhost:3000, pretty-printed logs
 
 ## Scripts
 
-| Script | Command | Notes |
-|---|---|---|
-| `pnpm dev` | `node --watch --env-file-if-exists=.env src/index.ts \| pino-pretty` | restarts on file change |
-| `pnpm start` | `node --env-file-if-exists=.env dist/index.js` | runs the build output |
-| `pnpm build` | `tsc -p tsconfig.build.json` | emits `dist/` |
-| `pnpm typecheck` | `tsc --noEmit` | TypeScript 7, no emit |
-| `pnpm test` | `vitest run` | Vitest 5 |
-| `pnpm lint` | `biome check .` | lint + format check |
-| `pnpm lint:fix` | `biome check --write .` | auto-fixes what it can |
+| Script           | Command                                                              | Notes                   |
+| ---------------- | -------------------------------------------------------------------- | ----------------------- |
+| `pnpm dev`       | `node --watch --env-file-if-exists=.env src/index.ts \| pino-pretty` | restarts on file change |
+| `pnpm start`     | `node --env-file-if-exists=.env dist/index.js`                       | runs the build output   |
+| `pnpm build`     | `tsc -p tsconfig.build.json`                                         | emits `dist/`           |
+| `pnpm typecheck` | `tsc --noEmit`                                                       | TypeScript 7, no emit   |
+| `pnpm test`      | `vitest run`                                                         | Vitest 5                |
+| `pnpm lint`      | `biome check .`                                                      | lint + format check     |
+| `pnpm lint:fix`  | `biome check --write .`                                              | auto-fixes what it can  |
 
 ## Environment variables
 
 See `.env.example`. All variables are validated at boot by `src/env.ts` (Zod); the process exits with a message naming every invalid or missing variable (never its value) if validation fails.
 
-| Variable | Default | Notes |
-|---|---|---|
-| `NODE_ENV` | `development` | `development` \| `test` \| `production` |
-| `PORT` | `3000` | 1–65535 |
-| `DATABASE_URL` | — (required) | `postgres://user:password@host:port/db` |
-| `LOG_LEVEL` | `info` | pino level |
+| Variable       | Default       | Notes                                   |
+| -------------- | ------------- | --------------------------------------- |
+| `NODE_ENV`     | `development` | `development` \| `test` \| `production` |
+| `PORT`         | `3000`        | 1–65535                                 |
+| `DATABASE_URL` | — (required)  | `postgres://user:password@host:port/db` |
+| `LOG_LEVEL`    | `info`        | pino level                              |
 
 ## Database
 

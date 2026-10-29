@@ -34,7 +34,10 @@ export type ProblemDetails = {
 };
 
 /** Writes a Problem Details response (RFC 9457), stamping the current request id. */
-export function problemResponse(c: Context<AppEnv>, problem: Omit<ProblemDetails, "requestId">): Response {
+export function problemResponse(
+  c: Context<AppEnv>,
+  problem: Omit<ProblemDetails, "requestId">,
+): Response {
   const body: ProblemDetails = { ...problem, requestId: c.var.requestId };
   return c.body(JSON.stringify(body), body.status, {
     "content-type": "application/problem+json",
