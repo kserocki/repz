@@ -14,8 +14,7 @@ internal val Project.libs: VersionCatalog
  * `:core:common` -> `com.repz.app.core.common`, `:feature:history:impl` -> `com.repz.app.feature.history.impl`,
  * `:app:shared` -> `com.repz.app.shared` (the leading `app` segment is dropped for `:app:*` modules).
  */
-internal fun Project.repzNamespace(): String =
-    (BASE_PACKAGE_SEGMENTS + pathSegmentsWithoutAppPrefix()).joinToString(".")
+internal fun Project.repzNamespace(): String = (BASE_PACKAGE_SEGMENTS + pathSegmentsWithoutAppPrefix()).joinToString(".")
 
 /**
  * Derives a unique Gradle group per module from its parent path segments, so Kotlin/Native klibs

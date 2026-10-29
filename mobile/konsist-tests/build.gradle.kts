@@ -13,10 +13,12 @@ tasks.withType<Test>().configureEach {
     // A Test task is normally up-to-date once its classpath is unchanged; Konsist reads every
     // module's source text directly, so re-running it when any Kotlin/Gradle source changes
     // anywhere under `mobile/` needs this explicit input.
-    inputs.files(
-        fileTree(rootDir) {
-            include("**/*.kt", "**/*.kts")
-            exclude("**/build/**", "**/.gradle/**", "**/.kotlin/**")
-        },
-    ).withPropertyName("repzSourceFiles").withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs
+        .files(
+            fileTree(rootDir) {
+                include("**/*.kt", "**/*.kts")
+                exclude("**/build/**", "**/.gradle/**", "**/.kotlin/**")
+            },
+        ).withPropertyName("repzSourceFiles")
+        .withPathSensitivity(PathSensitivity.RELATIVE)
 }

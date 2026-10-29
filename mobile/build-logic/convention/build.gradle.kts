@@ -38,7 +38,11 @@ detekt {
     ignoreFailures.set(false)
     autoCorrect.set(false)
     disableDefaultRuleSets.set(false)
-    config.setFrom(rootProject.layout.projectDirectory.dir("..").file("config/detekt/detekt.yml"))
+    config.setFrom(
+        rootProject.layout.projectDirectory
+            .dir("..")
+            .file("config/detekt/detekt.yml"),
+    )
     basePath.set(rootProject.layout.projectDirectory.dir(".."))
     source.setFrom(layout.projectDirectory.dir("src/main/kotlin"))
 }

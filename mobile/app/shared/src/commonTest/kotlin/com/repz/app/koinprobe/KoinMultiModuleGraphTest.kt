@@ -1,13 +1,13 @@
 package com.repz.app.koinprobe
 
 import com.repz.app.core.testing.koin.KoinProbeDependency
+import org.koin.core.context.stopKoin
+import org.koin.mp.KoinPlatformTools
+import org.koin.plugin.module.dsl.startKoin
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertNotSame
 import kotlin.test.assertSame
-import org.koin.core.context.stopKoin
-import org.koin.mp.KoinPlatformTools
-import org.koin.plugin.module.dsl.startKoin
 
 /**
  * Regression test: a provider function declared in one Gradle module's `@Module` class

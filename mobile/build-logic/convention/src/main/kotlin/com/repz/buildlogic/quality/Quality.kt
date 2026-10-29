@@ -58,7 +58,9 @@ internal fun Project.configureDetekt() {
 
 /** Every `src/<sourceSet>/kotlin` directory this module has, whatever the source-set names are. */
 private fun Project.kotlinSourceDirectories(): List<File> =
-    layout.projectDirectory.dir("src").asFile
+    layout.projectDirectory
+        .dir("src")
+        .asFile
         .listFiles { file -> file.isDirectory }
         ?.map { sourceSetDir -> sourceSetDir.resolve("kotlin") }
         ?.filter { it.exists() }
