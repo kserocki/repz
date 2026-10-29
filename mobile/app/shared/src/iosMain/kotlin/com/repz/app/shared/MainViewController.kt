@@ -4,7 +4,8 @@ import androidx.compose.ui.window.ComposeUIViewController
 import platform.UIKit.UIViewController
 
 /**
- * The single entry point Swift calls (`MainViewControllerKt.MainViewController()`) to host the
- * shared Compose UI inside `ComposeView`'s `UIViewControllerRepresentable`.
+ * The single entry point Swift calls (`MainViewControllerKt.mainViewController()`) to host the
+ * shared Compose UI inside `ComposeView`'s `UIViewControllerRepresentable`. Lowercase per Detekt's
+ * `FunctionNaming` rule (REP-9): this is a plain factory function, not `@Composable`.
  */
-fun MainViewController(): UIViewController = ComposeUIViewController { RepzRoot() }
+fun mainViewController(): UIViewController = ComposeUIViewController { RepzRoot() }
