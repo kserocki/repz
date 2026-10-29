@@ -48,7 +48,7 @@ repz/
     ├── app/
     │   ├── android/             # com.android.application – thin Android entry (MainActivity, Application)
     │   └── shared/              # KMP umbrella: App(), root navigation, Koin graph, iOS framework export
-    ├── iosApp/                  # Xcode project – thin SwiftUI host + BGTaskScheduler registration
+    ├── iosApp/                  # Xcode project – thin SwiftUI host; BGTaskScheduler registration later (REP-26)
     ├── core/
     │   ├── common/              # Result/AppError, DispatcherProvider, Clock & Id providers
     │   ├── domain/              # models, repository interfaces, shared use cases (pure Kotlin)
@@ -403,7 +403,10 @@ Verified 2026-10-28 against Maven Central, Google Maven, GitHub releases and npm
 | Room 3 | `androidx.room3:room3-runtime` / `room3-compiler`, plugin `androidx.room3` | 3.0.3 | KSP per target (`kspAndroid`, `kspIosArm64`, `kspIosSimulatorArm64`); host tests: `sqlite-bundled-jvm` substituted on `androidHostTestRuntimeClasspath` |
 | SQLite bundled driver | `androidx.sqlite:sqlite-bundled` | 2.7.1 | |
 | WorkManager | `androidx.work:work-runtime-ktx` | 2.12.0 | `androidMain` only |
+| Activity Compose | `androidx.activity:activity-compose` | 1.13.0 | `androidMain` only; `MainActivity` hosts Compose directly, no AppCompat (ADR-0017) |
+| Core SplashScreen | `androidx.core:core-splashscreen` | 1.2.0 | `androidMain` only; SplashScreen API starting theme (ADR-0017) |
 | Koin | `io.insert-koin:koin-bom`, `koin-core`, `koin-annotations` | 4.2.2 | `koin-bom` unused: both artifacts pin `koin` directly, no `platform()` needed in KMP `commonMain`; `koin-core` + `koin-annotations` applied via `repz.koin` |
+| Koin Android | `io.insert-koin:koin-android` | 4.2.2 | `androidMain` only; `androidContext(...)` from `RepzApplication` (ADR-0017) |
 | Koin Compiler Plugin | `io.insert-koin.compiler.plugin` | 1.2.1 | officially verified up to Kotlin 2.4.20; on 2.4.21 it warns on every Kotlin compile task, with source, in a module applying `repz.koin` (35 tasks today) but does not block — **verified in REP-7**. Cross-module `@ComponentScan` hints are dropped on Kotlin/Native (koin-compiler-plugin#106); mitigated with explicit provider functions per module (ADR-0008, "option A") |
 | Ktor client | `io.ktor` | 3.6.0 | |
 | kotlinx.serialization | | 1.12.0 | |
