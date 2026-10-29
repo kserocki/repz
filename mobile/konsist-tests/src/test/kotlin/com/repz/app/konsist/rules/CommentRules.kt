@@ -8,10 +8,9 @@ private val REP_KEY = Regex("""REP-\d+""")
 private val TODO_WORD = Regex("""\bTODO\b""")
 
 /**
- * C1: in every comment, a `REP-<n>` key appears only as `TODO(REP-<n>):`, and every `TODO` is
- * written exactly that way; upstream references (`KT-…`, `lib#123`) are unrestricted (AGENTS.md §4,
- * §8; Q2). Scanned as plain text with this file's own comment extractor, so it also covers `.kts`
- * build scripts, which Konsist 0.18.1 cannot parse at all.
+ * C1: in every comment, a Linear key appears only in the form `TODO(REP-1):`; upstream references
+ * (`KT-…`, `lib#123`) are unrestricted (AGENTS.md §4, §8). Reads plain text, not Konsist, since it
+ * also covers `.kts` build scripts, which Konsist 0.18.1 cannot parse at all.
  */
 fun checkC1OnlyLinearKeysInTodoForm(files: List<RepzTextFile>) {
     files.assertTrue("C1: a REP-<n> key in a comment only ever appears as TODO(REP-<n>): (AGENTS.md §4, §8)") { file ->
@@ -32,10 +31,8 @@ private fun commentViolatesC1(comment: String): Boolean {
 }
 
 /**
- * Every `//` line comment and `/* */` block comment in [text], as the text between the markers.
- * String and character literals are skipped (so a comment marker inside one is not mistaken for a
- * real comment start); triple-quoted strings are skipped whole. Kotlin's nestable block comments
- * are tracked by depth.
+ * Every `//` line comment and `/* */` block comment in [text], as the text between the markers,
+ * skipping string/char literals and tracking Kotlin's nestable block comments by depth.
  */
 internal fun extractComments(text: String): List<String> {
     val comments = mutableListOf<String>()

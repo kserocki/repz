@@ -5,11 +5,9 @@ import com.lemonappdev.konsist.api.verify.assertTrue
 import com.repz.app.konsist.support.repzSourceFile
 
 /**
- * P1: main files under `core`, `feature` (api and impl) and `app/shared` declare a package that
- * starts with the module's namespace (`com.repz.app.` plus its path, AGENTS.md §3, ADR-0004);
- * `app/android` main files only need to start with `com.repz.app` (its real namespace is the fixed
- * `com.repz.app`, set directly in its build file, not the one this algorithm would derive for
- * `:app:android`).
+ * P1: main files under `core`, `feature` (api and impl) and `app/shared` declare a package
+ * starting with the module's namespace (`com.repz.app.` plus its path, AGENTS.md §3); `app/android`
+ * only needs to start with `com.repz.app` (its real, fixed namespace, not the derived one).
  */
 fun checkP1PackageMatchesModule(scope: KoScope) {
     scope.files

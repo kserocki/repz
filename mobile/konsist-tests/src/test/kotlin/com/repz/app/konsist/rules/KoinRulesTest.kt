@@ -32,6 +32,13 @@ class KoinRulesTest {
     }
 
     @Test
+    fun given_d2SingletonFixture_whenChecked_thenFailsOnSingletonAnnotation() {
+        val error = assertFails { checkD2KoinDefinitionClassesOnlyInAppShared(fixtureScope("d2-singleton")) }
+
+        assertContains(error.message.orEmpty(), "@Singleton is forbidden")
+    }
+
+    @Test
     fun given_project_whenD3Checked_thenNoViolations() {
         checkD3AtMostOneModuleClassPerModule(projectScope())
     }
@@ -65,5 +72,10 @@ class KoinRulesTest {
         val error = assertFails { checkD5OneOwnerPerDefinition(fixtureScope("d5")) }
 
         assertContains(error.message.orEmpty(), "D5")
+    }
+
+    @Test
+    fun given_d5AllowedNamedQualifiersFixture_whenChecked_thenNoViolations() {
+        checkD5OneOwnerPerDefinition(fixtureScope("d5-allowed-named-qualifiers"))
     }
 }

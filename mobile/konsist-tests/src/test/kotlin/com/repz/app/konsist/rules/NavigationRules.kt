@@ -1,8 +1,10 @@
 package com.repz.app.konsist.rules
 
 import com.lemonappdev.konsist.api.container.KoScope
-import com.lemonappdev.konsist.api.declaration.KoClassDeclaration
+import com.lemonappdev.konsist.api.declaration.KoImportDeclaration
+import com.lemonappdev.konsist.api.declaration.KoPackageDeclaration
 import com.lemonappdev.konsist.api.declaration.KoPropertyDeclaration
+import com.lemonappdev.konsist.api.declaration.combined.KoClassAndObjectDeclaration
 import com.lemonappdev.konsist.api.verify.assertTrue
 import com.repz.app.konsist.support.repzSourceFile
 
@@ -21,9 +23,21 @@ fun checkV1FeatureApiShape(scope: KoScope) {
     ) { file ->
         file.declarations(includeNested = false, includeLocal = false).all { declaration ->
             when (declaration) {
-                is KoClassDeclaration -> declaration.hasAnnotationWithName("Serializable") && declaration.hasParentWithName("NavKey")
-                is KoPropertyDeclaration -> declaration.name.endsWith("NavKeySerializers")
-                else -> false
+                is KoClassAndObjectDeclaration -> {
+                    declaration.hasAnnotationWithName("Serializable") && declaration.hasParentWithName("NavKey")
+                }
+
+                is KoPropertyDeclaration -> {
+                    declaration.name.endsWith("NavKeySerializers")
+                }
+
+                is KoPackageDeclaration, is KoImportDeclaration -> {
+                    true
+                }
+
+                else -> {
+                    false
+                }
             }
         }
     }

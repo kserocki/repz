@@ -9,10 +9,9 @@ import com.repz.app.konsist.support.repzSourceFile
 private val FEATURE_IMPL_MODULE = Regex(""":feature:[^:]+:impl""")
 
 /**
- * N1: a class extending `ViewModel` is named `*ViewModel` and vice versa; it lives in a
- * `..presentation..` package of a `feature:x:impl`; it has `XUiState`/`XIntent`/`XEffect` in the
- * same package, and exposes `state`, `effects` and `fun onIntent(intent: XIntent)` (AGENTS.md §4,
- * ADR-0005, new-feature skill).
+ * N1: a class extending `ViewModel` is named `*ViewModel` and vice versa, lives in a
+ * `..presentation..` package of a `feature:x:impl`, has `XUiState`/`XIntent`/`XEffect` siblings,
+ * and exposes `state`, `effects` and `fun onIntent(intent: XIntent)` (AGENTS.md §4, ADR-0005).
  */
 fun checkN1ViewModelShapeAndNaming(scope: KoScope) {
     val classesAndInterfaces = scope.classesAndInterfaces()
@@ -90,11 +89,13 @@ fun checkN3UseCaseShape(scope: KoScope) {
     }
 }
 
+// Optional generic type arguments, e.g. `koinViewModel<HistoryViewModel>()`, are still a call.
+private val KOIN_VIEW_MODEL_CALL = Regex("""koinViewModel\s*(?:<[^>]*>)?\(""")
+
 /**
- * N4: a `@Composable fun XScreen` has a matching `@Composable fun XContent` in the same package;
- * `XContent` takes `state` and `onIntent`, never a `*ViewModel` parameter, and never calls
- * `koinViewModel(`; `koinViewModel(` is called only inside `*Screen` functions; at least one
- * `@Preview` function in the same file calls `XContent(` (AGENTS.md §4, ADR-0005).
+ * N4: a `@Composable fun XScreen` has a matching `@Composable fun XContent` in the same package,
+ * which never takes a `*ViewModel` parameter or calls `koinViewModel(` (only `*Screen` may); a
+ * `@Preview` in the same file calls `XContent(` (AGENTS.md §4, ADR-0005).
  */
 fun checkN4ScreenContentPairing(scope: KoScope) {
     val composableFunctions = scope.functions().filter { it.hasAnnotationWithName("Composable") }
@@ -112,13 +113,13 @@ fun checkN4ScreenContentPairing(scope: KoScope) {
         content.hasParameterWithName("state") &&
             content.hasParameterWithName("onIntent") &&
             content.parameters.none { it.type.name.endsWith("ViewModel") } &&
-            "koinViewModel(" !in content.text
+            !KOIN_VIEW_MODEL_CALL.containsMatchIn(content.text)
     }
 
     composableFunctions.assertTrue(
         additionalMessage = "N4: koinViewModel( is called only inside *Screen functions (ADR-0005)",
     ) { function ->
-        "koinViewModel(" !in function.text || function.name.endsWith("Screen")
+        !KOIN_VIEW_MODEL_CALL.containsMatchIn(function.text) || function.name.endsWith("Screen")
     }
 
     screenFunctions.assertTrue(

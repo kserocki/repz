@@ -107,7 +107,16 @@ fun checkA3FeatureSeesDomainOnly(files: List<RepzTextFile>) {
         }
 }
 
-private val A4_COMPOSITION_ROOT_TOKENS = listOf("KoinApplication(", "startKoin(", "startKoin<", "NavDisplay(")
+// Checked by fully qualified name (import line or inline FQN use, e.g. RepzApp.kt's
+// `@org.koin.core.annotation.KoinApplication`), not by call syntax: startKoin accepts both
+// `startKoin(...)` and a trailing-lambda `startKoin { ... }`, and this matches either.
+private val A4_COMPOSITION_ROOT_FQNS =
+    listOf(
+        "org.koin.core.context.startKoin",
+        "org.koin.plugin.module.dsl.startKoin",
+        "org.koin.core.annotation.KoinApplication",
+        "androidx.navigation3.ui.NavDisplay",
+    )
 
 /**
  * A4: `@KoinApplication`, `startKoin` and `NavDisplay` are used only in `app:shared`, the
@@ -115,11 +124,11 @@ private val A4_COMPOSITION_ROOT_TOKENS = listOf("KoinApplication(", "startKoin("
  */
 fun checkA4CompositionRootIsAppShared(files: List<RepzTextFile>) {
     files
-        .filter { !it.source.isBuildScript }
+        .filter { !it.source.isBuildScript && it.source.modulePath != ":konsist-tests" }
         .assertTrue(
             "A4: @KoinApplication/startKoin/NavDisplay are used only in app:shared, the composition root (AGENTS.md §3.4)",
         ) { file ->
-            val usesCompositionRootApi = A4_COMPOSITION_ROOT_TOKENS.any { it in file.text }
+            val usesCompositionRootApi = A4_COMPOSITION_ROOT_FQNS.any { it in file.text }
             !usesCompositionRootApi || file.source.modulePath == ":app:shared"
         }
 
@@ -132,7 +141,10 @@ fun checkA4CompositionRootIsAppShared(files: List<RepzTextFile>) {
 
 private val ENTITY_ANNOTATION = Regex("""@Entity\b""")
 private val DTO_CLASS_NAME = Regex("""class\s+(\w*Dto)\b""")
-private val RESTRICTED_ENTITY_OR_DTO_IMPORT = Regex("""com\.repz\.app\.core\.(?:database|network)\.\w*(?:Entity|Dto)\b""")
+
+// Allows any number of subpackage segments before the class name, e.g.
+// `com.repz.app.core.database.probe.ProbeEntity` or `com.repz.app.core.network.dto.WorkoutDto`.
+private val RESTRICTED_ENTITY_OR_DTO_IMPORT = Regex("""com\.repz\.app\.core\.(?:database|network)(?:\.\w+)*\.\w*(?:Entity|Dto)""")
 private val ALLOWED_ENTITY_DTO_MODULES = setOf(":core:database", ":core:network", ":core:data", ":core:sync")
 
 /**
@@ -140,7 +152,7 @@ private val ALLOWED_ENTITY_DTO_MODULES = setOf(":core:database", ":core:network"
  * neither leaks outside `core:database`, `core:network`, `core:data` or `core:sync` (AGENTS.md §3.5).
  */
 fun checkA5EntitiesAndDtosStayInData(files: List<RepzTextFile>) {
-    val mainFiles = files.filter { !it.source.isBuildScript }
+    val mainFiles = files.filter { !it.source.isBuildScript && it.source.modulePath != ":konsist-tests" }
 
     mainFiles.assertTrue("A5: @Entity classes live only in core:database (AGENTS.md §3.5)") { file ->
         !ENTITY_ANNOTATION.containsMatchIn(file.text) || file.source.modulePath == ":core:database"

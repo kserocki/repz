@@ -73,10 +73,7 @@ fun checkD4ProviderFunctionsDeclareReturnType(scope: KoScope) {
 /**
  * D5: each Koin definition - a provider function inside a `@Module` class, or a `@Single`/
  * `@Factory`/`@Scoped`/`@KoinViewModel` class - has exactly one owner: the pair of (return type,
- * qualifier annotations) is unique across every main source set (ARCH §9, a user decision recorded
- * when Koin's compiler plugin was wired up). The return type is compared by its source text, not a
- * resolved fully qualified name (Konsist does not do type resolution here by design); documented as
- * a heuristic in ARCH §12.
+ * qualifier annotations) is unique across every main source set (ARCH §9, §12.2).
  */
 fun checkD5OneOwnerPerDefinition(scope: KoScope) {
     data class Definition(
@@ -119,9 +116,13 @@ fun checkD5OneOwnerPerDefinition(scope: KoScope) {
     }
 }
 
+// "Module" (class-level) plus annotations unrelated to Koin qualification: without these, two
+// definitions that differ only by @OptIn/@Suppress/@JvmStatic would wrongly count as distinct.
+private val NON_QUALIFIER_ANNOTATIONS = KOIN_DEFINITION_ANNOTATIONS + listOf("Module", "OptIn", "Suppress", "JvmStatic")
+
 private fun qualifierKey(annotations: List<KoAnnotationDeclaration>): String =
     annotations
-        .map { it.name }
-        .filterNot { it in KOIN_DEFINITION_ANNOTATIONS }
+        .filterNot { it.name in NON_QUALIFIER_ANNOTATIONS }
+        .map { it.text }
         .sorted()
         .joinToString(",")
