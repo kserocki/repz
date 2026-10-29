@@ -61,15 +61,20 @@ design/     git-ignored local design export
 
 ## 5. Commands
 
-> Filled in during the scaffold (REP "Scaffold" milestone). Until then, ask the user.
+Run from `mobile/` unless noted. One-time setup: create the git-ignored `mobile/local.properties` with `sdk.dir=<path to Android SDK>`. On macOS the Xcode license must be accepted (`sudo xcodebuild -license accept`).
 
-| Task | Command |
-|---|---|
-| Mobile: build + unit tests + lint + architecture | `cd mobile && ./gradlew check` |
-| Android app | `cd mobile && ./gradlew :app:android:installDebug` |
-| iOS app | open `mobile/iosApp/iosApp.xcodeproj` in Xcode |
-| API + DB | `docker compose up -d` (from the repo root) |
-| API dev / tests / lint | `cd api && pnpm dev` · `pnpm test` · `pnpm lint` |
+| Task | Command | Status |
+|---|---|---|
+| Full build (all targets, incl. Android lint) | `./gradlew build` | works |
+| Unit tests (Android host + iOS simulator) | `./gradlew allTests` | works |
+| Android debug APK / install | `./gradlew :app:android:assembleDebug` · `:app:android:installDebug` | builds; not launchable until REP-11 |
+| Module list | `./gradlew projects` | works |
+| Style, static analysis, architecture tests | `./gradlew check` (ktlint, Detekt, Konsist) | arrives with REP-9 |
+| iOS app | open `mobile/iosApp/iosApp.xcodeproj` in Xcode | arrives with REP-11 |
+| API + DB | `docker compose up -d` (from the repo root) | arrives with REP-12 |
+| API dev / tests / lint | `cd api && pnpm dev` · `pnpm test` · `pnpm lint` | arrives with REP-12 |
+
+Final command names for CI are fixed in REP-10. If a command you need is missing here, ask.
 
 ## 6. Skills (`.claude/skills/`)
 

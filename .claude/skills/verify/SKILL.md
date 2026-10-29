@@ -15,19 +15,22 @@ This also covers failures: if a gate fails for a reason you don't understand, or
 
 **Mobile** (from `mobile/`):
 ```bash
-./gradlew ktlintCheck detekt          # style + static analysis (Compose rules included)
-./gradlew :konsist-tests:test         # architecture rules (see AGENTS.md §3)
-./gradlew allTests                    # commonTest on JVM + iOS simulator
-./gradlew :app:android:assembleDebug  # also compiles the Koin graph (compiler plugin)
+./gradlew build      # all targets, incl. Android lint (works today)
+./gradlew allTests   # commonTest on the Android host + iOS simulator (works today)
 ```
-**API** (from `api/`):
+Arriving later (don't invent substitutes; if you need them before they exist, say so):
+- REP-9: `./gradlew check` with ktlint, Detekt + Compose rules, and the Konsist architecture tests.
+- REP-7: compile-time Koin graph check (part of the normal build once the plugin is applied).
+- REP-10: final CI task names.
+
+**API** (from `api/`, from REP-12 on):
 ```bash
 pnpm lint && pnpm typecheck && pnpm test
 pnpm openapi:export && git diff --exit-code openapi.json   # contract is committed and current
 ```
-**Contract:** `./gradlew :core:network:allTests` decodes the shared fixtures.
+**Contract:** shared fixtures are decoded by a `core:network` test (from REP-13 on).
 
-> Exact task names are fixed during the scaffold. If a command doesn't exist yet, say so and ask. Don't invent an alternative.
+> Current commands are listed in `AGENTS.md` §5. If a command doesn't exist yet, report it as not available. Don't make one up.
 
 ## 2. Checklist
 - [ ] New behaviour has unit tests (domain + ViewModel / service)
