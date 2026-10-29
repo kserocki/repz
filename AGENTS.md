@@ -79,7 +79,7 @@ Run from `mobile/` unless noted. One-time setup: create the git-ignored `mobile/
 | iOS app | open `mobile/iosApp/iosApp.xcodeproj` in Xcode · `xcodebuild -project mobile/iosApp/iosApp.xcodeproj -scheme iosApp -destination 'generic/platform=iOS Simulator' build` | works (REP-11) |
 | Postgres for the API | `docker compose up -d` (from the repo root; needs Docker/OrbStack running) | works |
 | API setup / dev | `cd api && pnpm install` · `pnpm dev` (Node 26, `.env` from `.env.example`) | works |
-| API gates | `pnpm lint` · `pnpm typecheck` · `pnpm test` · `pnpm build` | works |
+| API gates (from `api/`) | `pnpm lint` · `pnpm typecheck` · `pnpm test` · `pnpm build` | works |
 
 Final command names for CI are fixed in REP-10. If a command you need is missing here, ask.
 
