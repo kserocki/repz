@@ -1,6 +1,6 @@
 package com.repz.app.konsist.support
 
-import com.lemonappdev.konsist.api.declaration.KoFileDeclaration
+import com.lemonappdev.konsist.api.provider.KoPathProvider
 
 /**
  * A file's Gradle module path (e.g. `:feature:history:impl`), source-set name (`commonMain`,
@@ -17,8 +17,12 @@ data class RepzSourceFile(
     val isBuildScript: Boolean,
 )
 
-/** Parses [KoFileDeclaration.projectPath] into a [RepzSourceFile]. See [RepzSourceFile]. */
-fun KoFileDeclaration.repzSourceFile(): RepzSourceFile = parseRepzSourceFile(projectPath)
+/**
+ * Parses [KoPathProvider.projectPath] into a [RepzSourceFile]. See [RepzSourceFile]. Works on a
+ * file or on any declaration (class, function, property, …), which all carry the path of their
+ * containing file.
+ */
+fun KoPathProvider.repzSourceFile(): RepzSourceFile = parseRepzSourceFile(projectPath)
 
 /** A fixture file's path still has this real prefix before its fake module tree starts. */
 private val FIXTURE_PREFIX = Regex(""".*konsist-tests/src/test/fixtures/[^/]+/(.*)""")
