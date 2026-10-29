@@ -9,6 +9,8 @@ style:
     maxLineLength: 140
   MagicNumber:
     active: true
+    # Already alpha.6's own default; pinned explicitly so design tokens (val md = 12.dp) keep
+    # passing even if a later alpha changes it.
     ignorePropertyDeclaration: true
     ignoreCompanionObjectPropertyDeclaration: true
   UnusedPrivateFunction:
