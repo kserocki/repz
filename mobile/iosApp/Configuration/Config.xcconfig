@@ -1,0 +1,18 @@
+// Repz iOS app target settings (ADR-0017). Reviewable text so Xcode's own UI doesn't hide
+// configuration changes in diffs; the pbxproj only points here via baseConfigurationReference.
+// Personal signing (DEVELOPMENT_TEAM) belongs in the git-ignored Local.xcconfig next to this file.
+
+PRODUCT_NAME = Repz
+PRODUCT_BUNDLE_IDENTIFIER = com.repz.app
+IPHONEOS_DEPLOYMENT_TARGET = 18.0
+TARGETED_DEVICE_FAMILY = 1
+INFOPLIST_FILE = iosApp/Info.plist
+ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon
+
+CODE_SIGN_STYLE = Automatic
+DEVELOPMENT_TEAM =
+
+// embedAndSignAppleFrameworkForXcode needs an unsandboxed script environment (REP-11 S2).
+ENABLE_USER_SCRIPT_SANDBOXING = NO
+
+#include? "Local.xcconfig"
