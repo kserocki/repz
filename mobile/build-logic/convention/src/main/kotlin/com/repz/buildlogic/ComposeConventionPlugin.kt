@@ -7,8 +7,7 @@ import org.gradle.kotlin.dsl.named
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 /**
- * Compose Multiplatform for a KMP module: runtime, foundation, ui, components-resources and
- * ui-tooling-preview in `commonMain`. Coordinates are declared directly from the catalog, not
+ * Compose Multiplatform for a KMP module. Coordinates are declared directly from the catalog, not
  * through the `compose.*` accessor DSL (deprecated in CMP 1.12). Material3 is intentionally not
  * here: only `core:designsystem` declares it (ADR-0006).
  */

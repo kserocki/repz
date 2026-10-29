@@ -9,8 +9,8 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 /**
  * Base convention for every shared KMP module: Kotlin Multiplatform plus the AGP 9 Android KMP
- * library target (delegated to Bolt's `configureAndroidLibraryTarget`) and the two Apple-silicon
- * iOS targets. Also applies `repz.quality`, whose body is filled in REP-9.
+ * library target (via `configureAndroidLibraryTarget`) and the two Apple-silicon iOS targets.
+ * Also applies `repz.quality`.
  */
 class KmpLibraryConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {

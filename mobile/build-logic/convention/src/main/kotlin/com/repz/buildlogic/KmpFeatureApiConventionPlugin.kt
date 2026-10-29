@@ -8,8 +8,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 /**
  * A `feature:x:api` module: a KMP library (`repz.kmp.library`) plus kotlinx.serialization for
- * `@Serializable` NavKeys, depending on `core:navigation`. Nav3 runtime and NavKey serialization
- * wiring land in REP-8.
+ * `@Serializable` NavKeys, depending on `core:navigation`.
  */
 class KmpFeatureApiConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
@@ -17,6 +16,7 @@ class KmpFeatureApiConventionPlugin : Plugin<Project> {
             pluginManager.apply("repz.kmp.library")
             pluginManager.apply("org.jetbrains.kotlin.plugin.serialization")
 
+            // TODO(REP-8): add Nav3 runtime and NavKey serialization.
             extensions.getByType<KotlinMultiplatformExtension>().sourceSets.named("commonMain") {
                 dependencies {
                     api(project(":core:navigation"))

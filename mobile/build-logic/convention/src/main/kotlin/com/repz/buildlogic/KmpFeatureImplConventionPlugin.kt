@@ -9,8 +9,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 /**
  * A `feature:x:impl` module: a KMP library with Compose, depending on its own `feature:x:api`
  * (derived from this module's path) plus the core modules every feature is allowed to see
- * (AGENTS.md §3: never `core:data`/`core:database`/`core:network`, never another `impl`). Koin,
- * lifecycle and kotlinx-collections-immutable land with REP-7 / the first real screen.
+ * (AGENTS.md §3: never `core:data`/`core:database`/`core:network`, never another `impl`).
  */
 class KmpFeatureImplConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
@@ -18,6 +17,7 @@ class KmpFeatureImplConventionPlugin : Plugin<Project> {
             pluginManager.apply("repz.kmp.library")
             pluginManager.apply("repz.compose")
 
+            // TODO(REP-7): add Koin, lifecycle and kotlinx-collections-immutable.
             check(path.endsWith(":impl")) {
                 "repz.kmp.feature.impl expects a module path ending in `:impl`, got `$path`."
             }
