@@ -47,7 +47,7 @@ See `.env.example`. All variables are validated at boot by `src/env.ts` (Zod); t
 
 ## Database
 
-`docker-compose.yml` (repository root) starts Postgres 18.6 only; there is no API container yet (tracked as a follow-up issue). The connection is checked once at boot (`select 1`); if Postgres is unreachable, the process logs a fatal error (host only, never the full connection string) and exits.
+`docker-compose.yml` (repository root) starts Postgres 18.6 only; there is no API container yet (tracked as a follow-up issue). The connection is checked once at boot (`select 1`); if Postgres is unreachable, the process logs a fatal error (host only, never the full connection string) and calls `process.exit(1)`. Under `pnpm dev`, `node --watch` then waits for a file change before it tries again, instead of the terminal returning; use `pnpm build && pnpm start` to see the real exit code.
 
 There is no schema yet — `db/schema/`, migrations and seed data land in REP-13.
 

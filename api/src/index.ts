@@ -24,22 +24,39 @@ const server = serve({ fetch: app.fetch, port: env.PORT }, (info) => {
   logger.info({ port: info.port }, "listening");
 });
 
+const SHUTDOWN_TIMEOUT_MS = 10_000;
+
 let shuttingDown = false;
 
 function shutdown(signal: NodeJS.Signals): void {
   if (shuttingDown) {
-    return;
+    logger.warn({ signal }, "shutdown already in progress, forcing exit");
+    process.exit(1);
   }
   shuttingDown = true;
   logger.info({ signal }, "shutting down");
+
+  const forceExitTimer = setTimeout(() => {
+    logger.error({ timeoutMs: SHUTDOWN_TIMEOUT_MS }, "graceful shutdown timed out, forcing exit");
+    process.exit(1);
+  }, SHUTDOWN_TIMEOUT_MS);
 
   server.close((closeError) => {
     if (closeError) {
       logger.error({ err: closeError }, "error while closing the HTTP server");
     }
-    void database.close().finally(() => {
-      process.exit(closeError ? 1 : 0);
-    });
+
+    database.close().then(
+      () => {
+        clearTimeout(forceExitTimer);
+        process.exit(closeError ? 1 : 0);
+      },
+      (databaseCloseError: unknown) => {
+        logger.error({ err: databaseCloseError }, "error while closing the database connection");
+        clearTimeout(forceExitTimer);
+        process.exit(1);
+      },
+    );
   });
 }
 

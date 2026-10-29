@@ -36,15 +36,19 @@ describe("loadEnv", () => {
   });
 
   it("given invalid values, when the error is thrown, then it never contains a supplied value", () => {
-    const secretUrl = "postgres://repz:super-secret-password@localhost:5432/repz";
+    const secretUrl = "postgres://repz:super-secret-password@localhost:99999/repz";
+
+    let caught: Error | undefined;
     try {
-      loadEnv({ DATABASE_URL: "http://not-postgres.example.com/db", PORT: "abc" });
-      throw new Error("loadEnv should have thrown");
+      loadEnv({ DATABASE_URL: secretUrl, PORT: "abc" });
     } catch (error) {
-      const message = (error as Error).message;
-      expect(message).not.toContain("not-postgres.example.com");
-      expect(message).not.toContain("abc");
-      expect(message).not.toContain(secretUrl);
+      caught = error as Error;
     }
+
+    expect(caught).toBeDefined();
+    const message = (caught as Error).message;
+    expect(message).not.toContain("super-secret-password");
+    expect(message).not.toContain("abc");
+    expect(message).not.toContain(secretUrl);
   });
 });

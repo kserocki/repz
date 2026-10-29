@@ -3,27 +3,19 @@ import { HTTPException } from "hono/http-exception";
 import pino from "pino";
 import { describe, expect, it } from "vitest";
 import { errorHandler, notFoundHandler } from "./errors.ts";
+import type { ProblemDetails } from "./problem-details.ts";
 import { requestIdMiddleware } from "./request-id.ts";
 import { requestLoggerMiddleware } from "./request-logger.ts";
 import { createRouter } from "./router.ts";
+import { MemoryDestination } from "./testing/memory-destination.ts";
 
 const EmptyResponseSchema = z.object({});
 
-type ProblemDetailsBody = {
-  type: string;
-  title: string;
-  status: number;
-  detail?: string;
-  instance?: string;
-  requestId: string;
-  errors?: Array<{ path: string; message: string }>;
-};
-
 /** A throwaway app wiring the shared pieces plus test-only routes; never part of `createApp`. */
-function createTestApp() {
+function createTestApp(destination: pino.DestinationStream = { write: () => {} }) {
   const app = createRouter();
   app.use(requestIdMiddleware(() => "test-request-id"));
-  app.use(requestLoggerMiddleware(pino({ level: "silent" })));
+  app.use(requestLoggerMiddleware(pino({ level: "info" }, destination)));
 
   app.openapi(
     createRoute({
@@ -121,8 +113,9 @@ describe("notFoundHandler", () => {
 });
 
 describe("errorHandler", () => {
-  it("given a handler that throws an unexpected Error, when requested, then responds 500 without the error message", async () => {
-    const app = createTestApp();
+  it("given a handler that throws an unexpected Error, when requested, then responds 500 without the error message and logs it once with the request id", async () => {
+    const destination = new MemoryDestination();
+    const app = createTestApp(destination);
 
     const res = await app.request("/boom");
 
@@ -137,6 +130,16 @@ describe("errorHandler", () => {
       status: 500,
     });
     expect(body.requestId).toBe("test-request-id");
+
+    const errorEntries = destination.entries.filter((entry) => entry.level === 50);
+    expect(errorEntries).toHaveLength(1);
+    expect(errorEntries[0]).toMatchObject({
+      requestId: "test-request-id",
+      msg: "Unhandled error",
+    });
+    expect((errorEntries[0]?.err as { message?: string } | undefined)?.message).toBe(
+      "secret detail",
+    );
   });
 
   it("given a handler that throws an HTTPException, when requested, then responds with its status", async () => {
@@ -165,7 +168,7 @@ describe("errorHandler", () => {
 
     expect(res.status).toBe(400);
     expect(res.headers.get("content-type")).toBe("application/problem+json");
-    const body = (await res.json()) as ProblemDetailsBody;
+    const body = (await res.json()) as ProblemDetails;
     expect(body).toMatchObject({ type: "about:blank", status: 400 });
     expect(body.detail).toMatch(/Malformed JSON/i);
   });
@@ -178,9 +181,11 @@ describe("validationErrorHook", () => {
     const res = await app.request("/items?limit=abc");
 
     expect(res.status).toBe(400);
-    const body = (await res.json()) as ProblemDetailsBody;
+    expect(res.headers.get("content-type")).toBe("application/problem+json");
+    const body = (await res.json()) as ProblemDetails;
     expect(body.type).toBe("urn:repz:problem:validation-error");
     expect(body.status).toBe(400);
+    expect(body.instance).toBe("/items");
     expect(body.errors?.[0]?.path).toBe("query.limit");
     expect(body.requestId).toBe("test-request-id");
   });

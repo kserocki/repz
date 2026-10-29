@@ -35,7 +35,7 @@ export const errorHandler: ErrorHandler<AppEnv> = (error, c) => {
     });
   }
 
-  c.var.logger.error({ err: error, requestId: c.var.requestId }, "Unhandled error");
+  c.var.logger.error({ err: error }, "Unhandled error");
   const status: ContentfulStatusCode = 500;
   return problemResponse(c, {
     type: "about:blank",
@@ -67,6 +67,7 @@ export const validationErrorHook: Hook<unknown, AppEnv, string, Response | undef
     type: "urn:repz:problem:validation-error",
     title: "Validation Error",
     status: 400,
+    instance: requestPath(c),
     errors,
   });
 };

@@ -8,7 +8,7 @@ export type Database = {
 };
 
 /**
- * Postgres.js + Drizzle client, without a schema (REP-13 adds `db/schema/`).
+ * Postgres.js + Drizzle client, without a schema yet.
  * `ping()` is used once at boot to fail fast if the database is unreachable.
  */
 export function createDatabase(databaseUrl: string): Database {

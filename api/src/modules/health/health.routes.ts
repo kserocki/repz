@@ -14,7 +14,7 @@ const healthRoute = createRoute({
   },
 });
 
-/** Liveness only: no DB call (ADR-0016, Q4). The DB is checked once at boot instead. */
+/** Liveness only: no DB call (ADR-0016). The DB is checked once at boot instead. */
 export function createHealthRoutes(): OpenAPIHono<AppEnv> {
   const router = createRouter();
   router.openapi(healthRoute, (c) => c.json({ status: "ok" as const }));
