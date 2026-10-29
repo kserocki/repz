@@ -26,7 +26,7 @@ Arriving later (don't invent substitutes; if you need them before they exist, sa
 **API** (from `api/`, from REP-12 on):
 ```bash
 pnpm lint && pnpm typecheck && pnpm test
-pnpm openapi:export && git diff --exit-code openapi.json   # contract is committed and current
+pnpm openapi:export && git diff --exit-code openapi.json   # from REP-17 on: contract is committed and current
 ```
 **Contract:** shared fixtures are decoded by a `core:network` test (from REP-17 on).
 

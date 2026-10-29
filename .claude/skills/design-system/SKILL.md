@@ -29,7 +29,7 @@ Sources, in this order: `docs/DESIGN_SYSTEM.md` (committed truth) → `design/bo
 ## Strings (multi-language ready)
 - All user-facing text in Compose Resources (EN default + `values-pl`), including content descriptions. No literals in Kotlin.
 - Placeholders instead of concatenation, `plurals` for counts, one key per full sentence.
-- Supported languages are declared once (Android `locales_config.xml`, iOS `CFBundleLocalizations`), and no language checks appear in code. A new language = a new `values-<lang>` folder + one entry in those declarations.
+- A new language = a new `values-<lang>` folder **only**. Platform language lists are generated from those folders (Android `generateLocaleConfig`, iOS `CFBundleLocalizations` via a Gradle task). No language checks in code.
 - Locale-aware formatting for numbers, units, dates and durations.
 
 ## Checklist before done
