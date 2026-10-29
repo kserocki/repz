@@ -7,7 +7,7 @@ import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Module
 
 /**
- * Consumer side of the cross-module Koin regression probe (REP-7). Deliberately outside
+ * Consumer side of the cross-module Koin regression probe. Deliberately outside
  * `com.repz.app.shared` so [AppModule][com.repz.app.shared.di.AppModule]'s `@ComponentScan` can
  * never pick these test classes up when `RepzApp` is assembled.
  */

@@ -10,10 +10,9 @@ import org.koin.mp.KoinPlatformTools
 import org.koin.plugin.module.dsl.startKoin
 
 /**
- * Regression test (REP-7): a provider function declared in one Gradle module's `@Module` class
+ * Regression test: a provider function declared in one Gradle module's `@Module` class
  * (`core:testing`) resolves for a consumer declared in another (`app:shared`), on every target
- * including Kotlin/Native. Cross-module `@ComponentScan` drops its hints on Kotlin/Native
- * (koin-compiler-plugin#106); explicit provider functions don't (ADR-0008, option A).
+ * including Kotlin/Native (see ADR-0008 for why this uses provider functions, not `@ComponentScan`).
  */
 class KoinMultiModuleGraphTest {
     @AfterTest

@@ -7,7 +7,7 @@ import org.koin.core.context.stopKoin
 import org.koin.mp.KoinPlatformTools
 
 /**
- * Regression test (REP-7): the real `RepzApp` graph starts on every target, including the iOS
+ * Regression test: the real `RepzApp` graph starts on every target, including the iOS
  * simulator, not only compiles.
  */
 class RepzAppStartTest {
