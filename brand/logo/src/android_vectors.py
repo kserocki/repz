@@ -40,6 +40,16 @@ GROUP_RE = re.compile(
 PATH_RE = re.compile(r'<path id="([\w-]+)" fill="(#[0-9A-Fa-f]{6})" d="([^"]+)"/>')
 RECT_RE = re.compile(r'<rect width="([\d.]+)" height="([\d.]+)" rx="([\d.]+)" fill="(#[0-9A-Fa-f]{6})"/>')
 
+VIEWPORT_CENTER = 54.0  # half of the 108x108 viewport; the source symbol is already centred here.
+
+# The SplashScreen API lays `windowSplashScreenAnimatedIcon` out in the 288 dp box it uses when
+# there is no distinct icon background (a same-colour `windowSplashScreenIconBackgroundColor` does
+# not switch it to the 240 dp box; measured in Coach's REP-11 round-1 review). The foreground/
+# monochrome geometry occupies 60% of the 108-unit viewport, i.e. 172.8 dp in that 288 dp box, not
+# the 144 dp the product decision calls for. Shrinking the splash-only copy by 5/6 (60% -> 50% of
+# the viewport, scaled about VIEWPORT_CENTER so it stays centred) renders at 144 dp instead.
+SPLASH_SYMBOL_SCALE = 5 / 6
+
 
 def read_svg(name: str) -> str:
     return (APP_ICON_DIR / name).read_text()
@@ -102,19 +112,36 @@ def background_drawable() -> str:
     return vector_xml(source, body)
 
 
-def symbol_group(source: str, color_override: str | None) -> str:
+def format_number(value: float, decimals: int) -> str:
+    """Matches `variants.py`'s own formatting (`.2f` translate, `.4f` scale), so a group with no
+    extra scale re-renders byte-identical to the source SVG's literal translate/scale text."""
+    text = f"{value:.{decimals}f}"
+    return text.rstrip("0").rstrip(".") if "." in text else text
+
+
+def symbol_group(source: str, color_override: str | None, extra_scale: float = 1.0) -> str:
     translate_x, translate_y, scale_x, scale_y, inner = GROUP_RE.search(read_svg(source)).groups()
-    scale_y = scale_y or scale_x
+    translate_x = float(translate_x)
+    translate_y = float(translate_y)
+    scale_x = float(scale_x)
+    scale_y = float(scale_y) if scale_y else scale_x
+
+    if extra_scale != 1.0:
+        translate_x = VIEWPORT_CENTER + (translate_x - VIEWPORT_CENTER) * extra_scale
+        translate_y = VIEWPORT_CENTER + (translate_y - VIEWPORT_CENTER) * extra_scale
+        scale_x *= extra_scale
+        scale_y *= extra_scale
+
     paths = "".join(
         path_xml("        ", path_id, color_override or android_color(fill, source), path_data)
         for path_id, fill, path_data in PATH_RE.findall(inner)
     )
     return (
         "    <group\n"
-        f'        android:translateX="{translate_x}"\n'
-        f'        android:translateY="{translate_y}"\n'
-        f'        android:scaleX="{scale_x}"\n'
-        f'        android:scaleY="{scale_y}">\n'
+        f'        android:translateX="{format_number(translate_x, 2)}"\n'
+        f'        android:translateY="{format_number(translate_y, 2)}"\n'
+        f'        android:scaleX="{format_number(scale_x, 4)}"\n'
+        f'        android:scaleY="{format_number(scale_y, 4)}">\n'
         f"{paths}"
         "    </group>\n"
     )
@@ -131,9 +158,14 @@ def monochrome_drawable() -> str:
 
 
 def splash_symbol_drawable() -> str:
-    """Same geometry as the monochrome layer; the fill is the themed splash colour, not a brand hex."""
+    """Same geometry as the monochrome layer, scaled down by SPLASH_SYMBOL_SCALE so the SplashScreen
+    API renders it at 144 dp (not 172.8 dp) in its 288 dp no-background icon box. The fill is the
+    themed splash colour, not a brand hex."""
     source = "android-monochrome-108.svg"
-    return vector_xml(source, symbol_group(source, color_override="@color/splash_symbol"))
+    return vector_xml(
+        source,
+        symbol_group(source, color_override="@color/splash_symbol", extra_scale=SPLASH_SYMBOL_SCALE),
+    )
 
 
 def write(name: str, content: str) -> None:
