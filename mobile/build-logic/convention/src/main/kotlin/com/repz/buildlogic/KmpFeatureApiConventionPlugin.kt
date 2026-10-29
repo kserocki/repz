@@ -16,7 +16,6 @@ class KmpFeatureApiConventionPlugin : Plugin<Project> {
             pluginManager.apply("repz.kmp.library")
             pluginManager.apply("org.jetbrains.kotlin.plugin.serialization")
 
-            // TODO(REP-8): add Nav3 runtime and NavKey serialization.
             extensions.getByType<KotlinMultiplatformExtension>().sourceSets.named("commonMain") {
                 dependencies {
                     api(project(":core:navigation"))
