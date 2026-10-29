@@ -26,8 +26,14 @@ Sources, in this order: `docs/DESIGN_SYSTEM.md` (committed truth) → `design/bo
 5. Accessibility: 48 dp minimum (56 for logging), `contentDescription` for icon-only controls, `semantics` custom actions where the spec lists them, and colour never as the only signal.
 6. Screenshot tests (Roborazzi) come later. Keep previews deterministic (no `Clock.System`).
 
+## Strings (multi-language ready)
+- All user-facing text in Compose Resources (EN default + `values-pl`), including content descriptions. No literals in Kotlin.
+- Placeholders instead of concatenation, `plurals` for counts, one key per full sentence.
+- No hard-coded language lists or language checks in code. A new language = a new `values-<lang>` folder only.
+- Locale-aware formatting for numbers, units, dates and durations.
+
 ## Checklist before done
 - [ ] light + dark + dynamic colour (Android) look right
-- [ ] PL strings don't truncate (buttons wrap; headlines may compress to wdth 88)
+- [ ] no hard-coded strings; plurals/placeholders used; PL strings don't truncate (buttons wrap; headlines may compress to wdth 88)
 - [ ] 200 % font scale doesn't break the layout
 - [ ] reduced motion path works

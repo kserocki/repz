@@ -49,7 +49,11 @@ design/     git-ignored local design export
 - **DI:** Koin annotations on concrete classes (`@KoinViewModel`, `@Factory`, `@Single`); one `@Module @ComponentScan` class per Gradle module.
 - **Errors:** domain returns typed results (`DomainResult<T, DomainError>`). No exceptions across layers.
 - **Time and IDs:** inject `kotlin.time.Clock` and `IdGenerator`. Never call `Clock.System` or `Uuid.random()` directly in logic.
-- **Strings:** Compose Resources, EN + PL. No hard-coded user-facing text. Numbers are formatted per locale (`82.5` / `82,5`).
+- **Strings and i18n:** every user-facing text lives in Compose Resources (`strings.xml`, English default, `values-pl` for Polish). Never hard-code text in Kotlin, including content descriptions, notification texts and error messages. Adding a language must only mean adding a new `values-<lang>` folder, never a code change:
+  - placeholders (`%1$s`, `%1$d`) instead of concatenating strings; `plurals` for anything counted (sets, reps, workouts); one key per full sentence, never sentence fragments glued together;
+  - no language lists or `if (language == "pl")` in code; the language picker reads available locales from resources;
+  - numbers, units, dates and durations are formatted with locale-aware formatters, never by hand (`82.5` / `82,5`);
+  - layouts survive +30 % text length (buttons wrap, never truncate).
 - **Tests:** `commonTest`, kotlin.test + Turbine, hand-written fakes from `core:testing` (no mocking libraries). Name tests `given…_when…_then…`.
 - **API (TS):** routes → service → repository. Zod schemas are the contract. Errors are RFC 9457 Problem Details.
 - **Language:** English only in code, comments, commits and docs.
