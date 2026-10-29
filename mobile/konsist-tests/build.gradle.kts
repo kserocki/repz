@@ -7,6 +7,11 @@ kotlin {
     jvmToolchain(17)
 }
 
+dependencies {
+    testImplementation(libs.konsist)
+    testImplementation(libs.kotlin.test)
+}
+
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 
