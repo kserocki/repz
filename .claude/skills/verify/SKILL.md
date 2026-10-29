@@ -24,9 +24,9 @@ No baselines and no blanket suppression: fix findings. A scoped suppression, or 
 Arriving later (don't invent substitutes; if you need them before they exist, say so):
 - REP-10: final CI task names.
 
-**API** (from `api/`, from REP-12 on):
+**API** (from `api/`, works today):
 ```bash
-pnpm lint && pnpm typecheck && pnpm test
+pnpm lint && pnpm typecheck && pnpm test && pnpm build
 pnpm openapi:export && git diff --exit-code openapi.json   # from REP-17 on: contract is committed and current
 ```
 **Contract:** shared fixtures are decoded by a `core:network` test (from REP-17 on).
