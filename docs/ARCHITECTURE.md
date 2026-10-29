@@ -314,12 +314,12 @@ class HistoryViewModel(
 
 ## 9. Dependency injection (Koin + Compiler Plugin)
 
-- Classes declare themselves: `@KoinViewModel class HistoryViewModel(...)`, `@Factory class ObserveWorkoutHistoryUseCase(...)`, `@Single class OfflineWorkoutRepository(...) : WorkoutRepository`.
-- Every Gradle module with definitions applies the plugin and exposes **one** annotated module class: `@Module @ComponentScan("com.repz.app.feature.history") class HistoryModule`.
+- The `repz.koin` convention plugin applies the compiler plugin (`io.insert-koin.compiler.plugin`) and the `koin-core`/`koin-annotations` runtime to every module with Koin definitions: `app:shared`, `core:testing` and the six `feature:*:impl` modules (via `repz.kmp.feature.impl`). `core:domain` and `core:common` never see Koin.
+- Every Gradle module with definitions exposes **one** `@Module` class whose bindings are explicit `@Single`/`@Factory`/`@KoinViewModel` provider functions declared inside it, e.g. `@Module class HistoryModule { @KoinViewModel fun historyViewModel(...) = HistoryViewModel(...) }`. No cross-module `@ComponentScan`: on Kotlin 2.4.20+ the Koin compiler plugin's `@ComponentScan` hints are dropped by the Kotlin/Native KLIB serializer across Gradle module boundaries (koin-compiler-plugin#106 / KT-79565, found and verified in REP-7), so a definition scanned in one module is invisible when another module compiles against it. `app:shared` is the exception: its own module and the `@KoinApplication` entry point always compile together, so it may keep a local `@ComponentScan("com.repz.app.shared")`. Re-checked in REP-58 once koin-compiler-plugin 1.2.2 (PR #129) ships the fix.
 - Platform-specific bindings (WorkManager, Keychain, Room builder) are provided through `expect`/`actual` classes in the module's platform source sets.
-- `app:shared` is the only entry point: `@KoinApplication(modules = [...]) object RepzApp`, started with `startKoin<RepzApp>()`. Android calls it from `Application`, iOS from the SwiftUI `App` init.
-- **The full graph is verified at compile time** (missing bindings, cycles, qualifier clashes), so a broken graph does not compile and no runtime `verify()` test is needed.
-- Rule for readability: annotations only on concrete classes. No top-level annotated functions, except for third-party objects (Ktor `HttpClient`, Room database), which go in an explicit `@Module` class with `@Single fun` providers.
+- `app:shared` is the only entry point: `@KoinApplication(modules = [AppModule::class, ...]) object RepzApp`, started via `startRepzKoin()` (wraps `startKoin<RepzApp>()`). New `@Module` classes are added to `RepzApp`'s explicit `modules` list, never auto-discovered (no `@Configuration`). Android calls `startRepzKoin` from `Application`, iOS from the SwiftUI `App` init (REP-11).
+- **The full graph is verified at compile time** (missing bindings, cycles, qualifier clashes) wherever the entry point compiles — `app:shared`'s main and test compilations — so a broken graph does not compile and no runtime `verify()` test is needed. Leaf modules without an entry point get no compile-time diagnostics. This also auto-enables `strictSafety`: `app:shared`'s common-metadata compile task never reports up-to-date, so the graph re-verifies every build (its per-platform compile tasks cache normally; verified in REP-7).
+- Rule for readability: a module's one `@Module` class holds every binding as an explicit `@Single`/`@Factory`/`@KoinViewModel fun` provider — not only for third-party objects (Ktor `HttpClient`, Room database), which was the pre-REP-7 convention.
 
 ---
 
@@ -402,8 +402,8 @@ Verified 2026-10-28 against Maven Central, Google Maven, GitHub releases and npm
 | Room 3 | `androidx.room3:room3-runtime` / `room3-compiler`, plugin `androidx.room3` | 3.0.3 | KSP per target (`kspAndroid`, `kspIosArm64`, `kspIosSimulatorArm64`); host tests: `sqlite-bundled-jvm` substituted on `androidHostTestRuntimeClasspath` |
 | SQLite bundled driver | `androidx.sqlite:sqlite-bundled` | 2.7.1 | |
 | WorkManager | `androidx.work:work-runtime-ktx` | 2.12.0 | `androidMain` only |
-| Koin | `io.insert-koin:koin-bom`, `koin-annotations` | 4.2.2 | |
-| Koin Compiler Plugin | `io.insert-koin.compiler.plugin` | 1.2.1 | officially verified up to Kotlin 2.4.20; on 2.4.21 it warns but does not block (verify in spike) |
+| Koin | `io.insert-koin:koin-bom`, `koin-core`, `koin-annotations` | 4.2.2 | `koin-bom` unused (ADR-0008); `koin-core` + `koin-annotations` applied via `repz.koin` |
+| Koin Compiler Plugin | `io.insert-koin.compiler.plugin` | 1.2.1 | officially verified up to Kotlin 2.4.20; on 2.4.21 it warns but does not block — **verified in REP-7**. Cross-module `@ComponentScan` hints are dropped on Kotlin/Native (koin-compiler-plugin#106); mitigated with explicit provider functions per module (ADR-0008, "option A") |
 | Ktor client | `io.ktor` | 3.6.0 | |
 | kotlinx.serialization | | 1.12.0 | |
 | kotlinx.coroutines | | 1.11.0 | |
@@ -487,7 +487,7 @@ All decisions live in [`docs/adr/`](adr/) (ADR-0001 … ADR-0015). Add a new ADR
 ## 15. Risks to verify in the first scaffold spike
 
 1. Room 3 KSP wiring with `com.android.kotlin.multiplatform.library` (AGP 9.4) on iOS targets. This is not confirmed by official docs. (REP-6) Verified: KSP generates the `actual` Room code for `kspAndroid`, `kspIosArm64` and `kspIosSimulatorArm64`; the probe DAO suite (suspend query, `Flow`, `withWriteTransaction` rollback) passes on `testAndroidHostTest` and the iOS 27.1 simulator; `androidHostTestRuntimeClasspath` substitutes `sqlite-bundled-jvm` so the bundled driver loads on the host JVM.
-2. Koin Compiler Plugin 1.2.1 on Kotlin 2.4.21 (officially verified up to 2.4.20; expected to warn, not fail). (REP-7)
+2. Koin Compiler Plugin 1.2.1 on Kotlin 2.4.21 (officially verified up to 2.4.20; expected to warn, not fail). (REP-7) — **Checked in REP-7:** warns as expected (`Kotlin 2.4.21 is newer than the newest verified version (2.4.20)...`), never blocks. Found a real bug along the way: cross-module `@ComponentScan` hints are dropped on Kotlin/Native (koin-compiler-plugin#106 / KT-79565, JVM/Android unaffected). Fixed by switching to explicit `@Single`/`@Factory` provider functions per module instead of cross-module scanning (ADR-0008, "option A"); `app:shared` still scans locally. Re-check in REP-58 once plugin 1.2.2 ships.
 3. Detekt 2.0 alpha + Compose rules + KMP source sets. (REP-9)
 4. Nav3 polymorphic back-stack serialization on iOS. (REP-8) Verified in REP-8: the SavedState round-trip passes on the iOS simulator, and a JSON round-trip passes on the Android host. The Android `Bundle` path (process death, "Don't keep activities") is checked in REP-28.
 5. Choice of image-generation tool and art style (decided after the Claude Design pass).
