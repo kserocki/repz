@@ -70,7 +70,7 @@ Run from `mobile/` unless noted. One-time setup: create the git-ignored `mobile/
 
 | Task | Command | Status |
 |---|---|---|
-| Full build (all targets, incl. Android lint) | `./gradlew build` | works |
+| Full build (all targets, incl. Android lint and the Koin graph check) | `./gradlew build` | works |
 | Unit tests (Android host + iOS simulator) | `./gradlew allTests` | works |
 | Android debug APK / install | `./gradlew :app:android:assembleDebug` · `:app:android:installDebug` | builds; not launchable until REP-11 |
 | Module list | `./gradlew projects` | works |
@@ -110,7 +110,7 @@ Leadership (Opus 5.5): `atlas` (plans, splits work into packages), `coach` (code
 
 ## 8. Definition of done
 
-- `verify` skill passes: every gate that exists today (see §5). Detekt, ktlint, Konsist, the compile-time Koin graph and the TS gates join as REP-9, REP-7 and REP-12 land.
+- `verify` skill passes: every gate that exists today (see §5). The compile-time Koin graph check already runs in `./gradlew build`; Detekt, ktlint, Konsist and the TS gates join as REP-9 and REP-12 land.
 - New UI has previews for each state, light and dark, plus a PL string check.
 - New behaviour is covered by unit tests (domain + ViewModel).
 - Docs and ADRs are updated if behaviour or a decision changed.

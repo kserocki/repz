@@ -25,7 +25,7 @@ If anything is unclear (naming, behaviour, UX copy, a token value, which module 
    - `XScreen(onNavigate…)`: gets the VM with `koinViewModel()`, `collectAsStateWithLifecycle()`, collects effects in `LaunchedEffect`.
    - `XContent(state, onIntent, modifier)`: stateless, only `core:designsystem` components and tokens. Add `@Preview` per state, light + dark.
 5. **Navigation:** `fun EntryProviderScope<NavKey>.xEntries(navigator: Navigator)` in impl; wire it in `app:shared`. Cross-feature navigation goes only through api NavKeys.
-6. **DI:** one `@Module` class per module with explicit provider functions (`@Factory fun observeHistory(repo: WorkoutRepository) = ObserveWorkoutHistoryUseCase(repo)`), no `@ComponentScan` (ADR-0008). Include it in the `@KoinApplication` in `app:shared`. The compiler plugin verifies the graph on Android and iOS. The exact ViewModel provider shape (`@KoinViewModel fun …`) is confirmed in REP-28. Until then, ask.
+6. **DI:** one `@Module` class per module with explicit provider functions (feature-local example: `@Factory fun observeHistory(repo: WorkoutRepository): ObserveWorkoutHistoryUseCase = ObserveWorkoutHistoryUseCase(repo)`), no `@ComponentScan` (ADR-0008). Include it in the `@KoinApplication` in `app:shared`. The compiler plugin verifies the graph on Android and iOS. The exact ViewModel provider shape (`@KoinViewModel fun …`) is confirmed in REP-28. Until then, ask.
 7. **Strings:** add EN + PL to Compose Resources. Check that the PL layout does not truncate.
 8. **Motion:** use only the MOT-xx IDs listed for this screen (see the `animation` skill).
 9. **Tests** (`commonTest`): a ViewModel test per intent (Turbine, fakes from `core:testing`, `StandardTestDispatcher`) and a use-case test per rule.
