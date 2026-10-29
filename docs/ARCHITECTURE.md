@@ -489,7 +489,7 @@ All decisions live in [`docs/adr/`](adr/) (ADR-0001 … ADR-0015). Add a new ADR
 1. Room 3 KSP wiring with `com.android.kotlin.multiplatform.library` (AGP 9.4) on iOS targets. This is not confirmed by official docs. (REP-6)
 2. Koin Compiler Plugin 1.2.1 on Kotlin 2.4.21 (officially verified up to 2.4.20; expected to warn, not fail). (REP-7)
 3. Detekt 2.0 alpha + Compose rules + KMP source sets. (REP-9)
-4. Nav3 polymorphic back-stack serialization on iOS. (REP-8)
+4. Nav3 polymorphic back-stack serialization on iOS. (REP-8) Verified in REP-8: the SavedState round-trip passes on the iOS simulator, and a JSON round-trip passes on the Android host.
 5. Choice of image-generation tool and art style (decided after the Claude Design pass).
 6. Xcode 27.1 / Gradle 9.8.2 / AGP 9.4.0, all above Kotlin 2.4.21's tested toolchain (Xcode 26.4, Gradle 9.7.0, AGP 9.3.1) — checked in REP-5: build, link and simulator tests pass; only the AGP deprecation was seen.
 
