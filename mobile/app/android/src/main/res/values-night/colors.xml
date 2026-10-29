@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Splash screen (night): ink background, cyan symbol. -->
+    <color name="splash_background">@color/brand_ink</color>
+    <color name="splash_symbol">@color/brand_cyan</color>
+
+</resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Fixed brand colours (brand/LOGO.md §3): never dynamic, never themed. -->
+    <color name="brand_cyan">#00C2E0</color>
+    <color name="brand_deep">#00687A</color>
+    <color name="brand_ink">#0E1416</color>
+    <color name="brand_paper">#F5FAFB</color>
+
+    <!-- Splash screen (day): paper background, deep symbol. Overridden in values-night. -->
+    <color name="splash_background">@color/brand_paper</color>
+    <color name="splash_symbol">@color/brand_deep</color>
+
+</resources>

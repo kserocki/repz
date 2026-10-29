@@ -11,3 +11,17 @@ cd .. && python3 src/variants.py
 ```
 
 Never edit files in `logo/master`, `logo/color`, `logo/app-icon` or `logo/motion` by hand.
+
+After `logo/app-icon` changes, regenerate what consumes it on each platform:
+
+```bash
+# Android: adaptive-icon + splash VectorDrawables (stdlib only, no venv needed)
+python3 logo/src/android_vectors.py
+
+# iOS: AppIcon + LaunchSymbol asset catalog (copies PNG/SVG as-is)
+../mobile/iosApp/scripts/sync-brand-assets.sh
+```
+
+Both scripts are deterministic: re-running them must leave `git status` clean. Never edit the
+files they write (`mobile/app/android/src/main/res/drawable/*.xml`,
+`mobile/iosApp/iosApp/Assets.xcassets/`) by hand.

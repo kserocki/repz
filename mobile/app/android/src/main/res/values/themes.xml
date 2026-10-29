@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Shown by the AndroidX SplashScreen compat library before the first Compose frame.
+         installSplashScreen() applies this theme on API < 31 too (MainActivity, app:android). -->
+    <style name="Theme.Repz.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_symbol</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/splash_background</item>
+        <item name="postSplashScreenTheme">@style/Theme.Repz</item>
+    </style>
+
+    <!-- Framework parent only: no AppCompat, no Material Components (app:android hosts Compose directly). -->
+    <style name="Theme.Repz" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/splash_background</item>
+    </style>
+
+</resources>
