@@ -21,6 +21,15 @@ discovers source sets under the AGP 9 KMP library plugin or AGP 9 built-in Kotli
 (`mobile/config/detekt/detekt.yml`) is `buildUponDefaultConfig: true` with four small overrides plus
 the full Compose rule set at its documented defaults; no baseline. Detekt runs its own bundled
 Kotlin 2.4.10 in an isolated classpath, so it does not conflict with the project's Kotlin 2.4.21.
-Known gap: `FunctionNaming` and `UnusedPrivateFunction` have no per-annotation exemption in
-alpha.6, so a `@Composable fun FooContent()` or a private `@Preview` function will be flagged once
-real Compose UI code lands (ARCH §12.1); not fixed yet, revisit before the first UI module ships.
+
+`FunctionNaming.ignoreAnnotated: ['Composable']` and `UnusedPrivateFunction.ignoreAnnotated:
+['Preview']` are both configured, even though neither key appears in the alpha.6 generated default
+config: `ignoreAnnotated` is a generic key accepted on every rule (`dev.detekt.api.Config.Companion`,
+`ConfigValidationKt`, `AnnotationSuppressorKt`), not a per-rule property, so it never shows up there.
+Verified against the alpha.6 jars: a `@Composable fun SampleComposable()` and a private
+`@Composable @Preview fun` are not flagged by `FunctionNaming`, while a plain (non-Composable)
+PascalCase function still is. Custom multipreview annotations must be added to `FunctionNaming`'s
+`ignoreAnnotated` list too. Accepted gap (user, 2026-10-29): `UnusedPrivateFunction` implements
+`RequiresAnalysisApi`, so it needs type resolution and is inactive in the plain `detekt` gate today
+regardless of its `ignoreAnnotated` config — a private `@Preview` function is simply never checked
+for being unused; revisit when Detekt 2.0 is stable.

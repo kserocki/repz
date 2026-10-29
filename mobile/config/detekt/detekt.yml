@@ -11,6 +11,12 @@ style:
     active: true
     ignorePropertyDeclaration: true
     ignoreCompanionObjectPropertyDeclaration: true
+  UnusedPrivateFunction:
+    active: true
+    # Needs type resolution (RequiresAnalysisApi), so it never runs in our plain, non-type-resolved
+    # detekt gate; inactive today is an accepted gap (user, 2026-10-29). ignoreAnnotated still
+    # documents the intent (private previews look unused) for when the gate gains type resolution.
+    ignoreAnnotated: ['Preview']
 
 complexity:
   LongParameterList:
@@ -24,6 +30,11 @@ naming:
     # CompositionLocals and @Preview-style top-level vals pass without forcing every existing
     # UPPER_SNAKE_CASE constant (e.g. build-logic's ANDROID_HOST_TEST_RUNTIME_CLASSPATH) to rename.
     constantPattern: '[A-Z][A-Za-z0-9_]*'
+  FunctionNaming:
+    active: true
+    # ignoreAnnotated is a generic key on every rule (dev.detekt.api.Config.Companion); Composables
+    # are PascalCase and are separately checked by compose-rules' ComposableNaming.
+    ignoreAnnotated: ['Composable']
 
 Compose:
   ComposableAnnotationNaming:
