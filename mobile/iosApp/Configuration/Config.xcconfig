@@ -12,19 +12,23 @@ ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon
 CODE_SIGN_STYLE = Automatic
 DEVELOPMENT_TEAM =
 
-// embedAndSignAppleFrameworkForXcode needs an unsandboxed script environment (REP-11 S2).
+// embedAndSignAppleFrameworkForXcode needs an unsandboxed script environment.
 ENABLE_USER_SCRIPT_SANDBOXING = NO
 
-// Xcode 27.1's own new-project default (verified against Base_ProjectSettings.xctemplate), now
-// that real Swift sources exist (REP-11 S2).
+// Xcode 27.1's own new-project default (verified against Base_ProjectSettings.xctemplate).
 SWIFT_VERSION = 5.0
 SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES
 SWIFT_APPROACHABLE_CONCURRENCY = YES
 
 // Direct integration of the static RepzShared framework (ADR-0017): the "Compile Kotlin
 // framework" run-script phase builds it into app/shared/build/xcode-frameworks/<CONFIGURATION>/
-// <SDK_NAME> via embedAndSignAppleFrameworkForXcode, which also embeds and signs it into the app.
+// <SDK_NAME> via embedAndSignAppleFrameworkForXcode. Nothing is embedded (RepzShared is linked
+// statically straight into the app binary); the task only compiles, signs and exposes the klib.
 FRAMEWORK_SEARCH_PATHS = $(SRCROOT)/../app/shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME) $(inherited)
 OTHER_LDFLAGS = -framework RepzShared $(inherited)
+
+// embedAndSignAppleFrameworkForXcode only builds the arm64 simulator slice; the x86_64 simulator
+// is out of scope, so exclude it or 'generic/platform=iOS Simulator' builds fail.
+EXCLUDED_ARCHS[sdk=iphonesimulator*] = x86_64
 
 #include? "Local.xcconfig"
