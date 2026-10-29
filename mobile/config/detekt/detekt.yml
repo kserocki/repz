@@ -20,7 +20,10 @@ complexity:
 naming:
   TopLevelPropertyNaming:
     active: true
-    constantPattern: '[A-Z][A-Za-z0-9]*'
+    # Default is upper snake case only ('[A-Z][_A-Z0-9]*'); widened to also accept PascalCase so
+    # CompositionLocals and @Preview-style top-level vals pass without forcing every existing
+    # UPPER_SNAKE_CASE constant (e.g. build-logic's ANDROID_HOST_TEST_RUNTIME_CLASSPATH) to rename.
+    constantPattern: '[A-Z][A-Za-z0-9_]*'
 
 Compose:
   ComposableAnnotationNaming:
