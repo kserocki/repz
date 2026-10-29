@@ -449,6 +449,8 @@ The machine toolchain the mobile build is verified against (checked in REP-5):
 
 ## 12. Quality gates
 
+This is the target setup. Which gates run today is listed in `AGENTS.md` §5.
+
 | Gate | Tool | Where |
 |---|---|---|
 | Kotlin style | ktlint | pre-commit (optional) + CI |

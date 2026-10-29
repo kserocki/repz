@@ -51,7 +51,7 @@ design/     git-ignored local design export
 - **Time and IDs:** inject `kotlin.time.Clock` and `IdGenerator`. Never call `Clock.System` or `Uuid.random()` directly in logic.
 - **Strings and i18n:** every user-facing text lives in Compose Resources (`strings.xml`, English default, `values-pl` for Polish). Never hard-code text in Kotlin, including content descriptions, notification texts and error messages. Adding a language must only mean adding a new `values-<lang>` folder, never a code change:
   - placeholders (`%1$s`, `%1$d`) instead of concatenating strings; `plurals` for anything counted (sets, reps, workouts); one key per full sentence, never sentence fragments glued together;
-  - no language lists or `if (language == "pl")` in code; the language picker reads available locales from resources;
+  - supported languages are declared once (Android `locales_config.xml`, iOS `CFBundleLocalizations`) and the language picker reads that list; no `if (language == "pl")` anywhere in code;
   - numbers, units, dates and durations are formatted with locale-aware formatters, never by hand (`82.5` / `82,5`);
   - layouts survive +30 % text length (buttons wrap, never truncate).
 - **Tests:** `commonTest`, kotlin.test + Turbine, hand-written fakes from `core:testing` (no mocking libraries). Name tests `given…_when…_then…`.
@@ -60,7 +60,7 @@ design/     git-ignored local design export
 - **Naming over comments:** functions, variables and classes are named so precisely that comments are unnecessary. Extract a well-named function instead of writing a comment.
 - **Comments only for non-obvious logic:** 1–3 plain lines on what the code does and how it behaves, understandable to any developer. No essays.
 - **No ticket numbers in comments**, except `// TODO(REP-xx): …` pointing to an existing Linear issue.
-- **Commits:** Conventional Commits with the Linear key in the message (`feat(workout): log set offline (REP-12)`).
+- **Commits:** Conventional Commits with the Linear key in the message (`feat(workout): log set offline (REP-34)`).
 - **Workflow:** every Linear issue is implemented with the `implement` skill (plan → approval → implementation → manual test → review → PR).
 
 ## 5. Commands
@@ -73,7 +73,7 @@ Run from `mobile/` unless noted. One-time setup: create the git-ignored `mobile/
 | Unit tests (Android host + iOS simulator) | `./gradlew allTests` | works |
 | Android debug APK / install | `./gradlew :app:android:assembleDebug` · `:app:android:installDebug` | builds; not launchable until REP-11 |
 | Module list | `./gradlew projects` | works |
-| Style, static analysis, architecture tests | `./gradlew check` (ktlint, Detekt, Konsist) | arrives with REP-9 |
+| Style, static analysis, architecture tests | `./gradlew check` | runs today; ktlint, Detekt and Konsist join with REP-9 |
 | iOS app | open `mobile/iosApp/iosApp.xcodeproj` in Xcode | arrives with REP-11 |
 | API + DB | `docker compose up -d` (from the repo root) | arrives with REP-12 |
 | API dev / tests / lint | `cd api && pnpm dev` · `pnpm test` · `pnpm lint` | arrives with REP-12 |
@@ -109,7 +109,7 @@ Leadership (Opus 5.5): `atlas` (plans, splits work into packages), `coach` (code
 
 ## 8. Definition of done
 
-- `verify` skill passes (Kotlin: detekt, ktlint, Konsist, unit tests, compile-time Koin graph; TS: lint, typecheck, tests).
+- `verify` skill passes: every gate that exists today (see §5). Detekt, ktlint, Konsist, the compile-time Koin graph and the TS gates join as REP-9, REP-7 and REP-12 land.
 - New UI has previews for each state, light and dark, plus a PL string check.
 - New behaviour is covered by unit tests (domain + ViewModel).
 - Docs and ADRs are updated if behaviour or a decision changed.

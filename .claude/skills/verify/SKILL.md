@@ -1,6 +1,6 @@
 ---
 name: verify
-description: Run Repz quality gates before a commit or PR (Kotlin detekt, ktlint, Konsist architecture tests, unit tests, compile-time Koin graph; TS lint, typecheck, tests, OpenAPI contract) and the pre-commit checklist. Use before every commit, when asked to check, or when finishing a task.
+description: Run the Repz quality gates before a commit or PR (today: Gradle build incl. Android lint + unit tests on Android host and iOS simulator; later ktlint/Detekt/Konsist, Koin graph, TS lint/typecheck/tests and the OpenAPI contract as their issues land) and the pre-commit checklist. Use before every commit, when asked to check, or when finishing a task.
 ---
 
 # Verify
@@ -19,7 +19,7 @@ This also covers failures: if a gate fails for a reason you don't understand, or
 ./gradlew allTests   # commonTest on the Android host + iOS simulator (works today)
 ```
 Arriving later (don't invent substitutes; if you need them before they exist, say so):
-- REP-9: `./gradlew check` with ktlint, Detekt + Compose rules, and the Konsist architecture tests.
+- REP-9: ktlint, Detekt + Compose rules and the Konsist architecture tests, wired into `./gradlew check` (which already runs, but without them).
 - REP-7: compile-time Koin graph check (part of the normal build once the plugin is applied).
 - REP-10: final CI task names.
 
@@ -28,7 +28,7 @@ Arriving later (don't invent substitutes; if you need them before they exist, sa
 pnpm lint && pnpm typecheck && pnpm test
 pnpm openapi:export && git diff --exit-code openapi.json   # contract is committed and current
 ```
-**Contract:** shared fixtures are decoded by a `core:network` test (from REP-13 on).
+**Contract:** shared fixtures are decoded by a `core:network` test (from REP-17 on).
 
 > Current commands are listed in `AGENTS.md` §5. If a command doesn't exist yet, report it as not available. Don't make one up.
 
