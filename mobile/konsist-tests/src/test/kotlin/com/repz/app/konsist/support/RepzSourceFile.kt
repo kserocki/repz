@@ -31,9 +31,10 @@ internal fun parseRepzSourceFile(projectPath: String): RepzSourceFile {
     val normalizedPath = projectPath.replace('\\', '/')
     val pathUnderModuleTree = FIXTURE_PREFIX.find(normalizedPath)?.groupValues?.get(1) ?: normalizedPath
     val segments = pathUnderModuleTree.split('/').filter { it.isNotEmpty() }
-    val sourceDirectoryIndex = segments.indices.lastOrNull { index ->
-        segments.getOrNull(index) == "src" && segments.getOrNull(index + 2) == "kotlin"
-    }
+    val sourceDirectoryIndex =
+        segments.indices.lastOrNull { index ->
+            segments.getOrNull(index) == "src" && segments.getOrNull(index + 2) == "kotlin"
+        }
 
     return if (sourceDirectoryIndex == null) {
         val fileName = segments.lastOrNull().orEmpty()

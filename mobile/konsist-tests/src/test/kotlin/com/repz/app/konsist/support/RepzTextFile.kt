@@ -20,8 +20,7 @@ private val mobileRoot: File by lazy { File(Konsist.projectRootPath) }
  * (C1) read every file directly instead of going through a
  * [com.lemonappdev.konsist.api.container.KoScope], which only ever contains `.kt` files.
  */
-fun realTextFiles(): List<RepzTextFile> =
-    repzTextFilesUnder(mobileRoot) { dir -> "fixtures" !in dir.path && "konsist-tests" !in dir.path }
+fun realTextFiles(): List<RepzTextFile> = repzTextFilesUnder(mobileRoot) { dir -> "fixtures" !in dir.path && "konsist-tests" !in dir.path }
 
 /** The fixture tree for one rule, read the same way as [realTextFiles]. */
 fun fixtureTextFiles(ruleId: String): List<RepzTextFile> = repzTextFilesUnder(File(mobileRoot, "konsist-tests/src/test/fixtures/$ruleId"))

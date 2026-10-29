@@ -9,7 +9,7 @@ import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 import java.io.File
 
 /**
- * ktlint reporters: plain for the console, checkstyle for machine consumption (REP-10). KSP
+ * ktlint reporters: plain for the console, checkstyle for machine consumption later in CI. KSP
  * (Room) and the Compose resources plugin both register their generated Kotlin under this
  * module's own `build/` directory as real compilation source directories, which ktlint's
  * Kotlin-source-set auto-discovery then picks up; excluded here since it is never hand-written.

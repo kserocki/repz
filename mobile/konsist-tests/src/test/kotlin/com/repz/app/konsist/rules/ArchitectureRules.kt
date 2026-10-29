@@ -47,9 +47,16 @@ fun checkA2FeatureImplIsolation(files: List<RepzTextFile>) {
     files
         .filter { !it.source.isBuildScript && FEATURE_IMPL_MODULE.matches(it.source.modulePath) }
         .assertTrue("A2: feature:x:impl never imports another feature's :impl (AGENTS.md §3.2)") { file ->
-            val ownFeatureName = file.source.modulePath.removePrefix(":feature:").removeSuffix(":impl")
+            val ownFeatureName =
+                file.source.modulePath
+                    .removePrefix(":feature:")
+                    .removeSuffix(":impl")
             importedNames(file.text).none { name ->
-                FEATURE_IMPL_IMPORT.find(name)?.groupValues?.get(1)?.let { it != ownFeatureName } == true
+                FEATURE_IMPL_IMPORT
+                    .find(name)
+                    ?.groupValues
+                    ?.get(1)
+                    ?.let { it != ownFeatureName } == true
             }
         }
 
@@ -70,15 +77,26 @@ private val A3_FORBIDDEN_IMPORTS =
     listOf("com.repz.app.core.data", "com.repz.app.core.database", "com.repz.app.core.network", "com.repz.app.core.sync")
 private val A3_FORBIDDEN_BUILD_FILE_TOKENS =
     listOf(
-        "projects.core.data", "projects.core.database", "projects.core.network", "projects.core.sync",
-        ":core:data", ":core:database", ":core:network", ":core:sync",
+        "projects.core.data",
+        "projects.core.database",
+        "projects.core.network",
+        "projects.core.sync",
+        ":core:data",
+        ":core:database",
+        ":core:network",
+        ":core:sync",
     )
 
-/** A3: `feature:x:impl` and `feature:x:api` see domain interfaces only, never `core:data`/`core:database`/`core:network`/`core:sync` (AGENTS.md §3.3). */
+/**
+ * A3: `feature:x:impl` and `feature:x:api` see domain interfaces only, never `core:data`,
+ * `core:database`, `core:network` or `core:sync` (AGENTS.md §3.3).
+ */
 fun checkA3FeatureSeesDomainOnly(files: List<RepzTextFile>) {
     files
-        .filter { !it.source.isBuildScript && (FEATURE_IMPL_MODULE.matches(it.source.modulePath) || FEATURE_API_MODULE.matches(it.source.modulePath)) }
-        .assertTrue("A3: feature impl/api modules see domain interfaces only (AGENTS.md §3.3)") { file ->
+        .filter {
+            !it.source.isBuildScript &&
+                (FEATURE_IMPL_MODULE.matches(it.source.modulePath) || FEATURE_API_MODULE.matches(it.source.modulePath))
+        }.assertTrue("A3: feature impl/api modules see domain interfaces only (AGENTS.md §3.3)") { file ->
             A3_FORBIDDEN_IMPORTS.none { forbidden -> hasImportStartingWith(file.text, forbidden) }
         }
 
@@ -91,11 +109,16 @@ fun checkA3FeatureSeesDomainOnly(files: List<RepzTextFile>) {
 
 private val A4_COMPOSITION_ROOT_TOKENS = listOf("KoinApplication(", "startKoin(", "startKoin<", "NavDisplay(")
 
-/** A4: `@KoinApplication`, `startKoin` and `NavDisplay` are used only in `app:shared`, the composition root; `core:*` never imports feature or `app:shared` code (AGENTS.md §3.4). */
+/**
+ * A4: `@KoinApplication`, `startKoin` and `NavDisplay` are used only in `app:shared`, the
+ * composition root; `core:*` never imports feature or `app:shared` code (AGENTS.md §3.4).
+ */
 fun checkA4CompositionRootIsAppShared(files: List<RepzTextFile>) {
     files
         .filter { !it.source.isBuildScript }
-        .assertTrue("A4: @KoinApplication/startKoin/NavDisplay are used only in app:shared, the composition root (AGENTS.md §3.4)") { file ->
+        .assertTrue(
+            "A4: @KoinApplication/startKoin/NavDisplay are used only in app:shared, the composition root (AGENTS.md §3.4)",
+        ) { file ->
             val usesCompositionRootApi = A4_COMPOSITION_ROOT_TOKENS.any { it in file.text }
             !usesCompositionRootApi || file.source.modulePath == ":app:shared"
         }
@@ -112,7 +135,10 @@ private val DTO_CLASS_NAME = Regex("""class\s+(\w*Dto)\b""")
 private val RESTRICTED_ENTITY_OR_DTO_IMPORT = Regex("""com\.repz\.app\.core\.(?:database|network)\.\w*(?:Entity|Dto)\b""")
 private val ALLOWED_ENTITY_DTO_MODULES = setOf(":core:database", ":core:network", ":core:data", ":core:sync")
 
-/** A5: `@Entity` classes live only in `core:database`, `*Dto` classes only in `core:network`; neither leaks outside `core:database`/`core:network`/`core:data`/`core:sync` (AGENTS.md §3.5). */
+/**
+ * A5: `@Entity` classes live only in `core:database`, `*Dto` classes only in `core:network`;
+ * neither leaks outside `core:database`, `core:network`, `core:data` or `core:sync` (AGENTS.md §3.5).
+ */
 fun checkA5EntitiesAndDtosStayInData(files: List<RepzTextFile>) {
     val mainFiles = files.filter { !it.source.isBuildScript }
 

@@ -23,7 +23,12 @@ class RepzScopesDiagnosticsTest {
 
         assertTrue(files.isNotEmpty(), "projectScope() found no files at all - Konsist likely resolved the wrong root (R5).")
         assertTrue(
-            files.all { it.path.replace('\\', '/').substringAfterLast("/mobile/", missingDelimiterValue = "").isNotEmpty() },
+            files.all {
+                it.path
+                    .replace('\\', '/')
+                    .substringAfterLast("/mobile/", missingDelimiterValue = "")
+                    .isNotEmpty()
+            },
             "Every file must resolve under a `mobile/` directory; projectScope() likely found the wrong root (R5).",
         )
     }

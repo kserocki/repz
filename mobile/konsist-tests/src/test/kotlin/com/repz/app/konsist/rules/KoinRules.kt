@@ -18,7 +18,10 @@ fun checkD1ComponentScanOnlyInAppShared(scope: KoScope) {
         }
 }
 
-/** D2: `@Single`/`@Factory`/`@Scoped`/`@KoinViewModel` classes live only in `app:shared`; `@Singleton` is forbidden everywhere (ADR-0008, knowledge base). */
+/**
+ * D2: `@Single`/`@Factory`/`@Scoped`/`@KoinViewModel` classes live only in `app:shared`;
+ * `@Singleton` is forbidden everywhere (ADR-0008, knowledge base).
+ */
 fun checkD2KoinDefinitionClassesOnlyInAppShared(scope: KoScope) {
     scope
         .classesAndObjects()
@@ -52,7 +55,10 @@ fun checkD3AtMostOneModuleClassPerModule(scope: KoScope) {
         }
 }
 
-/** D4: provider functions (`@Single`/`@Factory`/`@Scoped`/`@KoinViewModel` functions inside a `@Module` class) declare an explicit return type, needed for D5 (ARCH §9). */
+/**
+ * D4: provider functions (`@Single`/`@Factory`/`@Scoped`/`@KoinViewModel` functions inside a
+ * `@Module` class) declare an explicit return type, needed for D5 (ARCH §9).
+ */
 fun checkD4ProviderFunctionsDeclareReturnType(scope: KoScope) {
     scope
         .classesAndObjects()
@@ -67,12 +73,17 @@ fun checkD4ProviderFunctionsDeclareReturnType(scope: KoScope) {
 /**
  * D5: each Koin definition - a provider function inside a `@Module` class, or a `@Single`/
  * `@Factory`/`@Scoped`/`@KoinViewModel` class - has exactly one owner: the pair of (return type,
- * qualifier annotations) is unique across every main source set (ARCH §9, REP-7 user decision).
- * The return type is compared by its source text, not a resolved fully qualified name (Konsist does
- * not do type resolution here by design, D3 in the plan); documented as a heuristic in ARCH §12.
+ * qualifier annotations) is unique across every main source set (ARCH §9, a user decision recorded
+ * when Koin's compiler plugin was wired up). The return type is compared by its source text, not a
+ * resolved fully qualified name (Konsist does not do type resolution here by design); documented as
+ * a heuristic in ARCH §12.
  */
 fun checkD5OneOwnerPerDefinition(scope: KoScope) {
-    data class Definition(val returnType: String, val qualifier: String, val location: String)
+    data class Definition(
+        val returnType: String,
+        val qualifier: String,
+        val location: String,
+    )
 
     val fromProviderFunctions =
         scope
@@ -109,4 +120,8 @@ fun checkD5OneOwnerPerDefinition(scope: KoScope) {
 }
 
 private fun qualifierKey(annotations: List<KoAnnotationDeclaration>): String =
-    annotations.map { it.name }.filterNot { it in KOIN_DEFINITION_ANNOTATIONS }.sorted().joinToString(",")
+    annotations
+        .map { it.name }
+        .filterNot { it in KOIN_DEFINITION_ANNOTATIONS }
+        .sorted()
+        .joinToString(",")
