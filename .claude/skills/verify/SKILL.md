@@ -1,6 +1,6 @@
 ---
 name: verify
-description: Run the Repz quality gates before a commit or PR (today: Gradle build incl. Android lint + unit tests on Android host and iOS simulator; later ktlint/Detekt/Konsist, Koin graph, TS lint/typecheck/tests and the OpenAPI contract as their issues land) and the pre-commit checklist. Use before every commit, when asked to check, or when finishing a task.
+description: Run the Repz quality gates before a commit or PR (today: Gradle build incl. Android lint and the compile-time Koin graph check, plus unit tests on the Android host and iOS simulator; later ktlint/Detekt/Konsist, TS lint/typecheck/tests and the OpenAPI contract as their issues land) and the pre-commit checklist. Use before every commit, when asked to check, or when finishing a task.
 ---
 
 # Verify
@@ -15,12 +15,11 @@ This also covers failures: if a gate fails for a reason you don't understand, or
 
 **Mobile** (from `mobile/`):
 ```bash
-./gradlew build      # all targets, incl. Android lint (works today)
+./gradlew build      # all targets, incl. Android lint and the Koin graph check (works today)
 ./gradlew allTests   # commonTest on the Android host + iOS simulator (works today)
 ```
 Arriving later (don't invent substitutes; if you need them before they exist, say so):
 - REP-9: ktlint, Detekt + Compose rules and the Konsist architecture tests, wired into `./gradlew check` (which already runs, but without them).
-- REP-7: compile-time Koin graph check (part of the normal build once the plugin is applied).
 - REP-10: final CI task names.
 
 **API** (from `api/`, from REP-12 on):

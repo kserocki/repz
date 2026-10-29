@@ -24,6 +24,10 @@ gradlePlugin {
             id = "repz.compose"
             implementationClass = "com.repz.buildlogic.ComposeConventionPlugin"
         }
+        register("koin") {
+            id = "repz.koin"
+            implementationClass = "com.repz.buildlogic.KoinConventionPlugin"
+        }
         register("kmpFeatureApi") {
             id = "repz.kmp.feature.api"
             implementationClass = "com.repz.buildlogic.KmpFeatureApiConventionPlugin"

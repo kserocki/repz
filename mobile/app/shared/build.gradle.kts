@@ -1,6 +1,7 @@
 plugins {
     id("repz.kmp.library")
     id("repz.compose")
+    id("repz.koin")
 }
 
 kotlin {
@@ -16,6 +17,9 @@ kotlin {
             implementation(projects.core.sync)
             implementation(projects.core.navigation)
             implementation(projects.core.designsystem)
+        }
+        commonTest.dependencies {
+            implementation(projects.core.testing)
         }
     }
 }

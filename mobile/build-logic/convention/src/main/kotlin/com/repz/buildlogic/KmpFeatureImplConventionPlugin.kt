@@ -16,8 +16,9 @@ class KmpFeatureImplConventionPlugin : Plugin<Project> {
         with(target) {
             pluginManager.apply("repz.kmp.library")
             pluginManager.apply("repz.compose")
+            pluginManager.apply("repz.koin")
 
-            // TODO(REP-7): add Koin, lifecycle and kotlinx-collections-immutable.
+            // TODO(REP-28): add lifecycle and kotlinx-collections-immutable.
             check(path.endsWith(":impl")) {
                 "repz.kmp.feature.impl expects a module path ending in `:impl`, got `$path`."
             }

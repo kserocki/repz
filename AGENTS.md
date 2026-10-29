@@ -46,7 +46,7 @@ design/     git-ignored local design export
 - **Screens:** MVI-lite. `XUiState` (immutable, `ImmutableList`), `sealed interface XIntent`, `sealed interface XEffect`, `XViewModel` with `state`, `effects`, `onIntent()`, a stateful `XScreen` and a stateless `XContent` with a `@Preview` per state.
 - **Use cases:** `VerbNounUseCase` with a single `operator fun invoke`.
 - **Repositories:** the interface lives in domain (`WorkoutRepository`); the implementation is `OfflineFirstWorkoutRepository` in `core:data`.
-- **DI:** Koin annotations on concrete classes (`@KoinViewModel`, `@Factory`, `@Single`); one `@Module @ComponentScan` class per Gradle module.
+- **DI:** every module **that has bindings** exposes exactly one `@Module` class that declares them as **explicit provider functions** (`@Single fun workoutRepository(dao: WorkoutDao, clock: Clock): WorkoutRepository = OfflineFirstWorkoutRepository(dao, clock)`). `core:domain` and `core:common` stay Koin-free. Their shared use cases are provided by `DomainModule`, and `Clock`, `IdGenerator` and dispatchers by `CommonModule`, both in `app:shared`. Features provide only their own feature-local use cases. **Each definition has exactly one owner**, because the compiler plugin isn't verified to flag duplicates (Koin resolves them last-wins at runtime). Don't use cross-module `@ComponentScan` (Koin compiler plugin 1.2.1 loses those hints on iOS, see ADR-0008 and REP-58). `app:shared` lists all modules in its `@KoinApplication`. The ViewModel provider shape (`@KoinViewModel` as a module function) gets verified on iOS in REP-28.
 - **Errors:** domain returns typed results (`DomainResult<T, DomainError>`). No exceptions across layers.
 - **Time and IDs:** inject `kotlin.time.Clock` and `IdGenerator`. Never call `Clock.System` or `Uuid.random()` directly in logic.
 - **Strings and i18n:** every user-facing text lives in Compose Resources (`strings.xml`, English default, `values-pl` for Polish). Never hard-code text in Kotlin, including content descriptions, notification texts and error messages. Adding a language must only mean adding a new `values-<lang>` folder, never a code change:
@@ -70,7 +70,7 @@ Run from `mobile/` unless noted. One-time setup: create the git-ignored `mobile/
 
 | Task | Command | Status |
 |---|---|---|
-| Full build (all targets, incl. Android lint) | `./gradlew build` | works |
+| Full build (all targets, incl. Android lint and the Koin graph check) | `./gradlew build` | works |
 | Unit tests (Android host + iOS simulator) | `./gradlew allTests` | works |
 | Android debug APK / install | `./gradlew :app:android:assembleDebug` · `:app:android:installDebug` | builds; not launchable until REP-11 |
 | Module list | `./gradlew projects` | works |
@@ -110,7 +110,7 @@ Leadership (Opus 5.5): `atlas` (plans, splits work into packages), `coach` (code
 
 ## 8. Definition of done
 
-- `verify` skill passes: every gate that exists today (see §5). Detekt, ktlint, Konsist, the compile-time Koin graph and the TS gates join as REP-9, REP-7 and REP-12 land.
+- `verify` skill passes: every gate that exists today (see §5). The compile-time Koin graph check already runs in `./gradlew build`; Detekt, ktlint, Konsist and the TS gates join as REP-9 and REP-12 land.
 - New UI has previews for each state, light and dark, plus a PL string check.
 - New behaviour is covered by unit tests (domain + ViewModel).
 - Docs and ADRs are updated if behaviour or a decision changed.
