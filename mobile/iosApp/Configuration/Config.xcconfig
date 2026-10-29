@@ -15,4 +15,16 @@ DEVELOPMENT_TEAM =
 // embedAndSignAppleFrameworkForXcode needs an unsandboxed script environment (REP-11 S2).
 ENABLE_USER_SCRIPT_SANDBOXING = NO
 
+// Xcode 27.1's own new-project default (verified against Base_ProjectSettings.xctemplate), now
+// that real Swift sources exist (REP-11 S2).
+SWIFT_VERSION = 5.0
+SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES
+SWIFT_APPROACHABLE_CONCURRENCY = YES
+
+// Direct integration of the static RepzShared framework (ADR-0017): the "Compile Kotlin
+// framework" run-script phase builds it into app/shared/build/xcode-frameworks/<CONFIGURATION>/
+// <SDK_NAME> via embedAndSignAppleFrameworkForXcode, which also embeds and signs it into the app.
+FRAMEWORK_SEARCH_PATHS = $(SRCROOT)/../app/shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME) $(inherited)
+OTHER_LDFLAGS = -framework RepzShared $(inherited)
+
 #include? "Local.xcconfig"
