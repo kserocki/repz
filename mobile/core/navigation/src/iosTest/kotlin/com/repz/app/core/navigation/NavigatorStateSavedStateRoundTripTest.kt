@@ -7,6 +7,7 @@ import androidx.savedstate.serialization.decodeFromSavedState
 import androidx.savedstate.serialization.encodeToSavedState
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.modules.plus
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -20,6 +21,13 @@ import kotlin.test.assertFailsWith
 class NavigatorStateSavedStateRoundTripTest {
 
     private val configuration = navigationSavedStateConfiguration(fixtureCombinedNavKeySerializers)
+
+    // Only this configuration registers FixtureUnregisteredRoute, so it can encode a SavedState
+    // containing it; configuration (above) is then used to exercise the decode-side failure.
+    private val configurationWithUnregisteredKeyRegistered = navigationSavedStateConfiguration(
+        fixtureCombinedNavKeySerializers +
+            navKeySerializers { subclass(FixtureUnregisteredRoute::class, FixtureUnregisteredRoute.serializer()) },
+    )
 
     private val stateWithEntriesInEveryStack = NavigatorState(
         isAuthenticated = true,
@@ -64,6 +72,23 @@ class NavigatorStateSavedStateRoundTripTest {
 
         assertFailsWith<SerializationException> {
             encodeToSavedState(NavigatorState.serializer(), stateWithUnregisteredKey, configuration)
+        }
+    }
+
+    @Test
+    fun given_savedStateWithAnUnregisteredDiscriminator_whenDecoded_thenThrowsSerializationException() {
+        val stateWithUnregisteredKey = stateWithEntriesInEveryStack.copy(
+            topLevelBackStacks = stateWithEntriesInEveryStack.topLevelBackStacks +
+                (TopLevelDestination.Train to listOf(FixtureUnregisteredRoute)),
+        )
+        val savedState = encodeToSavedState(
+            NavigatorState.serializer(),
+            stateWithUnregisteredKey,
+            configurationWithUnregisteredKeyRegistered,
+        )
+
+        assertFailsWith<SerializationException> {
+            decodeFromSavedState(NavigatorState.serializer(), savedState, configuration)
         }
     }
 }

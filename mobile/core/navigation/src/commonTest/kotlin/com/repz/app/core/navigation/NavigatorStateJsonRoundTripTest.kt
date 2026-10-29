@@ -4,6 +4,7 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.plus
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -11,6 +12,13 @@ import kotlin.test.assertFailsWith
 class NavigatorStateJsonRoundTripTest {
 
     private val json = Json { serializersModule = fixtureCombinedNavKeySerializers }
+
+    // Only this Json instance registers FixtureUnregisteredRoute, so it can encode a payload
+    // containing it; json (above) is then used to exercise the decode-side failure.
+    private val jsonWithUnregisteredKeyRegistered = Json {
+        serializersModule = fixtureCombinedNavKeySerializers +
+            navKeySerializers { subclass(FixtureUnregisteredRoute::class, FixtureUnregisteredRoute.serializer()) }
+    }
 
     private val stateWithEntriesInEveryStack = NavigatorState(
         isAuthenticated = true,
@@ -42,6 +50,19 @@ class NavigatorStateJsonRoundTripTest {
 
         assertFailsWith<SerializationException> {
             json.encodeToString(stateWithUnregisteredKey)
+        }
+    }
+
+    @Test
+    fun given_payloadWithAnUnregisteredDiscriminator_whenDecoded_thenThrowsSerializationException() {
+        val stateWithUnregisteredKey = stateWithEntriesInEveryStack.copy(
+            topLevelBackStacks = stateWithEntriesInEveryStack.topLevelBackStacks +
+                (TopLevelDestination.Train to listOf(FixtureUnregisteredRoute)),
+        )
+        val payload = jsonWithUnregisteredKeyRegistered.encodeToString(stateWithUnregisteredKey)
+
+        assertFailsWith<SerializationException> {
+            json.decodeFromString<NavigatorState>(payload)
         }
     }
 }

@@ -7,20 +7,11 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 
 /**
- * Keeps one back stack per [TopLevelDestination] plus a separate back stack for the signed-out
- * auth flow, and the single source of truth for which of them is on screen.
- *
- * Rules: switching tabs keeps every tab's stack; re-selecting the current tab pops it to its
- * root; `goBack()` at the root of a non-[TopLevelDestination.Train] tab selects Train with its
- * stack untouched, and at Train's root returns `false` (the caller, e.g. the platform back
- * button, decides what happens next); navigating to the key already on top of the active stack
- * is a no-op; signing in resets every tab to its root and selects Train; signing out resets
- * every tab to its root and restarts the auth stack at its root.
- *
- * `isAuthenticated` and `selectedDestination` are snapshot-backed ([mutableStateOf]) and the
- * back stacks are [NavBackStack]s (snapshot-backed lists), so a Compose caller observes every
- * mutation without extra plumbing. There is no [androidx.compose.runtime.Composable] here: this
- * class is a plain, UI-framework-agnostic state holder.
+ * Keeps one back stack per [TopLevelDestination] plus a back stack for the signed-out auth flow.
+ * Switching tabs keeps every stack; re-selecting the current tab pops it to its root; `goBack()`
+ * at a non-Train root selects Train, at Train's root or the auth root returns `false`; pushing
+ * the key already on top is a no-op; sign-in resets every tab and selects Train; sign-out resets
+ * every tab and restarts the auth stack.
  */
 class Navigator(
     private val topLevelRoots: Map<TopLevelDestination, NavKey>,
