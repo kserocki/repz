@@ -8,13 +8,22 @@ import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 import java.io.File
 
-/** ktlint reporters: plain for the console, checkstyle for machine consumption (REP-10). */
+/**
+ * ktlint reporters: plain for the console, checkstyle for machine consumption (REP-10). KSP
+ * (Room) and the Compose resources plugin both register their generated Kotlin under this
+ * module's own `build/` directory as real compilation source directories, which ktlint's
+ * Kotlin-source-set auto-discovery then picks up; excluded here since it is never hand-written.
+ */
 internal fun Project.configureKtlint() {
     val ktlintVersion = libs.findVersion("ktlint").get().requiredVersion
+    val buildDirectoryMarker = "${File.separator}build${File.separator}"
 
     extensions.configure<KtlintExtension> {
         version.set(ktlintVersion)
         ignoreFailures.set(false)
+        filter {
+            exclude { entry -> entry.file.path.contains(buildDirectoryMarker) }
+        }
         reporters {
             reporter(ReporterType.PLAIN)
             reporter(ReporterType.CHECKSTYLE)

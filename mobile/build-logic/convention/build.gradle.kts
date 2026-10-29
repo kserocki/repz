@@ -22,6 +22,9 @@ dependencies {
 ktlint {
     version.set(libs.versions.ktlint.asProvider())
     ignoreFailures.set(false)
+    filter {
+        exclude { entry -> entry.file.path.contains("${File.separator}build${File.separator}") }
+    }
     reporters {
         reporter(ReporterType.PLAIN)
         reporter(ReporterType.CHECKSTYLE)
