@@ -4,14 +4,13 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 
 /**
- * Prints what [projectScope] actually resolved (R5: Konsist might find the wrong project root, or
- * silently return zero files) so a wrong root shows up as readable output, not as 24 rules quietly
- * passing vacuously. Also asserts the one fact every other rule in this module depends on: every
- * file's path starts under `mobile/`.
+ * Prints what [projectScope] and [realTextFiles] actually resolved, so Konsist finding the wrong
+ * project root (or silently returning zero files) shows up as readable output, not as every rule
+ * quietly passing vacuously. Also asserts the facts every rule in this module depends on.
  */
 class RepzScopesDiagnosticsTest {
     @Test
-    fun givenProjectScope_whenInspected_thenEveryFileResolvesUnderMobileAndCountsArePrinted() {
+    fun given_projectScope_whenInspected_thenEveryFileResolvesUnderMobileAndCountsArePrinted() {
         val files = projectScope().files
 
         println("Konsist project scope: ${files.size} files")
@@ -21,7 +20,7 @@ class RepzScopesDiagnosticsTest {
             println("  $modulePath: " + bySourceSet.entries.joinToString { (sourceSet, f) -> "$sourceSet=${f.size}" })
         }
 
-        assertTrue(files.isNotEmpty(), "projectScope() found no files at all - Konsist likely resolved the wrong root (R5).")
+        assertTrue(files.isNotEmpty(), "projectScope() found no files at all - Konsist likely resolved the wrong root.")
         assertTrue(
             files.all {
                 it.path
@@ -29,7 +28,18 @@ class RepzScopesDiagnosticsTest {
                     .substringAfterLast("/mobile/", missingDelimiterValue = "")
                     .isNotEmpty()
             },
-            "Every file must resolve under a `mobile/` directory; projectScope() likely found the wrong root (R5).",
+            "Every file must resolve under a `mobile/` directory; projectScope() likely found the wrong root.",
         )
+    }
+
+    @Test
+    fun given_realTextFiles_whenInspected_thenCoversBuildScriptsAndBuildLogic() {
+        val files = realTextFiles()
+
+        println("Real text files: ${files.size} files")
+
+        assertTrue(files.isNotEmpty(), "realTextFiles() found no files at all - the fixtures exclusion likely matched everything.")
+        assertTrue(files.any { it.source.isBuildScript }, "realTextFiles() must include at least one .kts build script.")
+        assertTrue(files.any { it.source.modulePath.startsWith(":build-logic:") }, "realTextFiles() must include build-logic sources.")
     }
 }

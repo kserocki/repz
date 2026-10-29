@@ -14,16 +14,17 @@ private val IGNORED_DIRECTORY_NAMES = setOf("build", ".gradle", ".kotlin", ".git
 private val mobileRoot: File by lazy { File(Konsist.projectRootPath) }
 
 /**
- * Every `.kt`/`.kts` file under the real `mobile/` tree, minus every fixture tree and minus
- * `:konsist-tests` itself (see [projectScope] for why). Konsist 0.18.1's `KotlinFileParser` rejects
- * `.kts` files outright (`IllegalArgumentException: File must be a Kotlin file`), so text-only rules
- * (C1) read every file directly instead of going through a
- * [com.lemonappdev.konsist.api.container.KoScope], which only ever contains `.kt` files.
+ * Every `.kt`/`.kts` file under the real `mobile/` tree, minus every fixture tree, matched by its
+ * exact relative path from the project root. Konsist's `KotlinFileParser` rejects `.kts` outright,
+ * so text-only rules (C1) read every file directly instead of through a [com.lemonappdev.konsist.api.container.KoScope].
  */
-fun realTextFiles(): List<RepzTextFile> = repzTextFilesUnder(mobileRoot) { dir -> "fixtures" !in dir.path && "konsist-tests" !in dir.path }
+fun realTextFiles(): List<RepzTextFile> = repzTextFilesUnder(mobileRoot) { dir -> !isUnderFixturesRoot(relativeToMobileRoot(dir)) }
 
 /** The fixture tree for one rule, read the same way as [realTextFiles]. */
-fun fixtureTextFiles(ruleId: String): List<RepzTextFile> = repzTextFilesUnder(File(mobileRoot, "konsist-tests/src/test/fixtures/$ruleId"))
+fun fixtureTextFiles(ruleId: String): List<RepzTextFile> =
+    repzTextFilesUnder(File(mobileRoot, "${FIXTURES_ROOT_SEGMENTS.joinToString("/")}/$ruleId"))
+
+private fun relativeToMobileRoot(file: File): String = file.path.removePrefix(mobileRoot.path)
 
 private fun repzTextFilesUnder(
     root: File,
@@ -37,6 +38,6 @@ private fun repzTextFilesUnder(
             RepzTextFile(
                 path = file.path,
                 text = file.readText(),
-                source = parseRepzSourceFile(file.path.removePrefix(mobileRoot.path)),
+                source = parseRepzSourceFile(relativeToMobileRoot(file)),
             )
         }.toList()

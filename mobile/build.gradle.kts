@@ -17,9 +17,8 @@ plugins {
 }
 
 // `base` only gives this root project a `check` task; it has no Kotlin source of its own besides
-// this script and `settings.gradle.kts` (linted by ktlint above). Architecture and static-analysis
-// gates live in each subproject and in `build-logic`, whose own quality gate is wired in here since
-// it is a separate included build with its own lifecycle tasks.
+// this script and `settings.gradle.kts` (linted by ktlint above). `build-logic` is a separate
+// included build with its own lifecycle tasks, so its quality gate is wired in here too.
 tasks.named("check") {
     dependsOn(gradle.includedBuild("build-logic").task(":convention:check"))
 }

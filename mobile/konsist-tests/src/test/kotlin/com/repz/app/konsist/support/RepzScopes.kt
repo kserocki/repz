@@ -3,19 +3,19 @@ package com.repz.app.konsist.support
 import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.container.KoScope
 
-private const val FIXTURES_ROOT = "konsist-tests/src/test/fixtures"
+private val FIXTURES_ROOT = FIXTURES_ROOT_SEGMENTS.joinToString("/")
 
 /**
- * The real `mobile/` tree, minus every fixture under [FIXTURES_ROOT] (§3.5) and minus
- * `:konsist-tests` itself: it hosts the rules, so its own source text contains the very patterns
- * (annotation names, token lists, regexes) the heuristic rules search for, which would otherwise
- * make a rule fail against its own implementation. It is tooling, not one of the modules AGENTS.md's
- * architecture rules describe.
+ * The real `mobile/` tree, minus every fixture tree, matched by its exact relative path from the
+ * project root (ARCH §12.2). A4/A5 additionally exclude `:konsist-tests` themselves, since they
+ * could otherwise match their own source text.
  */
 fun projectScope(): KoScope =
     Konsist
         .scopeFromProject(ignoreBuildConfig = false)
-        .slice { file -> FIXTURES_ROOT !in file.path && "/konsist-tests/" !in file.path }
+        .slice { file -> !isUnderFixturesRoot(file.projectPath) }
 
 /** The fixture tree for one rule, e.g. `fixtureScope("a3")` for everything under `fixtures/a3`. */
 fun fixtureScope(ruleId: String): KoScope = Konsist.scopeFromDirectory("$FIXTURES_ROOT/$ruleId")
+
+internal fun isUnderFixturesRoot(path: String): Boolean = pathSegments(path).take(FIXTURES_ROOT_SEGMENTS.size) == FIXTURES_ROOT_SEGMENTS

@@ -4,11 +4,8 @@ import com.lemonappdev.konsist.api.provider.KoPathProvider
 
 /**
  * A file's Gradle module path (e.g. `:feature:history:impl`), source-set name (`commonMain`,
- * `iosTest`, …; `null` for a `.kts` build script), and whether it is test code or a build script —
- * derived purely from the file's own path. This runs unchanged for the real project tree and for
- * fixture trees laid out as `konsist-tests/src/test/fixtures/<ruleId>/<module path>/src/<sourceSet>/kotlin/…`
- * (D9/ARCH §12): both resolve the module path from the segments before the last `src/<name>/kotlin`
- * directory.
+ * `iosTest`, …; `null` for a `.kts` build script), and whether it is test code or a build script,
+ * derived from the file's own path relative to the project root (ARCH §12.2).
  */
 data class RepzSourceFile(
     val modulePath: String,
@@ -18,19 +15,19 @@ data class RepzSourceFile(
 )
 
 /**
- * Parses [KoPathProvider.projectPath] into a [RepzSourceFile]. See [RepzSourceFile]. Works on a
- * file or on any declaration (class, function, property, …), which all carry the path of their
- * containing file.
+ * Parses [KoPathProvider.projectPath] into a [RepzSourceFile]. Works on a file or on any
+ * declaration (class, function, property, …), which all carry the path of their containing file.
  */
 fun KoPathProvider.repzSourceFile(): RepzSourceFile = parseRepzSourceFile(projectPath)
 
-/** A fixture file's path still has this real prefix before its fake module tree starts. */
-private val FIXTURE_PREFIX = Regex(""".*konsist-tests/src/test/fixtures/[^/]+/(.*)""")
+/** [path] split into forward-slash segments; a leading/trailing separator yields no empty segment. */
+internal fun pathSegments(path: String): List<String> = path.replace('\\', '/').split('/').filter { it.isNotEmpty() }
+
+/** A fixture file's segments start with exactly these before its fake module tree and ruleId. */
+internal val FIXTURES_ROOT_SEGMENTS = listOf("konsist-tests", "src", "test", "fixtures")
 
 internal fun parseRepzSourceFile(projectPath: String): RepzSourceFile {
-    val normalizedPath = projectPath.replace('\\', '/')
-    val pathUnderModuleTree = FIXTURE_PREFIX.find(normalizedPath)?.groupValues?.get(1) ?: normalizedPath
-    val segments = pathUnderModuleTree.split('/').filter { it.isNotEmpty() }
+    val segments = pathSegments(projectPath).withoutFixturesPrefix()
     val sourceDirectoryIndex =
         segments.indices.lastOrNull { index ->
             segments.getOrNull(index) == "src" && segments.getOrNull(index + 2) == "kotlin"
@@ -53,6 +50,12 @@ internal fun parseRepzSourceFile(projectPath: String): RepzSourceFile {
             isBuildScript = false,
         )
     }
+}
+
+/** Drops a leading `konsist-tests/src/test/fixtures/<ruleId>/`, matched by exact segments, not a substring search. */
+private fun List<String>.withoutFixturesPrefix(): List<String> {
+    val prefixLength = FIXTURES_ROOT_SEGMENTS.size + 1
+    return if (size > prefixLength && subList(0, FIXTURES_ROOT_SEGMENTS.size) == FIXTURES_ROOT_SEGMENTS) drop(prefixLength) else this
 }
 
 private fun List<String>.toGradleModulePath(): String = ":" + joinToString(":")
