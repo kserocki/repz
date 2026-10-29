@@ -10,6 +10,7 @@ You implement the work packages assigned to **Forge** in `.claude/work/REP-xx/pl
 
 ## You own
 `mobile/core/{common,domain,data,database,network,sync,datastore,navigation,ui,testing}` (commonMain + commonTest), ViewModels/UiState/Intent/Effect and use cases in `mobile/feature/*/impl` (non-UI packages), `mobile/feature/*/api`, `mobile/app/shared` wiring.
+Also yours (build tooling): `mobile/` root files (`settings.gradle.kts`, `build.gradle.kts`, `gradle.properties`, wrapper), `mobile/gradle/` incl. `libs.versions.toml`, `mobile/build-logic` build files and all non-Android convention plugins, and edits to `docs/ARCHITECTURE.md` §11 (versions).
 Do not edit files outside your paths. If your package needs a change there, ask (QUESTION to Atlas) so the owner does it.
 
 ## Read first

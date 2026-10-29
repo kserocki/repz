@@ -49,27 +49,36 @@ design/     git-ignored local design export
 - **DI:** Koin annotations on concrete classes (`@KoinViewModel`, `@Factory`, `@Single`); one `@Module @ComponentScan` class per Gradle module.
 - **Errors:** domain returns typed results (`DomainResult<T, DomainError>`). No exceptions across layers.
 - **Time and IDs:** inject `kotlin.time.Clock` and `IdGenerator`. Never call `Clock.System` or `Uuid.random()` directly in logic.
-- **Strings:** Compose Resources, EN + PL. No hard-coded user-facing text. Numbers are formatted per locale (`82.5` / `82,5`).
+- **Strings and i18n:** every user-facing text lives in Compose Resources (`strings.xml`, English default, `values-pl` for Polish). Never hard-code text in Kotlin, including content descriptions, notification texts and error messages. Adding a language must only mean adding a new `values-<lang>` folder, never a code change:
+  - placeholders (`%1$s`, `%1$d`) instead of concatenating strings; `plurals` for anything counted (sets, reps, workouts); one key per full sentence, never sentence fragments glued together;
+  - the platform language lists are **generated from the `values-*` folders** (Android: AGP `generateLocaleConfig = true`; iOS: a Gradle task fills `CFBundleLocalizations`, set up in REP-11). The language picker reads that generated list. No `if (language == "pl")` anywhere in code;
+  - numbers, units, dates and durations are formatted with locale-aware formatters, never by hand (`82.5` / `82,5`);
+  - layouts survive +30 % text length (buttons wrap, never truncate).
 - **Tests:** `commonTest`, kotlin.test + Turbine, hand-written fakes from `core:testing` (no mocking libraries). Name tests `given…_when…_then…`.
 - **API (TS):** routes → service → repository. Zod schemas are the contract. Errors are RFC 9457 Problem Details.
 - **Language:** English only in code, comments, commits and docs.
 - **Naming over comments:** functions, variables and classes are named so precisely that comments are unnecessary. Extract a well-named function instead of writing a comment.
 - **Comments only for non-obvious logic:** 1–3 plain lines on what the code does and how it behaves, understandable to any developer. No essays.
 - **No ticket numbers in comments**, except `// TODO(REP-xx): …` pointing to an existing Linear issue.
-- **Commits:** Conventional Commits with the Linear key in the message (`feat(workout): log set offline (REP-12)`).
+- **Commits:** Conventional Commits with the Linear key in the message (`feat(workout): log set offline (REP-34)`).
 - **Workflow:** every Linear issue is implemented with the `implement` skill (plan → approval → implementation → manual test → review → PR).
 
 ## 5. Commands
 
-> Filled in during the scaffold (REP "Scaffold" milestone). Until then, ask the user.
+Run from `mobile/` unless noted. One-time setup: create the git-ignored `mobile/local.properties` with `sdk.dir=<path to Android SDK>`. On macOS the Xcode license must be accepted (`sudo xcodebuild -license accept`).
 
-| Task | Command |
-|---|---|
-| Mobile: build + unit tests + lint + architecture | `cd mobile && ./gradlew check` |
-| Android app | `cd mobile && ./gradlew :app:android:installDebug` |
-| iOS app | open `mobile/iosApp/iosApp.xcodeproj` in Xcode |
-| API + DB | `docker compose up -d` (from the repo root) |
-| API dev / tests / lint | `cd api && pnpm dev` · `pnpm test` · `pnpm lint` |
+| Task | Command | Status |
+|---|---|---|
+| Full build (all targets, incl. Android lint) | `./gradlew build` | works |
+| Unit tests (Android host + iOS simulator) | `./gradlew allTests` | works |
+| Android debug APK / install | `./gradlew :app:android:assembleDebug` · `:app:android:installDebug` | builds; not launchable until REP-11 |
+| Module list | `./gradlew projects` | works |
+| Style, static analysis, architecture tests | `./gradlew check` | runs today; ktlint, Detekt and Konsist join with REP-9 |
+| iOS app | open `mobile/iosApp/iosApp.xcodeproj` in Xcode | arrives with REP-11 |
+| API + DB | `docker compose up -d` (from the repo root) | arrives with REP-12 |
+| API dev / tests / lint | `cd api && pnpm dev` · `pnpm test` · `pnpm lint` | arrives with REP-12 |
+
+Final command names for CI are fixed in REP-10. If a command you need is missing here, ask.
 
 ## 6. Skills (`.claude/skills/`)
 
@@ -100,7 +109,7 @@ Leadership (Opus 5.5): `atlas` (plans, splits work into packages), `coach` (code
 
 ## 8. Definition of done
 
-- `verify` skill passes (Kotlin: detekt, ktlint, Konsist, unit tests, compile-time Koin graph; TS: lint, typecheck, tests).
+- `verify` skill passes: every gate that exists today (see §5). Detekt, ktlint, Konsist, the compile-time Koin graph and the TS gates join as REP-9, REP-7 and REP-12 land.
 - New UI has previews for each state, light and dark, plus a PL string check.
 - New behaviour is covered by unit tests (domain + ViewModel).
 - Docs and ADRs are updated if behaviour or a decision changed.

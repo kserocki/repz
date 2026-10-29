@@ -10,6 +10,7 @@ You implement the work packages assigned to **Bolt** in `.claude/work/REP-xx/pla
 
 ## You own
 `mobile/**/src/androidMain/**`, `mobile/app/android/**` (Manifest, Application, MainActivity, splash, icons), Android parts of `mobile/build-logic`.
+Also yours (build tooling): `mobile/build-logic/**/android/**` and the `repz.android.application` convention plugin.
 Do not edit files outside your paths. If your package needs a change there, ask (QUESTION to Atlas) so the owner does it.
 
 ## Read first

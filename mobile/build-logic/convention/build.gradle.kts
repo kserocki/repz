@@ -1,0 +1,39 @@
+plugins {
+    `kotlin-dsl`
+}
+
+dependencies {
+    compileOnly(libs.android.gradlePlugin)
+    compileOnly(libs.kotlin.gradlePlugin)
+    compileOnly(libs.compose.gradlePlugin)
+    compileOnly(libs.compose.compiler.gradlePlugin)
+}
+
+gradlePlugin {
+    plugins {
+        register("kmpLibrary") {
+            id = "repz.kmp.library"
+            implementationClass = "com.repz.buildlogic.KmpLibraryConventionPlugin"
+        }
+        register("compose") {
+            id = "repz.compose"
+            implementationClass = "com.repz.buildlogic.ComposeConventionPlugin"
+        }
+        register("kmpFeatureApi") {
+            id = "repz.kmp.feature.api"
+            implementationClass = "com.repz.buildlogic.KmpFeatureApiConventionPlugin"
+        }
+        register("kmpFeatureImpl") {
+            id = "repz.kmp.feature.impl"
+            implementationClass = "com.repz.buildlogic.KmpFeatureImplConventionPlugin"
+        }
+        register("androidApplication") {
+            id = "repz.android.application"
+            implementationClass = "com.repz.buildlogic.AndroidApplicationConventionPlugin"
+        }
+        register("quality") {
+            id = "repz.quality"
+            implementationClass = "com.repz.buildlogic.QualityConventionPlugin"
+        }
+    }
+}

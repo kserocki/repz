@@ -1,6 +1,6 @@
 ---
 name: verify
-description: Run Repz quality gates before a commit or PR (Kotlin detekt, ktlint, Konsist architecture tests, unit tests, compile-time Koin graph; TS lint, typecheck, tests, OpenAPI contract) and the pre-commit checklist. Use before every commit, when asked to check, or when finishing a task.
+description: Run the Repz quality gates before a commit or PR (today: Gradle build incl. Android lint + unit tests on Android host and iOS simulator; later ktlint/Detekt/Konsist, Koin graph, TS lint/typecheck/tests and the OpenAPI contract as their issues land) and the pre-commit checklist. Use before every commit, when asked to check, or when finishing a task.
 ---
 
 # Verify
@@ -15,19 +15,22 @@ This also covers failures: if a gate fails for a reason you don't understand, or
 
 **Mobile** (from `mobile/`):
 ```bash
-./gradlew ktlintCheck detekt          # style + static analysis (Compose rules included)
-./gradlew :konsist-tests:test         # architecture rules (see AGENTS.md §3)
-./gradlew allTests                    # commonTest on JVM + iOS simulator
-./gradlew :app:android:assembleDebug  # also compiles the Koin graph (compiler plugin)
+./gradlew build      # all targets, incl. Android lint (works today)
+./gradlew allTests   # commonTest on the Android host + iOS simulator (works today)
 ```
-**API** (from `api/`):
+Arriving later (don't invent substitutes; if you need them before they exist, say so):
+- REP-9: ktlint, Detekt + Compose rules and the Konsist architecture tests, wired into `./gradlew check` (which already runs, but without them).
+- REP-7: compile-time Koin graph check (part of the normal build once the plugin is applied).
+- REP-10: final CI task names.
+
+**API** (from `api/`, from REP-12 on):
 ```bash
 pnpm lint && pnpm typecheck && pnpm test
-pnpm openapi:export && git diff --exit-code openapi.json   # contract is committed and current
+pnpm openapi:export && git diff --exit-code openapi.json   # from REP-17 on: contract is committed and current
 ```
-**Contract:** `./gradlew :core:network:allTests` decodes the shared fixtures.
+**Contract:** shared fixtures are decoded by a `core:network` test (from REP-17 on).
 
-> Exact task names are fixed during the scaffold. If a command doesn't exist yet, say so and ask. Don't invent an alternative.
+> Current commands are listed in `AGENTS.md` §5. If a command doesn't exist yet, report it as not available. Don't make one up.
 
 ## 2. Checklist
 - [ ] New behaviour has unit tests (domain + ViewModel / service)
