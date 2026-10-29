@@ -1,5 +1,13 @@
 plugins {
     id("repz.kmp.library")
+    id("repz.room")
 }
 
-// TODO(REP-6): apply KSP and Room 3.
+kotlin {
+    sourceSets {
+        commonTest.dependencies {
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.turbine)
+        }
+    }
+}

@@ -79,7 +79,7 @@ Spawn `coach` (fresh) with the worktree path and the work folder. It writes `rev
 ### 5 · Pull request
 1. `git push -u origin <branch>` from the worktree.
 2. Upload every file in `media/` to the Linear issue as attachments (Linear attachment upload tools) and collect the URLs.
-3. `gh pr create --base main` with title `<type>(<scope>): <summary> (REP-xx)` and this body:
+3. `gh pr create --base main` with the title **`REP-xx <Summary>`** (key first, a space, then a short summary in sentence case, no Conventional-Commit prefix; e.g. `REP-5 KMP Gradle scaffold, version catalog and convention plugins`). The squash commit on `main` uses this title. Use this body:
    ```markdown
    ## What & why
    <2–4 sentences, user-visible result and reason>

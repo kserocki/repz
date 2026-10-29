@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
     compileOnly(libs.android.gradlePlugin)
+    compileOnly(libs.androidx.room3.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.compose.gradlePlugin)
     compileOnly(libs.compose.compiler.gradlePlugin)
@@ -14,6 +15,10 @@ gradlePlugin {
         register("kmpLibrary") {
             id = "repz.kmp.library"
             implementationClass = "com.repz.buildlogic.KmpLibraryConventionPlugin"
+        }
+        register("room") {
+            id = "repz.room"
+            implementationClass = "com.repz.buildlogic.RoomConventionPlugin"
         }
         register("compose") {
             id = "repz.compose"
