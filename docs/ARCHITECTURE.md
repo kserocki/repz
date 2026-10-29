@@ -296,10 +296,18 @@ class HistoryViewModel(
 
 ## 8. Navigation 3
 
-- `feature:x:api` contains only `@Serializable` route keys: `data object HistoryRoute : NavKey`, `data class WorkoutDetailsRoute(val id: String) : NavKey`.
-- `feature:x:impl` contributes entries: `fun EntryProviderScope<NavKey>.historyEntries(navigator: Navigator)`.
-- `core:navigation` holds the `Navigator`: **a separate back stack per top-level tab** (Train / History / Exercises / Settings), plus the auth gate.
-- Back stacks are saved through an explicit polymorphic `SerializersModule` that registers every `NavKey`. Kotlin/Native has no reflection, so this is required on iOS.
+- `feature:x:api` contains only `@Serializable` route keys (`data object HistoryRoute : NavKey`, `data class WorkoutDetailsRoute(val id: String) : NavKey`) and **registers them itself**: it exposes one `val xNavKeySerializers: SerializersModule` built with `navKeySerializers { subclass(…) }`. `app:shared` combines all of them with `+`. `core:navigation` never sees feature keys, because that would be a dependency cycle.
+- `feature:x:impl` declares its entries: `fun EntryProviderScope<NavKey>.historyEntries(navigator: Navigator)`. `app:shared` hosts `NavDisplay` and wires every feature's entries into it. The serializers module needs `import kotlinx.serialization.modules.plus` to combine with `+`.
+- `core:navigation` holds the `Navigator`: **a separate back stack per top-level tab** (Train / History / Exercises / Profile; the Profile tab is served by `feature:settings`), plus the auth gate.
+- The whole navigator is **one saved object** (`NavigatorState`: auth flag, selected tab, all stacks) saved through a `SavedStateConfiguration` with the combined polymorphic `SerializersModule`. Kotlin/Native has no reflection, so explicit registration is required on iOS. Everything restores atomically.
+- The **visible stack** is the Train stack plus the selected tab's stack (when the selected tab isn't Train). Back from another tab's root is then a plain pop, and predictive back shows Train underneath.
+- Navigator rules (fixed by unit tests in `core:navigation`):
+  - (a) switching tabs keeps every tab's back stack;
+  - (b) tapping the already selected tab pops it to its root;
+  - (c) Back on the root of History/Exercises/Profile goes to Train with Train's stack kept; Back on Train's root is not handled (Android leaves the app);
+  - (d) after sign-in all tab stacks start at their roots with Train selected; after sign-out all tab stacks are cleared and the auth stack restarts at its root;
+  - (e) navigating to the key already on top is ignored (no double push on a double tap);
+  - (f) after process death everything is restored, including the selected tab and the auth stack.
 - Transitions are defined once in the design system's motion spec and applied globally. Predictive back is supported on Android.
 
 ---
@@ -388,7 +396,7 @@ Verified 2026-10-28 against Maven Central, Google Maven, GitHub releases and npm
 | Kotlin | `org.jetbrains.kotlin` | 2.4.21 | |
 | KSP | `com.google.devtools.ksp` | 2.3.12 | versioning decoupled from Kotlin since 2.3.0; needed for Room |
 | Compose Multiplatform | `org.jetbrains.compose` | 1.12.2 | ships Material3 **1.12.0-alpha03** (M3 Expressive APIs are available in `commonMain`) |
-| Navigation 3 | `org.jetbrains.androidx.navigation3:navigation3-ui` | 1.2.0 | use the JetBrains group (androidx `-ui` is Android-only) |
+| Navigation 3 | `org.jetbrains.androidx.navigation3:navigation3-ui` | 1.2.0 | use the JetBrains group (androidx `-ui` is Android-only); runtime is `androidx.navigation3:navigation3-runtime` (Google Maven) + `androidx.savedstate:savedstate` 1.4.0 |
 | M3 adaptive + Nav3 | `org.jetbrains.compose.material3.adaptive:adaptive-navigation3` | 1.3.0 | list-detail scenes (optional) |
 | Lifecycle / ViewModel | `org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose`, `-viewmodel-navigation3` | 2.11.0 | |
 | Room 3 | `androidx.room3:room3-runtime` / `room3-compiler`, plugin `androidx.room3` | 3.0.3 | KSP per target (`kspAndroid`, `kspIosArm64`, `kspIosSimulatorArm64`); host tests: `sqlite-bundled-jvm` substituted on `androidHostTestRuntimeClasspath` |
@@ -481,7 +489,7 @@ All decisions live in [`docs/adr/`](adr/) (ADR-0001 … ADR-0015). Add a new ADR
 1. Room 3 KSP wiring with `com.android.kotlin.multiplatform.library` (AGP 9.4) on iOS targets. This is not confirmed by official docs. (REP-6) Verified: KSP generates the `actual` Room code for `kspAndroid`, `kspIosArm64` and `kspIosSimulatorArm64`; the probe DAO suite (suspend query, `Flow`, `withWriteTransaction` rollback) passes on `testAndroidHostTest` and the iOS 27.1 simulator; `androidHostTestRuntimeClasspath` substitutes `sqlite-bundled-jvm` so the bundled driver loads on the host JVM.
 2. Koin Compiler Plugin 1.2.1 on Kotlin 2.4.21 (officially verified up to 2.4.20; expected to warn, not fail). (REP-7)
 3. Detekt 2.0 alpha + Compose rules + KMP source sets. (REP-9)
-4. Nav3 polymorphic back-stack serialization on iOS. (REP-8)
+4. Nav3 polymorphic back-stack serialization on iOS. (REP-8) Verified in REP-8: the SavedState round-trip passes on the iOS simulator, and a JSON round-trip passes on the Android host. The Android `Bundle` path (process death, "Don't keep activities") is checked in REP-28.
 5. Choice of image-generation tool and art style (decided after the Claude Design pass).
 6. Xcode 27.1 / Gradle 9.8.2 / AGP 9.4.0, all above Kotlin 2.4.21's tested toolchain (Xcode 26.4, Gradle 9.7.0, AGP 9.3.1) — checked in REP-5: build, link and simulator tests pass; only the AGP deprecation was seen.
 
