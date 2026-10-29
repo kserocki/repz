@@ -412,6 +412,20 @@ Verified 2026-10-28 against Maven Central, Google Maven, GitHub releases and npm
 | Konsist | `com.lemonappdev:konsist` | 0.18.1 | |
 | Roborazzi | `io.github.takahirom.roborazzi` | 1.77.0 | later; iOS support experimental |
 
+### Toolchain
+
+The machine toolchain the mobile build is verified against (checked in REP-5):
+
+| Tool | Version | Notes |
+|---|---|---|
+| Xcode | 27.1 (27A9275) | kept by user decision; Kotlin 2.4.21 is tested up to Xcode 26.4 |
+| macOS | 27.2 | |
+| JDK | 17 | Gradle daemon toolchain |
+| Android compileSdk / targetSdk | 37 | minSdk 29 |
+| iOS simulator runtime | 27.1 | |
+| Gradle | 9.8.2 | above Kotlin 2.4.21's tested 9.7.0 |
+| AGP | 9.4.0 | above Kotlin 2.4.21's tested 9.3.1; only the `Configuration.setVisible` deprecation observed |
+
 ### API
 
 | Item | Version | Notes |
@@ -441,7 +455,7 @@ Verified 2026-10-28 against Maven Central, Google Maven, GitHub releases and npm
 | Kotlin static analysis | Detekt + Compose rules | CI |
 | Architecture rules | Konsist (see §3 rules, naming: `*ViewModel`, `*UseCase` with single `invoke`, `*Screen` vs `*Content`) | CI |
 | DI graph | Koin Compiler Plugin, full-graph check at compile time | build |
-| Unit tests | `commonTest` on JVM + iOS simulator | CI |
+| Unit tests | `commonTest` on the Android host test (`testAndroidHostTest`) + iOS simulator (`iosSimulatorArm64Test`) | CI |
 | TS | Biome/ESLint, `tsc --noEmit`, Vitest | CI |
 
 Planned later (optional): Room DAO tests, Ktor `MockEngine` repository tests, sync conflict scenarios, backend Vitest + testcontainers, screenshot tests.
@@ -462,10 +476,11 @@ All decisions live in [`docs/adr/`](adr/) (ADR-0001 … ADR-0015). Add a new ADR
 
 ## 15. Risks to verify in the first scaffold spike
 
-1. Room 3 KSP wiring with `com.android.kotlin.multiplatform.library` (AGP 9.4) on iOS targets. This is not confirmed by official docs.
-2. Koin Compiler Plugin 1.2.1 on Kotlin 2.4.21 (officially verified up to 2.4.20; expected to warn, not fail).
-3. Detekt 2.0 alpha + Compose rules + KMP source sets.
-4. Nav3 polymorphic back-stack serialization on iOS.
+1. Room 3 KSP wiring with `com.android.kotlin.multiplatform.library` (AGP 9.4) on iOS targets. This is not confirmed by official docs. (REP-6)
+2. Koin Compiler Plugin 1.2.1 on Kotlin 2.4.21 (officially verified up to 2.4.20; expected to warn, not fail). (REP-7)
+3. Detekt 2.0 alpha + Compose rules + KMP source sets. (REP-9)
+4. Nav3 polymorphic back-stack serialization on iOS. (REP-8)
 5. Choice of image-generation tool and art style (decided after the Claude Design pass).
+6. Xcode 27.1 / Gradle 9.8.2 / AGP 9.4.0, all above Kotlin 2.4.21's tested toolchain (Xcode 26.4, Gradle 9.7.0, AGP 9.3.1) — checked in REP-5: build, link and simulator tests pass; only the AGP deprecation was seen.
 
 If a spike fails, we **stop and decide together**. No silent fallbacks.
