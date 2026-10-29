@@ -416,9 +416,11 @@ Verified 2026-10-28 against Maven Central, Google Maven, GitHub releases and npm
 | AGP | `com.android.application`, `com.android.kotlin.multiplatform.library` | 9.4.0 | KMP library plugin is the recommended path |
 | Gradle | | 9.8.2 | |
 | Turbine | `app.cash.turbine` | 1.2.1 | |
-| Detekt | `dev.detekt` | 2.0.0-alpha.6 | alpha is a deliberate choice: it is the only line with K2 / Kotlin 2.4 support, and it is a dev-only tool |
-| ktlint Gradle | `org.jlleitschuh.gradle.ktlint` | 14.2.0 | |
-| Konsist | `com.lemonappdev:konsist` | 0.18.1 | |
+| Detekt | `dev.detekt` | 2.0.0-alpha.6 | alpha is a deliberate choice: it is the only line with K2 / Kotlin 2.4 support, and it is a dev-only tool. Verified in REP-9: runs its own bundled Kotlin 2.4.10 compiler in an isolated classpath, so it never conflicts with the project's 2.4.21 |
+| Compose rules for Detekt | `io.nlopez.compose.rules:detekt` | 0.6.8 | its POM depends on `dev.detekt:detekt-core:2.0.0-alpha.6`, i.e. built for exactly our alpha (REP-9) |
+| ktlint Gradle | `org.jlleitschuh.gradle.ktlint` | 14.2.0 | published only to the Gradle Plugin Portal, not Maven Central (`build-logic/settings.gradle.kts` adds `gradlePluginPortal()` to `dependencyResolutionManagement` for it, REP-9) |
+| ktlint engine | `com.pinterest.ktlint` | 1.8.0 | pinned explicitly via the ktlint Gradle plugin's `version` property, so the plugin's own default never silently decides it (REP-9) |
+| Konsist | `com.lemonappdev:konsist` | 0.18.1 | `KotlinFileParser` rejects `.kts` files outright (confirmed in REP-9); rules that need build-script content read it as plain text instead |
 | Roborazzi | `io.github.takahirom.roborazzi` | 1.77.0 | later; iOS support experimental |
 
 ### Toolchain
@@ -458,18 +460,59 @@ The machine toolchain the mobile build is verified against (checked in REP-5):
 
 ## 12. Quality gates
 
-This is the target setup. Which gates run today is listed in `AGENTS.md` §5.
-
 | Gate | Tool | Where |
 |---|---|---|
-| Kotlin style | ktlint | pre-commit (optional) + CI |
-| Kotlin static analysis | Detekt + Compose rules | CI |
-| Architecture rules | Konsist (see §3 rules, naming: `*ViewModel`, `*UseCase` with single `invoke`, `*Screen` vs `*Content`) | CI |
+| Kotlin style | ktlint | `./gradlew check` (CI wiring: REP-10) |
+| Kotlin static analysis | Detekt + Compose rules | `./gradlew check` (CI wiring: REP-10) |
+| Architecture rules | Konsist (`:konsist-tests`, see §3 rules, naming: `*ViewModel`, `*UseCase` with single `invoke`, `*Screen` vs `*Content`) | `./gradlew check` (CI wiring: REP-10) |
 | DI graph | Koin Compiler Plugin, full-graph check at compile time | build |
-| Unit tests | `commonTest` on the Android host test (`testAndroidHostTest`) + iOS simulator (`iosSimulatorArm64Test`) | CI |
+| Unit tests | `commonTest` on the Android host test (`testAndroidHostTest`) + iOS simulator (`iosSimulatorArm64Test`) | `./gradlew check` (CI wiring: REP-10) |
 | TS | Biome/ESLint, `tsc --noEmit`, Vitest | CI |
 
 Planned later (optional): Room DAO tests, Ktor `MockEngine` repository tests, sync conflict scenarios, backend Vitest + testcontainers, screenshot tests.
+
+### 12.1 ktlint and Detekt (REP-9)
+
+`repz.quality` (applied by `repz.kmp.library` and `repz.android.application`, and by `:konsist-tests` directly) wires both into every module's `check`:
+
+- **ktlint** (`org.jlleitschuh.gradle.ktlint`, `ktlint_official` style via `mobile/.editorconfig`, 140-char lines) discovers every Kotlin source set itself, KMP (`commonMain`, `androidMain`, `iosMain`, `commonTest`, `androidHostTest`, `iosTest`, …), AGP 9 built-in Kotlin (`app:android`'s `main`/`test`/`androidTest`, with no `org.jetbrains.kotlin.android` plugin needed) and `*.gradle.kts` scripts alike. It also discovers KSP- and Compose-resources-generated Kotlin under each module's own `build/` directory as if it were hand-written source; `repz.quality` excludes any path containing `build` from linting for that reason.
+- **Detekt** (`dev.detekt`, Compose rules `io.nlopez.compose.rules:detekt`) runs as the plain, non-type-resolved `detekt` task only — not the per-compilation (`detektMainAndroid`, `detektHostTestAndroid`, …) or per-source-set (`detektCommonMainSourceSet`, …) tasks the alpha also registers, which are not part of `check` by default and are left unused. `source` is set explicitly to every `src/<sourceSet>/kotlin` directory the module has, so coverage does not depend on how the alpha's own discovery handles the AGP 9 KMP library plugin or AGP 9 built-in Kotlin. Runs its own bundled Kotlin 2.4.10 in an isolated classpath; no conflict with the project's Kotlin 2.4.21 was observed.
+- Config: `mobile/config/detekt/detekt.yml`, `buildUponDefaultConfig: true`, no baseline. Contains only: `MaxLineLength` (140, matching ktlint), `MagicNumber` (property declarations exempt — already the alpha.6 default), `LongParameterList` (`ignoreDefaultParameters: true`, for Composables with defaulted parameters), `TopLevelPropertyNaming` (`constantPattern` widened to `[A-Z][A-Za-z0-9_]*`, accepting both `UPPER_SNAKE_CASE` constants and PascalCase `CompositionLocal`s/preview vals in the same rule), and the full Compose rule set at its documented defaults.
+- `build-logic/convention` cannot apply `repz.quality` (it builds it), so it configures both tools on itself by hand, identically.
+- Root `mobile/build.gradle.kts` applies `base` (gives the root project a `check` task) and ktlint (lints the root `*.gradle.kts` and `settings.gradle.kts`); its `check` depends on `build-logic`'s own `:convention:check` so the included build is gated too.
+- `./gradlew ktlintFormat` auto-fixes formatting; Detekt findings are fixed by hand (`autoCorrect: false`).
+- **Known gap:** Detekt 2.0.0-alpha.6's `FunctionNaming` and `UnusedPrivateFunction` rules have no per-annotation exemption (no `ignoreAnnotated` property on either, confirmed against the alpha.6 default config) and no Compose-specific carve-out, so a `@Composable fun FooContent()` or a private `@Preview` function will be flagged once real Compose UI code lands. No fix is applied yet (ADR-0009); revisit before the first UI module ships.
+
+### 12.2 Konsist rule catalogue (`:konsist-tests`, REP-9)
+
+A plain Kotlin/JVM module, not a KMP one: it reads source **text** (via Konsist for `.kt` files, or directly for `.kts`, which Konsist's `KotlinFileParser` cannot parse at all), so it sees every source set of every module, including `iosMain`/`iosTest`, build-logic and the root build scripts. Each rule is a function run twice — against the real project tree (`projectScope()`/`realTextFiles()`, excluding `:konsist-tests` itself and all fixtures) and against a dedicated fixture tree under `konsist-tests/src/test/fixtures/<ruleId>/` that proves it actually fails. No Konsist exclusion or baseline exists for any rule.
+
+| ID | Rule | Mechanism |
+|---|---|---|
+| P1 | Main files under `core`/`feature`/`app:shared` declare a package starting with the module's namespace; `app:android` starts with `com.repz.app` | Konsist, `KoFileDeclaration.packagee` |
+| A1 | `core:domain` imports nothing from `android.`/`androidx.`/`io.ktor.`/`org.koin.`/`org.jetbrains.compose.`; `core:common` imports nothing from `org.koin.`; neither module's build file applies those plugins | plain text (build files) |
+| A2 | A `feature:x:impl` never imports another feature's `:impl`; a `feature:x:api` never imports any `:impl`; no feature build file depends on another feature's `:impl` | plain text |
+| A3 | `feature:x:impl`/`feature:x:api` see domain interfaces only, never `core:data`/`core:database`/`core:network`/`core:sync`, incl. their build files | plain text |
+| A4 | `@KoinApplication`/`startKoin`/`NavDisplay` are used only in `app:shared`; `core:*` never imports feature or `app:shared` code | plain text |
+| A5 | `@Entity` classes live only in `core:database`, `*Dto` classes only in `core:network`; neither leaks outside `core:database`/`core:network`/`core:data`/`core:sync` | plain text (heuristic: text pattern for the annotation/suffix, not a resolved type) |
+| T1 | UI files (import `androidx.compose.`) outside `core:designsystem` contain no hard-coded `Color(…)`/`Color.<Name>` (except `Transparent`/`Unspecified`), no `<n>.dp` (except `0.dp`), no `<n>.sp`, no `spring(`/`tween(` | plain text (heuristic) |
+| S1 | UI files in `feature:x:impl`/`core:ui`/`core:designsystem`/`app:shared` pass no string literal containing a letter to `Text(` or a `text=`/`contentDescription=`/`label=`/`placeholder=`/`title=` argument, outside `@Preview` functions | Konsist, per function's own `.text` (precise about the `@Preview` boundary; heuristic about what counts as a forbidden call) |
+| D1 | `@ComponentScan` only in `app:shared` | Konsist |
+| D2 | `@Single`/`@Factory`/`@Scoped`/`@KoinViewModel` classes only in `app:shared`; `@Singleton` forbidden everywhere | Konsist |
+| D3 | At most one `@Module` class per module's main source sets, except `app:shared` | Konsist |
+| D4 | Provider functions inside a `@Module` class declare an explicit return type | Konsist |
+| D5 | One owner per (return type, qualifier annotations) pair, across provider functions and definition classes | Konsist (heuristic: return type compared by source text, not a resolved fully qualified name — Konsist does not do type resolution here by design) |
+| V1 | `feature:x:api` main files declare only `@Serializable` `NavKey` types and exactly one top-level `val <feature>NavKeySerializers` | Konsist |
+| N1 | A class extending `ViewModel` is named `*ViewModel` and vice versa; lives in `..presentation..` of a `feature:x:impl`; has `XUiState`/`XIntent`/`XEffect` in the same package; exposes `state`, `effects`, `onIntent` | Konsist |
+| N2 | `*UiState` properties are never `List`/`Set`/`Map` | Konsist |
+| N3 | `*UseCase` classes live in `core:domain` or `..domain..` of a `feature:x:impl`; declare exactly one non-private function, `operator fun invoke` | Konsist |
+| N4 | A `@Composable fun XScreen` has a matching `XContent` in the same package; `XContent` takes `state`/`onIntent`, never a ViewModel parameter, never calls `koinViewModel(`; `koinViewModel(` only inside `*Screen`; a `@Preview` in the same file calls `XContent(` | Konsist (per-function `.text`) |
+| N5 | `*Repository` interfaces live in `core:domain`; a `core:data` implementation is named `OfflineFirst<Interface>`; outside `core:data` only `core:testing`/test source sets may implement one | Konsist |
+| N6 | `@Test` functions match `^given.+_when.+_then.+$` | Konsist |
+| N7 | No `io.mockk`/`org.mockito` imports | Konsist |
+| C1 | A `REP-<n>` key in a comment only ever appears as `TODO(REP-<n>):`; every `TODO` is written exactly that way; upstream tracker references are unrestricted | plain text, incl. `.kts` (its own comment extractor: skips string/char literals, tracks Kotlin's nestable block comments) |
+
+"Plain text" rules read every `.kt`/`.kts` file directly (`RepzTextFile`) rather than through a Konsist `KoScope`, needed wherever a rule must see `.gradle.kts` content.
 
 ---
 
@@ -489,7 +532,7 @@ All decisions live in [`docs/adr/`](adr/) (ADR-0001 … ADR-0015). Add a new ADR
 
 1. Room 3 KSP wiring with `com.android.kotlin.multiplatform.library` (AGP 9.4) on iOS targets. This is not confirmed by official docs. (REP-6) Verified: KSP generates the `actual` Room code for `kspAndroid`, `kspIosArm64` and `kspIosSimulatorArm64`; the probe DAO suite (suspend query, `Flow`, `withWriteTransaction` rollback) passes on `testAndroidHostTest` and the iOS 27.1 simulator; `androidHostTestRuntimeClasspath` substitutes `sqlite-bundled-jvm` so the bundled driver loads on the host JVM.
 2. Koin Compiler Plugin 1.2.1 on Kotlin 2.4.21 (officially verified up to 2.4.20; expected to warn, not fail). (REP-7) — **Checked in REP-7:** warns as expected (`Kotlin 2.4.21 is newer than the newest verified version (2.4.20)...`), never blocks. Found a real bug along the way: cross-module `@ComponentScan` hints are dropped on Kotlin/Native (koin-compiler-plugin#106 / KT-79565, JVM/Android unaffected). Fixed by switching to explicit `@Single`/`@Factory` provider functions per module instead of cross-module scanning (ADR-0008, "option A"); `app:shared` still scans locally. Re-check in REP-58 once plugin 1.2.2 ships.
-3. Detekt 2.0 alpha + Compose rules + KMP source sets. (REP-9)
+3. Detekt 2.0 alpha + Compose rules + KMP source sets. (REP-9) — **Checked in REP-9:** no Kotlin-version-mismatch crash (Detekt runs its own bundled Kotlin 2.4.10 in an isolated classpath, confirmed by its daemon running alongside the project's 2.4.21 one; the pre-approved mitigation, forcing the `detekt`/`detektPlugins` configurations to 2.4.10, was not needed). Compose rules load and fire correctly (verified with a deliberate `ComposableNaming` violation). ktlint-gradle 14.2.0 discovers every KMP source set and AGP 9 built-in Kotlin (`app:android`) without hand-wired source dirs; it also picks up KSP- and Compose-resources-generated Kotlin under each module's `build/` directory, which needed an explicit exclude (`repz.quality`, REP-9). Konsist 0.18.1 resolves the project root to `mobile/` correctly, but its `KotlinFileParser` rejects `.kts` files outright (`IllegalArgumentException: File must be a Kotlin file`) even via `scopeFromFile`; rules needing build-script content read it as plain text instead (§12.2). Detekt's `FunctionNaming`/`UnusedPrivateFunction` have no annotation-based exemption in alpha.6, a gap for when Compose UI code lands (§12.1).
 4. Nav3 polymorphic back-stack serialization on iOS. (REP-8) Verified in REP-8: the SavedState round-trip passes on the iOS simulator, and a JSON round-trip passes on the Android host. The Android `Bundle` path (process death, "Don't keep activities") is checked in REP-28.
 5. Choice of image-generation tool and art style (decided after the Claude Design pass).
 6. Xcode 27.1 / Gradle 9.8.2 / AGP 9.4.0, all above Kotlin 2.4.21's tested toolchain (Xcode 26.4, Gradle 9.7.0, AGP 9.3.1) — checked in REP-5: build, link and simulator tests pass; only the AGP deprecation was seen.
