@@ -296,10 +296,18 @@ class HistoryViewModel(
 
 ## 8. Navigation 3
 
-- `feature:x:api` contains only `@Serializable` route keys: `data object HistoryRoute : NavKey`, `data class WorkoutDetailsRoute(val id: String) : NavKey`.
-- `feature:x:impl` contributes entries: `fun EntryProviderScope<NavKey>.historyEntries(navigator: Navigator)`.
-- `core:navigation` holds the `Navigator`: **a separate back stack per top-level tab** (Train / History / Exercises / Settings), plus the auth gate.
-- Back stacks are saved through an explicit polymorphic `SerializersModule` that registers every `NavKey`. Kotlin/Native has no reflection, so this is required on iOS.
+- `feature:x:api` contains only `@Serializable` route keys (`data object HistoryRoute : NavKey`, `data class WorkoutDetailsRoute(val id: String) : NavKey`) and **registers them itself**: it exposes one `val xNavKeySerializers: SerializersModule` built with `navKeySerializers { subclass(…) }`. `app:shared` combines all of them with `+`. `core:navigation` never sees feature keys, because that would be a dependency cycle.
+- `feature:x:impl` contributes entries: `fun EntryProviderScope<NavKey>.historyEntries(navigator: Navigator)`. The UI (`NavDisplay`, entry providers) lives in `app:shared`.
+- `core:navigation` holds the `Navigator`: **a separate back stack per top-level tab** (Train / History / Exercises / Profile; the Profile tab is served by `feature:settings`), plus the auth gate.
+- The whole navigator is **one saved object** (`NavigatorState`: auth flag, selected tab, all stacks) saved through a `SavedStateConfiguration` with the combined polymorphic `SerializersModule`. Kotlin/Native has no reflection, so explicit registration is required on iOS. Everything restores atomically.
+- The **visible stack** is the Train stack plus the selected tab's stack (when the selected tab isn't Train). Back from another tab's root is then a plain pop, and predictive back shows Train underneath.
+- Navigator rules (fixed by unit tests in `core:navigation`):
+  - (a) switching tabs keeps every tab's back stack;
+  - (b) tapping the already selected tab pops it to its root;
+  - (c) Back on the root of History/Exercises/Profile goes to Train with Train's stack kept; Back on Train's root is not handled (Android leaves the app);
+  - (d) after sign-in all tab stacks start at their roots with Train selected; after sign-out all tab stacks are cleared and the auth stack restarts at its root;
+  - (e) navigating to the key already on top is ignored (no double push on a double tap);
+  - (f) after process death everything is restored, including the selected tab and the auth stack.
 - Transitions are defined once in the design system's motion spec and applied globally. Predictive back is supported on Android.
 
 ---
