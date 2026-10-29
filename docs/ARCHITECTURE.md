@@ -297,7 +297,7 @@ class HistoryViewModel(
 ## 8. Navigation 3
 
 - `feature:x:api` contains only `@Serializable` route keys (`data object HistoryRoute : NavKey`, `data class WorkoutDetailsRoute(val id: String) : NavKey`) and **registers them itself**: it exposes one `val xNavKeySerializers: SerializersModule` built with `navKeySerializers { subclass(…) }`. `app:shared` combines all of them with `+`. `core:navigation` never sees feature keys, because that would be a dependency cycle.
-- `feature:x:impl` contributes entries: `fun EntryProviderScope<NavKey>.historyEntries(navigator: Navigator)`. The UI (`NavDisplay`, entry providers) lives in `app:shared`.
+- `feature:x:impl` declares its entries: `fun EntryProviderScope<NavKey>.historyEntries(navigator: Navigator)`. `app:shared` hosts `NavDisplay` and wires every feature's entries into it. The serializers module needs `import kotlinx.serialization.modules.plus` to combine with `+`.
 - `core:navigation` holds the `Navigator`: **a separate back stack per top-level tab** (Train / History / Exercises / Profile; the Profile tab is served by `feature:settings`), plus the auth gate.
 - The whole navigator is **one saved object** (`NavigatorState`: auth flag, selected tab, all stacks) saved through a `SavedStateConfiguration` with the combined polymorphic `SerializersModule`. Kotlin/Native has no reflection, so explicit registration is required on iOS. Everything restores atomically.
 - The **visible stack** is the Train stack plus the selected tab's stack (when the selected tab isn't Train). Back from another tab's root is then a plain pop, and predictive back shows Train underneath.
@@ -489,7 +489,7 @@ All decisions live in [`docs/adr/`](adr/) (ADR-0001 … ADR-0015). Add a new ADR
 1. Room 3 KSP wiring with `com.android.kotlin.multiplatform.library` (AGP 9.4) on iOS targets. This is not confirmed by official docs. (REP-6)
 2. Koin Compiler Plugin 1.2.1 on Kotlin 2.4.21 (officially verified up to 2.4.20; expected to warn, not fail). (REP-7)
 3. Detekt 2.0 alpha + Compose rules + KMP source sets. (REP-9)
-4. Nav3 polymorphic back-stack serialization on iOS. (REP-8) Verified in REP-8: the SavedState round-trip passes on the iOS simulator, and a JSON round-trip passes on the Android host.
+4. Nav3 polymorphic back-stack serialization on iOS. (REP-8) Verified in REP-8: the SavedState round-trip passes on the iOS simulator, and a JSON round-trip passes on the Android host. The Android `Bundle` path (process death, "Don't keep activities") is checked in REP-28.
 5. Choice of image-generation tool and art style (decided after the Claude Design pass).
 6. Xcode 27.1 / Gradle 9.8.2 / AGP 9.4.0, all above Kotlin 2.4.21's tested toolchain (Xcode 26.4, Gradle 9.7.0, AGP 9.3.1) — checked in REP-5: build, link and simulator tests pass; only the AGP deprecation was seen.
 

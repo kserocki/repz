@@ -10,3 +10,6 @@ The codebase must stay understandable as it grows, for humans and agents.
 
 ## Consequences
 More modules, but clear boundaries and fast incremental builds. Rule breaks fail CI.
+
+## Amendment (2026-10-29, REP-8)
+Besides NavKeys, `feature:x:api` also exposes one `val xNavKeySerializers: SerializersModule` that registers its keys (iOS has no reflection). `app:shared` combines them. Architecture checks must allow this value.
