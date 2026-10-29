@@ -38,7 +38,9 @@ private val IGNORED_QUALIFIERS = setOf(
  * (`values`, `values-pl`, `values-pt-rBR`) declares a language. A directory that also carries a
  * theme or density qualifier (`values-dark`, `values-pl-dark`, …) is a themed/density *variant* of
  * an already-declared language, never a declaration on its own, so it is skipped entirely: it
- * never creates a new locale and never collides with one. Any other qualifier is an error, because
+ * never creates a new locale and never collides with one — including when its base folder
+ * (`values-pl` for `values-pl-dark`) is missing: the language is then silently absent from the
+ * result, the same as if no folder for it existed at all. Any other qualifier is an error, because
  * Repz has no rule for what it means for the supported-language list.
  *
  * The unqualified `values` folder maps to [DEFAULT_APP_LOCALE_TAG]. The result is sorted with the
@@ -88,17 +90,18 @@ private fun resolveLocaleTag(directory: File): String? {
     var hasIgnoredQualifier = false
 
     for (qualifier in qualifiers) {
+        val regionMatch = REGION_QUALIFIER.matchEntire(qualifier)
         when {
             qualifier in IGNORED_QUALIFIERS -> hasIgnoredQualifier = true
             language == null && LANGUAGE_QUALIFIER.matches(qualifier) -> language = qualifier
-            region == null && REGION_QUALIFIER.matches(qualifier) ->
-                region = REGION_QUALIFIER.find(qualifier)!!.groupValues[1]
+            region == null && regionMatch != null -> region = regionMatch.groupValues[1]
             else -> throw unsupportedQualifier(qualifier, directory)
         }
     }
 
     if (hasIgnoredQualifier) return null
-    val resolvedLanguage = language ?: throw unsupportedQualifier(directory.name.removePrefix("$VALUES_PREFIX-"), directory)
+    val bareQualifiers = directory.name.removePrefix("$VALUES_PREFIX-")
+    val resolvedLanguage = language ?: throw unsupportedQualifier(bareQualifiers, directory)
     return if (region != null) "$resolvedLanguage-$region" else resolvedLanguage
 }
 

@@ -81,6 +81,24 @@ class AppLocalesTest {
     }
 
     @Test
+    fun givenAValuesPlDarkFolderWithoutValuesPl_whenReadAppLocalesIsCalled_thenPlIsSilentlyAbsent() {
+        writeStrings("values", "Repz")
+        writeStrings("values-pl-dark", "Repz")
+
+        val locales = readAppLocales(composeResourcesDirectory)
+
+        assertEquals(listOf("en"), locales.map { it.tag })
+    }
+
+    @Test
+    fun givenTwoFoldersResolvingToTheSameTag_whenReadAppLocalesIsCalled_thenItFails() {
+        writeStrings("values", "Repz")
+        writeStrings("values-en", "Repz")
+
+        assertFailsWith<GradleException> { readAppLocales(composeResourcesDirectory) }
+    }
+
+    @Test
     fun givenAnUnsupportedQualifier_whenReadAppLocalesIsCalled_thenItFails() {
         writeStrings("values-xx1", "Repz")
 
