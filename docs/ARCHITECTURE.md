@@ -391,7 +391,7 @@ Verified 2026-10-28 against Maven Central, Google Maven, GitHub releases and npm
 | Navigation 3 | `org.jetbrains.androidx.navigation3:navigation3-ui` | 1.2.0 | use the JetBrains group (androidx `-ui` is Android-only) |
 | M3 adaptive + Nav3 | `org.jetbrains.compose.material3.adaptive:adaptive-navigation3` | 1.3.0 | list-detail scenes (optional) |
 | Lifecycle / ViewModel | `org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose`, `-viewmodel-navigation3` | 2.11.0 | |
-| Room 3 | `androidx.room3:room3-runtime` / `room3-compiler`, plugin `androidx.room3` | 3.0.3 | KSP per target (`kspAndroid`, `kspIosArm64`, `kspIosSimulatorArm64`) |
+| Room 3 | `androidx.room3:room3-runtime` / `room3-compiler`, plugin `androidx.room3` | 3.0.3 | KSP per target (`kspAndroid`, `kspIosArm64`, `kspIosSimulatorArm64`); host tests: `sqlite-bundled-jvm` substituted on `androidHostTestRuntimeClasspath` |
 | SQLite bundled driver | `androidx.sqlite:sqlite-bundled` | 2.7.1 | |
 | WorkManager | `androidx.work:work-runtime-ktx` | 2.12.0 | `androidMain` only |
 | Koin | `io.insert-koin:koin-bom`, `koin-annotations` | 4.2.2 | |
@@ -478,7 +478,7 @@ All decisions live in [`docs/adr/`](adr/) (ADR-0001 … ADR-0015). Add a new ADR
 
 ## 15. Risks to verify in the first scaffold spike
 
-1. Room 3 KSP wiring with `com.android.kotlin.multiplatform.library` (AGP 9.4) on iOS targets. This is not confirmed by official docs. (REP-6)
+1. Room 3 KSP wiring with `com.android.kotlin.multiplatform.library` (AGP 9.4) on iOS targets. This is not confirmed by official docs. (REP-6) Checked in REP-6: KSP generates the `actual` Room code for `kspAndroid`, `kspIosArm64` and `kspIosSimulatorArm64`; the probe DAO suite (suspend query, `Flow`, `withWriteTransaction` rollback) passes on `testAndroidHostTest` and the iOS 27.1 simulator; `androidHostTestRuntimeClasspath` substitutes `sqlite-bundled-jvm` so the bundled driver loads on the host JVM.
 2. Koin Compiler Plugin 1.2.1 on Kotlin 2.4.21 (officially verified up to 2.4.20; expected to warn, not fail). (REP-7)
 3. Detekt 2.0 alpha + Compose rules + KMP source sets. (REP-9)
 4. Nav3 polymorphic back-stack serialization on iOS. (REP-8)
