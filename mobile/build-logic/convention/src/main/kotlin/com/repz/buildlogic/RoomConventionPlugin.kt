@@ -10,10 +10,9 @@ import org.gradle.kotlin.dsl.named
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 /**
- * Room 3 (KSP-generated, bundled SQLite driver) for a `repz.kmp.library` module. Wires KSP to
- * exactly the three targets `repz.kmp.library` declares (Android, `iosArm64`,
- * `iosSimulatorArm64`): a target added later without KSP fails loudly at compile time, because
- * the generated `actual` implementation would be missing.
+ * Room 3 (KSP-generated, bundled SQLite driver) for a `repz.kmp.library` module. KSP is wired
+ * only to the three targets `repz.kmp.library` declares; a target added later without KSP fails
+ * at compile time, since the generated `actual` would be missing.
  */
 class RoomConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {

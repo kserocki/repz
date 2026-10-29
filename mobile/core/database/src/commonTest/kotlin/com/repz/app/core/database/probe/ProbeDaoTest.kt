@@ -6,6 +6,7 @@ import app.cash.turbine.test
 import com.repz.app.core.database.RepzDatabase
 import com.repz.app.core.database.buildRepzDatabase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -15,10 +16,9 @@ import kotlin.test.assertNull
 
 // TODO(REP-24): replace the probe with the real schema.
 class ProbeDaoTest {
-    // Dispatchers.IO is internal on iosArm64/iosSimulatorArm64 in kotlinx.coroutines 1.11.0;
-    // Default is the public, multi-threaded, non-test-scheduler dispatcher available everywhere.
+    // Room needs a real dispatcher for its query/invalidation work, not the runTest scheduler.
     private val database =
-        Room.inMemoryDatabaseBuilder<RepzDatabase>().buildRepzDatabase(Dispatchers.Default)
+        Room.inMemoryDatabaseBuilder<RepzDatabase>().buildRepzDatabase(Dispatchers.IO)
     private val probeDao = database.probeDao()
 
     @AfterTest

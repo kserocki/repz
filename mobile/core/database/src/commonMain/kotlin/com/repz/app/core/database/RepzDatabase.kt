@@ -7,10 +7,6 @@ import androidx.room3.RoomDatabaseConstructor
 import com.repz.app.core.database.probe.ProbeDao
 import com.repz.app.core.database.probe.ProbeEntity
 
-/**
- * Room 3 / KSP spike proof. `entities` and `version` stay at the probe schema until REP-24 lands
- * the real schema (`workout`, `outbox`, `sync_meta`, ...).
- */
 // TODO(REP-24): replace the probe schema with the real one.
 @Database(entities = [ProbeEntity::class], version = 1)
 @ConstructedBy(RepzDatabaseConstructor::class)
