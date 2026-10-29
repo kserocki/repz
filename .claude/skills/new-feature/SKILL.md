@@ -17,7 +17,7 @@ If anything is unclear (naming, behaviour, UX copy, a token value, which module 
 ## Steps
 1. **Module** (only for a new feature): create `mobile/feature/<name>/api` and `.../impl` with the convention plugins `repz.kmp.feature.api` / `repz.kmp.feature.impl` (see `mobile/build-logic`). Register them in `settings.gradle.kts`.
 2. **api:** only `@Serializable` NavKeys, e.g. `data object HistoryRoute : NavKey`, `data class WorkoutDetailsRoute(val workoutId: String) : NavKey`. Expose `val xNavKeySerializers = navKeySerializers { subclass(…) }` in the api module (required on iOS, no reflection); `app:shared` combines all of them.
-3. **Domain first:** use cases go in `core:domain` (or in the feature's `impl/domain` package if feature-only). Use `VerbNounUseCase` with a single `operator fun invoke`. No Koin annotation on the class; it's provided by a `@Factory fun` in the module's `@Module` class (step 6).
+3. **Domain first:** use cases go in `core:domain` if shared, or in the feature's `impl/domain` package if feature-only. Use `VerbNounUseCase` with a single `operator fun invoke` and no Koin annotation on the class. Shared use cases are provided by `DomainModule` in `app:shared`, and feature-only ones by the feature's `@Module` (step 6). Each use case has exactly one provider.
 4. **Presentation** in `impl/.../presentation/<screen>/`:
    - `XUiState`: data class, defaults = loading state, `ImmutableList` for lists, UI models (`XUi`) mapped from domain (no domain objects with logic in the UI).
    - `XIntent`: sealed interface. `XEffect`: sealed interface.
