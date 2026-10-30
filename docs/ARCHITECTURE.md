@@ -527,7 +527,7 @@ A plain Kotlin/JVM module, not a KMP one: it reads source **text** (via Konsist 
 
 ## 14. Decision log
 
-All decisions live in [`docs/adr/`](adr/) (ADR-0001 … ADR-0015). Add a new ADR for every decision that changes this document.
+All decisions live in [`docs/adr/`](adr/) (ADR-0001 … ADR-0017). Add a new ADR for every decision that changes this document.
 
 ## 15. Risks to verify in the first scaffold spike
 

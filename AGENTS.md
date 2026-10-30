@@ -31,7 +31,7 @@ design/     git-ignored local design export
 .claude/skills/  task playbooks (see §6)
 ```
 
-## 3. Non-negotiable architecture rules (Konsist enforces them in `./gradlew check`)
+## 3. Non-negotiable architecture rules (Konsist enforces rules 1–5 and 7 in `./gradlew check`; rule 7 heuristically, rule 6 by review)
 
 1. `core:domain` is pure Kotlin: no Room, Ktor, Compose, Koin or `androidx.*`.
 2. `feature:*:impl` never depends on another `feature:*:impl`. It navigates only via `feature:*:api` NavKeys.

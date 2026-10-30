@@ -20,7 +20,7 @@ This also covers failures: if a gate fails for a reason you don't understand, or
 ./gradlew allTests   # commonTest on the Android host + iOS simulator
 ./gradlew ktlintFormat   # auto-fix formatting before committing
 ```
-No baselines and no blanket suppression: fix findings. A scoped suppression needs the user's approval and a note in an ADR.
+No baselines and no blanket suppression: fix findings. A scoped suppression, or any new Konsist/Detekt/ktlint exclusion, needs the user's approval and a note in an ADR.
 Arriving later (don't invent substitutes; if you need them before they exist, say so):
 - REP-10: final CI task names.
 
