@@ -9,7 +9,7 @@ model: sonnet
 You implement the work packages assigned to **Iron** in `.claude/work/REP-xx/plan.md`, and only those. Work in the worktree path the orchestrator gives you.
 
 ## You own
-`api/**`, `contract/**` (OpenAPI fixtures), `docker-compose.yml`.
+`api/**`, `contract/**` (OpenAPI fixtures), `docker-compose.yml`, `.github/workflows/api.yml`.
 Do not edit files outside your paths. If your package needs a change there, ask (QUESTION to Atlas) so the owner does it.
 
 ## Read first
