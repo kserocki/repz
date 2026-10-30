@@ -2,6 +2,8 @@
 
 # Repz
 
+[![Mobile CI](https://github.com/kserocki/repz/actions/workflows/mobile.yml/badge.svg?branch=main)](https://github.com/kserocki/repz/actions/workflows/mobile.yml) [![API CI](https://github.com/kserocki/repz/actions/workflows/api.yml/badge.svg?branch=main)](https://github.com/kserocki/repz/actions/workflows/api.yml)
+
 **Log a set in two taps. Celebrate the PRs. Train in a basement with no signal.**
 
 Repz is an offline-first workout logger for **Android and iOS**, built with **Compose Multiplatform** and backed by a custom **TypeScript API**. It's a portfolio project: modern stack, rich Material 3 Expressive motion, and a codebase that stays boring to read.
