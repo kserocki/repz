@@ -42,12 +42,9 @@ RECT_RE = re.compile(r'<rect width="([\d.]+)" height="([\d.]+)" rx="([\d.]+)" fi
 
 VIEWPORT_CENTER = 54.0  # half of the 108x108 viewport; the source symbol is already centred here.
 
-# The SplashScreen API lays `windowSplashScreenAnimatedIcon` out in the 288 dp box it uses when
-# there is no distinct icon background (a same-colour `windowSplashScreenIconBackgroundColor` does
-# not switch it to the 240 dp box; measured in Coach's REP-11 round-1 review). The foreground/
-# monochrome geometry occupies 60% of the 108-unit viewport, i.e. 172.8 dp in that 288 dp box, not
-# the 144 dp the product decision calls for. Shrinking the splash-only copy by 5/6 (60% -> 50% of
-# the viewport, scaled about VIEWPORT_CENTER so it stays centred) renders at 144 dp instead.
+# The SplashScreen API draws the splash icon in a 288 dp box. Scaling the splash-only copy by 5/6
+# (about VIEWPORT_CENTER, so it stays centred) shrinks the 60%-of-viewport symbol to 50%, which
+# renders at 144 dp wide in that 288 dp box.
 SPLASH_SYMBOL_SCALE = 5 / 6
 
 
