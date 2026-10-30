@@ -443,6 +443,8 @@ The machine toolchain the mobile build is verified against (checked in REP-5):
 
 ### API
 
+Re-verified on npm, nodejs.org and Docker Hub on 2026-10-29 (REP-12).
+
 | Item | Version | Notes |
 |---|---|---|
 | Node.js | 26.13.0 (Active LTS) | runs TypeScript directly via type stripping |

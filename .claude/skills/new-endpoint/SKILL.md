@@ -17,7 +17,7 @@ If anything is unclear (naming, behaviour, UX copy, a token value, which module 
 2. **DB** (if needed): Drizzle table in `src/db/schema/`, then `pnpm db:generate` for the migration (never hand-edit generated SQL), then `pnpm db:migrate`. Syncable root tables need `user_id`, `version bigint` (from `sync_version_seq`), `updated_at` and `deleted_at`.
 3. **Repository** (`*.repository.ts`): Drizzle queries only, no HTTP concerns.
 4. **Service** (`*.service.ts`): business rules. Throw typed domain errors that are mapped to Problem Details in `shared/errors.ts`.
-5. **Route** (`*.routes.ts`): `createRoute` + `app.openapi(...)`. Validation comes from the Zod schemas. Wire dependencies in `app.ts` (factory functions, no DI framework).
+5. **Route** (`*.routes.ts`): build the router with `createRouter()` from `shared/router.ts`, which gives an `OpenAPIHono` with the shared validation hook. Problem `type`s follow ADR-0016 (`about:blank` for plain HTTP errors, `urn:repz:problem:<kebab-name>` for app errors). Test routes through `createApp(...).request()`. Declare routes with `createRoute` + `app.openapi(...)`. Validation comes from the Zod schemas. Wire dependencies in `app.ts` (factory functions, no DI framework).
 6. **Contract:** `pnpm openapi:export` updates `api/openapi.json` (committed). Add or update JSON fixtures in `contract/fixtures/`. The contract test validates them against the spec.
 7. **Mobile side** (if consumed): hand-written `@Serializable` DTOs in `mobile/core/network`, matching the fixtures. Add a test that decodes every fixture. The API service is a Ktor function returning a typed result.
 8. **Tests:** a Vitest unit test for the service. Route tests with the in-memory app (testcontainers tests are a later milestone).
