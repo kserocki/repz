@@ -1,0 +1,37 @@
+{
+  "name": "@repz/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Repz backend API (Hono + Drizzle + Postgres)",
+  "engines": {
+    "node": ">=26"
+  },
+  "packageManager": "pnpm@12.16.1",
+  "scripts": {
+    "dev": "node --watch --env-file-if-exists=.env src/index.ts | pino-pretty",
+    "start": "node --env-file-if-exists=.env dist/index.js",
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "biome check --error-on-warnings .",
+    "lint:fix": "biome check --write ."
+  },
+  "dependencies": {
+    "@hono/node-server": "2.1.5",
+    "@hono/zod-openapi": "1.6.3",
+    "drizzle-orm": "0.45.4",
+    "hono": "4.13.14",
+    "pino": "10.4.0",
+    "postgres": "3.4.9",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.4",
+    "@types/node": "26.6.6",
+    "pino-pretty": "13.2.0",
+    "typescript": "7.0.2",
+    "vitest": "5.0.5"
+  }
+}

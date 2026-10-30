@@ -40,7 +40,7 @@ repz/
 ├── design/                      # git-ignored: local Claude Design export + unpacked boards
 ├── .claude/skills/              # new-feature, new-endpoint, sync-entity, animation, design-system, verify
 ├── .github/workflows/           # mobile.yml, api.yml
-├── docker-compose.yml           # postgres + api
+├── docker-compose.yml           # Postgres only; the API runs on the host with `pnpm dev` (REP-59 adds a container)
 ├── api/                         # TypeScript backend (pnpm)
 └── mobile/                      # Gradle root for KMP
     ├── build-logic/             # convention plugins
@@ -328,7 +328,7 @@ class HistoryViewModel(
 
 ### 10.1 Stack
 
-Node.js LTS · TypeScript (strict) · Hono + `@hono/zod-openapi` · Zod · Drizzle ORM + drizzle-kit migrations · Postgres (docker) · JWT · argon2 password hashing · Vitest · pnpm.
+Node.js 26 LTS (runs `.ts` via type stripping) · TypeScript 7 (`tsc` for typecheck/build only) · Hono + `@hono/zod-openapi` · Zod · Drizzle ORM + drizzle-kit migrations · Postgres (docker) · pino (JSON logs) · JWT · argon2 password hashing · Vitest · Biome · pnpm. See ADR-0016.
 API docs: OpenAPI generated from Zod schemas, served at `/openapi.json`, with an interactive UI at `/docs`.
 
 ### 10.2 Structure
@@ -339,6 +339,7 @@ api/src/
 ├── app.ts                   # composition root: builds services, mounts routes
 ├── env.ts                   # Zod-validated environment
 ├── db/
+│   ├── client.ts            # postgres.js + Drizzle client, ping, close
 │   ├── schema/              # one file per table group
 │   ├── migrations/
 │   └── seed/                # exercise catalog snapshot (wger.de, CC-BY-SA) + seeder
@@ -350,7 +351,7 @@ api/src/
 │       ├── sync.routes.ts
 │       ├── sync.service.ts
 │       └── handlers/        # SyncHandler per entity: workouts, templates, exercises
-└── shared/                  # error handler, auth middleware, request id, logger
+└── shared/                  # app-env, router (OpenAPIHono factory), problem-details, errors (error handler), request-id, logger, request-logger; auth middleware later
 ```
 
 Layers: **routes** (HTTP + validation) → **service** (business rules) → **repository** (Drizzle). Dependencies are wired through plain factory functions in `app.ts`, with no DI framework.
@@ -366,7 +367,7 @@ Layers: **routes** (HTTP + validation) → **service** (business rules) → **re
 | GET / PATCH | `/me` | profile, unit system |
 | POST | `/sync/push` | `{ changes: [{ type, id, deleted, payload }] }` → `{ accepted: [{ id, version }] }` |
 | GET | `/sync/pull` | `?cursor=&limit=` → `{ changes, nextCursor, hasMore }` (includes global exercise catalog) |
-| GET | `/health` | liveness |
+| GET | `/health` | liveness only (`200 {"status":"ok"}`); the DB is checked once at boot and the process exits if it is unreachable |
 
 **Exercise catalog:** imported from [wger.de](https://wger.de) (CC-BY-SA 4.0) by a one-off script into a **committed snapshot**. The seed is deterministic and there is no runtime dependency on wger. Attribution appears in the README and on the app's About screen. Catalog rows carry `license` and `author` fields.
 
@@ -377,7 +378,7 @@ Layers: **routes** (HTTP + validation) → **service** (business rules) → **re
 - **Offline:** Coil 3 disk cache. After the initial sync, a low-priority job prefetches all catalog images, so the library looks complete without network.
 - **Custom (user) exercises** get an illustration for their primary muscle group (about 12 generic illustrations in the same style, bundled in the app as Compose resources). Nothing is ever shown without an image.
 
-Errors use **RFC 9457 Problem Details** (`application/problem+json`) everywhere.
+Errors use **RFC 9457 Problem Details** (`application/problem+json`) everywhere. `type` is `about:blank` for plain HTTP errors and `urn:repz:problem:<kebab-name>` for application errors (e.g. `urn:repz:problem:validation-error`). Every problem carries `requestId`, and validation errors add `errors: [{ path, message }]` (ADR-0016).
 
 ### 10.4 Database
 
@@ -442,10 +443,12 @@ The machine toolchain the mobile build is verified against (checked in REP-5):
 
 ### API
 
+Re-verified on npm, nodejs.org and Docker Hub on 2026-10-29 (REP-12).
+
 | Item | Version | Notes |
 |---|---|---|
-| Node.js | 26 (Active LTS) | |
-| TypeScript | 7.0.2 | native (Go) compiler |
+| Node.js | 26.13.0 (Active LTS) | runs TypeScript directly via type stripping |
+| TypeScript | 7.0.2 | native (Go) compiler; `tsc` used for typecheck and build only |
 | pnpm | 12.16.1 | |
 | Hono / @hono/node-server / @hono/zod-openapi | 4.13.14 / 2.1.5 / 1.6.3 | |
 | Zod | 4.6.7 | |
@@ -454,7 +457,9 @@ The machine toolchain the mobile build is verified against (checked in REP-5):
 | jose | 6.2.13 | JWT sign/verify |
 | @node-rs/argon2 | 2.2.2 | password hashing, no node-gyp |
 | Vitest | 5.0.5 | |
-| Biome | 2.6.3 | lint + format in one tool |
+| Biome | 2.6.4 | lint + format in one tool |
+| pino / pino-pretty | 10.4.0 / 13.2.0 | JSON logger; pretty output only in `pnpm dev` |
+| @types/node | 26.6.6 | |
 | Postgres (docker) | 18.6 | |
 
 **API contract:** the OpenAPI spec is generated from Zod (`/openapi.json`) and committed to `api/openapi.json`. Kotlin DTOs are **hand-written** in `core:network`. A CI contract test validates JSON fixtures shared by both sides against the spec, so neither side can drift without the build failing. Generators (openapi-generator `kotlin`/`multiplatform`) produce noisy code that needs fixups, which is not worth it for an API we fully own.
@@ -470,7 +475,7 @@ The machine toolchain the mobile build is verified against (checked in REP-5):
 | Architecture rules | Konsist (`:konsist-tests`, see §3 rules, naming: `*ViewModel`, `*UseCase` with single `invoke`, `*Screen` vs `*Content`) | `./gradlew check` (CI wiring: REP-10) |
 | DI graph | Koin Compiler Plugin, full-graph check at compile time | build |
 | Unit tests | `commonTest` on the Android host test (`testAndroidHostTest`) + iOS simulator (`iosSimulatorArm64Test`) | `./gradlew check` (CI wiring: REP-10) |
-| TS | Biome/ESLint, `tsc --noEmit`, Vitest | CI |
+| TS | Biome (`pnpm lint`), TypeScript 7 `tsc --noEmit` (`pnpm typecheck`), Vitest (`pnpm test`) | local now, CI with REP-10 |
 
 Planned later (optional): Room DAO tests, Ktor `MockEngine` repository tests, sync conflict scenarios, backend Vitest + testcontainers, screenshot tests.
 

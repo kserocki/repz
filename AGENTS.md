@@ -77,8 +77,9 @@ Run from `mobile/` unless noted. One-time setup: create the git-ignored `mobile/
 | Style, static analysis, architecture tests | `./gradlew check` (ktlint, Detekt + Compose rules, Konsist, Android lint, unit tests) | works |
 | Auto-fix formatting | `./gradlew ktlintFormat` | works |
 | iOS app | open `mobile/iosApp/iosApp.xcodeproj` in Xcode · `xcodebuild -project mobile/iosApp/iosApp.xcodeproj -scheme iosApp -destination 'generic/platform=iOS Simulator' build` | works (REP-11) |
-| API + DB | `docker compose up -d` (from the repo root) | arrives with REP-12 |
-| API dev / tests / lint | `cd api && pnpm dev` · `pnpm test` · `pnpm lint` | arrives with REP-12 |
+| Postgres for the API | `docker compose up -d` (from the repo root; needs Docker/OrbStack running) | works |
+| API setup / dev | `cd api && pnpm install` · `pnpm dev` (Node 26, `.env` from `.env.example`) | works |
+| API gates (from `api/`) | `pnpm lint` · `pnpm typecheck` · `pnpm test` · `pnpm build` | works |
 
 Final command names for CI are fixed in REP-10. If a command you need is missing here, ask.
 
