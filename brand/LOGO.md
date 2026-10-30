@@ -15,7 +15,9 @@ All files are generated from `logo/src/build.py` (geometry) and `logo/src/varian
 | `logo/color/` | Colourways `symbol-*`, `lockup-stacked-*`, `lockup-horizontal-*` in `cyan`, `deep`, `ink`, `white`, `black`; tiles `lockup-stacked-on-{ink,cyan,paper}` |
 | `logo/app-icon/` | iOS `ios-{light,dark,tinted}-1024` (SVG + PNG); Android adaptive `android-{foreground,background,monochrome}-108.svg` |
 | `logo/motion/` | `splash-storyboard.svg/png` (6 key frames) |
-| `logo/src/` | Generators + stroke-based sources (outlined to `master/` with picosvg) |
+| `logo/src/` | Generators + stroke-based sources (outlined to `master/` with picosvg); `android_vectors.py` converts `app-icon/android-*-108.svg` into Android VectorDrawables (stdlib only) |
+| `mobile/app/android/src/main/res/drawable/` | Android adaptive-icon + splash VectorDrawables, generated from `logo/app-icon/android-*-108.svg` by `logo/src/android_vectors.py`. Never edit by hand |
+| `mobile/iosApp/iosApp/Assets.xcassets/` | iOS `AppIcon` + `LaunchSymbol` image sets, copied as-is from `logo/app-icon/ios-*-1024.png` and `logo/color/symbol-{deep,cyan}.svg` by `mobile/iosApp/scripts/sync-brand-assets.sh`. Never edit by hand |
 
 ## 2. Geometry (symbol grid 320 × 160, centre x = 160, y = 80)
 
@@ -67,7 +69,7 @@ Approved pairings: cyan on ink · ink on cyan · deep on paper · white or black
 
 **Reduced motion:** static logo, 150 ms fade.
 
-**Splash hand-off:** the OS splash (Android 12 API / iOS LaunchScreen) shows the *complete* symbol, cyan on ink. The first Compose frame shows the same symbol in the same place. On a cold start into Welcome, the plates fly **out** and the bar is re-loaded (MOT-01). Returning users get a straight crossfade into Train home.
+**Splash hand-off:** the OS splash (Android SplashScreen API / iOS LaunchScreen) shows the *complete* symbol, 144 dp/pt wide, following system appearance: deep on paper by day, cyan on ink by night. The first Compose frame shows the same symbol in the same place. On a cold start into Welcome, the plates fly **out** and the bar is re-loaded (MOT-01). Returning users get a straight crossfade into Train home.
 
 ### Reuse inside the app (same parts, same springs)
 

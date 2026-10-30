@@ -18,6 +18,7 @@ dependencies {
     compileOnly(libs.detekt.gradlePlugin)
     compileOnly(libs.ktlint.gradlePlugin)
     detektPlugins(libs.compose.rules.detekt)
+    testImplementation(libs.kotlin.test)
 }
 
 // This module builds `repz.quality`, so it cannot apply it; ktlint and Detekt are configured here

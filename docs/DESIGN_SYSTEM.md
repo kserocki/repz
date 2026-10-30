@@ -195,6 +195,8 @@ Buttons are `full` at rest and morph to `medium` (hero: radius 22) on press (M3 
 
 ## 6. Spacing & layout
 
+Targets: phones only (iPhone only on iOS), **portrait only** on both platforms (ADR-0017). Wide-window layouts below apply to Android foldables/tablets where the system may ignore the lock.
+
 Spacing (4 dp grid): `xxs 2 · xs 4 · sm 8 · md 12 · lg 16 · xl 24 · xxl 32 · xxxl 48 · huge 64`.
 
 | Layout | dp |

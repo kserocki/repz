@@ -30,6 +30,7 @@ xcuserdata/
 DerivedData/
 *.xcuserstate
 Pods/
+mobile/iosApp/Configuration/Local.xcconfig
 
 # --- Node / API ---
 node_modules/

@@ -51,7 +51,7 @@ design/     git-ignored local design export
 - **Time and IDs:** inject `kotlin.time.Clock` and `IdGenerator`. Never call `Clock.System` or `Uuid.random()` directly in logic.
 - **Strings and i18n:** every user-facing text lives in Compose Resources (`strings.xml`, English default, `values-pl` for Polish). Never hard-code text in Kotlin, including content descriptions, notification texts and error messages. Adding a language must only mean adding a new `values-<lang>` folder, never a code change:
   - placeholders (`%1$s`, `%1$d`) instead of concatenating strings; `plurals` for anything counted (sets, reps, workouts); one key per full sentence, never sentence fragments glued together;
-  - the platform language lists are **generated from the `values-*` folders** (Android: AGP `generateLocaleConfig = true`; iOS: a Gradle task fills `CFBundleLocalizations`, set up in REP-11). The language picker reads that generated list. No `if (language == "pl")` anywhere in code;
+  - the platform language lists are **generated from `app:shared`'s `composeResources/values-*` folders** (the canonical set, ADR-0017; Android: AGP `generateLocaleConfig = true`; iOS: a Gradle task fills `CFBundleLocalizations`). Adding a language means adding one `values-<lang>` folder there (and matching folders in every module with strings), never a list edit. The language picker reads that generated list. No `if (language == "pl")` anywhere in code;
   - numbers, units, dates and durations are formatted with locale-aware formatters, never by hand (`82.5` / `82,5`);
   - layouts survive +30 % text length (buttons wrap, never truncate).
 - **Tests:** `commonTest`, kotlin.test + Turbine, hand-written fakes from `core:testing` (no mocking libraries). Name tests `given…_when…_then…`.
@@ -72,11 +72,11 @@ Run from `mobile/` unless noted. One-time setup: create the git-ignored `mobile/
 |---|---|---|
 | Full build (all targets, incl. Android lint and the Koin graph check) | `./gradlew build` | works |
 | Unit tests (Android host + iOS simulator) | `./gradlew allTests` | works |
-| Android debug APK / install | `./gradlew :app:android:assembleDebug` · `:app:android:installDebug` | builds; not launchable until REP-11 |
+| Android debug APK / install | `./gradlew :app:android:assembleDebug` · `:app:android:installDebug` | launchable (REP-11) |
 | Module list | `./gradlew projects` | works |
 | Style, static analysis, architecture tests | `./gradlew check` (ktlint, Detekt + Compose rules, Konsist, Android lint, unit tests) | works |
 | Auto-fix formatting | `./gradlew ktlintFormat` | works |
-| iOS app | open `mobile/iosApp/iosApp.xcodeproj` in Xcode | arrives with REP-11 |
+| iOS app | open `mobile/iosApp/iosApp.xcodeproj` in Xcode · `xcodebuild -project mobile/iosApp/iosApp.xcodeproj -scheme iosApp -destination 'generic/platform=iOS Simulator' build` | works (REP-11) |
 | API + DB | `docker compose up -d` (from the repo root) | arrives with REP-12 |
 | API dev / tests / lint | `cd api && pnpm dev` · `pnpm test` · `pnpm lint` | arrives with REP-12 |
 
