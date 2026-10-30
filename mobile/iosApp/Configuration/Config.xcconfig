@@ -23,7 +23,7 @@ SWIFT_APPROACHABLE_CONCURRENCY = YES
 // Direct integration of the static RepzShared framework (ADR-0017): the "Compile Kotlin
 // framework" run-script phase builds it into app/shared/build/xcode-frameworks/<CONFIGURATION>/
 // <SDK_NAME> via embedAndSignAppleFrameworkForXcode. Nothing is embedded (RepzShared is linked
-// statically straight into the app binary); the task only compiles, signs and exposes the klib.
+// statically straight into the app binary); the task only compiles, signs and exposes RepzShared.framework.
 FRAMEWORK_SEARCH_PATHS = $(SRCROOT)/../app/shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME) $(inherited)
 OTHER_LDFLAGS = -framework RepzShared $(inherited)
 

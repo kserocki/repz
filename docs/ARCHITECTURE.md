@@ -70,7 +70,7 @@ repz/
         └── settings/{api,impl}
 ```
 
-Identifiers: package / applicationId / bundle id **`com.repz.app`**. Minimum OS: **Android 10 (API 29)**, **iOS 18**.
+Identifiers: package / applicationId / bundle id **`com.repz.app`**. Minimum OS: **Android 10 (API 29)**, **iOS 18**. iPhone only; portrait lock on both platforms (ADR-0017).
 
 Why two separate app modules? With the current Android Gradle Plugin, the Android application module can no longer be the KMP module itself, so `app/android` is a thin shell and all shared code lives in `app/shared`.
 
