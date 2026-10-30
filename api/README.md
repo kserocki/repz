@@ -31,7 +31,7 @@ pnpm dev                      # http://localhost:3000, pretty-printed logs
 | `pnpm build`     | `tsc -p tsconfig.build.json`                                         | emits `dist/`           |
 | `pnpm typecheck` | `tsc --noEmit`                                                       | TypeScript 7, no emit   |
 | `pnpm test`      | `vitest run`                                                         | Vitest 5                |
-| `pnpm lint`      | `biome check .`                                                      | lint + format check     |
+| `pnpm lint`      | `biome check --error-on-warnings .`                                  | lint + format check     |
 | `pnpm lint:fix`  | `biome check --write .`                                              | auto-fixes what it can  |
 
 ## Environment variables
@@ -47,7 +47,7 @@ See `.env.example`. All variables are validated at boot by `src/env.ts` (Zod); t
 
 ## Database
 
-`docker-compose.yml` (repository root) starts Postgres 18.6 only; there is no API container yet (tracked as a follow-up issue). The connection is checked once at boot (`select 1`); if Postgres is unreachable, the process logs a fatal error (host only, never the full connection string) and calls `process.exit(1)`. Under `pnpm dev`, `node --watch` then waits for a file change before it tries again, instead of the terminal returning; use `pnpm build && pnpm start` to see the real exit code.
+`docker-compose.yml` (repository root) starts Postgres 18.6 only; there is no API container yet (tracked as REP-59). The connection is checked once at boot (`select 1`); if Postgres is unreachable, the process logs a fatal error (host only, never the full connection string) and calls `process.exit(1)`. Under `pnpm dev`, `node --watch` then waits for a file change before it tries again, instead of the terminal returning; use `pnpm build && pnpm start` to see the real exit code.
 
 There is no schema yet — `db/schema/`, migrations and seed data land in REP-13.
 
