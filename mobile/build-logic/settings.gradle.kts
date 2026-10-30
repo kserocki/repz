@@ -34,6 +34,12 @@ dependencyResolutionManagement {
     repositories {
         googleFiltered()
         mavenCentral()
+        // org.jlleitschuh.gradle:ktlint-gradle is published only to the Gradle Plugin Portal's
+        // own repository, not Maven Central.
+        exclusiveContent {
+            forRepository { gradlePluginPortal() }
+            filter { includeGroup("org.jlleitschuh.gradle") }
+        }
     }
 
     versionCatalogs {

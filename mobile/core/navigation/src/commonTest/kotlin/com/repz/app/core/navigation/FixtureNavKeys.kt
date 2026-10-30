@@ -15,18 +15,24 @@ import kotlinx.serialization.modules.plus
 data object FixtureTrainRoot : NavKey
 
 @Serializable
-data class FixtureWorkoutDetailsRoute(val workoutId: String, val setIndex: Int?) : NavKey
+data class FixtureWorkoutDetailsRoute(
+    val workoutId: String,
+    val setIndex: Int?,
+) : NavKey
 
-val fixtureFirstModuleNavKeySerializers = navKeySerializers {
-    subclass(FixtureTrainRoot::class, FixtureTrainRoot.serializer())
-    subclass(FixtureWorkoutDetailsRoute::class, FixtureWorkoutDetailsRoute.serializer())
-}
+val fixtureFirstModuleNavKeySerializers =
+    navKeySerializers {
+        subclass(FixtureTrainRoot::class, FixtureTrainRoot.serializer())
+        subclass(FixtureWorkoutDetailsRoute::class, FixtureWorkoutDetailsRoute.serializer())
+    }
 
 @Serializable
 data object FixtureHistoryRoot : NavKey
 
 @Serializable
-data class FixtureHistoryEntryRoute(val workoutId: String) : NavKey
+data class FixtureHistoryEntryRoute(
+    val workoutId: String,
+) : NavKey
 
 @Serializable
 data object FixtureExercisesRoot : NavKey
@@ -38,16 +44,19 @@ data object FixtureProfileRoot : NavKey
 data object FixtureAuthWelcomeRoute : NavKey
 
 @Serializable
-data class FixtureAuthLoginRoute(val prefillEmail: String? = null) : NavKey
+data class FixtureAuthLoginRoute(
+    val prefillEmail: String? = null,
+) : NavKey
 
-val fixtureSecondModuleNavKeySerializers = navKeySerializers {
-    subclass(FixtureHistoryRoot::class, FixtureHistoryRoot.serializer())
-    subclass(FixtureHistoryEntryRoute::class, FixtureHistoryEntryRoute.serializer())
-    subclass(FixtureExercisesRoot::class, FixtureExercisesRoot.serializer())
-    subclass(FixtureProfileRoot::class, FixtureProfileRoot.serializer())
-    subclass(FixtureAuthWelcomeRoute::class, FixtureAuthWelcomeRoute.serializer())
-    subclass(FixtureAuthLoginRoute::class, FixtureAuthLoginRoute.serializer())
-}
+val fixtureSecondModuleNavKeySerializers =
+    navKeySerializers {
+        subclass(FixtureHistoryRoot::class, FixtureHistoryRoot.serializer())
+        subclass(FixtureHistoryEntryRoute::class, FixtureHistoryEntryRoute.serializer())
+        subclass(FixtureExercisesRoot::class, FixtureExercisesRoot.serializer())
+        subclass(FixtureProfileRoot::class, FixtureProfileRoot.serializer())
+        subclass(FixtureAuthWelcomeRoute::class, FixtureAuthWelcomeRoute.serializer())
+        subclass(FixtureAuthLoginRoute::class, FixtureAuthLoginRoute.serializer())
+    }
 
 val fixtureCombinedNavKeySerializers = fixtureFirstModuleNavKeySerializers + fixtureSecondModuleNavKeySerializers
 

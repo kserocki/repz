@@ -16,5 +16,4 @@ object RepzApp
  * Starts the real dependency graph. [platformDeclaration] is where Android/iOS add platform-only
  * bindings (`androidContext(...)`, loggers); it stays a single function, no Swift-specific overload.
  */
-fun startRepzKoin(platformDeclaration: KoinAppDeclaration = {}): KoinApplication =
-    startKoin<RepzApp> { platformDeclaration() }
+fun startRepzKoin(platformDeclaration: KoinAppDeclaration = {}): KoinApplication = startKoin<RepzApp> { platformDeclaration() }

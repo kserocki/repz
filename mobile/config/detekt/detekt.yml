@@ -1,0 +1,135 @@
+# Overrides on top of Detekt's own defaults (`buildUponDefaultConfig: true` in `repz.quality`),
+# plus every rule from `io.nlopez.compose.rules:detekt` 0.6.8 at its documented default. Rule ids
+# and property names are taken from `./gradlew detektGenerateConfig` against detekt 2.0.0-alpha.6
+# (ADR-0009): both may change between alphas.
+
+style:
+  MaxLineLength:
+    active: true
+    maxLineLength: 140
+  MagicNumber:
+    active: true
+    # Already alpha.6's own default; pinned explicitly so design tokens (val md = 12.dp) keep
+    # passing even if a later alpha changes it.
+    ignorePropertyDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true
+  UnusedPrivateFunction:
+    active: true
+    # Needs type resolution (RequiresAnalysisApi), so it never runs in our plain, non-type-resolved
+    # detekt gate; inactive today is an accepted gap (user, 2026-10-29). ignoreAnnotated still
+    # documents the intent (private previews look unused) for when the gate gains type resolution.
+    ignoreAnnotated: ['Preview']
+
+complexity:
+  LongParameterList:
+    active: true
+    ignoreDefaultParameters: true
+
+naming:
+  TopLevelPropertyNaming:
+    active: true
+    # Default is upper snake case only ('[A-Z][_A-Z0-9]*'); widened to also accept PascalCase so
+    # CompositionLocals and @Preview-style top-level vals pass without forcing every existing
+    # UPPER_SNAKE_CASE constant (e.g. build-logic's ANDROID_HOST_TEST_RUNTIME_CLASSPATH) to rename.
+    constantPattern: '[A-Z][A-Za-z0-9_]*'
+  FunctionNaming:
+    active: true
+    # ignoreAnnotated is a generic key on every rule (dev.detekt.api.Config.Companion); Composables
+    # are PascalCase and are separately checked by compose-rules' ComposableNaming.
+    ignoreAnnotated: ['Composable']
+
+Compose:
+  ComposableAnnotationNaming:
+    active: true
+  ComposableNaming:
+    active: true
+  ComposableNestingDepth:
+    active: false
+  ComposableParamOrder:
+    active: true
+  CompositionLocalAllowlist:
+    active: true
+  CompositionLocalNaming:
+    active: true
+  ConditionHoist:
+    active: true
+  ContentEmitterReturningValues:
+    active: true
+  ContentSlotReused:
+    active: true
+  ContentTrailingLambda:
+    active: true
+  DefaultsVisibility:
+    active: true
+  InvalidReadOnlyComposable:
+    active: true
+  LambdaParameterEventTrailing:
+    active: true
+  LambdaParameterInRestartableEffect:
+    active: true
+  Material2:
+    active: false
+  MissingNonRestartableComposable:
+    active: true
+    # -- Ignore direct and custom @Preview composables (default: true)
+    # ignoresPreviews: true
+  MissingReadOnlyComposable:
+    active: true
+  ModifierClickableOrder:
+    active: true
+  ModifierComposed:
+    active: true
+  ModifierMissing:
+    active: true
+  ModifierNaming:
+    active: true
+  ModifierNotUsedAtRoot:
+    active: true
+  ModifierReused:
+    active: true
+  ModifierShouldBeForwardedToEveryBranch:
+    active: true
+  ModifierWithoutDefault:
+    active: true
+  MultipleEmitters:
+    active: true
+  MutableParams:
+    active: true
+  MutableStateAutoboxing:
+    active: true
+  MutableStateParam:
+    active: true
+  ParameterNaming:
+    active: true
+  PreviewAnnotationNaming:
+    active: true
+  PreviewNaming:
+    active: false
+  PreviewPublic:
+    active: true
+  RememberContentMissing:
+    active: true
+  RememberMissing:
+    active: true
+  StaleRememberUpdatedStateInRemember:
+    active: true
+  StateParam:
+    active: true
+  UnnecessaryComposable:
+    active: true
+  UnnecessaryLaunchedEffect:
+    active: true
+    # -- Calls whose dispatch or extension receiver has one of these fully qualified types keep LaunchedEffect.
+    # allowedCallReceiverTypes:
+    #   - androidx.compose.ui.focus.FocusRequester
+    # -- Calls whose fully qualified name is listed here keep LaunchedEffect.
+    # allowedCallNames:
+    #   - androidx.compose.ui.focus.FocusRequester.requestFocus
+  UnstableCollections:
+    active: false
+  VarsWithoutStateBacking:
+    active: true
+  ViewModelForwarding:
+    active: true
+  ViewModelInjection:
+    active: true

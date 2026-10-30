@@ -71,3 +71,5 @@ include(":feature:templates:api")
 include(":feature:templates:impl")
 include(":feature:settings:api")
 include(":feature:settings:impl")
+
+include(":konsist-tests")

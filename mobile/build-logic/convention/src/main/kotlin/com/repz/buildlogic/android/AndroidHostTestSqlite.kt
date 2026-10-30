@@ -21,7 +21,7 @@ internal fun Project.useJvmBundledSqliteInAndroidHostTests() {
                 .using(module("$SQLITE_BUNDLED_JVM_MODULE:$sqliteVersion"))
                 .because(
                     "sqlite-bundled ships Android-only natives; sqlite-bundled-jvm carries the " +
-                        "host JVM natives that testAndroidHostTest runs on."
+                        "host JVM natives that testAndroidHostTest runs on.",
                 )
         }
     }

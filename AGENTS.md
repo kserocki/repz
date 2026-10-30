@@ -31,7 +31,7 @@ design/     git-ignored local design export
 .claude/skills/  task playbooks (see §6)
 ```
 
-## 3. Non-negotiable architecture rules (Konsist enforces them in CI)
+## 3. Non-negotiable architecture rules (Konsist enforces rules 1–5 and 7 in `./gradlew check`; rule 7 heuristically, rule 6 by review)
 
 1. `core:domain` is pure Kotlin: no Room, Ktor, Compose, Koin or `androidx.*`.
 2. `feature:*:impl` never depends on another `feature:*:impl`. It navigates only via `feature:*:api` NavKeys.
@@ -74,7 +74,8 @@ Run from `mobile/` unless noted. One-time setup: create the git-ignored `mobile/
 | Unit tests (Android host + iOS simulator) | `./gradlew allTests` | works |
 | Android debug APK / install | `./gradlew :app:android:assembleDebug` · `:app:android:installDebug` | builds; not launchable until REP-11 |
 | Module list | `./gradlew projects` | works |
-| Style, static analysis, architecture tests | `./gradlew check` | runs today; ktlint, Detekt and Konsist join with REP-9 |
+| Style, static analysis, architecture tests | `./gradlew check` (ktlint, Detekt + Compose rules, Konsist, Android lint, unit tests) | works |
+| Auto-fix formatting | `./gradlew ktlintFormat` | works |
 | iOS app | open `mobile/iosApp/iosApp.xcodeproj` in Xcode | arrives with REP-11 |
 | API + DB | `docker compose up -d` (from the repo root) | arrives with REP-12 |
 | API dev / tests / lint | `cd api && pnpm dev` · `pnpm test` · `pnpm lint` | arrives with REP-12 |
@@ -110,7 +111,7 @@ Leadership (Opus 5.5): `atlas` (plans, splits work into packages), `coach` (code
 
 ## 8. Definition of done
 
-- `verify` skill passes: every gate that exists today (see §5). The compile-time Koin graph check already runs in `./gradlew build`; Detekt, ktlint, Konsist and the TS gates join as REP-9 and REP-12 land.
+- `verify` skill passes: every gate that exists today (see §5). `./gradlew check` and `./gradlew build` are green, with no baseline. The API gates are listed in §5.
 - New UI has previews for each state, light and dark, plus a PL string check.
 - New behaviour is covered by unit tests (domain + ViewModel).
 - Docs and ADRs are updated if behaviour or a decision changed.

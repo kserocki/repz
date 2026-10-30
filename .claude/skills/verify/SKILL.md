@@ -1,6 +1,6 @@
 ---
 name: verify
-description: Run the Repz quality gates before a commit or PR (today: Gradle build incl. Android lint and the compile-time Koin graph check, plus unit tests on the Android host and iOS simulator; later ktlint/Detekt/Konsist, TS lint/typecheck/tests and the OpenAPI contract as their issues land) and the pre-commit checklist. Use before every commit, when asked to check, or when finishing a task.
+description: Run the Repz quality gates before a commit or PR (mobile: ./gradlew check = ktlint, Detekt + Compose rules, Konsist architecture tests, Android lint, Koin graph, unit tests; API: lint, typecheck, test; later the OpenAPI contract and CI) and the pre-commit checklist. Use before every commit, when asked to check, or when finishing a task.
 ---
 
 # Verify
@@ -15,11 +15,13 @@ This also covers failures: if a gate fails for a reason you don't understand, or
 
 **Mobile** (from `mobile/`):
 ```bash
-./gradlew build      # all targets, incl. Android lint and the Koin graph check (works today)
-./gradlew allTests   # commonTest on the Android host + iOS simulator (works today)
+./gradlew check      # ktlint, Detekt + Compose rules, Konsist architecture tests, Android lint, unit tests
+./gradlew build      # all targets incl. the compile-time Koin graph check
+./gradlew allTests   # commonTest on the Android host + iOS simulator
+./gradlew ktlintFormat   # auto-fix formatting before committing
 ```
+No baselines and no blanket suppression: fix findings. A scoped suppression, or any new Konsist/Detekt/ktlint exclusion, needs the user's approval and a note in an ADR.
 Arriving later (don't invent substitutes; if you need them before they exist, say so):
-- REP-9: ktlint, Detekt + Compose rules and the Konsist architecture tests, wired into `./gradlew check` (which already runs, but without them).
 - REP-10: final CI task names.
 
 **API** (from `api/`, from REP-12 on):

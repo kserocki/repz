@@ -16,7 +16,9 @@ import org.koin.core.annotation.Module
 class KoinProbeConsumerModule
 
 @Factory
-class KoinProbeConsumer(val dependency: KoinProbeDependency)
+class KoinProbeConsumer(
+    val dependency: KoinProbeDependency,
+)
 
 @org.koin.core.annotation.KoinApplication(modules = [KoinProbeProviderModule::class, KoinProbeConsumerModule::class])
 object KoinProbeApp

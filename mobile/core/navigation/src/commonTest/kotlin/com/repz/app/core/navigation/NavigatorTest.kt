@@ -8,16 +8,19 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class NavigatorTest {
-
-    private val topLevelRoots: Map<TopLevelDestination, NavKey> = mapOf(
-        TopLevelDestination.Train to FixtureTrainRoot,
-        TopLevelDestination.History to FixtureHistoryRoot,
-        TopLevelDestination.Exercises to FixtureExercisesRoot,
-        TopLevelDestination.Profile to FixtureProfileRoot,
-    )
+    private val topLevelRoots: Map<TopLevelDestination, NavKey> =
+        mapOf(
+            TopLevelDestination.Train to FixtureTrainRoot,
+            TopLevelDestination.History to FixtureHistoryRoot,
+            TopLevelDestination.Exercises to FixtureExercisesRoot,
+            TopLevelDestination.Profile to FixtureProfileRoot,
+        )
     private val authRoot: NavKey = FixtureAuthWelcomeRoute
 
-    private fun navigator(isAuthenticated: Boolean, restoredState: NavigatorState? = null) = Navigator(
+    private fun navigator(
+        isAuthenticated: Boolean,
+        restoredState: NavigatorState? = null,
+    ) = Navigator(
         topLevelRoots = topLevelRoots,
         authRoot = authRoot,
         isAuthenticated = isAuthenticated,
@@ -71,7 +74,12 @@ class NavigatorTest {
         )
         navigator.selectTopLevel(TopLevelDestination.History)
         assertEquals(
-            listOf(FixtureTrainRoot, FixtureWorkoutDetailsRoute(workoutId = "w1", setIndex = null), FixtureHistoryRoot, FixtureHistoryEntryRoute(workoutId = "w1")),
+            listOf(
+                FixtureTrainRoot,
+                FixtureWorkoutDetailsRoute(workoutId = "w1", setIndex = null),
+                FixtureHistoryRoot,
+                FixtureHistoryEntryRoute(workoutId = "w1"),
+            ),
             navigator.visibleBackStack,
         )
     }
@@ -141,17 +149,19 @@ class NavigatorTest {
 
     @Test
     fun given_signedOutNavigatorWithDirtyTabs_whenOnSignedIn_thenAllTabsResetToRootAndTrainSelected() {
-        val dirtyState = NavigatorState(
-            isAuthenticated = false,
-            selectedDestination = TopLevelDestination.Profile,
-            topLevelBackStacks = mapOf(
-                TopLevelDestination.Train to listOf(FixtureTrainRoot, FixtureWorkoutDetailsRoute("w1", null)),
-                TopLevelDestination.History to listOf(FixtureHistoryRoot),
-                TopLevelDestination.Exercises to listOf(FixtureExercisesRoot),
-                TopLevelDestination.Profile to listOf(FixtureProfileRoot),
-            ),
-            authBackStack = listOf(FixtureAuthWelcomeRoute),
-        )
+        val dirtyState =
+            NavigatorState(
+                isAuthenticated = false,
+                selectedDestination = TopLevelDestination.Profile,
+                topLevelBackStacks =
+                    mapOf(
+                        TopLevelDestination.Train to listOf(FixtureTrainRoot, FixtureWorkoutDetailsRoute("w1", null)),
+                        TopLevelDestination.History to listOf(FixtureHistoryRoot),
+                        TopLevelDestination.Exercises to listOf(FixtureExercisesRoot),
+                        TopLevelDestination.Profile to listOf(FixtureProfileRoot),
+                    ),
+                authBackStack = listOf(FixtureAuthWelcomeRoute),
+            )
         val navigator = navigator(isAuthenticated = false, restoredState = dirtyState)
 
         navigator.onSignedIn()
@@ -224,17 +234,19 @@ class NavigatorTest {
 
     @Test
     fun given_signedOutStateWithAuthEntries_whenRestored_thenAuthStackAndSignedOutFlagAreRestored() {
-        val signedOutStateWithAuthEntries = NavigatorState(
-            isAuthenticated = false,
-            selectedDestination = TopLevelDestination.Train,
-            topLevelBackStacks = mapOf(
-                TopLevelDestination.Train to listOf(FixtureTrainRoot),
-                TopLevelDestination.History to listOf(FixtureHistoryRoot),
-                TopLevelDestination.Exercises to listOf(FixtureExercisesRoot),
-                TopLevelDestination.Profile to listOf(FixtureProfileRoot),
-            ),
-            authBackStack = listOf(FixtureAuthWelcomeRoute, FixtureAuthLoginRoute(prefillEmail = "a@b.com")),
-        )
+        val signedOutStateWithAuthEntries =
+            NavigatorState(
+                isAuthenticated = false,
+                selectedDestination = TopLevelDestination.Train,
+                topLevelBackStacks =
+                    mapOf(
+                        TopLevelDestination.Train to listOf(FixtureTrainRoot),
+                        TopLevelDestination.History to listOf(FixtureHistoryRoot),
+                        TopLevelDestination.Exercises to listOf(FixtureExercisesRoot),
+                        TopLevelDestination.Profile to listOf(FixtureProfileRoot),
+                    ),
+                authBackStack = listOf(FixtureAuthWelcomeRoute, FixtureAuthLoginRoute(prefillEmail = "a@b.com")),
+            )
 
         val navigator = navigator(isAuthenticated = true, restoredState = signedOutStateWithAuthEntries)
 
@@ -260,16 +272,18 @@ class NavigatorTest {
 
     @Test
     fun given_restoredStateMissingATab_whenConstructingNavigator_thenThatTabFallsBackToItsRoot() {
-        val stateMissingExercises = NavigatorState(
-            isAuthenticated = true,
-            selectedDestination = TopLevelDestination.Train,
-            topLevelBackStacks = mapOf(
-                TopLevelDestination.Train to listOf(FixtureTrainRoot),
-                TopLevelDestination.History to listOf(FixtureHistoryRoot),
-                TopLevelDestination.Profile to listOf(FixtureProfileRoot),
-            ),
-            authBackStack = listOf(FixtureAuthWelcomeRoute),
-        )
+        val stateMissingExercises =
+            NavigatorState(
+                isAuthenticated = true,
+                selectedDestination = TopLevelDestination.Train,
+                topLevelBackStacks =
+                    mapOf(
+                        TopLevelDestination.Train to listOf(FixtureTrainRoot),
+                        TopLevelDestination.History to listOf(FixtureHistoryRoot),
+                        TopLevelDestination.Profile to listOf(FixtureProfileRoot),
+                    ),
+                authBackStack = listOf(FixtureAuthWelcomeRoute),
+            )
 
         val navigator = navigator(isAuthenticated = true, restoredState = stateMissingExercises)
 
@@ -281,17 +295,19 @@ class NavigatorTest {
 
     @Test
     fun given_restoredStateWithAnEmptyTabStack_whenConstructingNavigator_thenThatTabFallsBackToItsRoot() {
-        val stateWithEmptyExercisesStack = NavigatorState(
-            isAuthenticated = true,
-            selectedDestination = TopLevelDestination.Train,
-            topLevelBackStacks = mapOf(
-                TopLevelDestination.Train to listOf(FixtureTrainRoot),
-                TopLevelDestination.History to listOf(FixtureHistoryRoot),
-                TopLevelDestination.Exercises to emptyList(),
-                TopLevelDestination.Profile to listOf(FixtureProfileRoot),
-            ),
-            authBackStack = listOf(FixtureAuthWelcomeRoute),
-        )
+        val stateWithEmptyExercisesStack =
+            NavigatorState(
+                isAuthenticated = true,
+                selectedDestination = TopLevelDestination.Train,
+                topLevelBackStacks =
+                    mapOf(
+                        TopLevelDestination.Train to listOf(FixtureTrainRoot),
+                        TopLevelDestination.History to listOf(FixtureHistoryRoot),
+                        TopLevelDestination.Exercises to emptyList(),
+                        TopLevelDestination.Profile to listOf(FixtureProfileRoot),
+                    ),
+                authBackStack = listOf(FixtureAuthWelcomeRoute),
+            )
 
         val navigator = navigator(isAuthenticated = true, restoredState = stateWithEmptyExercisesStack)
 
