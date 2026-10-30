@@ -4,7 +4,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class GenerateAndroidAppNameResourcesTaskTest {
-
     @Test
     fun givenTheDefaultLocaleTag_whenAndroidValuesDirectoryNameIsCalled_thenItMapsToValues() {
         assertEquals("values", androidValuesDirectoryName("en"))

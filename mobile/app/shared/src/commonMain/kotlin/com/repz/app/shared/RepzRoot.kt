@@ -23,7 +23,10 @@ fun RepzRoot(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun LaunchPlaceholder(darkTheme: Boolean, modifier: Modifier = Modifier) {
+private fun LaunchPlaceholder(
+    darkTheme: Boolean,
+    modifier: Modifier = Modifier,
+) {
     val backgroundColor = if (darkTheme) RepzBrandColors.Ink else RepzBrandColors.Paper
     Box(modifier = modifier.fillMaxSize().background(backgroundColor))
 }

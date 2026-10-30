@@ -26,9 +26,17 @@ private const val APP_NAME_RESOURCE = "app_name"
 private const val VALUES_PREFIX = "values"
 private val LANGUAGE_QUALIFIER = Regex("^[a-z]{2,3}$")
 private val REGION_QUALIFIER = Regex("^r([A-Z]{2})$")
-private val IGNORED_QUALIFIERS = setOf(
-    "light", "dark", "ldpi", "mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi",
-)
+private val IGNORED_QUALIFIERS =
+    setOf(
+        "light",
+        "dark",
+        "ldpi",
+        "mdpi",
+        "hdpi",
+        "xhdpi",
+        "xxhdpi",
+        "xxxhdpi",
+    )
 
 /**
  * Reads every `values[-qualifiers]/strings.xml` directly under [composeResourcesDirectory] and
@@ -47,10 +55,11 @@ private val IGNORED_QUALIFIERS = setOf(
  * default locale first, then the rest alphabetically by tag.
  */
 fun readAppLocales(composeResourcesDirectory: File): List<AppLocale> {
-    val directories = composeResourcesDirectory
-        .listFiles { file -> file.isDirectory && isValuesDirectoryName(file.name) }
-        .orEmpty()
-        .sortedBy { it.name }
+    val directories =
+        composeResourcesDirectory
+            .listFiles { file -> file.isDirectory && isValuesDirectoryName(file.name) }
+            .orEmpty()
+            .sortedBy { it.name }
 
     val locales = mutableListOf<AppLocale>()
     for (directory in directories) {
@@ -63,10 +72,11 @@ fun readAppLocales(composeResourcesDirectory: File): List<AppLocale> {
             )
         }
 
-        val appName = readAppName(directory)
-            ?: throw GradleException(
-                "Missing <string name=\"$APP_NAME_RESOURCE\"> in ${directory.name}/strings.xml",
-            )
+        val appName =
+            readAppName(directory)
+                ?: throw GradleException(
+                    "Missing <string name=\"$APP_NAME_RESOURCE\"> in ${directory.name}/strings.xml",
+                )
         locales += AppLocale(tag = tag, valuesDirectoryName = directory.name, appName = appName)
     }
 
@@ -77,8 +87,7 @@ fun readAppLocales(composeResourcesDirectory: File): List<AppLocale> {
 val Project.appLocalesSourceDirectory: Directory
     get() = rootProject.layout.projectDirectory.dir("app/shared/src/commonMain/composeResources")
 
-private fun isValuesDirectoryName(name: String): Boolean =
-    name == VALUES_PREFIX || name.startsWith("$VALUES_PREFIX-")
+private fun isValuesDirectoryName(name: String): Boolean = name == VALUES_PREFIX || name.startsWith("$VALUES_PREFIX-")
 
 /** `null` means "not a language declaration" (a theme/density variant): skip, not an error. */
 private fun resolveLocaleTag(directory: File): String? {
@@ -99,13 +108,18 @@ private fun resolveLocaleTag(directory: File): String? {
         }
     }
 
-    if (hasIgnoredQualifier) return null
-    val bareQualifiers = directory.name.removePrefix("$VALUES_PREFIX-")
-    val resolvedLanguage = language ?: throw unsupportedQualifier(bareQualifiers, directory)
-    return if (region != null) "$resolvedLanguage-$region" else resolvedLanguage
+    return when {
+        hasIgnoredQualifier -> null
+        language != null && region != null -> "$language-$region"
+        language != null -> language
+        else -> throw unsupportedQualifier(directory.name.removePrefix("$VALUES_PREFIX-"), directory)
+    }
 }
 
-private fun unsupportedQualifier(qualifier: String, directory: File): GradleException =
+private fun unsupportedQualifier(
+    qualifier: String,
+    directory: File,
+): GradleException =
     GradleException(
         "Unsupported resource qualifier '$qualifier' in ${directory.name}; " +
             "supported: language, rRegion, theme, density",
@@ -115,16 +129,18 @@ private fun readAppName(directory: File): String? {
     val stringsFile = File(directory, "strings.xml")
     if (!stringsFile.isFile) return null
 
-    val document = DocumentBuilderFactory.newInstance()
-        .apply { isNamespaceAware = false }
-        .newDocumentBuilder()
-        .parse(stringsFile)
+    val document =
+        DocumentBuilderFactory
+            .newInstance()
+            .apply { isNamespaceAware = false }
+            .newDocumentBuilder()
+            .parse(stringsFile)
 
     val stringElements = document.getElementsByTagName("string")
-    for (index in 0 until stringElements.length) {
-        val element = stringElements.item(index)
-        val name = element.attributes?.getNamedItem("name")?.nodeValue
-        if (name == APP_NAME_RESOURCE) return element.textContent.trim()
-    }
-    return null
+    return (0 until stringElements.length)
+        .asSequence()
+        .map { index -> stringElements.item(index) }
+        .firstOrNull { element -> element.attributes?.getNamedItem("name")?.nodeValue == APP_NAME_RESOURCE }
+        ?.textContent
+        ?.trim()
 }

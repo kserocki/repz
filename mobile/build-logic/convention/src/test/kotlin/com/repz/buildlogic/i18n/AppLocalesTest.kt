@@ -1,5 +1,6 @@
 package com.repz.buildlogic.i18n
 
+import org.gradle.api.GradleException
 import java.io.File
 import kotlin.io.path.createTempDirectory
 import kotlin.test.AfterTest
@@ -7,10 +8,8 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import org.gradle.api.GradleException
 
 class AppLocalesTest {
-
     private lateinit var composeResourcesDirectory: File
 
     @BeforeTest
@@ -130,7 +129,10 @@ class AppLocalesTest {
         assertEquals(listOf("en", "pl", "pt-BR"), locales.map { it.tag })
     }
 
-    private fun writeStrings(directoryName: String, appName: String) {
+    private fun writeStrings(
+        directoryName: String,
+        appName: String,
+    ) {
         val directory = File(composeResourcesDirectory, directoryName).apply { mkdirs() }
         File(directory, "strings.xml").writeText(
             """

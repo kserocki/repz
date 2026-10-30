@@ -21,7 +21,6 @@ import java.io.File
  */
 @CacheableTask
 abstract class GenerateIosAppLocalizationsTask : DefaultTask() {
-
     @get:InputDirectory
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val sourceDirectory: DirectoryProperty

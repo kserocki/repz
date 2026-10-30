@@ -27,7 +27,6 @@ import java.io.File
  */
 @CacheableTask
 abstract class GenerateAndroidAppNameResourcesTask : DefaultTask() {
-
     @get:InputDirectory
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val sourceDirectory: DirectoryProperty
@@ -60,10 +59,11 @@ abstract class GenerateAndroidAppNameResourcesTask : DefaultTask() {
  * `generateLocaleConfig` picks it up the same way it would a hand-written `res/values-*` folder.
  */
 fun Project.registerGenerateAndroidAppNameResources() {
-    val generateTask = tasks.register<GenerateAndroidAppNameResourcesTask>("generateAndroidAppNameResources") {
-        sourceDirectory.set(appLocalesSourceDirectory)
-        outputDirectory.set(layout.buildDirectory.dir("generated/androidAppNameResources"))
-    }
+    val generateTask =
+        tasks.register<GenerateAndroidAppNameResourcesTask>("generateAndroidAppNameResources") {
+            sourceDirectory.set(appLocalesSourceDirectory)
+            outputDirectory.set(layout.buildDirectory.dir("generated/androidAppNameResources"))
+        }
 
     extensions.getByType<ApplicationAndroidComponentsExtension>().onVariants { variant ->
         variant.sources.res?.addGeneratedSourceDirectory(
