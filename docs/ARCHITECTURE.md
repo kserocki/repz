@@ -441,6 +441,15 @@ The machine toolchain the mobile build is verified against (checked in REP-5):
 | Gradle | 9.8.2 | above Kotlin 2.4.21's tested 9.7.0 |
 | AGP | 9.4.0 | above Kotlin 2.4.21's tested 9.3.1; only the `Configuration.setVisible` deprecation observed |
 
+### CI runners
+
+The GitHub-hosted runners `.github/workflows/mobile.yml` and `api.yml` use, verified in REP-10 against `actions/runner-images`, the pinned action SHAs and GitHub docs:
+
+| Runner label | Used by | Toolchain | Notes |
+|---|---|---|---|
+| `ubuntu-24.04` | `mobile.yml`: `changes`, `android`, `brand-assets`, `mobile-ci-passed`. `api.yml`: `changes`, `api`, `api-ci-passed` | JDK 17 (temurin, via `actions/setup-java`); Android SDK at `ANDROID_HOME` with platform `android-37.0` (no install step, no `local.properties`); Node.js 26.13.0 from `api/.node-version` via `actions/setup-node` (`api` job only) | GA image (`ubuntu-latest` = 24.04 today); pinned explicitly so a label move never changes the toolchain silently |
+| `xcode-27` | `mobile.yml`: `ios` | macOS 27.0.1; Xcode 27.1 (27A9275) selected explicitly (`sudo xcode-select -s /Applications/Xcode_27.1.app`), matching the local build `iosApp.xcodeproj` was made with; JDK 17 (`JAVA_HOME_17_arm64`) | Public-preview image (`actions/runner-images` #14404); accepted despite preview status because it is the only image whose default Xcode is 27.1 |
+
 ### API
 
 Re-verified on npm, nodejs.org and Docker Hub on 2026-10-29 (REP-12).
