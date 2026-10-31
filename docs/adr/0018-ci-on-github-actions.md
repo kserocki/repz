@@ -20,4 +20,5 @@ Every gate from REP-9 and REP-12 ran only on a developer machine. The repo is pu
 ## Consequences
 - A red aggregate check blocks merging; reproduce it locally with the same command from `AGENTS.md` §5.
 - The `ios` job (~12 min cold) is the slowest and depends on a preview image that may queue. When `xcode-27` goes GA or Xcode changes, update the label, the `xcode-select` path and ARCHITECTURE §11 together.
-- Known gaps, proposed as follow-ups: Dependabot for action SHAs, SARIF upload for Detekt/lint, an iOS device link/archive job, `actionlint` in CI (today it runs locally: `docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.12`, configured by `.github/actionlint.yaml`, which declares the preview `xcode-27` label), and the OpenAPI diff (REP-17).
+- Known gaps, tracked as follow-ups: Dependabot for action SHAs (REP-62), SARIF upload for Detekt/lint (REP-63), an iOS device link/archive job (REP-64), `actionlint` in CI (REP-65; today it runs locally: `docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.12`, configured by `.github/actionlint.yaml`, which declares the preview `xcode-27` label) and the OpenAPI diff (REP-17).
+- That a docs-only PR skips the build jobs can only be shown after this workflow is on `main` (REP-66).
