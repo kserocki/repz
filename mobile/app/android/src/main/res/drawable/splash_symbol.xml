@@ -12,7 +12,7 @@
         android:scaleY="0.1824">
         <path
             android:name="bar"
-            android:fillColor="@color/splash_symbol"
+            android:fillColor="#FF00FF"
             android:pathData="M110,70 L210,70 A10 10 0 0 1 220,80 L220,80 A10 10 0 0 1 210,90 L110,90 A10 10 0 0 1 100,80 L100,80 A10 10 0 0 1 110,70 Z"/>
         <path
             android:name="plate-inner-left"
