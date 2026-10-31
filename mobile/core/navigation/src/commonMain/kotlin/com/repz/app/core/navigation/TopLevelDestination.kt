@@ -13,3 +13,5 @@ enum class TopLevelDestination {
     Exercises,
     Profile,
 }
+
+val   ciNegativeKtlintBreak=1

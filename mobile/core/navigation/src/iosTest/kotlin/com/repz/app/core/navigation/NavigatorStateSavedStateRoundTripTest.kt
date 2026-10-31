@@ -99,4 +99,9 @@ class NavigatorStateSavedStateRoundTripTest {
             decodeFromSavedState(NavigatorState.serializer(), savedState, configuration)
         }
     }
+
+    @Test
+    fun given_ciNegativeTest_whenRun_thenFails() {
+        kotlin.test.assertEquals(1, 2)
+    }
 }
