@@ -4,6 +4,7 @@ import type { Context, ErrorHandler, NotFoundHandler } from "hono";
 import { HTTPException } from "hono/http-exception";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 import type { AppEnv } from "./app-env.ts";
+import { ApplicationError } from "./application-error.ts";
 import { problemResponse } from "./problem-details.ts";
 
 function reasonPhrase(status: number): string {
@@ -24,8 +25,27 @@ export const notFoundHandler: NotFoundHandler<AppEnv> = (c) => {
 };
 
 export const errorHandler: ErrorHandler<AppEnv> = (error, c) => {
+  if (error instanceof ApplicationError) {
+    if (error.log) {
+      c.var.logger[error.log.level](error.log.fields, error.log.message);
+    }
+    return problemResponse(
+      c,
+      {
+        type: error.type,
+        title: error.title,
+        status: error.status,
+        instance: requestPath(c),
+      },
+      error.headers,
+    );
+  }
+
   if (error instanceof HTTPException) {
     const status = error.status;
+    if (status >= 500) {
+      c.var.logger.error({ err: error }, "HTTP exception");
+    }
     return problemResponse(c, {
       type: "about:blank",
       title: reasonPhrase(status),

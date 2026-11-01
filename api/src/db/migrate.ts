@@ -1,15 +1,17 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";
-import { loadEnv } from "../env.ts";
+import { loadEnv, migrationEnvSchema } from "../env.ts";
 import { createLogger } from "../shared/logger.ts";
 
 /**
  * Applies every committed migration to `DATABASE_URL`. A separate command from boot (ADR-0019):
  * no race between instances starting at once, and `/health` stays a pure liveness check.
  * Forward-only: migrations already on `main` are immutable, fixes are new migrations.
+ * Validated against `migrationEnvSchema`, not the full `envSchema`: migrating needs no
+ * `JWT_SECRET` (T6).
  */
-const env = loadEnv(process.env);
+const env = loadEnv(process.env, migrationEnvSchema);
 const logger = createLogger(env);
 const client = postgres(env.DATABASE_URL, {
   max: 1,

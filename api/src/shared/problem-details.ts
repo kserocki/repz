@@ -37,9 +37,11 @@ export type ProblemDetails = {
 export function problemResponse(
   c: Context<AppEnv>,
   problem: Omit<ProblemDetails, "requestId">,
+  headers?: Record<string, string>,
 ): Response {
   const body: ProblemDetails = { ...problem, requestId: c.var.requestId };
   return c.body(JSON.stringify(body), body.status, {
     "content-type": "application/problem+json",
+    ...headers,
   });
 }
