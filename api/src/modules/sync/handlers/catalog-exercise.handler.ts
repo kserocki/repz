@@ -2,8 +2,8 @@ import { toExercisePayload } from "./custom-exercise.handler.ts";
 import type { SyncHandler } from "./sync-handler.ts";
 
 /**
- * Read-only: the catalog is seeded (REP-16), never pushed to. Shares the `exercises` table with
- * `customExercise`, scoped to `owner_id IS NULL`.
+ * Read-only: the catalog is seeded by a separate importer, never pushed to. Shares the
+ * `exercises` table with `customExercise`, scoped to `owner_id IS NULL`.
  */
 export function createCatalogExerciseSyncHandler(): SyncHandler {
   return {

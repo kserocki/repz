@@ -32,7 +32,7 @@ function toTemplatePayload(aggregate: TemplateAggregate): TemplatePayload {
   };
 }
 
-/** Every `exerciseId` may be unknown or the caller's own, but never another user's (ADR-0020 §3.3). */
+/** Every `exerciseId` may be unknown or the caller's own, but never another user's (ADR-0020). */
 async function validateReferences(
   stores: SyncStores,
   userId: string,

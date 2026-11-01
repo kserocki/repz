@@ -54,7 +54,7 @@ function toWorkoutPayload(aggregate: WorkoutAggregate): WorkoutPayload {
 
 /**
  * `templateId` and every `exerciseId` may be unknown (dangling, created and deleted offline) or
- * the caller's own, live or tombstoned, but never another user's (ADR-0020 §3.3).
+ * the caller's own, live or tombstoned, but never another user's (ADR-0020).
  */
 async function validateReferences(
   stores: SyncStores,

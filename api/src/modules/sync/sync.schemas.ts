@@ -3,7 +3,7 @@ import { EQUIPMENT, MUSCLES, type Muscle, SET_TYPES } from "../../db/schema/voca
 import type { FieldError } from "./sync.types.ts";
 import { SYNC_TYPES } from "./sync.types.ts";
 
-// --- Limits (Q3 defaults) ---------------------------------------------------------------------
+// --- Limits ----------------------------------------------------------------------------------
 
 export const NAME_MAX = 100;
 export const NOTES_MAX = 2000;

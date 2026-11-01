@@ -27,8 +27,8 @@ export type UnitSystem = (typeof UNIT_SYSTEMS)[number];
 
 /**
  * The 12 muscle groups used for custom-exercise illustration fallbacks (design board 16).
- * Validated in Zod only for now (REP-15); the DB `CHECK` and the wger-to-this-list mapping for
- * catalog exercises arrive with the catalog seeder, which also extends this tuple if needed.
+ * Validated in Zod only for now; the DB `CHECK` and the wger-to-this-list mapping for catalog
+ * exercises arrive with the catalog seeder, which also extends this tuple if needed.
  */
 export const MUSCLES = [
   "chest",

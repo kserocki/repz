@@ -185,8 +185,8 @@ export type InMemorySyncStore = {
  * protocol-order test can assert they are the first calls. `savepoint` snapshots every table and
  * restores it on throw; `write` does the same for the whole batch on an unexpected error.
  *
- * As the REP-14 lesson says, this fake proves the protocol, not the database race — Spotter
- * proves the races on real Postgres.
+ * This fake proves the protocol, not the database race — Spotter proves the races on real
+ * Postgres.
  */
 export function createInMemorySyncStore(): InMemorySyncStore {
   let versionCounter = 0;

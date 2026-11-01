@@ -6,15 +6,15 @@ import { createTemplateSyncRepository } from "./handlers/template.repository.ts"
 import { createWorkoutSyncRepository } from "./handlers/workout.repository.ts";
 import type { SyncStores, SyncTransactions } from "./sync.types.ts";
 
-/** Namespace for the per-user exclusive write lock (ADR-0020 §3.2). */
+/** Namespace for the per-user exclusive write lock (ADR-0020). */
 export const SYNC_USER_WRITE_LOCK_SPACE = 2;
 /** Namespace for the catalog gate: shared by every push, exclusive for the catalog seeder. */
 export const SYNC_CATALOG_GATE_LOCK_SPACE = 3;
 
 /**
- * Exported for the catalog seeder (REP-16): it must take this exclusive lock as the first
- * statement of its own write transaction, so it waits for every in-flight push and blocks new
- * ones, and catalog versions never interleave with an in-flight user write.
+ * Exported for the catalog seeder: it must take this exclusive lock as the first statement of
+ * its own write transaction, so it waits for every in-flight push and blocks new ones, and
+ * catalog versions never interleave with an in-flight user write.
  */
 export async function lockCatalogSyncWrites(executor: DatabaseExecutor): Promise<void> {
   await executor.execute(
@@ -52,7 +52,7 @@ function storesFor(executor: DatabaseExecutor): SyncStores {
  * a Drizzle nested transaction (a real `SAVEPOINT`/`RELEASE`/`ROLLBACK TO` with the postgres-js
  * driver), so one item's constraint failure rolls back only that item. `readSnapshot` is
  * `REPEATABLE READ, READ ONLY`, needed so a pull's several per-table queries see one consistent
- * snapshot instead of each getting its own (ADR-0020 §3.2).
+ * snapshot instead of each getting its own (ADR-0020).
  */
 export function createSyncTransactions(db: PostgresJsDatabase<DatabaseSchema>): SyncTransactions {
   return {

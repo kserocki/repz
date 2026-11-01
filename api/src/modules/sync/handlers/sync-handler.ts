@@ -83,7 +83,7 @@ export function createSyncHandlerRegistry(handlers: SyncHandler[]): SyncHandlerR
 }
 
 /**
- * Shared decision-table plumbing for every `SyncWriter.apply` (ADR-0020 §3.3): reads the existing
+ * Shared decision-table plumbing for every `SyncWriter.apply` (ADR-0020): reads the existing
  * root `FOR UPDATE`, loads the stored aggregate and compares it to the incoming one only when the
  * outcome could possibly be "no write" (row 7) — never for a delete, a reject or a fresh insert —
  * then runs `decideChange` and performs the one repository call the decision calls for.
