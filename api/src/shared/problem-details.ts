@@ -33,9 +33,14 @@ export type ProblemDetails = {
   errors?: Array<{ path: string; message: string }>;
 };
 
-/** Writes a Problem Details response (RFC 9457), stamping the current request id. */
-export function problemResponse(
-  c: Context<AppEnv>,
+/**
+ * Writes a Problem Details response (RFC 9457), stamping the current request id. Generic over
+ * `E` (not fixed to `AppEnv`) so it works from routers with a wider env too, e.g.
+ * `AuthenticatedAppEnv` (`Context<AuthenticatedAppEnv>` is not assignable to `Context<AppEnv>`:
+ * Hono's `Context.set` makes it invariant in its env, not covariant).
+ */
+export function problemResponse<E extends AppEnv>(
+  c: Context<E>,
   problem: Omit<ProblemDetails, "requestId">,
   headers?: Record<string, string>,
 ): Response {

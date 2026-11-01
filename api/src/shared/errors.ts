@@ -11,7 +11,8 @@ function reasonPhrase(status: number): string {
   return STATUS_CODES[status] ?? "Error";
 }
 
-function requestPath(c: Context<AppEnv>): string {
+/** Generic over `E` so it also works from a router with a wider env, e.g. `AuthenticatedAppEnv`. */
+function requestPath<E extends AppEnv>(c: Context<E>): string {
   return new URL(c.req.url).pathname;
 }
 
@@ -68,12 +69,12 @@ export const errorHandler: ErrorHandler<AppEnv> = (error, c) => {
 /**
  * `OpenAPIHono` default validation hook: on a Zod failure, replies with
  * `urn:repz:problem:validation-error` and one `{ path, message }` entry per
- * issue, path prefixed by the validation target (e.g. "query.limit").
+ * issue, path prefixed by the validation target (e.g. "query.limit"). Generic over `E` for the
+ * same reason as `problemResponse`, so `createRouter<AuthenticatedAppEnv>()` can use it too.
  */
-export const validationErrorHook: Hook<unknown, AppEnv, string, Response | undefined> = (
-  result,
-  c,
-) => {
+export function validationErrorHook<E extends AppEnv = AppEnv>(
+  ...[result, c]: Parameters<Hook<unknown, E, string, Response | undefined>>
+): Response | undefined {
   if (result.success) {
     return undefined;
   }
@@ -90,4 +91,4 @@ export const validationErrorHook: Hook<unknown, AppEnv, string, Response | undef
     instance: requestPath(c),
     errors,
   });
-};
+}
