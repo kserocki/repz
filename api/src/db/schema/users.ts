@@ -34,6 +34,8 @@ export const refreshTokens = pgTable(
     createdAt: timestamp("created_at").notNull().defaultNow(),
     expiresAt: timestamp("expires_at").notNull(),
     revokedAt: timestamp("revoked_at"),
+    /** The token rotation created to replace this one once it was revoked (REP-14, §3.3). */
+    replacedBy: uuid("replaced_by"),
   },
   (t) => [
     foreignKey({
@@ -41,8 +43,17 @@ export const refreshTokens = pgTable(
       columns: [t.userId],
       foreignColumns: [users.id],
     }).onDelete("cascade"),
+    foreignKey({
+      name: "refresh_tokens_replaced_by_fkey",
+      columns: [t.replacedBy],
+      foreignColumns: [t.id],
+    }).onDelete("set null"),
     uniqueIndex("refresh_tokens_token_hash_key").on(t.tokenHash),
     index("refresh_tokens_user_id_idx").on(t.userId),
     index("refresh_tokens_family_id_idx").on(t.familyId),
+    check(
+      "refresh_tokens_replaced_by_check",
+      sql`${t.replacedBy} is null or ${t.revokedAt} is not null`,
+    ),
   ],
 );

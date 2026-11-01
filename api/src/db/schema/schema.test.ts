@@ -157,6 +157,28 @@ describe("child tables", () => {
   );
 });
 
+describe("refresh token rotation", () => {
+  it("given refreshTokens, then replaced_by is a nullable uuid", () => {
+    const replacedBy = column(refreshTokens, "replaced_by");
+
+    expect(replacedBy.notNull).toBe(false);
+    expect(replacedBy.columnType).toBe("PgUUID");
+  });
+
+  it("given refreshTokens, then replaced_by has a self-referencing FK that sets null on delete", () => {
+    const fk = foreignKeyOn(refreshTokens, "replaced_by");
+
+    expect(fk).toBeDefined();
+    expect(fk?.onDelete).toBe("set null");
+    expect(fk && tableName(fk.reference().foreignTable)).toBe(tableName(refreshTokens));
+    expect(fk?.reference().foreignColumns.map((c) => c.name)).toEqual(["id"]);
+  });
+
+  it("given refreshTokens, then the replaced_by check constraint exists", () => {
+    expect(() => check(refreshTokens, "refresh_tokens_replaced_by_check")).not.toThrow();
+  });
+});
+
 describe("vocabularies", () => {
   it("given the exercises equipment check, when read, then it matches EQUIPMENT", () => {
     expect(inListValues(check(exercises, "exercises_equipment_check"))).toEqual([...EQUIPMENT]);
