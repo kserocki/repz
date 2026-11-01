@@ -441,6 +441,15 @@ The machine toolchain the mobile build is verified against (checked in REP-5):
 | Gradle | 9.8.2 | above Kotlin 2.4.21's tested 9.7.0 |
 | AGP | 9.4.0 | above Kotlin 2.4.21's tested 9.3.1; only the `Configuration.setVisible` deprecation observed |
 
+### CI runners
+
+The GitHub-hosted runners `.github/workflows/mobile.yml` and `api.yml` use, verified in REP-10 against `actions/runner-images`, the pinned action SHAs and GitHub docs:
+
+| Runner label | Used by | Toolchain | Notes |
+|---|---|---|---|
+| `ubuntu-24.04` | `mobile.yml`: `changes`, `android`, `brand-assets`, `mobile-ci-passed`. `api.yml`: `changes`, `api`, `api-ci-passed` | JDK 17 (temurin, via `actions/setup-java`); Android SDK at `ANDROID_HOME` with platform `android-37.0` (no install step, no `local.properties`); Node.js 26.13.0 from `api/.node-version` via `actions/setup-node` (`api` job only) | GA image (`ubuntu-latest` = 24.04 today); pinned explicitly so a label move never changes the toolchain silently |
+| `xcode-27` | `mobile.yml`: `ios` | macOS 27.0.1; Xcode 27.1 (27A9275) selected explicitly (`sudo xcode-select -s /Applications/Xcode_27.1.app`), matching the local build `iosApp.xcodeproj` was made with; JDK 17 (`JAVA_HOME_17_arm64`) | Public-preview image (`actions/runner-images` #14404); accepted despite preview status because it is the only image whose default Xcode is 27.1 |
+
 ### API
 
 Re-verified on npm, nodejs.org and Docker Hub on 2026-10-29 (REP-12).
@@ -470,12 +479,14 @@ Re-verified on npm, nodejs.org and Docker Hub on 2026-10-29 (REP-12).
 
 | Gate | Tool | Where |
 |---|---|---|
-| Kotlin style | ktlint | `./gradlew check` (CI wiring: REP-10) |
-| Kotlin static analysis | Detekt + Compose rules | `./gradlew check` (CI wiring: REP-10) |
-| Architecture rules | Konsist (`:konsist-tests`, see §3 rules, naming: `*ViewModel`, `*UseCase` with single `invoke`, `*Screen` vs `*Content`) | `./gradlew check` (CI wiring: REP-10) |
-| DI graph | Koin Compiler Plugin, full-graph check at compile time | build |
-| Unit tests | `commonTest` on the Android host test (`testAndroidHostTest`) + iOS simulator (`iosSimulatorArm64Test`) | `./gradlew check` (CI wiring: REP-10) |
-| TS | Biome (`pnpm lint`), TypeScript 7 `tsc --noEmit` (`pnpm typecheck`), Vitest (`pnpm test`) | local now, CI with REP-10 |
+| Kotlin style | ktlint | `./gradlew check`; CI `mobile.yml` `android` job |
+| Kotlin static analysis | Detekt + Compose rules | `./gradlew check`; CI `mobile.yml` `android` job |
+| Architecture rules | Konsist (`:konsist-tests`, see §3 rules, naming: `*ViewModel`, `*UseCase` with single `invoke`, `*Screen` vs `*Content`) | `./gradlew check`; CI `mobile.yml` `android` job |
+| DI graph | Koin Compiler Plugin, full-graph check at compile time | build (incl. `assembleDebug` in CI) |
+| Unit tests | `commonTest` on the Android host test (`testAndroidHostTest`) + iOS simulator (`iosSimulatorArm64Test`) | `./gradlew check`; CI `mobile.yml` `android` job + `ios` job for `iosSimulatorArm64Test` |
+| TS | Biome (`pnpm lint`), TypeScript 7 `tsc --noEmit` (`pnpm typecheck`), Vitest (`pnpm test`) | `pnpm lint && pnpm typecheck && pnpm test && pnpm build`; CI `api.yml` |
+| iOS app build | `xcodebuild` simulator build, no signing | CI `mobile.yml` `ios` job |
+| Brand assets reproducible | `android_vectors.py` + `sync-brand-assets.sh`, then a clean `git status` | CI `mobile.yml` `brand-assets` job |
 
 Planned later (optional): Room DAO tests, Ktor `MockEngine` repository tests, sync conflict scenarios, backend Vitest + testcontainers, screenshot tests.
 
@@ -535,7 +546,7 @@ A plain Kotlin/JVM module, not a KMP one: it reads source **text** (via Konsist 
 
 ## 14. Decision log
 
-All decisions live in [`docs/adr/`](adr/) (ADR-0001 … ADR-0017). Add a new ADR for every decision that changes this document.
+All decisions live in [`docs/adr/`](adr/) (ADR-0001 … ADR-0018). Add a new ADR for every decision that changes this document.
 
 ## 15. Risks to verify in the first scaffold spike
 

@@ -10,7 +10,7 @@ You implement the work packages assigned to **Forge** in `.claude/work/REP-xx/pl
 
 ## You own
 `mobile/core/{common,domain,data,database,network,sync,datastore,navigation,ui,testing}` (commonMain + commonTest), ViewModels/UiState/Intent/Effect and use cases in `mobile/feature/*/impl` (non-UI packages), `mobile/feature/*/api`, `mobile/app/shared` wiring.
-Also yours (build tooling): `mobile/` root files (`settings.gradle.kts`, `build.gradle.kts`, `gradle.properties`, wrapper), `mobile/gradle/` incl. `libs.versions.toml`, `mobile/build-logic` build files and all non-Android convention plugins, and edits to `docs/ARCHITECTURE.md` §11 (versions).
+Also yours (build tooling): `mobile/` root files (`settings.gradle.kts`, `build.gradle.kts`, `gradle.properties`, wrapper), `mobile/gradle/` incl. `libs.versions.toml`, `mobile/build-logic` build files and all non-Android convention plugins, `.github/workflows/mobile.yml`, `.github/actionlint.yaml`, and edits to `docs/ARCHITECTURE.md` §11 (versions).
 Do not edit files outside your paths. If your package needs a change there, ask (QUESTION to Atlas) so the owner does it.
 
 ## Read first
@@ -51,3 +51,10 @@ The orchestrator routes it and resumes you with the answer. Who to ask:
 - Comment only non-obvious logic: 1–3 plain lines on what it does and how it behaves.
 - Never put ticket numbers in comments, except `// TODO(REP-xx): …` referencing an existing Linear issue.
 - Follow `AGENTS.md` (architecture rules §3, conventions §4).
+
+## Long-running commands (never block without a bound)
+Always:
+- pass the Bash `timeout` parameter to Gradle, `xcodebuild`, `pnpm`, `docker` and `ffmpeg` calls;
+- start emulators, simulators and dev servers in the background and poll with a bounded loop (e.g. 60×5 s), never with bare `adb wait-for-device`, `gh run watch` without a Bash `timeout`, or an interactive wait;
+- run the narrowest task that proves the point, and keep full builds for the final check;
+- commit as soon as each logical piece is verified, so a stall loses little work.

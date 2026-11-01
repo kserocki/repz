@@ -80,8 +80,12 @@ Run from `mobile/` unless noted. One-time setup: create the git-ignored `mobile/
 | Postgres for the API | `docker compose up -d` (from the repo root; needs Docker/OrbStack running) | works |
 | API setup / dev | `cd api && pnpm install` · `pnpm dev` (Node 26, `.env` from `.env.example`) | works |
 | API gates (from `api/`) | `pnpm lint` · `pnpm typecheck` · `pnpm test` · `pnpm build` | works |
+| Brand assets reproducible (from the repo root) | `python3 brand/logo/src/android_vectors.py && mobile/iosApp/scripts/sync-brand-assets.sh && git status --porcelain` (must print nothing) | works |
 
-Final command names for CI are fixed in REP-10. If a command you need is missing here, ask.
+**CI (GitHub Actions)** runs the same commands (ADR-0018):
+- `.github/workflows/mobile.yml`: `./gradlew check :app:android:assembleDebug` on Linux; `./gradlew iosSimulatorArm64Test compileKotlinIosArm64` and the `xcodebuild` simulator build on macOS (`xcode-27`); the brand-asset check.
+- `.github/workflows/api.yml`: `pnpm install --frozen-lockfile`, then the API gates.
+- Required checks on `main`: `Mobile CI passed` and `API CI passed`. Reproduce a CI failure locally with the same command. If a command you need is missing here, ask.
 
 ## 6. Skills (`.claude/skills/`)
 
@@ -112,7 +116,7 @@ Leadership (Opus 5.5): `atlas` (plans, splits work into packages), `coach` (code
 
 ## 8. Definition of done
 
-- `verify` skill passes: every gate that exists today (see §5). `./gradlew check` and `./gradlew build` are green, with no baseline. The API gates are listed in §5.
+- `verify` skill passes locally (see §5): `./gradlew check` and `./gradlew build` are green with no baseline, plus the API gates. Both CI checks (`Mobile CI passed`, `API CI passed`) are green on the PR.
 - New UI has previews for each state, light and dark, plus a PL string check.
 - New behaviour is covered by unit tests (domain + ViewModel).
 - Docs and ADRs are updated if behaviour or a decision changed.
