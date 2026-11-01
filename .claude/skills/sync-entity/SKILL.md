@@ -28,7 +28,7 @@ Read `docs/ARCHITECTURE.md` §5 and ADR-0002/0003 first. **The aggregate is the 
    - Register the handler in `app.ts`.
    - Every version write goes through `SyncTransactions.write` after `lockUserSyncWrites`; `decideChange` decides (delete wins, idempotent retries); pull returns `version > cursor` with tombstones as `payload: null`.
    - Tests: schema tests (limits, strict keys, duplicate child ids), handler mapping, service cases for every `decideChange` row that applies, the OpenAPI test (`sync.openapi.test.ts`), and a Spotter scenario on real Postgres.
-7. Update the OpenAPI schemas for push/pull (`new-endpoint` skill steps 1, 6).
+7. Export the OpenAPI contract and update the shared fixtures (`new-endpoint` skill step 6).
 
 ## Tests (must have)
 - Repository: write → entity + one coalesced outbox row; ten edits → still one row.
