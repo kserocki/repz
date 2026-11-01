@@ -5,8 +5,9 @@ import { users } from "./users.ts";
 import { EQUIPMENT, inVocabulary } from "./vocabularies.ts";
 
 /**
- * Sync root. `owner_id null` = global catalog row (seeded by REP-16), set = a user's custom
- * exercise. `isCustom` and `imageUrl` are derived at the API edge, never stored (ADR-0019 T11).
+ * Sync root. `owner_id null` = global catalog row (seeded by the catalog seeder), set = a
+ * user's custom exercise. `isCustom` and `imageUrl` are derived at the API edge, never stored
+ * (ADR-0019).
  */
 export const exercises = pgTable(
   "exercises",

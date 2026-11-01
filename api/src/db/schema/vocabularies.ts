@@ -4,7 +4,7 @@ import type { PgColumn } from "drizzle-orm/pg-core";
 /**
  * Closed vocabularies stored as `text` + `CHECK (col IN (...))` (ADR-0019), never `pgEnum`:
  * text + check can be extended or shrunk with an ordinary migration, a pg enum value can't be
- * removed. DB values are lowercase snake_case; the JSON wire format is REP-15/17's decision.
+ * removed. DB values are lowercase snake_case; the wire format is mapped at the API edge.
  */
 
 export const SET_TYPES = ["warmup", "normal", "drop", "failure"] as const;
@@ -25,10 +25,7 @@ export type Equipment = (typeof EQUIPMENT)[number];
 export const UNIT_SYSTEMS = ["kg", "lb"] as const;
 export type UnitSystem = (typeof UNIT_SYSTEMS)[number];
 
-/**
- * A single-quoted SQL string literal, for DDL contexts (`CHECK` constraints) where a bound
- * `$1` parameter placeholder — what `sql`${value}`` would produce — isn't valid.
- */
+/** Interpolating a value with `sql` produces a bound `$1`, which DDL such as `CHECK` can't use. */
 function sqlLiteral(value: string): SQL {
   return sql.raw(`'${value.replaceAll("'", "''")}'`);
 }

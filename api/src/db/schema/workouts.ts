@@ -18,7 +18,7 @@ import { inVocabulary, SET_TYPES } from "./vocabularies.ts";
 /**
  * Sync root. The server only ever holds finished workouts (ARCHITECTURE §5.4: the active
  * workout is local-only until it finishes), hence `finished_at NOT NULL`. No FK on
- * `template_id` (ADR-0019 T7): a workout can legitimately reference a template that was
+ * `template_id` (ADR-0019): a workout can legitimately reference a template that was
  * created and deleted offline before ever reaching the server.
  */
 export const workouts = pgTable(
@@ -44,7 +44,7 @@ export const workouts = pgTable(
   ],
 );
 
-/** No FK on `exercise_id` (ADR-0019 T7), same reasoning as `workouts.template_id`. */
+/** No FK on `exercise_id` (ADR-0019), same reasoning as `workouts.template_id`. */
 export const workoutExercises = pgTable(
   "workout_exercises",
   {

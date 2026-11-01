@@ -33,7 +33,7 @@ export const workoutTemplates = pgTable(
 
 /**
  * No `id` of its own (ARCHITECTURE §4): `(template_id, position)` is the primary key. No FK to
- * `exercise_id` (ADR-0019 T7): the aggregate is the unit of sync, and a template can reference a
+ * `exercise_id` (ADR-0019): the aggregate is the unit of sync, and a template can reference a
  * custom exercise that was created and deleted offline before ever reaching the server.
  */
 export const templateExercises = pgTable(

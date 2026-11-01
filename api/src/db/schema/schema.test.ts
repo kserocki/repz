@@ -41,6 +41,10 @@ function index(table: PgTable, name: string) {
   return getTableConfig(table).indexes.find((i) => i.config.name === name);
 }
 
+function tableName(table: PgTable): string {
+  return getTableConfig(table).name;
+}
+
 /** The literal values of a `col in ('a', 'b', ...)` check, in the order they were written. */
 function inListValues(checkSql: ReturnType<typeof check>): string[] {
   const { sql } = dialect.sqlToQuery(checkSql.value);
@@ -58,27 +62,24 @@ describe("syncable roots", () => {
     ["workouts", workouts],
   ];
 
-  it.each(roots)(
-    "given %s, when configured, then it has version, updatedAt and deletedAt",
-    (_name, table) => {
-      const version = column(table, "version");
-      const updatedAt = column(table, "updated_at");
-      const deletedAt = column(table, "deleted_at");
+  it.each(roots)("given %s, then it has version, updatedAt and deletedAt", (_name, table) => {
+    const version = column(table, "version");
+    const updatedAt = column(table, "updated_at");
+    const deletedAt = column(table, "deleted_at");
 
-      expect(version.notNull).toBe(true);
-      expect(version.columnType).toBe("PgBigInt53");
-      expect(version.hasDefault).toBe(true);
-      expect(
-        dialect.sqlToQuery(version.default as Parameters<typeof dialect.sqlToQuery>[0]).sql,
-      ).toContain("nextval('sync_version_seq')");
+    expect(version.notNull).toBe(true);
+    expect(version.columnType).toBe("PgBigInt53");
+    expect(version.hasDefault).toBe(true);
+    expect(
+      dialect.sqlToQuery(version.default as Parameters<typeof dialect.sqlToQuery>[0]).sql,
+    ).toContain("nextval('sync_version_seq')");
 
-      expect(updatedAt.notNull).toBe(true);
-      expect(updatedAt.getSQLType()).toBe(TIMESTAMPTZ_3);
+    expect(updatedAt.notNull).toBe(true);
+    expect(updatedAt.getSQLType()).toBe(TIMESTAMPTZ_3);
 
-      expect(deletedAt.notNull).toBe(false);
-      expect(deletedAt.getSQLType()).toBe(TIMESTAMPTZ_3);
-    },
-  );
+    expect(deletedAt.notNull).toBe(false);
+    expect(deletedAt.getSQLType()).toBe(TIMESTAMPTZ_3);
+  });
 
   const userScopedRoots: [string, PgTable, string][] = [
     ["workoutTemplates", workoutTemplates, "user_id"],
@@ -86,21 +87,23 @@ describe("syncable roots", () => {
   ];
 
   it.each(userScopedRoots)(
-    "given %s, when configured, then %s is not null with a cascading FK to users",
+    "given %s, then %s is not null with a cascading FK to users",
     (_name, table, columnName) => {
       expect(column(table, columnName).notNull).toBe(true);
 
       const fk = foreignKeyOn(table, columnName);
       expect(fk?.onDelete).toBe("cascade");
+      expect(fk && tableName(fk.reference().foreignTable)).toBe(tableName(users));
       expect(fk?.reference().foreignColumns.map((c) => c.name)).toEqual(["id"]);
     },
   );
 
-  it("given exercises, when configured, then owner_id is nullable with a cascading FK to users", () => {
+  it("given exercises, then owner_id is nullable with a cascading FK to users", () => {
     expect(column(exercises, "owner_id").notNull).toBe(false);
 
     const fk = foreignKeyOn(exercises, "owner_id");
     expect(fk?.onDelete).toBe("cascade");
+    expect(fk && tableName(fk.reference().foreignTable)).toBe(tableName(users));
     expect(fk?.reference().foreignColumns.map((c) => c.name)).toEqual(["id"]);
   });
 
@@ -111,7 +114,7 @@ describe("syncable roots", () => {
   ];
 
   it.each(rootScopeIndexes)(
-    "given %s, when configured, then it has a (scope, version) index",
+    "given %s, then it has a (scope, version) index",
     (_name, table, indexName) => {
       const idx = index(table, indexName);
 
@@ -122,20 +125,21 @@ describe("syncable roots", () => {
 });
 
 describe("child tables", () => {
-  const childrenWithCascadingParentFk: [string, PgTable, string][] = [
-    ["refreshTokens", refreshTokens, "user_id"],
-    ["templateExercises", templateExercises, "template_id"],
-    ["workoutExercises", workoutExercises, "workout_id"],
-    ["workoutSets", workoutSets, "workout_exercise_id"],
+  const childrenWithCascadingParentFk: [string, PgTable, string, PgTable][] = [
+    ["refreshTokens", refreshTokens, "user_id", users],
+    ["templateExercises", templateExercises, "template_id", workoutTemplates],
+    ["workoutExercises", workoutExercises, "workout_id", workouts],
+    ["workoutSets", workoutSets, "workout_exercise_id", workoutExercises],
   ];
 
   it.each(childrenWithCascadingParentFk)(
-    "given %s, when configured, then its parent FK cascades on delete",
-    (_name, table, columnName) => {
+    "given %s, then its parent FK cascades on delete",
+    (_name, table, columnName, parentTable) => {
       const fk = foreignKeyOn(table, columnName);
 
       expect(fk).toBeDefined();
       expect(fk?.onDelete).toBe("cascade");
+      expect(fk && tableName(fk.reference().foreignTable)).toBe(tableName(parentTable));
     },
   );
 
@@ -146,7 +150,7 @@ describe("child tables", () => {
   ];
 
   it.each(crossAggregateColumns)(
-    "given %s, when configured, then %s has no foreign key (cross-aggregate reference)",
+    "given %s, then %s has no foreign key (cross-aggregate reference)",
     (_name, table, columnName) => {
       expect(foreignKeyOn(table, columnName)).toBeUndefined();
     },
@@ -177,17 +181,14 @@ describe("timestamps", () => {
     ["workoutSets", workoutSets],
   ];
 
-  it.each(tables)(
-    "given %s, when configured, then every timestamp column is timestamptz(3)",
-    (_name, table) => {
-      const timestampColumns = getTableConfig(table).columns.filter(
-        (c) => c.columnType === "PgTimestamp",
-      );
+  it.each(tables)("given %s, then every timestamp column is timestamptz(3)", (_name, table) => {
+    const timestampColumns = getTableConfig(table).columns.filter(
+      (c) => c.columnType === "PgTimestamp",
+    );
 
-      expect(timestampColumns.length).toBeGreaterThan(0);
-      for (const timestampColumn of timestampColumns) {
-        expect(timestampColumn.getSQLType()).toBe(TIMESTAMPTZ_3);
-      }
-    },
-  );
+    expect(timestampColumns.length).toBeGreaterThan(0);
+    for (const timestampColumn of timestampColumns) {
+      expect(timestampColumn.getSQLType()).toBe(TIMESTAMPTZ_3);
+    }
+  });
 });
