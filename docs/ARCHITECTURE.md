@@ -185,7 +185,7 @@ sequenceDiagram
     Note over Engine: WorkManager / BGTask (network constraint)
     Engine->>DB: read outbox (batch)
     Engine->>API: POST /sync/push (aggregates)
-    API-->>Engine: accepted [id → newVersion]
+    API-->>Engine: accepted [id → version, deleted], rejected [id → problem]
     Engine->>DB: tx { set server_version; delete outbox rows }
     Engine->>API: GET /sync/pull?cursor=N
     API-->>Engine: changes (version > N), nextCursor, hasMore
@@ -200,7 +200,8 @@ sequenceDiagram
 - The server keeps one global Postgres sequence `sync_version_seq`. Every accepted write gets the next value.
 - **"Last write" means last write *to reach the server*.** We never trust client clocks, so clock skew cannot corrupt data.
 - When pulling, the client **skips** incoming changes for entities that still have a pending outbox entry. The local edit is pushed next and wins, which is consistent with arrival-order LWW.
-- **Delete wins:** once a tombstone exists on the server, a later upsert of that ID is ignored and the tombstone is returned on the next pull. This prevents "zombie" records.
+- **Delete wins:** once a tombstone exists on the server, a later upsert of that ID is ignored and the tombstone is returned on the next pull. This prevents "zombie" records. The push response also returns `deleted: true` for such an upsert, and the client **must apply it locally**: the pull may have skipped that tombstone while the edit was pending.
+- **Rejections are permanent** (`read-only`, `id-conflict`, `invalid-reference`, `validation-error`). The client keeps the local data, marks it "couldn't sync" and drops the outbox entry. A delete stays in the outbox until its undo snackbar is dismissed (user decision, ADR-0020).
 - **Active (unfinished) workout is local-only.** It enters the outbox when it is finished. This removes most of the realistic conflicts and avoids sync traffic during a session.
 
 ### 5.5 Initial sync (new device / reinstall)
@@ -348,10 +349,8 @@ api/src/
 ├── modules/
 │   ├── auth/      {routes, service, repository, schemas, errors}.ts + access-tokens, refresh-token, refresh-rotation (pure decideRefresh), password-hasher
 │   ├── users/     {routes, service, repository, schemas}.ts (GET/PATCH /me)
-│   └── sync/
-│       ├── sync.routes.ts
-│       ├── sync.service.ts
-│       └── handlers/        # SyncHandler per entity: workouts, templates, exercises
+│   └── sync/      {routes, service, schemas, types, errors}.ts, sync.decisions (pure decideChange), sync.repository (transactions, advisory locks)
+│       └── handlers/        # SyncHandler per type (workout, template, custom exercise, read-only catalog exercise) + one repository per aggregate
 └── shared/                  # app-env, router (OpenAPIHono factory), problem-details, errors (error handler), request-id, logger, request-logger, clock (injected time), application-error (typed errors → Problem Details), auth (`requireAuth` bearer middleware)
 ```
 
@@ -366,8 +365,8 @@ Layers: **routes** (HTTP + validation) → **service** (business rules) → **re
 | POST | `/auth/refresh` | public; `{ refreshToken }` → 200 `{ accessToken, refreshToken, expiresIn }`. **Rotation**: reusing a revoked token revokes the whole family (401 `invalid-refresh-token`), except a retry within the 30 s grace window (ADR-0011) |
 | POST | `/auth/logout` | public; `{ refreshToken }` → 204 always; revokes the token's family |
 | GET / PATCH | `/me` | bearer; → `User`. PATCH takes `displayName` and/or `unitSystem` (at least one); 401 `invalid-access-token` |
-| POST | `/sync/push` | `{ changes: [{ type, id, deleted, payload }] }` → `{ accepted: [{ id, version }] }` |
-| GET | `/sync/pull` | `?cursor=&limit=` → `{ changes, nextCursor, hasMore }` (includes global exercise catalog) |
+| POST | `/sync/push` | bearer; `{ changes: [{ type, id, deleted, payload }] }` (1–100 changes, ≤ 1 MiB) → 200 `{ accepted: [{ type, id, version, deleted }], rejected: [{ type, id, problem }] }`. A bad change rejects only itself (ADR-0020) |
+| GET | `/sync/pull` | bearer; `?cursor=0&limit=500` (1–500) → `{ changes: [{ type, id, version, deleted, updatedAt, payload }], nextCursor, hasMore, totalEstimate: { total, workout, template, exercise } }`. Includes the global exercise catalog; tombstones have `payload: null` |
 | GET | `/health` | liveness only (`200 {"status":"ok"}`); the DB is checked once at boot and the process exits if it is unreachable |
 
 **Exercise catalog:** imported from [wger.de](https://wger.de) (CC-BY-SA 4.0) by a one-off script into a **committed snapshot**. The seed is deterministic and there is no runtime dependency on wger. Attribution appears in the README and on the app's About screen. Catalog rows carry `license` and `author` fields.
@@ -379,7 +378,7 @@ Layers: **routes** (HTTP + validation) → **service** (business rules) → **re
 - **Offline:** Coil 3 disk cache. After the initial sync, a low-priority job prefetches all catalog images, so the library looks complete without network.
 - **Custom (user) exercises** get an illustration for their primary muscle group (about 12 generic illustrations in the same style, bundled in the app as Compose resources). Nothing is ever shown without an image.
 
-Every `/auth/*` response sends `Cache-Control: no-store`. Protected routes use `requireAuth` (`Authorization: Bearer <access token>`).
+Every `/auth/*` and `/sync/*` response sends `Cache-Control: no-store`. Protected routes use `requireAuth` (`Authorization: Bearer <access token>`).
 
 Errors use **RFC 9457 Problem Details** (`application/problem+json`) everywhere. `type` is `about:blank` for plain HTTP errors and `urn:repz:problem:<kebab-name>` for application errors (e.g. `urn:repz:problem:validation-error`). Every problem carries `requestId`, and validation errors add `errors: [{ path, message }]` (ADR-0016).
 
@@ -398,7 +397,7 @@ Conventions: ADR-0019. Schema source: `api/src/db/schema/`.
 | `workout_exercises` | `id`, `workout_id` + `position` (unique together), `exercise_id` (no FK), `notes` |
 | `workout_sets` | `id`, `workout_exercise_id` + `position` (unique together), `type`, `weight_grams bigint`, `reps`, `rpe numeric(3,1)`, `completed_at` |
 
-**Advisory-lock namespaces** (first argument of `pg_advisory_xact_lock(int4, int4)`): `1` = refresh-token family (`REFRESH_TOKEN_FAMILY_LOCK_SPACE` in `modules/auth/auth.repository.ts`, ADR-0011). A new lock picks the next free number and is listed here.
+**Advisory-lock namespaces** (first argument of `pg_advisory_xact_lock(int4, int4)`): `1` = refresh-token family (`REFRESH_TOKEN_FAMILY_LOCK_SPACE` in `modules/auth/auth.repository.ts`, ADR-0011); `2` = per-user sync writes and `3` = catalog gate (`SYNC_USER_WRITE_LOCK_SPACE`, `SYNC_CATALOG_GATE_LOCK_SPACE` in `modules/sync/sync.repository.ts`, ADR-0020). A new lock picks the next free number and is listed here.
 
 Every root table has `version bigint` (default `nextval('sync_version_seq')`, set again on every update), `updated_at`, `deleted_at` and a `(user_id | owner_id, version)` index. Children cascade from their root; there are no foreign keys between aggregates. A push of an aggregate replaces its children in one transaction.
 
@@ -564,7 +563,7 @@ A plain Kotlin/JVM module, not a KMP one: it reads source **text** (via Konsist 
 
 ## 14. Decision log
 
-All decisions live in [`docs/adr/`](adr/) (ADR-0001 … ADR-0019). Add a new ADR for every decision that changes this document.
+All decisions live in [`docs/adr/`](adr/) (ADR-0001 … ADR-0020). Add a new ADR for every decision that changes this document.
 
 ## 15. Risks to verify in the first scaffold spike
 

@@ -77,6 +77,14 @@ See `docs/ARCHITECTURE.md` §10.3 and ADR-0011 (with its REP-14 amendment) for t
 - **Reuse detection, relaxed by a grace window:** presenting an already-rotated token revokes every live token in its family (a stolen-token signal). A token rotated less than `REFRESH_TOKEN_REUSE_GRACE_SECONDS` ago whose direct successor is still live is treated as a retried or concurrent refresh instead: it gets a new sibling pair in the same family, and the original successor stays live. This absorbs a client retrying after a lost response, or two parallel requests from the app (e.g. the UI and a background sync worker) refreshing at once, without signing the user out. `REFRESH_TOKEN_REUSE_GRACE_SECONDS=0` disables it (strict detection).
 - Passwords are hashed with argon2id (`@node-rs/argon2`, OWASP's first recommended configuration: 19 MiB, 2 passes, 1 thread).
 
+## Sync
+
+`POST /sync/push` and `GET /sync/pull` (bearer token, `Cache-Control: no-store`) implement the offline-first protocol from ADR-0002, ADR-0003 and ADR-0020:
+
+- **Push** takes 1–100 changes (`{ type, id, deleted, payload }`, at most 1 MiB) and answers `{ accepted, rejected }`. A bad change rejects only itself (`validation-error`, `read-only`, `id-conflict`, `invalid-reference`), never the batch. Delete wins: an upsert of a tombstoned id comes back as `deleted: true`. A retry with an identical payload keeps the same version.
+- **Pull** returns changes with `version > cursor`, ordered by version (`limit` 1–500, default 500). It includes the global exercise catalog, sends tombstones with `payload: null` and reports `totalEstimate` per type.
+- **Ordering guarantee:** every push takes a per-user advisory lock (plus a shared catalog gate) before it writes, and every pull reads one `REPEATABLE READ` snapshot. A cursor therefore never skips a version that commits later. Code that assigns versions must go through `SyncTransactions.write` after `lockUserSyncWrites`.
+
 ## Database
 
 `docker-compose.yml` (repository root) starts Postgres 18.6 only, bound to `127.0.0.1:5432` (not reachable from other machines on the network); there is no API container yet (tracked as REP-59). The connection is checked once at boot (`select 1`); if Postgres is unreachable, the process logs a fatal error (host only, never the full connection string) and calls `process.exit(1)`. Under `pnpm dev`, `node --watch` then waits for a file change before it tries again, instead of the terminal returning; use `pnpm build && pnpm start` to see the real exit code.

@@ -19,7 +19,7 @@ Read `docs/ARCHITECTURE.md` §5 and ADR-0002/0003 first. **The aggregate is the 
 5. **DTO:** the payload DTO in `core:network` plus a fixture.
 
 ## Server (api)
-6. Drizzle tables (root + children) with the sync columns. A `SyncHandler` in `src/modules/sync/handlers/`: upsert replaces children in one transaction and assigns `nextval('sync_version_seq')`; **delete wins** (ignore upserts for tombstoned ids); the pull query returns rows with `version > cursor`.
+6. Drizzle tables (root + children) with the sync columns (ADR-0019). Add the type to `SYNC_TYPES`, a payload schema in `sync.schemas.ts`, an `<entity>.repository.ts` and an `<entity>.handler.ts` in `src/modules/sync/handlers/`, and register the handler in the registry. Follow ADR-0020: every version write goes through `SyncTransactions.write` after `lockUserSyncWrites`; replace children on every write; tombstoning deletes children; `decideChange` decides (delete wins, idempotent retries); pull returns `version > cursor` with tombstones as `payload: null`.
 7. Update the OpenAPI schemas for push/pull (`new-endpoint` skill steps 1, 6).
 
 ## Tests (must have)
