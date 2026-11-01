@@ -23,8 +23,8 @@ const WORKOUT_PKEY_CONSTRAINTS = new Set([
 /**
  * `insert`/`replace` write client-given child ids, which are global primary keys: a collision
  * (this root's own id race, or a child id already used under a different root) raises 23505 on
- * one of these three constraints. Anything else propagates and fails the whole push item's
- * savepoint with a 500, per ADR-0020.
+ * one of these three constraints. Anything else propagates out of the savepoint and rolls back
+ * the whole push with a 500, per ADR-0020.
  */
 function mapUniqueViolation(error: unknown): never {
   const cause = error instanceof Error ? (error.cause ?? error) : error;

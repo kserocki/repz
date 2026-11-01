@@ -181,6 +181,16 @@ describe("GET /sync/pull", () => {
     expect(res.headers.get("cache-control")).toBe("no-store");
   });
 
+  it("given an invalid bearer token, when pulled, then it responds 401", async () => {
+    const { app } = createTestApp();
+
+    const res = await pull(app, "not-a-jwt");
+
+    expect(res.status).toBe(401);
+    const body = await readJson(res);
+    expect(body.type).toBe("urn:repz:problem:invalid-access-token");
+  });
+
   it("given a valid token and no query, when pulled, then it responds 200 with a response matching PullResponseSchema", async () => {
     const { app } = createTestApp();
     const token = await registerAndGetAccessToken(app);

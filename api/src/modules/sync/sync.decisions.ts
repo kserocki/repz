@@ -1,3 +1,4 @@
+import type { SyncRejectionProblem } from "./sync.errors.ts";
 import type { RootState } from "./sync.types.ts";
 
 export type SyncDecision =
@@ -5,7 +6,7 @@ export type SyncDecision =
   | { action: "replace" }
   | { action: "tombstone" }
   | { action: "none"; version: number | null; deleted: boolean }
-  | { action: "reject"; problem: "read-only" | "id-conflict" };
+  | { action: "reject"; problem: Exclude<SyncRejectionProblem, "invalid-reference"> };
 
 /**
  * Pure decision function for one push item (ADR-0020's decision table), evaluated after payload

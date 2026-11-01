@@ -145,6 +145,99 @@ describe("WorkoutPayloadSchema", () => {
   it("given an empty name, when parsed, then it is rejected", () => {
     expect(WorkoutPayloadSchema.safeParse(baseWorkout({ name: "   " })).success).toBe(false);
   });
+
+  it("given two exercises with the same id, when parsed, then it is rejected with a path at the duplicate", () => {
+    const duplicateId = WORKOUT_EXERCISE_ID;
+    const result = WorkoutPayloadSchema.safeParse(
+      baseWorkout({
+        exercises: [
+          { id: duplicateId, exerciseId: EXERCISE_ID, notes: "", sets: [] },
+          { id: duplicateId, exerciseId: EXERCISE_ID, notes: "", sets: [] },
+        ],
+      }),
+    );
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({ path: ["exercises", 1, "id"] }),
+      );
+    }
+  });
+
+  it("given two sets sharing an id within the same exercise, when parsed, then it is rejected with a path at the duplicate", () => {
+    const duplicateSetId = SET_ID;
+    const result = WorkoutPayloadSchema.safeParse(
+      baseWorkout({
+        exercises: [
+          {
+            id: WORKOUT_EXERCISE_ID,
+            exerciseId: EXERCISE_ID,
+            notes: "",
+            sets: [baseSet({ id: duplicateSetId }), baseSet({ id: duplicateSetId })],
+          },
+        ],
+      }),
+    );
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({ path: ["exercises", 0, "sets", 1, "id"] }),
+      );
+    }
+  });
+
+  it("given two sets sharing an id across different exercises, when parsed, then it is rejected with a path at the duplicate", () => {
+    const duplicateSetId = SET_ID;
+    const result = WorkoutPayloadSchema.safeParse(
+      baseWorkout({
+        exercises: [
+          {
+            id: WORKOUT_EXERCISE_ID,
+            exerciseId: EXERCISE_ID,
+            notes: "",
+            sets: [baseSet({ id: duplicateSetId })],
+          },
+          {
+            id: "b6e6b6a0-2222-4a22-8a33-000000000099",
+            exerciseId: EXERCISE_ID,
+            notes: "",
+            sets: [baseSet({ id: duplicateSetId })],
+          },
+        ],
+      }),
+    );
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({ path: ["exercises", 1, "sets", 0, "id"] }),
+      );
+    }
+  });
+
+  it("given distinct exercise and set ids throughout, when parsed, then it is accepted", () => {
+    const result = WorkoutPayloadSchema.safeParse(
+      baseWorkout({
+        exercises: [
+          {
+            id: WORKOUT_EXERCISE_ID,
+            exerciseId: EXERCISE_ID,
+            notes: "",
+            sets: [
+              baseSet({ id: SET_ID }),
+              baseSet({ id: "b6e6b6a0-2222-4a22-8a33-000000000098" }),
+            ],
+          },
+          {
+            id: "b6e6b6a0-2222-4a22-8a33-000000000099",
+            exerciseId: EXERCISE_ID,
+            notes: "",
+            sets: [baseSet({ id: "b6e6b6a0-2222-4a22-8a33-000000000097" })],
+          },
+        ],
+      }),
+    );
+    expect(result.success).toBe(true);
+  });
 });
 
 describe("TemplatePayloadSchema", () => {
@@ -185,6 +278,18 @@ describe("TemplatePayloadSchema", () => {
     const result = TemplatePayloadSchema.safeParse(
       baseTemplate({
         exercises: [{ exerciseId: EXERCISE_ID, targetSets: 3, targetReps: null, restSeconds: 60 }],
+      }),
+    );
+    expect(result.success).toBe(true);
+  });
+
+  it("given the same exerciseId referenced twice, when parsed, then it is accepted (a template exercise has no id of its own, position is the key)", () => {
+    const result = TemplatePayloadSchema.safeParse(
+      baseTemplate({
+        exercises: [
+          { exerciseId: EXERCISE_ID, targetSets: 3, targetReps: null, restSeconds: 60 },
+          { exerciseId: EXERCISE_ID, targetSets: 5, targetReps: null, restSeconds: 90 },
+        ],
       }),
     );
     expect(result.success).toBe(true);
@@ -317,5 +422,9 @@ describe("PushRequestSchema envelope rules", () => {
     expect(PushRequestSchema.safeParse({ changes: [change({ extra: "nope" })] }).success).toBe(
       false,
     );
+  });
+
+  it("given an unknown top-level key on the envelope itself, when parsed, then it is rejected (strict object)", () => {
+    expect(PushRequestSchema.safeParse({ changes: [change()], extra: "nope" }).success).toBe(false);
   });
 });

@@ -1,6 +1,6 @@
 import { z } from "@hono/zod-openapi";
 import { EQUIPMENT, MUSCLES, type Muscle, SET_TYPES } from "../../db/schema/vocabularies.ts";
-import type { FieldError } from "./sync.types.ts";
+import type { FieldError, SyncType } from "./sync.types.ts";
 import { SYNC_TYPES } from "./sync.types.ts";
 
 // --- Limits ----------------------------------------------------------------------------------
@@ -101,6 +101,36 @@ export const WorkoutPayloadSchema = z
       path: ["finishedAt"],
     },
   )
+  .superRefine((workout, ctx) => {
+    // Exercise and child-set ids are client-chosen but become global primary keys once stored,
+    // so a duplicate here must fail as a payload fault (validation-error with a path), never
+    // reach the database and come back as the unrelated id-conflict problem.
+    const seenExerciseIds = new Set<string>();
+    workout.exercises.forEach((exercise, exerciseIndex) => {
+      if (seenExerciseIds.has(exercise.id)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["exercises", exerciseIndex, "id"],
+          message: "Duplicate exercise id within this workout",
+        });
+      }
+      seenExerciseIds.add(exercise.id);
+    });
+
+    const seenSetIds = new Set<string>();
+    workout.exercises.forEach((exercise, exerciseIndex) => {
+      exercise.sets.forEach((set, setIndex) => {
+        if (seenSetIds.has(set.id)) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["exercises", exerciseIndex, "sets", setIndex, "id"],
+            message: "Duplicate set id within this workout",
+          });
+        }
+        seenSetIds.add(set.id);
+      });
+    });
+  })
   .openapi("WorkoutPayload", {
     example: {
       templateId: "b6e6b6a0-4444-4a22-8a33-000000000001",
@@ -280,6 +310,7 @@ const PushChangePayloadSchema = z
       { $ref: "#/components/schemas/WorkoutPayload" },
       { $ref: "#/components/schemas/TemplatePayload" },
       { $ref: "#/components/schemas/CustomExercisePayload" },
+      { type: "null" },
     ],
   });
 
@@ -313,7 +344,7 @@ const PushChangeSchema = z
   });
 
 export const PushRequestSchema = z
-  .object({ changes: z.array(PushChangeSchema).min(1).max(PUSH_MAX_CHANGES) })
+  .strictObject({ changes: z.array(PushChangeSchema).min(1).max(PUSH_MAX_CHANGES) })
   .superRefine((body, ctx) => {
     const seen = new Set<string>();
     body.changes.forEach((change, index) => {
@@ -451,13 +482,15 @@ export const SyncChangeSchema = z
     },
   });
 
+const countField = z.number().int().min(0);
+
+/** One bucket per `SyncType` plus the grand total, so a new type needs no edit here. */
+const totalEstimateByType = Object.fromEntries(
+  SYNC_TYPES.map((type) => [type, countField]),
+) as Record<SyncType, typeof countField>;
+
 const TotalEstimateSchema = z
-  .object({
-    total: z.number().int().min(0),
-    workout: z.number().int().min(0),
-    template: z.number().int().min(0),
-    exercise: z.number().int().min(0),
-  })
+  .object({ total: countField, ...totalEstimateByType })
   .openapi("TotalEstimate", {
     example: { total: 1300, workout: 1000, template: 20, exercise: 280 },
   });

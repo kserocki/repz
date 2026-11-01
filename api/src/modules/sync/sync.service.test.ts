@@ -89,6 +89,33 @@ describe("sync.service push: protocol order", () => {
     expect(result.rejected[0]?.problem.type).toBe("urn:repz:problem:validation-error");
     expect(store.recordedCalls()).toEqual([]);
   });
+
+  it("given a delete-only push, when it runs, then the two lock calls still come first", async () => {
+    const { store, service } = harness();
+    await service.push(USER_A, [upsert("workout", "w1", workoutPayload())]);
+    const callsBeforeDelete = store.recordedCalls().length;
+
+    await service.push(USER_A, [remove("workout", "w1")]);
+
+    const deleteCalls = store.recordedCalls().slice(callsBeforeDelete);
+    expect(deleteCalls.slice(0, 2)).toEqual(["locks:lockSharedCatalogGate", "locks:lockUserWrite"]);
+  });
+
+  it("given a mixed batch of a valid and an invalid item, when it runs, then the lock is still taken for the valid item", async () => {
+    const { store, service } = harness();
+
+    const result = await service.push(USER_A, [
+      upsert("workout", "w1", { not: "a workout" }),
+      upsert("workout", "w2", workoutPayload()),
+    ]);
+
+    expect(result.accepted.map((item) => item.id)).toEqual(["w2"]);
+    expect(result.rejected.map((item) => item.id)).toEqual(["w1"]);
+    expect(store.recordedCalls().slice(0, 2)).toEqual([
+      "locks:lockSharedCatalogGate",
+      "locks:lockUserWrite",
+    ]);
+  });
 });
 
 describe("sync.service push: decision table outcomes", () => {
@@ -102,7 +129,7 @@ describe("sync.service push: decision table outcomes", () => {
     ]);
   });
 
-  it("given a workout that references a catalog exercise, when pushed as a custom exercise push targeting that id, then it is rejected read-only", async () => {
+  it("given a push targeting a catalog exercise's id, when pushed, then it is rejected read-only", async () => {
     const { store, service } = harness();
     store.seedCatalogExercise("catalog-1", {
       name: "Bench press",
@@ -367,6 +394,49 @@ describe("sync.service push: savepoint isolation", () => {
     expect(result.accepted.map((item) => item.id)).toEqual(["w1", "w2"]);
     expect(result.rejected.map((item) => item.id)).toEqual(["shared"]);
   });
+
+  it("given user B's workout reuses user A's child (exercise) id, when pushed, then B's item is rejected id-conflict, siblings are accepted, and A's row is untouched", async () => {
+    const { store, service } = harness();
+    const SHARED_EXERCISE_ID = "b6e6b6a0-2222-4a22-8a33-00000000aaaa";
+    const EXERCISE_REF = "b6e6b6a0-3333-4a22-8a33-000000000001";
+
+    const aResult = await service.push(USER_A, [
+      upsert(
+        "workout",
+        "a-workout",
+        workoutPayload({
+          exercises: [{ id: SHARED_EXERCISE_ID, exerciseId: EXERCISE_REF, notes: "", sets: [] }],
+        }),
+      ),
+    ]);
+    const aVersion = aResult.accepted[0]?.version;
+
+    const bResult = await service.push(USER_B, [
+      upsert("workout", "b-workout-1", workoutPayload()),
+      upsert(
+        "workout",
+        "b-workout-2",
+        workoutPayload({
+          exercises: [{ id: SHARED_EXERCISE_ID, exerciseId: EXERCISE_REF, notes: "", sets: [] }],
+        }),
+      ),
+      upsert("workout", "b-workout-3", workoutPayload()),
+    ]);
+
+    expect(bResult.accepted.map((item) => item.id)).toEqual(["b-workout-1", "b-workout-3"]);
+    expect(bResult.rejected).toEqual([
+      {
+        type: "workout",
+        id: "b-workout-2",
+        problem: { type: "urn:repz:problem:id-conflict", title: "Id Conflict" },
+      },
+    ]);
+
+    const aRow = store.rows("workouts").find((row) => row.id === "a-workout");
+    const aAggregate = aRow?.aggregate as { exercises: Array<{ id: string }> } | undefined;
+    expect(aAggregate?.exercises[0]?.id).toBe(SHARED_EXERCISE_ID);
+    expect(aRow?.version).toBe(aVersion);
+  });
 });
 
 describe("sync.service pull", () => {
@@ -406,6 +476,17 @@ describe("sync.service pull", () => {
     const secondPage = await service.pull(USER_A, firstPage.nextCursor, 2);
     expect(secondPage.changes).toHaveLength(1);
     expect(secondPage.hasMore).toBe(false);
+  });
+
+  it("given exactly limit changes, when pulled, then hasMore is false", async () => {
+    const { service } = harness();
+    await service.push(USER_A, [upsert("workout", "w1", workoutPayload())]);
+    await service.push(USER_A, [upsert("workout", "w2", workoutPayload())]);
+
+    const page = await service.pull(USER_A, 0, 2);
+
+    expect(page.changes).toHaveLength(2);
+    expect(page.hasMore).toBe(false);
   });
 
   it("given a cursor beyond every change, when pulled, then the page is empty and nextCursor is unchanged", async () => {

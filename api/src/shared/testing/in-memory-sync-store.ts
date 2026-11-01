@@ -76,10 +76,16 @@ function createFakeAggregateRepository<A>(
       if (!row) {
         throw new Error(`Fake replace: no row for id "${id}"`);
       }
-      row.aggregate = aggregate;
-      row.version = nextVersion();
-      row.updatedAt = new Date();
-      return toRootState(row);
+      // A new row object, never a mutation of `row`: `snapshotTables()` only copies the Map, so a
+      // snapshot taken before this call must still see the old row object afterwards.
+      const updated: FakeRoot<A> = {
+        ...row,
+        aggregate,
+        version: nextVersion(),
+        updatedAt: new Date(),
+      };
+      table.set(id, updated);
+      return toRootState(updated);
     },
 
     async tombstone(id) {
@@ -87,11 +93,15 @@ function createFakeAggregateRepository<A>(
       if (!row) {
         throw new Error(`Fake tombstone: no row for id "${id}"`);
       }
-      row.deletedAt = new Date();
-      row.version = nextVersion();
-      row.updatedAt = new Date();
-      row.aggregate = undefined;
-      return toRootState(row);
+      const updated: FakeRoot<A> = {
+        ...row,
+        deletedAt: new Date(),
+        version: nextVersion(),
+        updatedAt: new Date(),
+        aggregate: undefined,
+      };
+      table.set(id, updated);
+      return toRootState(updated);
     },
 
     async headsAfter(scope, cursor, limit) {
@@ -117,6 +127,90 @@ function createFakeAggregateRepository<A>(
         const row = table.get(id);
         return row !== undefined && row.ownerId !== null && row.ownerId !== userId;
       });
+    },
+  };
+}
+
+/**
+ * Workout exercise and set ids are global primary keys (`workout_exercises_pkey`,
+ * `workout_sets_pkey`), so a child id already used under a different root — by any user — must
+ * raise the same `SyncIdConflict` as Postgres's unique violation. Derived from the *current*
+ * table contents (never a separate registry) so it stays consistent with `snapshotTables`/
+ * `restoreTables` for free: a tombstoned or rolled-back row's children simply aren't counted.
+ */
+function workoutExerciseIdsInUse(
+  table: Map<string, FakeRoot<WorkoutAggregate>>,
+  excludingRootId?: string,
+): Set<string> {
+  const ids = new Set<string>();
+  for (const row of table.values()) {
+    if (row.id === excludingRootId || !row.aggregate) {
+      continue;
+    }
+    for (const exercise of row.aggregate.exercises) {
+      ids.add(exercise.id);
+    }
+  }
+  return ids;
+}
+
+function workoutSetIdsInUse(
+  table: Map<string, FakeRoot<WorkoutAggregate>>,
+  excludingRootId?: string,
+): Set<string> {
+  const ids = new Set<string>();
+  for (const row of table.values()) {
+    if (row.id === excludingRootId || !row.aggregate) {
+      continue;
+    }
+    for (const exercise of row.aggregate.exercises) {
+      for (const set of exercise.sets) {
+        ids.add(set.id);
+      }
+    }
+  }
+  return ids;
+}
+
+function checkWorkoutChildIdCollisions(
+  table: Map<string, FakeRoot<WorkoutAggregate>>,
+  aggregate: WorkoutAggregate,
+  excludingRootId?: string,
+): void {
+  const existingExerciseIds = workoutExerciseIdsInUse(table, excludingRootId);
+  for (const exercise of aggregate.exercises) {
+    if (existingExerciseIds.has(exercise.id)) {
+      throw new SyncIdConflict("workout_exercises_pkey");
+    }
+  }
+  const existingSetIds = workoutSetIdsInUse(table, excludingRootId);
+  for (const exercise of aggregate.exercises) {
+    for (const set of exercise.sets) {
+      if (existingSetIds.has(set.id)) {
+        throw new SyncIdConflict("workout_sets_pkey");
+      }
+    }
+  }
+}
+
+/** `createFakeAggregateRepository` plus the global child-id check above, for workouts only. */
+function createFakeWorkoutRepository(
+  table: Map<string, FakeRoot<WorkoutAggregate>>,
+  nextVersion: () => number,
+): AggregateSyncRepository<WorkoutAggregate> {
+  const base = createFakeAggregateRepository(table, nextVersion, "workouts_pkey");
+
+  return {
+    ...base,
+    async insert(ownerId, id, aggregate) {
+      checkWorkoutChildIdCollisions(table, aggregate);
+      return base.insert(ownerId, id, aggregate);
+    },
+    async replace(id, aggregate) {
+      // Excludes this root's own current children: a workout is always allowed to keep (or
+      // reorder) its own existing exercise/set ids.
+      checkWorkoutChildIdCollisions(table, aggregate, id);
+      return base.replace(id, aggregate);
     },
   };
 }
@@ -203,7 +297,7 @@ export function createInMemorySyncStore(): InMemorySyncStore {
     return {
       workouts: withRecording(
         "workouts",
-        createFakeAggregateRepository(workoutsTable, nextVersion, "workouts_pkey"),
+        createFakeWorkoutRepository(workoutsTable, nextVersion),
         recordedCalls,
       ),
       templates: withRecording(

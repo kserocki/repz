@@ -4,10 +4,21 @@ import { SyncIdConflict } from "./sync.errors.ts";
 import type {
   FieldError,
   PullPage,
+  PullTotalEstimate,
   PushOutcome,
   SyncTransactions,
   SyncType,
 } from "./sync.types.ts";
+import { SYNC_TYPES } from "./sync.types.ts";
+
+/** `{ total: 0, workout: 0, template: 0, exercise: 0 }`, derived so a new `SyncType` needs no edit here. */
+function emptyTotalEstimate(): PullTotalEstimate {
+  const byType = Object.fromEntries(SYNC_TYPES.map((type) => [type, 0])) as Record<
+    SyncType,
+    number
+  >;
+  return { total: 0, ...byType };
+}
 
 export type PushEnvelope = { type: SyncType; id: string; deleted: boolean; payload?: unknown };
 
@@ -190,7 +201,7 @@ export function createSyncService(deps: {
         const lastChange = page.at(-1);
         const nextCursor = lastChange ? lastChange.version : cursor;
 
-        const totalEstimate = { total: 0, workout: 0, template: 0, exercise: 0 };
+        const totalEstimate = emptyTotalEstimate();
         await Promise.all(
           deps.registry.handlers.map(async (handler) => {
             const count = await handler.reader.countAfter(stores, userId, cursor);

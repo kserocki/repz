@@ -80,9 +80,9 @@ const pullRoute = createRoute({
 });
 
 /**
- * `/sync/push` and `/sync/pull`, behind `requireAuth` and always `Cache-Control: no-store`
- * (3.1). Both middlewares are mounted scoped to `/sync/*` (never unscoped, which would turn them
- * into global middleware once this router is mounted at the app root).
+ * `/sync/push` and `/sync/pull`, behind `requireAuth` and always `Cache-Control: no-store`.
+ * Both middlewares are mounted scoped to `/sync/*` (never unscoped, which would turn them into
+ * global middleware once this router is mounted at the app root).
  */
 export function createSyncRoutes(
   syncService: SyncService,

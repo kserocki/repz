@@ -81,12 +81,8 @@ export type PullChange = {
   payload: unknown;
 };
 
-export type PullTotalEstimate = {
-  total: number;
-  workout: number;
-  template: number;
-  exercise: number;
-};
+/** One bucket per `SyncType` plus the grand total, so a new type needs no edit here. */
+export type PullTotalEstimate = { total: number } & Record<SyncType, number>;
 
 export type PullPage = {
   changes: PullChange[];
@@ -96,9 +92,9 @@ export type PullPage = {
 };
 
 /**
- * One root's state as kept in the database, independent of any caller (3.5): `ownerId: null`
- * means the global catalog, `deletedAt` is the tombstone marker. `decideChange` compares this
- * against the caller's id to tell "own" from "another user's" from "catalog".
+ * One root's state as kept in the database, independent of any caller: `ownerId: null` means the
+ * global catalog, `deletedAt` is the tombstone marker. `decideChange` compares this against the
+ * caller's id to tell "own" from "another user's" from "catalog".
  */
 export type RootState = {
   id: string;
