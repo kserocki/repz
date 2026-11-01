@@ -393,8 +393,8 @@ Conventions: ADR-0019. Schema source: `api/src/db/schema/`.
 | `workout_templates` (root) | `id`, `user_id`, `name`, `notes` |
 | `template_exercises` | PK `(template_id, position)`, `exercise_id`, `target_sets`, `target_reps_min/max`, `rest_seconds` |
 | `workouts` (root) | `id`, `user_id`, `template_id` (no FK), `name`, `notes`, `started_at`, `finished_at` |
-| `workout_exercises` | `id`, `workout_id`, `exercise_id` (no FK), `position`, `notes` |
-| `workout_sets` | `id`, `workout_exercise_id`, `position`, `type`, `weight_grams bigint`, `reps`, `rpe numeric(3,1)`, `completed_at` |
+| `workout_exercises` | `id`, `workout_id` + `position` (unique together), `exercise_id` (no FK), `notes` |
+| `workout_sets` | `id`, `workout_exercise_id` + `position` (unique together), `type`, `weight_grams bigint`, `reps`, `rpe numeric(3,1)`, `completed_at` |
 
 Every root table has `version bigint` (default `nextval('sync_version_seq')`, set again on every update), `updated_at`, `deleted_at` and a `(user_id | owner_id, version)` index. Children cascade from their root; there are no foreign keys between aggregates. A push of an aggregate replaces its children in one transaction.
 
