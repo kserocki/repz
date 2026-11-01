@@ -6,7 +6,7 @@
 ADR-0002 decided on an outbox with per-aggregate last write wins (LWW) in server arrival order. ADR-0003 decided on a full local replica with paged pulls. ADR-0019 left one problem open: `sync_version_seq` hands out versions before commit, so a pull could move its cursor past a version that commits later and miss that row forever. The API also needs exact rules for retries, deletes, foreign ids and dangling references.
 
 ## Decision
-- **Write serialisation (closes the ADR-0019 gap).** Every push starts with two transaction-scoped advisory locks, each as its own statement and in this order:
+- **Write serialisation (closes the ADR-0019 gap).** Every push that writes starts with two transaction-scoped advisory locks, each as its own statement and in this order:
   1. a shared catalog gate, `pg_advisory_xact_lock_shared(3, 0)`;
   2. a per-user lock, `pg_advisory_xact_lock(2, hashtext(user_id))`.
 

@@ -210,7 +210,7 @@ The device keeps a **full local replica** of the user's data. Personal workout d
 
 - After login, `pull_cursor = 0`. The engine loops `GET /sync/pull?cursor=…&limit=500` until `hasMore == false`, applying **each page in its own transaction**. If the app is killed, the next run resumes from the saved cursor.
 - PRs are recalculated **once** at the end of the initial sync rather than per page.
-- The UI shows a dedicated **"Restoring your history" screen** with progress (pages are counted against the server-provided `totalEstimate`).
+- The UI shows a dedicated **"Restoring your history" screen** with progress: a percentage plus "N / M workouts", counted against the per-type `totalEstimate` the server returns on every page (ADR-0020).
 - History screens read from Room. Lightweight summary projections are enough for v1. Paging 3 (Room `PagingSource`) is the upgrade path if lists grow.
 
 ### 5.6 Scheduling
