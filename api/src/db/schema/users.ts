@@ -15,7 +15,6 @@ export const users = pgTable(
     passwordHash: text("password_hash").notNull(),
     displayName: text("display_name").notNull(),
     unitSystem: text("unit_system").notNull().default("kg"),
-    driftCheckThrowaway: text("drift_check_throwaway"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
