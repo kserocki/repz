@@ -25,18 +25,18 @@ pnpm dev                      # http://localhost:3000, pretty-printed logs
 
 ## Scripts
 
-| Script           | Command                                                              | Notes                   |
-| ---------------- | -------------------------------------------------------------------- | ----------------------- |
-| `pnpm dev`       | `node --watch --env-file-if-exists=.env src/index.ts \| pino-pretty` | restarts on file change |
-| `pnpm start`     | `node --env-file-if-exists=.env dist/index.js`                       | runs the build output   |
-| `pnpm build`     | `tsc -p tsconfig.build.json`                                         | emits `dist/`           |
-| `pnpm typecheck` | `tsc --noEmit`                                                       | TypeScript 7, no emit   |
-| `pnpm test`      | `vitest run`                                                         | Vitest 5                |
-| `pnpm lint`      | `biome check --error-on-warnings .`                                  | lint + format check     |
-| `pnpm lint:fix`  | `biome check --write .`                                              | auto-fixes what it can  |
-| `pnpm db:generate` | `drizzle-kit generate`                                             | writes a migration from a schema change; no-op if nothing changed |
-| `pnpm db:check`  | `drizzle-kit check`                                                  | validates migration metadata; no database needed |
-| `pnpm db:migrate` | `node --env-file-if-exists=.env src/db/migrate.ts`                  | applies every committed migration; a re-run is a no-op |
+| Script             | Command                                                              | Notes                                                             |
+| ------------------ | -------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `pnpm dev`         | `node --watch --env-file-if-exists=.env src/index.ts \| pino-pretty` | restarts on file change                                           |
+| `pnpm start`       | `node --env-file-if-exists=.env dist/index.js`                       | runs the build output                                             |
+| `pnpm build`       | `tsc -p tsconfig.build.json`                                         | emits `dist/`                                                     |
+| `pnpm typecheck`   | `tsc --noEmit`                                                       | TypeScript 7, no emit                                             |
+| `pnpm test`        | `vitest run`                                                         | Vitest 5                                                          |
+| `pnpm lint`        | `biome check --error-on-warnings .`                                  | lint + format check                                               |
+| `pnpm lint:fix`    | `biome check --write .`                                              | auto-fixes what it can                                            |
+| `pnpm db:generate` | `drizzle-kit generate`                                               | writes a migration from a schema change; no-op if nothing changed |
+| `pnpm db:check`    | `drizzle-kit check`                                                  | validates migration metadata; no database needed                  |
+| `pnpm db:migrate`  | `node --env-file-if-exists=.env src/db/migrate.ts`                   | applies every committed migration; a re-run is a no-op            |
 
 ## Environment variables
 
