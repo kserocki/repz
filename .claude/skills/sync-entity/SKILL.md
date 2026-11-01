@@ -19,7 +19,15 @@ Read `docs/ARCHITECTURE.md` §5 and ADR-0002/0003 first. **The aggregate is the 
 5. **DTO:** the payload DTO in `core:network` plus a fixture.
 
 ## Server (api)
-6. Drizzle tables (root + children) with the sync columns (ADR-0019). Add the type to `SYNC_TYPES`, a payload schema in `sync.schemas.ts`, an `<entity>.repository.ts` and an `<entity>.handler.ts` in `src/modules/sync/handlers/`, and register the handler in the registry. Follow ADR-0020: every version write goes through `SyncTransactions.write` after `lockUserSyncWrites`; replace children on every write; tombstoning deletes children; `decideChange` decides (delete wins, idempotent retries); pull returns `version > cursor` with tombstones as `payload: null`.
+6. **Server side (`api/`)** — follow ADR-0019 and ADR-0020. For a new sync type, touch every one of these:
+   - Drizzle tables (root + children) with `syncColumns()` and a `(user_id, version)` index; `pnpm db:generate`.
+   - `SYNC_TYPES` (the wire `type`; `totalEstimate` buckets are derived from it) and the payload schema in `sync.schemas.ts` (`.openapi("Name")`, strict keys, child-id uniqueness in `superRefine`).
+   - Push `payload` `oneOf` in `sync.schemas.ts` plus `router.openAPIRegistry.register(...)` in `sync.routes.ts`.
+   - `handlers/<entity>.repository.ts` (replace children on every write, tombstone deletes children, map 23505 by constraint name from `.cause` to `SyncIdConflict`) and `handlers/<entity>.handler.ts`; extend the `SyncHandler.name` union.
+   - A `SyncStores` field, wired in `storesFor` (`sync.repository.ts`) and in the in-memory fake (`shared/testing/in-memory-sync-store.ts`, including global child-id keys and immutable row swaps for savepoint rollback).
+   - Register the handler in `app.ts`.
+   - Every version write goes through `SyncTransactions.write` after `lockUserSyncWrites`; `decideChange` decides (delete wins, idempotent retries); pull returns `version > cursor` with tombstones as `payload: null`.
+   - Tests: schema tests (limits, strict keys, duplicate child ids), handler mapping, service cases for every `decideChange` row that applies, the OpenAPI test (`sync.openapi.test.ts`), and a Spotter scenario on real Postgres.
 7. Update the OpenAPI schemas for push/pull (`new-endpoint` skill steps 1, 6).
 
 ## Tests (must have)

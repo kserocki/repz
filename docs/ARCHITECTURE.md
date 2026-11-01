@@ -399,6 +399,8 @@ Conventions: ADR-0019. Schema source: `api/src/db/schema/`.
 
 **Advisory-lock namespaces** (first argument of `pg_advisory_xact_lock(int4, int4)`): `1` = refresh-token family (`REFRESH_TOKEN_FAMILY_LOCK_SPACE` in `modules/auth/auth.repository.ts`, ADR-0011); `2` = per-user sync writes and `3` = catalog gate (`SYNC_USER_WRITE_LOCK_SPACE`, `SYNC_CATALOG_GATE_LOCK_SPACE` in `modules/sync/sync.repository.ts`, ADR-0020). A new lock picks the next free number and is listed here.
 
+Tombstoning a sync root (`deleted_at` set) hard-deletes its children in the same transaction; the root row stays as the tombstone (ADR-0020).
+
 Every root table has `version bigint` (default `nextval('sync_version_seq')`, set again on every update), `updated_at`, `deleted_at` and a `(user_id | owner_id, version)` index. Children cascade from their root; there are no foreign keys between aggregates. A push of an aggregate replaces its children in one transaction.
 
 ---

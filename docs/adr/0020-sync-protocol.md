@@ -17,11 +17,11 @@ ADR-0002 decided on an outbox with per-aggregate last write wins (LWW) in server
   - a `pg_snapshot_xmin` watermark, which needs a migration and a composite cursor, and lets one long transaction stall every pull;
   - a reservations table.
 - **Push outcomes.** The response is `{ accepted: [{ type, id, version, deleted }], rejected: [{ type, id, problem }] }`. Every change appears exactly once, in request order.
-  - **Whole-request errors.** A malformed envelope is a 400 for the whole request: more than 100 changes, a duplicate `(type, id)`, or a `deleted`/`payload` mismatch. A body over 1 MiB gets 413.
+  - **Whole-request errors.** A malformed envelope is a 400 for the whole request: no changes or more than 100, a duplicate `(type, id)`, or a `deleted`/`payload` mismatch. A body over 1 MiB gets 413.
   - **Per-change rejections.** These reject only their own change:
-    - an invalid payload (`validation-error`);
+    - an invalid payload, including duplicate child ids inside one payload (`validation-error`);
     - a catalog exercise (`read-only`);
-    - an id owned by another user (`id-conflict`);
+    - an id owned by another user, or a child id already used under another root by any user (`id-conflict`);
     - a reference to another user's template or exercise (`invalid-reference`).
   - **Savepoints.** Each change runs in its own savepoint inside one locked transaction, so a failing change never poisons the rest of the outbox.
 - **Conflict rules** are a pure decision function:
