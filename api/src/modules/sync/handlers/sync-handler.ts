@@ -1,4 +1,12 @@
-import type { ChangeHead, FieldError, PushOutcome, SyncStores, SyncType } from "../sync.types.ts";
+import { aggregatesEqual, decideChange } from "../sync.decisions.ts";
+import type {
+  AggregateSyncRepository,
+  ChangeHead,
+  FieldError,
+  PushOutcome,
+  SyncStores,
+  SyncType,
+} from "../sync.types.ts";
 
 export type ParsedChange = { deleted: boolean; aggregate: unknown };
 
@@ -72,4 +80,67 @@ export function createSyncHandlerRegistry(handlers: SyncHandler[]): SyncHandlerR
       return handler.writer;
     },
   };
+}
+
+/**
+ * Shared decision-table plumbing for every `SyncWriter.apply` (ADR-0020 §3.3): reads the existing
+ * root `FOR UPDATE`, loads the stored aggregate and compares it to the incoming one only when the
+ * outcome could possibly be "no write" (row 7) — never for a delete, a reject or a fresh insert —
+ * then runs `decideChange` and performs the one repository call the decision calls for.
+ * `validateReferences`, when given, runs only before an `insert`/`replace` actually happens.
+ */
+export async function resolveWriterOutcome<A>(
+  repo: AggregateSyncRepository<A>,
+  userId: string,
+  id: string,
+  change: { deleted: boolean; aggregate: A | null },
+  validateReferences?: (aggregate: A) => Promise<FieldError[]>,
+): Promise<PushOutcome> {
+  const [existing] = await repo.findStatesForUpdate([id]);
+  const needsEqualityCheck =
+    existing !== undefined &&
+    existing.ownerId === userId &&
+    existing.deletedAt === null &&
+    !change.deleted;
+
+  let isEqual = false;
+  if (needsEqualityCheck) {
+    const stored = (await repo.loadAggregates([id])).get(id);
+    isEqual =
+      stored !== undefined &&
+      change.aggregate !== null &&
+      aggregatesEqual(stored, change.aggregate);
+  }
+
+  const decision = decideChange(existing, { deleted: change.deleted }, userId, isEqual);
+
+  switch (decision.action) {
+    case "insert":
+    case "replace": {
+      const aggregate = change.aggregate;
+      if (aggregate === null) {
+        // decideChange never returns insert/replace for a delete; a type-safety net.
+        throw new Error("decideChange returned an upsert action without an aggregate");
+      }
+      if (validateReferences) {
+        const errors = await validateReferences(aggregate);
+        if (errors.length > 0) {
+          return { kind: "rejected", problem: "invalid-reference", errors };
+        }
+      }
+      const state =
+        decision.action === "insert"
+          ? await repo.insert(userId, id, aggregate)
+          : await repo.replace(id, aggregate);
+      return { kind: "accepted", version: state.version, deleted: false };
+    }
+    case "tombstone": {
+      const state = await repo.tombstone(id);
+      return { kind: "accepted", version: state.version, deleted: true };
+    }
+    case "none":
+      return { kind: "accepted", version: decision.version, deleted: decision.deleted };
+    case "reject":
+      return { kind: "rejected", problem: decision.problem };
+  }
 }
