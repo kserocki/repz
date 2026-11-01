@@ -10,3 +10,6 @@ export type AppEnv = {
     logger: pino.Logger;
   };
 };
+
+/** `AppEnv` plus the user id `requireAuth` sets once a bearer token verifies. */
+export type AuthenticatedAppEnv = AppEnv & { Variables: { userId: string } };

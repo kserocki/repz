@@ -1,0 +1,3 @@
+ALTER TABLE "refresh_tokens" ADD COLUMN "replaced_by" uuid;--> statement-breakpoint
+ALTER TABLE "refresh_tokens" ADD CONSTRAINT "refresh_tokens_replaced_by_fkey" FOREIGN KEY ("replaced_by") REFERENCES "public"."refresh_tokens"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "refresh_tokens" ADD CONSTRAINT "refresh_tokens_replaced_by_check" CHECK ("refresh_tokens"."replaced_by" is null or "refresh_tokens"."revoked_at" is not null);

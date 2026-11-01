@@ -2,6 +2,7 @@ import { createRoute, z } from "@hono/zod-openapi";
 import { HTTPException } from "hono/http-exception";
 import pino from "pino";
 import { describe, expect, it } from "vitest";
+import { ApplicationError } from "./application-error.ts";
 import { errorHandler, notFoundHandler } from "./errors.ts";
 import type { ProblemDetails } from "./problem-details.ts";
 import { requestIdMiddleware } from "./request-id.ts";
@@ -10,6 +11,23 @@ import { createRouter } from "./router.ts";
 import { MemoryDestination } from "./testing/memory-destination.ts";
 
 const EmptyResponseSchema = z.object({});
+
+/** A stand-in domain error, exercising the generic `ApplicationError` → Problem Details mapping. */
+class TestConflictError extends ApplicationError {
+  readonly type = "urn:repz:problem:test-conflict";
+  readonly title = "Test Conflict";
+  readonly status = 409;
+  override readonly headers = { "X-Test-Header": "present" };
+  override readonly log = {
+    level: "warn" as const,
+    message: "test conflict logged",
+    fields: { testField: "value" },
+  };
+
+  constructor() {
+    super("internal detail that must never reach the response");
+  }
+}
 
 /** A throwaway app wiring the shared pieces plus test-only routes; never part of `createApp`. */
 function createTestApp(destination: pino.DestinationStream = { write: () => {} }) {
@@ -46,6 +64,38 @@ function createTestApp(destination: pino.DestinationStream = { write: () => {} }
     }),
     () => {
       throw new HTTPException(403, { message: "Not allowed" });
+    },
+  );
+
+  app.openapi(
+    createRoute({
+      method: "get",
+      path: "/unavailable",
+      responses: {
+        200: {
+          description: "never",
+          content: { "application/json": { schema: EmptyResponseSchema } },
+        },
+      },
+    }),
+    () => {
+      throw new HTTPException(503, { message: "Service Unavailable" });
+    },
+  );
+
+  app.openapi(
+    createRoute({
+      method: "get",
+      path: "/conflict",
+      responses: {
+        200: {
+          description: "never",
+          content: { "application/json": { schema: EmptyResponseSchema } },
+        },
+      },
+    }),
+    () => {
+      throw new TestConflictError();
     },
   );
 
@@ -154,6 +204,66 @@ describe("errorHandler", () => {
       title: "Forbidden",
       status: 403,
       detail: "Not allowed",
+    });
+  });
+
+  it("given a handler that throws an HTTPException below 500, when requested, then nothing is logged at error level", async () => {
+    const destination = new MemoryDestination();
+    const app = createTestApp(destination);
+
+    await app.request("/forbidden");
+
+    const errorEntries = destination.entries.filter((entry) => entry.level === 50);
+    expect(errorEntries).toHaveLength(0);
+  });
+
+  it("given a handler that throws an HTTPException with a status >= 500, when requested, then it is logged at error level", async () => {
+    const destination = new MemoryDestination();
+    const app = createTestApp(destination);
+
+    const res = await app.request("/unavailable");
+
+    expect(res.status).toBe(503);
+    const body = await res.json();
+    expect(body).toMatchObject({
+      type: "about:blank",
+      title: "Service Unavailable",
+      status: 503,
+      detail: "Service Unavailable",
+    });
+
+    const errorEntries = destination.entries.filter((entry) => entry.level === 50);
+    expect(errorEntries).toHaveLength(1);
+    expect(errorEntries[0]).toMatchObject({ requestId: "test-request-id", msg: "HTTP exception" });
+  });
+
+  it("given a handler that throws an ApplicationError, when requested, then it maps to its Problem Details, headers and log line", async () => {
+    const destination = new MemoryDestination();
+    const app = createTestApp(destination);
+
+    const res = await app.request("/conflict");
+
+    expect(res.status).toBe(409);
+    expect(res.headers.get("content-type")).toBe("application/problem+json");
+    expect(res.headers.get("X-Test-Header")).toBe("present");
+    const text = await res.text();
+    expect(text).not.toContain("internal detail that must never reach the response");
+    const body = JSON.parse(text) as ProblemDetails;
+    expect(body).toMatchObject({
+      type: "urn:repz:problem:test-conflict",
+      title: "Test Conflict",
+      status: 409,
+      instance: "/conflict",
+      requestId: "test-request-id",
+    });
+    expect(body.detail).toBeUndefined();
+
+    const warnEntries = destination.entries.filter((entry) => entry.level === 40);
+    expect(warnEntries).toHaveLength(1);
+    expect(warnEntries[0]).toMatchObject({
+      requestId: "test-request-id",
+      msg: "test conflict logged",
+      testField: "value",
     });
   });
 

@@ -346,13 +346,13 @@ api/src/
 │   └── seed/                # exercise catalog snapshot (wger.de, CC-BY-SA) + seeder
 ├── scripts/import-wger.ts   # one-off import: wger API → normalized snapshot JSON (committed)
 ├── modules/
-│   ├── auth/      {routes, service, repository, schemas}.ts
-│   ├── users/
+│   ├── auth/      {routes, service, repository, schemas, errors}.ts + access-tokens, refresh-token, refresh-rotation (pure decideRefresh), password-hasher
+│   ├── users/     {routes, service, repository, schemas}.ts (GET/PATCH /me)
 │   └── sync/
 │       ├── sync.routes.ts
 │       ├── sync.service.ts
 │       └── handlers/        # SyncHandler per entity: workouts, templates, exercises
-└── shared/                  # app-env, router (OpenAPIHono factory), problem-details, errors (error handler), request-id, logger, request-logger; auth middleware later
+└── shared/                  # app-env, router (OpenAPIHono factory), problem-details, errors (error handler), request-id, logger, request-logger, clock (injected time), application-error (typed errors → Problem Details), auth (`requireAuth` bearer middleware)
 ```
 
 Layers: **routes** (HTTP + validation) → **service** (business rules) → **repository** (Drizzle). Dependencies are wired through plain factory functions in `app.ts`, with no DI framework.
@@ -361,11 +361,11 @@ Layers: **routes** (HTTP + validation) → **service** (business rules) → **re
 
 | Method | Path | Notes |
 |---|---|---|
-| POST | `/auth/register` | email, password, displayName → tokens |
-| POST | `/auth/login` | → `{ accessToken (15 min), refreshToken (30 d) }` |
-| POST | `/auth/refresh` | **rotation**; reusing an old refresh token revokes the whole token family |
-| POST | `/auth/logout` | revokes refresh token family |
-| GET / PATCH | `/me` | profile, unit system |
+| POST | `/auth/register` | public; `{ email, password, displayName }` → 201 `{ user, accessToken, refreshToken, expiresIn }`; 409 `email-taken` |
+| POST | `/auth/login` | public; `{ email, password }` → 200, same body as register; 401 `invalid-credentials` (never says which field) |
+| POST | `/auth/refresh` | public; `{ refreshToken }` → 200 `{ accessToken, refreshToken, expiresIn }`. **Rotation**: reusing a revoked token revokes the whole family (401 `invalid-refresh-token`), except a retry within the 30 s grace window (ADR-0011) |
+| POST | `/auth/logout` | public; `{ refreshToken }` → 204 always; revokes the token's family |
+| GET / PATCH | `/me` | bearer; → `User`. PATCH takes `displayName` and/or `unitSystem` (at least one); 401 `invalid-access-token` |
 | POST | `/sync/push` | `{ changes: [{ type, id, deleted, payload }] }` → `{ accepted: [{ id, version }] }` |
 | GET | `/sync/pull` | `?cursor=&limit=` → `{ changes, nextCursor, hasMore }` (includes global exercise catalog) |
 | GET | `/health` | liveness only (`200 {"status":"ok"}`); the DB is checked once at boot and the process exits if it is unreachable |
@@ -379,6 +379,8 @@ Layers: **routes** (HTTP + validation) → **service** (business rules) → **re
 - **Offline:** Coil 3 disk cache. After the initial sync, a low-priority job prefetches all catalog images, so the library looks complete without network.
 - **Custom (user) exercises** get an illustration for their primary muscle group (about 12 generic illustrations in the same style, bundled in the app as Compose resources). Nothing is ever shown without an image.
 
+Every `/auth/*` response sends `Cache-Control: no-store`. Protected routes use `requireAuth` (`Authorization: Bearer <access token>`).
+
 Errors use **RFC 9457 Problem Details** (`application/problem+json`) everywhere. `type` is `about:blank` for plain HTTP errors and `urn:repz:problem:<kebab-name>` for application errors (e.g. `urn:repz:problem:validation-error`). Every problem carries `requestId`, and validation errors add `errors: [{ path, message }]` (ADR-0016).
 
 ### 10.4 Database
@@ -388,13 +390,15 @@ Conventions: ADR-0019. Schema source: `api/src/db/schema/`.
 | Table | Key columns |
 |---|---|
 | `users` | `id` (`uuidv7()`), `email` (unique on `lower(email)`), `password_hash`, `display_name`, `unit_system` (`kg`/`lb`, default `kg`) |
-| `refresh_tokens` | `id` (`uuidv7()`), `user_id`, `family_id`, `token_hash` (unique), `expires_at`, `revoked_at` |
+| `refresh_tokens` | `id` (`uuidv7()`), `user_id`, `family_id`, `token_hash` (unique), `expires_at`, `revoked_at`, `replaced_by` (successor; only on a revoked row) |
 | `exercises` (root) | `id` (client or snapshot), `owner_id` (`NULL` = global catalog), `name`, `primary_muscle`, `secondary_muscles text[]`, `equipment`, `license`, `author` |
 | `workout_templates` (root) | `id`, `user_id`, `name`, `notes` |
 | `template_exercises` | PK `(template_id, position)`, `exercise_id`, `target_sets`, `target_reps_min/max`, `rest_seconds` |
 | `workouts` (root) | `id`, `user_id`, `template_id` (no FK), `name`, `notes`, `started_at`, `finished_at` |
 | `workout_exercises` | `id`, `workout_id` + `position` (unique together), `exercise_id` (no FK), `notes` |
 | `workout_sets` | `id`, `workout_exercise_id` + `position` (unique together), `type`, `weight_grams bigint`, `reps`, `rpe numeric(3,1)`, `completed_at` |
+
+**Advisory-lock namespaces** (first argument of `pg_advisory_xact_lock(int4, int4)`): `1` = refresh-token family (`REFRESH_TOKEN_FAMILY_LOCK_SPACE` in `modules/auth/auth.repository.ts`, ADR-0011). A new lock picks the next free number and is listed here.
 
 Every root table has `version bigint` (default `nextval('sync_version_seq')`, set again on every update), `updated_at`, `deleted_at` and a `(user_id | owner_id, version)` index. Children cascade from their root; there are no foreign keys between aggregates. A push of an aggregate replaces its children in one transaction.
 
@@ -476,7 +480,7 @@ Re-verified on npm, nodejs.org and Docker Hub on 2026-10-29 (REP-12).
 | Zod | 4.6.7 | |
 | Drizzle ORM / drizzle-kit | 0.45.4 / 0.31.11 | 1.0 still RC |
 | postgres (postgres.js) | 3.4.9 | driver for Drizzle |
-| jose | 6.2.13 | JWT sign/verify |
+| jose | 6.2.14 | JWT sign/verify (HS256, algorithm pinned) |
 | @node-rs/argon2 | 2.2.2 | password hashing, no node-gyp |
 | Vitest | 5.0.5 | |
 | Biome | 2.6.4 | lint + format in one tool |

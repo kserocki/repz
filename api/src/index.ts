@@ -2,6 +2,10 @@ import { serve } from "@hono/node-server";
 import { createApp } from "./app.ts";
 import { createDatabase } from "./db/client.ts";
 import { loadEnv } from "./env.ts";
+import { createAuthTransactions } from "./modules/auth/auth.repository.ts";
+import { createArgon2PasswordHasher } from "./modules/auth/password-hasher.ts";
+import { createUsersRepository } from "./modules/users/users.repository.ts";
+import { systemClock } from "./shared/clock.ts";
 import { createLogger } from "./shared/logger.ts";
 
 const env = loadEnv(process.env);
@@ -18,7 +22,23 @@ try {
   process.exit(1);
 }
 
-const app = createApp({ logger, generateRequestId: () => crypto.randomUUID() });
+const app = createApp({
+  logger,
+  generateRequestId: () => crypto.randomUUID(),
+  generateId: () => crypto.randomUUID(),
+  clock: systemClock,
+  passwordHasher: createArgon2PasswordHasher(),
+  auth: {
+    jwtSecret: env.JWT_SECRET,
+    accessTokenTtlSeconds: env.ACCESS_TOKEN_TTL_SECONDS,
+    refreshTokenTtlSeconds: env.REFRESH_TOKEN_TTL_SECONDS,
+    refreshTokenReuseGraceSeconds: env.REFRESH_TOKEN_REUSE_GRACE_SECONDS,
+  },
+  repositories: {
+    users: createUsersRepository(database.db),
+    authTransactions: createAuthTransactions(database.db),
+  },
+});
 
 const server = serve({ fetch: app.fetch, port: env.PORT }, (info) => {
   logger.info({ port: info.port }, "listening");

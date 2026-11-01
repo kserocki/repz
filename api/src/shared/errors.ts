@@ -4,13 +4,15 @@ import type { Context, ErrorHandler, NotFoundHandler } from "hono";
 import { HTTPException } from "hono/http-exception";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 import type { AppEnv } from "./app-env.ts";
+import { ApplicationError } from "./application-error.ts";
 import { problemResponse } from "./problem-details.ts";
 
 function reasonPhrase(status: number): string {
   return STATUS_CODES[status] ?? "Error";
 }
 
-function requestPath(c: Context<AppEnv>): string {
+/** Generic over `E` so it also works from a router with a wider env, e.g. `AuthenticatedAppEnv`. */
+function requestPath<E extends AppEnv>(c: Context<E>): string {
   return new URL(c.req.url).pathname;
 }
 
@@ -24,8 +26,27 @@ export const notFoundHandler: NotFoundHandler<AppEnv> = (c) => {
 };
 
 export const errorHandler: ErrorHandler<AppEnv> = (error, c) => {
+  if (error instanceof ApplicationError) {
+    if (error.log) {
+      c.var.logger[error.log.level](error.log.fields, error.log.message);
+    }
+    return problemResponse(
+      c,
+      {
+        type: error.type,
+        title: error.title,
+        status: error.status,
+        instance: requestPath(c),
+      },
+      error.headers,
+    );
+  }
+
   if (error instanceof HTTPException) {
     const status = error.status;
+    if (status >= 500) {
+      c.var.logger.error({ err: error }, "HTTP exception");
+    }
     return problemResponse(c, {
       type: "about:blank",
       title: reasonPhrase(status),
@@ -48,12 +69,12 @@ export const errorHandler: ErrorHandler<AppEnv> = (error, c) => {
 /**
  * `OpenAPIHono` default validation hook: on a Zod failure, replies with
  * `urn:repz:problem:validation-error` and one `{ path, message }` entry per
- * issue, path prefixed by the validation target (e.g. "query.limit").
+ * issue, path prefixed by the validation target (e.g. "query.limit"). Generic over `E` for the
+ * same reason as `problemResponse`, so `createRouter<AuthenticatedAppEnv>()` can use it too.
  */
-export const validationErrorHook: Hook<unknown, AppEnv, string, Response | undefined> = (
-  result,
-  c,
-) => {
+export function validationErrorHook<E extends AppEnv = AppEnv>(
+  ...[result, c]: Parameters<Hook<unknown, E, string, Response | undefined>>
+): Response | undefined {
   if (result.success) {
     return undefined;
   }
@@ -70,4 +91,4 @@ export const validationErrorHook: Hook<unknown, AppEnv, string, Response | undef
     instance: requestPath(c),
     errors,
   });
-};
+}
