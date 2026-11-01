@@ -10,6 +10,7 @@ import {
   InvalidRefreshTokenError,
   RefreshTokenReusedError,
 } from "./auth.errors.ts";
+import type { AuthTransactions, RefreshTokensRepository } from "./auth.repository.ts";
 import { createAuthService } from "./auth.service.ts";
 import { hashRefreshToken } from "./refresh-token.ts";
 
@@ -46,6 +47,71 @@ function setup(graceSeconds = GRACE_SECONDS) {
 
 async function tokenRowFor(store: ReturnType<typeof createInMemoryAuthStore>, rawToken: string) {
   return store.refreshTokens.findByHashForUpdate(hashRefreshToken(rawToken));
+}
+
+/** Hand-written recording wrapper (no mocking library): records every `RefreshTokensRepository` method called inside a transaction, in call order, so a test can assert on the sequence. */
+function createRecordingTransactions(
+  transactions: AuthTransactions,
+  calls: string[],
+): AuthTransactions {
+  return {
+    run(work) {
+      return transactions.run(({ users, refreshTokens }) => {
+        const recordingRefreshTokens: RefreshTokensRepository = {
+          insert(token) {
+            calls.push("insert");
+            return refreshTokens.insert(token);
+          },
+          lockFamilyOfToken(tokenHash) {
+            calls.push("lockFamilyOfToken");
+            return refreshTokens.lockFamilyOfToken(tokenHash);
+          },
+          findByHashForUpdate(tokenHash) {
+            calls.push("findByHashForUpdate");
+            return refreshTokens.findByHashForUpdate(tokenHash);
+          },
+          findByIdForUpdate(id) {
+            calls.push("findByIdForUpdate");
+            return refreshTokens.findByIdForUpdate(id);
+          },
+          markRotated(id, at, replacedBy) {
+            calls.push("markRotated");
+            return refreshTokens.markRotated(id, at, replacedBy);
+          },
+          revokeFamily(familyId, at) {
+            calls.push("revokeFamily");
+            return refreshTokens.revokeFamily(familyId, at);
+          },
+        };
+        return work({ users, refreshTokens: recordingRefreshTokens });
+      });
+    },
+  };
+}
+
+function setupWithRecording(graceSeconds = GRACE_SECONDS) {
+  const calls: string[] = [];
+  let nextId = 0;
+  const generateId = () => `id-${nextId++}`;
+  const clock = createFixedClock(NOW);
+  const store = createInMemoryAuthStore(generateId);
+  const accessTokens = createAccessTokens(
+    { secret: JWT_SECRET, ttlSeconds: ACCESS_TOKEN_TTL_SECONDS },
+    clock,
+  );
+  const service = createAuthService({
+    transactions: createRecordingTransactions(store.transactions, calls),
+    users: store.users,
+    passwordHasher: createFakePasswordHasher(),
+    accessTokens,
+    clock,
+    generateId,
+    settings: {
+      refreshTokenTtlSeconds: REFRESH_TOKEN_TTL_SECONDS,
+      refreshTokenReuseGraceSeconds: graceSeconds,
+    },
+  });
+  return { service, calls };
 }
 
 describe("register", () => {
@@ -315,6 +381,35 @@ describe("refresh", () => {
     expect(successor?.revokedAt).not.toBeNull();
   });
 
+  // The in-memory store has no row-level locking, so this proves the protocol (the mutex
+  // correctly serialises the two transactions) rather than the actual Postgres race: the
+  // real-Postgres run of Steel's scenario A (impl-log.md, "Iron · round 4") is the authoritative
+  // proof that the advisory lock closes the race against a real blocked UPDATE.
+  it("given a reuse of an old token racing a rotation of the live head, when both settle, then no token in the family is live", async () => {
+    async function raceAndAssertFamilyFullyRevoked(firstToSettle: "reuse" | "rotation") {
+      const { service, store } = setup(0);
+      const session = await registerUser(service);
+      const rotated = await service.refresh(session.refreshToken, TEST_LOGGER);
+      const familyId = (await tokenRowFor(store, rotated.refreshToken))?.familyId;
+
+      const reuseOldToken = () => service.refresh(session.refreshToken, TEST_LOGGER);
+      const rotateLiveHead = () => service.refresh(rotated.refreshToken, TEST_LOGGER);
+
+      await Promise.allSettled(
+        firstToSettle === "reuse"
+          ? [reuseOldToken(), rotateLiveHead()]
+          : [rotateLiveHead(), reuseOldToken()],
+      );
+
+      const familyTokens = store.listRefreshTokens().filter((token) => token.familyId === familyId);
+      expect(familyTokens.length).toBeGreaterThan(0);
+      expect(familyTokens.every((token) => token.revokedAt !== null)).toBe(true);
+    }
+
+    await raceAndAssertFamilyFullyRevoked("reuse");
+    await raceAndAssertFamilyFullyRevoked("rotation");
+  });
+
   it("given an expired token, when refreshed, then it throws InvalidRefreshTokenError and the family is untouched", async () => {
     const { service, store, clock } = setup();
     const session = await registerUser(service);
@@ -379,5 +474,37 @@ describe("logout", () => {
 
     const loginRow = await tokenRowFor(store, loginSession.refreshToken);
     expect(loginRow?.revokedAt).toBeNull();
+  });
+});
+
+describe("protocol order", () => {
+  const GUARDED_CALLS = ["findByHashForUpdate", "findByIdForUpdate", "revokeFamily"];
+
+  it("given a refresh, when the transaction runs, then lockFamilyOfToken is the first repository call, before any findByHash* or revokeFamily call", async () => {
+    const { service, calls } = setupWithRecording();
+    const session = await service.register(
+      { email: "alex@example.com", password: "password123", displayName: "Alex" },
+      TEST_LOGGER,
+    );
+    calls.length = 0; // only the refresh transaction's own call order matters here
+
+    await service.refresh(session.refreshToken, TEST_LOGGER);
+
+    expect(calls[0]).toBe("lockFamilyOfToken");
+    expect(calls.some((call) => GUARDED_CALLS.includes(call))).toBe(true);
+  });
+
+  it("given a logout, when the transaction runs, then lockFamilyOfToken is the first repository call, before any findByHash* or revokeFamily call", async () => {
+    const { service, calls } = setupWithRecording();
+    const session = await service.register(
+      { email: "alex@example.com", password: "password123", displayName: "Alex" },
+      TEST_LOGGER,
+    );
+    calls.length = 0; // only the logout transaction's own call order matters here
+
+    await service.logout(session.refreshToken);
+
+    expect(calls[0]).toBe("lockFamilyOfToken");
+    expect(calls.some((call) => GUARDED_CALLS.includes(call))).toBe(true);
   });
 });

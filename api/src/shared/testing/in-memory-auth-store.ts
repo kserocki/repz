@@ -17,18 +17,27 @@ export type InMemoryAuthStore = {
 type StoredToken = RefreshTokenRecord & { tokenHash: string };
 
 /**
- * DB-free `AuthTransactions` fake: `run` executes synchronously (no real concurrency, since
- * every unit test is single-threaded), so it provides no row locking. The "row locked by a
- * concurrent refresh" and parallel-race behaviour is Spotter's job against real Postgres.
+ * DB-free `AuthTransactions` fake. `transactions.run` models Postgres's advisory-lock family
+ * serialization: `lockFamilyOfToken` resolves to a per-family async mutex that stays held until
+ * the enclosing `run` settles, so two concurrent `run` calls touching the same family are
+ * serialized the same way two Postgres transactions holding the same `pg_advisory_xact_lock`
+ * key would be. Row-level `FOR UPDATE` locking itself is not modelled (every unit test is
+ * single-threaded); that and the full parallel-race behaviour are Spotter's job against real
+ * Postgres.
  */
 export function createInMemoryAuthStore(
   generateId: () => string = () => crypto.randomUUID(),
 ): InMemoryAuthStore {
   const users = createInMemoryUsersRepository(generateId);
   const tokensById = new Map<string, StoredToken>();
+  const familyLockTails = new Map<string, Promise<void>>();
 
   function toRecord({ tokenHash: _tokenHash, ...record }: StoredToken): RefreshTokenRecord {
     return record;
+  }
+
+  function findByTokenHash(tokenHash: string): StoredToken | undefined {
+    return [...tokensById.values()].find((token) => token.tokenHash === tokenHash);
   }
 
   const refreshTokens: RefreshTokensRepository = {
@@ -46,8 +55,12 @@ export function createInMemoryAuthStore(
       return toRecord(stored);
     },
 
+    async lockFamilyOfToken(tokenHash) {
+      return findByTokenHash(tokenHash)?.familyId;
+    },
+
     async findByHashForUpdate(tokenHash) {
-      const found = [...tokensById.values()].find((token) => token.tokenHash === tokenHash);
+      const found = findByTokenHash(tokenHash);
       return found ? toRecord(found) : undefined;
     },
 
@@ -74,7 +87,40 @@ export function createInMemoryAuthStore(
   };
 
   const transactions: AuthTransactions = {
-    run: (work) => work({ users, refreshTokens }),
+    async run(work) {
+      // Each `run` gets its own `lockFamilyOfToken` bound to the releases it should hold until
+      // it settles, chained onto whatever the previous holder of that family's lock queued.
+      const releases: Array<() => void> = [];
+      const txRefreshTokens: RefreshTokensRepository = {
+        ...refreshTokens,
+        async lockFamilyOfToken(tokenHash) {
+          const found = findByTokenHash(tokenHash);
+          if (!found) {
+            return undefined;
+          }
+          const previous = familyLockTails.get(found.familyId) ?? Promise.resolve();
+          let release!: () => void;
+          const held = new Promise<void>((resolve) => {
+            release = resolve;
+          });
+          familyLockTails.set(
+            found.familyId,
+            previous.then(() => held),
+          );
+          await previous;
+          releases.push(release);
+          return found.familyId;
+        },
+      };
+
+      try {
+        return await work({ users, refreshTokens: txRefreshTokens });
+      } finally {
+        releases.forEach((release) => {
+          release();
+        });
+      }
+    },
   };
 
   return {

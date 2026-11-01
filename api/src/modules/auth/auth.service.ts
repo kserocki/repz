@@ -152,6 +152,11 @@ export function createAuthService(deps: {
       const presentedHash = hashRefreshToken(refreshToken);
 
       const outcome: RefreshOutcome = await deps.transactions.run(async ({ refreshTokens }) => {
+        const familyId = await refreshTokens.lockFamilyOfToken(presentedHash);
+        if (!familyId) {
+          return { kind: "invalid" };
+        }
+
         const presented = await refreshTokens.findByHashForUpdate(presentedHash);
         const successor = presented?.replacedBy
           ? await refreshTokens.findByIdForUpdate(presented.replacedBy)
@@ -217,9 +222,9 @@ export function createAuthService(deps: {
     async logout(refreshToken) {
       const hash = hashRefreshToken(refreshToken);
       await deps.transactions.run(async ({ refreshTokens }) => {
-        const presented = await refreshTokens.findByHashForUpdate(hash);
-        if (presented) {
-          await refreshTokens.revokeFamily(presented.familyId, deps.clock.now());
+        const familyId = await refreshTokens.lockFamilyOfToken(hash);
+        if (familyId) {
+          await refreshTokens.revokeFamily(familyId, deps.clock.now());
         }
       });
     },
