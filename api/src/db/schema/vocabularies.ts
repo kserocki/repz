@@ -25,6 +25,27 @@ export type Equipment = (typeof EQUIPMENT)[number];
 export const UNIT_SYSTEMS = ["kg", "lb"] as const;
 export type UnitSystem = (typeof UNIT_SYSTEMS)[number];
 
+/**
+ * The 12 muscle groups used for custom-exercise illustration fallbacks (design board 16).
+ * Validated in Zod only for now (REP-15); the DB `CHECK` and the wger-to-this-list mapping for
+ * catalog exercises arrive with the catalog seeder, which also extends this tuple if needed.
+ */
+export const MUSCLES = [
+  "chest",
+  "back",
+  "shoulders",
+  "biceps",
+  "triceps",
+  "forearms",
+  "abs",
+  "glutes",
+  "quadriceps",
+  "hamstrings",
+  "calves",
+  "full_body",
+] as const;
+export type Muscle = (typeof MUSCLES)[number];
+
 /** Interpolating a value with `sql` produces a bound `$1`, which DDL such as `CHECK` can't use. */
 function sqlLiteral(value: string): SQL {
   return sql.raw(`'${value.replaceAll("'", "''")}'`);
