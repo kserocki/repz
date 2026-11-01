@@ -259,15 +259,8 @@ describe("refresh", () => {
     expect(successor?.revokedAt).not.toBeNull();
   });
 
-  // TODO(REP-14): pending Steel's answer (asked 2026-11-01) on whether presenting an
-  // already-revoked, never-rotated token (e.g. the successor above, swept by someone else's
-  // reuse) should decide "invalid" (no new warn log) or "reuse" (another warn log) when it was
-  // not itself the token that triggered the family revoke. §3.3 rule 4 taken literally says
-  // "reuse"; §3.6's auth.service.test.ts prose and Spotter's S11 ("one warn" total) say
-  // "invalid". `decideRefresh` currently implements the literal rule 4 (reuse), which is what
-  // this skipped test would contradict.
-  it.skip("given the successor of an already-revoked family is presented afterwards, when refreshed, then it fails as invalid, not as a fresh reuse", async () => {
-    const { service, clock } = setup();
+  it("given a family revoked by reuse, when its live successor at sweep time is presented, then it is reuse again and the family stays revoked", async () => {
+    const { service, store, clock } = setup();
     const session = await registerUser(service);
     const rotated = await service.refresh(session.refreshToken);
 
@@ -275,10 +268,14 @@ describe("refresh", () => {
     await expect(service.refresh(session.refreshToken)).rejects.toBeInstanceOf(
       RefreshTokenReusedError,
     );
+    const sweepTimestamp = clock.now();
 
     await expect(service.refresh(rotated.refreshToken)).rejects.toBeInstanceOf(
-      InvalidRefreshTokenError,
+      RefreshTokenReusedError,
     );
+
+    const successor = await tokenRowFor(store, rotated.refreshToken);
+    expect(successor?.revokedAt).toEqual(sweepTimestamp);
   });
 
   it("given the successor was already rotated, when the oldest token is replayed inside the grace window, then it is reuse and the whole family (including the newest token) is revoked", async () => {

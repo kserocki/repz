@@ -27,7 +27,7 @@ export class InvalidCredentialsError extends ApplicationError {
   }
 }
 
-/** `POST /auth/refresh` with an unknown, expired or already-revoked (non-reuse) token. */
+/** `POST /auth/refresh` with an unknown or expired token. */
 export class InvalidRefreshTokenError extends ApplicationError {
   readonly type = "urn:repz:problem:invalid-refresh-token";
   readonly title = "Invalid Refresh Token";
