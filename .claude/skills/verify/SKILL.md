@@ -25,6 +25,7 @@ No baselines and no blanket suppression: fix findings. A scoped suppression, or 
 **API** (from `api/`, works today):
 ```bash
 pnpm lint && pnpm typecheck && pnpm test && pnpm build
+pnpm db:check && pnpm db:generate && git status --porcelain   # must print nothing: every schema change has a committed migration
 pnpm openapi:export && git diff --exit-code openapi.json   # from REP-17 on: contract is committed and current
 ```
 **Contract:** shared fixtures are decoded by a `core:network` test (from REP-17 on).

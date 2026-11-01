@@ -14,7 +14,7 @@ If anything is unclear (naming, behaviour, UX copy, a token value, which module 
 
 ## Steps (api/)
 1. **Schema:** Zod schemas in `src/modules/<module>/<module>.schemas.ts`, with `.openapi({ example })` on every schema.
-2. **DB** (if needed): Drizzle table in `src/db/schema/`, then `pnpm db:generate` for the migration (never hand-edit generated SQL), then `pnpm db:migrate`. Syncable root tables need `user_id`, `version bigint` (from `sync_version_seq`), `updated_at` and `deleted_at`.
+2. **DB** (if needed): Drizzle table in `src/db/schema/`, then `pnpm db:generate` for the migration (never hand-edit generated SQL), then `pnpm db:migrate`. Follow ADR-0019. Syncable root tables use `syncColumns()` (`version`, `updated_at`, `deleted_at`) and a `(user_id, version)` index, and every update of a root sets `version = nextSyncVersion` and `updated_at = now()`. Migrations are forward-only: never edit a migration that is already on `main`; fix it with a new one.
 3. **Repository** (`*.repository.ts`): Drizzle queries only, no HTTP concerns.
 4. **Service** (`*.service.ts`): business rules. Throw typed domain errors that are mapped to Problem Details in `shared/errors.ts`.
 5. **Route** (`*.routes.ts`): build the router with `createRouter()` from `shared/router.ts`, which gives an `OpenAPIHono` with the shared validation hook. Problem `type`s follow ADR-0016 (`about:blank` for plain HTTP errors, `urn:repz:problem:<kebab-name>` for app errors). Test routes through `createApp(...).request()`. Declare routes with `createRoute` + `app.openapi(...)`. Validation comes from the Zod schemas. Wire dependencies in `app.ts` (factory functions, no DI framework).

@@ -80,11 +80,12 @@ Run from `mobile/` unless noted. One-time setup: create the git-ignored `mobile/
 | Postgres for the API | `docker compose up -d` (from the repo root; needs Docker/OrbStack running) | works |
 | API setup / dev | `cd api && pnpm install` · `pnpm dev` (Node 26, `.env` from `.env.example`) | works |
 | API gates (from `api/`) | `pnpm lint` · `pnpm typecheck` · `pnpm test` · `pnpm build` | works |
+| DB schema and migrations (from `api/`) | `pnpm db:generate` (after a schema change) · `pnpm db:migrate` (needs Postgres) · `pnpm db:check`; reset with `docker compose down -v` | works |
 | Brand assets reproducible (from the repo root) | `python3 brand/logo/src/android_vectors.py && mobile/iosApp/scripts/sync-brand-assets.sh && git status --porcelain` (must print nothing) | works |
 
 **CI (GitHub Actions)** runs the same commands (ADR-0018):
 - `.github/workflows/mobile.yml`: `./gradlew check :app:android:assembleDebug` on Linux; `./gradlew iosSimulatorArm64Test compileKotlinIosArm64` and the `xcodebuild` simulator build on macOS (`xcode-27`); the brand-asset check.
-- `.github/workflows/api.yml`: `pnpm install --frozen-lockfile`, then the API gates.
+- `.github/workflows/api.yml`: `pnpm install --frozen-lockfile`, the API gates, `pnpm db:check` + `pnpm db:generate` (no drift), and `pnpm db:migrate` twice on a Postgres 18.6 service.
 - Required checks on `main`: `Mobile CI passed` and `API CI passed`. Reproduce a CI failure locally with the same command. If a command you need is missing here, ask.
 
 ## 6. Skills (`.claude/skills/`)

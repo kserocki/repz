@@ -1,0 +1,5 @@
+# pnpm fails install on any unlisted dependency build script (strictDepBuilds). esbuild's
+# postinstall only re-checks the binary pnpm already installed from @esbuild/<platform>,
+# so it is listed as denied.
+allowBuilds:
+  esbuild: false
