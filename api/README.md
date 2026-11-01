@@ -12,16 +12,22 @@ The Repz backend: Hono + `@hono/zod-openapi`, Drizzle ORM, Postgres, pino. See `
 
 ```bash
 # from the repository root
-docker compose up -d          # starts Postgres only; the API runs on the host
+docker compose up -d          # starts Postgres only, bound to 127.0.0.1; the API runs on the host
 
 cd api
 pnpm install --frozen-lockfile
-cp .env.example .env          # edit if you changed the compose credentials or port
+cp .env.example .env          # fill in JWT_SECRET (see "Environment variables" below)
 pnpm db:migrate                # applies every committed migration
 pnpm dev                      # http://localhost:3000, pretty-printed logs
 ```
 
 `GET /health` should now return `200 {"status":"ok"}`.
+
+Without a `.env` file, pass every variable inline instead (useful for a one-off run or a quick manual test with non-default settings):
+
+```bash
+JWT_SECRET=$(openssl rand -base64 48) DATABASE_URL=postgres://repz:repz@localhost:5432/repz node src/index.ts
+```
 
 ## Scripts
 
@@ -40,18 +46,40 @@ pnpm dev                      # http://localhost:3000, pretty-printed logs
 
 ## Environment variables
 
-See `.env.example`. All variables are validated at boot by `src/env.ts` (Zod); the process exits with a message naming every invalid or missing variable (never its value) if validation fails.
+See `.env.example`. All variables are validated at boot by `src/env.ts` (Zod); the process exits with a message naming every invalid or missing variable (never its value) if validation fails. `pnpm db:migrate` validates only `NODE_ENV`/`DATABASE_URL`/`LOG_LEVEL` (`migrationEnvSchema`), so it works without `JWT_SECRET` (CI's migration step has none).
 
-| Variable       | Default       | Notes                                   |
-| -------------- | ------------- | --------------------------------------- |
-| `NODE_ENV`     | `development` | `development` \| `test` \| `production` |
-| `PORT`         | `3000`        | 1–65535                                 |
-| `DATABASE_URL` | — (required)  | `postgres://user:password@host:port/db` |
-| `LOG_LEVEL`    | `info`        | pino level                              |
+| Variable                            | Default          | Notes                                                                                                                                                                                         |
+| ----------------------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NODE_ENV`                          | `development`    | `development` \| `test` \| `production`                                                                                                                                                       |
+| `PORT`                              | `3000`           | 1–65535                                                                                                                                                                                       |
+| `DATABASE_URL`                      | — (required)     | `postgres://user:password@host:port/db`                                                                                                                                                       |
+| `LOG_LEVEL`                         | `info`           | pino level                                                                                                                                                                                    |
+| `JWT_SECRET`                        | — (required)     | >= 32 characters (256+ bits), used directly as the HS256 key. Generate one with `openssl rand -base64 48`. Required in every `NODE_ENV`, including `development`.                             |
+| `ACCESS_TOKEN_TTL_SECONDS`          | `900` (15 min)   | Access token (JWT) lifetime.                                                                                                                                                                  |
+| `REFRESH_TOKEN_TTL_SECONDS`         | `2592000` (30 d) | Refresh token lifetime, sliding: every new token (login, register, rotation, grace replay) is valid this long from its own issue time.                                                        |
+| `REFRESH_TOKEN_REUSE_GRACE_SECONDS` | `30`             | Window in which a rotated refresh token whose successor is still live is treated as a retried/concurrent refresh instead of reuse. `0` disables the grace window (strict ADR-0011 behaviour). |
+
+## Auth
+
+See `docs/ARCHITECTURE.md` §10.3 and ADR-0011 (with its REP-14 amendment) for the full design. Routes:
+
+| Method | Path             | Auth   | Notes                                                                                                       |
+| ------ | ---------------- | ------ | ----------------------------------------------------------------------------------------------------------- |
+| POST   | `/auth/register` | public | 201, returns `AuthSession` (`user`, `accessToken`, `refreshToken`, `expiresIn`)                             |
+| POST   | `/auth/login`    | public | 200, same shape as register; wrong password and unknown email give the identical `invalid-credentials` body |
+| POST   | `/auth/refresh`  | public | 200, rotates the refresh token (see below) and returns `AuthTokens`                                         |
+| POST   | `/auth/logout`   | public | 204 always, even for an unknown/expired/revoked token (idempotent)                                          |
+| GET    | `/me`            | bearer | 200, the current user                                                                                       |
+| PATCH  | `/me`            | bearer | 200, `displayName` and/or `unitSystem`, at least one required                                               |
+
+- **Access tokens** are HS256 JWTs (`jose`): `sub`, `iat`, `exp`, `iss: repz-api`, `aud: repz-app`, verified with the algorithm pinned. Protected routes read `Authorization: Bearer <token>`; a missing/invalid/expired token answers 401 `invalid-access-token` with `WWW-Authenticate`.
+- **Refresh tokens** are 256-bit random values, stored only as a SHA-256 hash. Every register/login starts a new "family" (one per signed-in device session); refreshing **rotates** the token under a row lock and records the successor, and the lifetime is **sliding** (each new token is valid `REFRESH_TOKEN_TTL_SECONDS` from its own issue time).
+- **Reuse detection, relaxed by a grace window:** presenting an already-rotated token revokes every live token in its family (a stolen-token signal). A token rotated less than `REFRESH_TOKEN_REUSE_GRACE_SECONDS` ago whose direct successor is still live is treated as a retried or concurrent refresh instead: it gets a new sibling pair in the same family, and the original successor stays live. This absorbs a client retrying after a lost response, or two tabs refreshing at once, without signing the user out. `REFRESH_TOKEN_REUSE_GRACE_SECONDS=0` disables it (strict detection).
+- Passwords are hashed with argon2id (`@node-rs/argon2`, OWASP's first recommended configuration: 19 MiB, 2 passes, 1 thread).
 
 ## Database
 
-`docker-compose.yml` (repository root) starts Postgres 18.6 only; there is no API container yet (tracked as REP-59). The connection is checked once at boot (`select 1`); if Postgres is unreachable, the process logs a fatal error (host only, never the full connection string) and calls `process.exit(1)`. Under `pnpm dev`, `node --watch` then waits for a file change before it tries again, instead of the terminal returning; use `pnpm build && pnpm start` to see the real exit code.
+`docker-compose.yml` (repository root) starts Postgres 18.6 only, bound to `127.0.0.1:5432` (not reachable from other machines on the network); there is no API container yet (tracked as REP-59). The connection is checked once at boot (`select 1`); if Postgres is unreachable, the process logs a fatal error (host only, never the full connection string) and calls `process.exit(1)`. Under `pnpm dev`, `node --watch` then waits for a file change before it tries again, instead of the terminal returning; use `pnpm build && pnpm start` to see the real exit code.
 
 The schema lives in `src/db/schema/` (Drizzle): one file per table group, plus the shared `sync_version_seq` sequence and vocabularies. Migrations are generated into `src/db/migrations/`, committed, and never hand-edited:
 
