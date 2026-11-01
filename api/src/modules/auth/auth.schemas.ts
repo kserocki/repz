@@ -5,8 +5,10 @@ const EMAIL_MAX_LENGTH = 254;
 const REGISTER_PASSWORD_MIN_LENGTH = 8;
 const REGISTER_PASSWORD_MAX_LENGTH = 128;
 const DISPLAY_NAME_MAX_LENGTH = 50;
+// A refresh token is 43 base64url characters; 256 leaves generous room without being unbounded.
+const REFRESH_TOKEN_MAX_LENGTH = 256;
 
-/** Trimmed and lowercased before validation (Q2): the wire value and the DB lookup always agree. */
+/** Trimmed and lowercased before validation: the wire value and the DB lookup always agree. */
 function emailField(maxLength?: number) {
   const format = maxLength ? z.email().max(maxLength) : z.email();
   return z.string().trim().toLowerCase().pipe(format);
@@ -29,19 +31,21 @@ export const RegisterRequestSchema = z
 export const LoginRequestSchema = z
   .object({
     email: emailField(),
-    // Never trimmed or length-checked (Q1): the server just compares it against the stored hash.
-    password: z.string().min(1),
+    // Never trimmed (the server just compares it against the stored hash). Capped at the same
+    // length as registration: a longer value can never match a registered password anyway, and
+    // the cap keeps argon2 from hashing an unbounded input.
+    password: z.string().min(1).max(REGISTER_PASSWORD_MAX_LENGTH),
   })
   .openapi("LoginRequest", {
     example: { email: "alex@example.com", password: "correct horse battery staple" },
   });
 
 export const RefreshRequestSchema = z
-  .object({ refreshToken: z.string().min(1) })
+  .object({ refreshToken: z.string().min(1).max(REFRESH_TOKEN_MAX_LENGTH) })
   .openapi("RefreshRequest", { example: { refreshToken: "3q2+7w==" } });
 
 export const LogoutRequestSchema = z
-  .object({ refreshToken: z.string().min(1) })
+  .object({ refreshToken: z.string().min(1).max(REFRESH_TOKEN_MAX_LENGTH) })
   .openapi("LogoutRequest", { example: { refreshToken: "3q2+7w==" } });
 
 export const AuthTokensSchema = z

@@ -1,7 +1,6 @@
 import { createRoute, type OpenAPIHono } from "@hono/zod-openapi";
 import type { AuthenticatedAppEnv } from "../../shared/app-env.ts";
-import type { AccessTokenVerifier } from "../../shared/auth.ts";
-import { requireAuth } from "../../shared/auth.ts";
+import { type AccessTokenVerifier, requireAuth } from "../../shared/auth.ts";
 import { ProblemDetailsSchema } from "../../shared/problem-details.ts";
 import { createRouter } from "../../shared/router.ts";
 import { toUserResponse, UpdateProfileRequestSchema, UserSchema } from "./users.schemas.ts";
@@ -44,14 +43,18 @@ const patchMeRoute = createRoute({
   },
 });
 
-/** `GET`/`PATCH /me`, behind `requireAuth`. REP-15 mounts `requireAuth` on `/sync/*` the same way. */
+/**
+ * `GET`/`PATCH /me`, behind `requireAuth`. `requireAuth` is mounted scoped to `/me` (never
+ * unscoped): once this router is mounted at the app root, an unscoped `.use(...)` would become a
+ * global middleware and start guarding every route, including unrelated 404s.
+ */
 export function createUsersRoutes(
   usersService: UsersService,
   verifyAccessToken: AccessTokenVerifier,
 ): OpenAPIHono<AuthenticatedAppEnv> {
   const router = createRouter<AuthenticatedAppEnv>();
 
-  router.use(requireAuth(verifyAccessToken));
+  router.use("/me", requireAuth(verifyAccessToken));
 
   router.openapi(getMeRoute, async (c) => {
     const user = await usersService.getProfile(c.var.userId);

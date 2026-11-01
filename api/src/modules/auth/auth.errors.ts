@@ -1,6 +1,6 @@
 import { ApplicationError } from "../../shared/application-error.ts";
 
-/** `POST /auth/register` with an email already in use (`users_email_lower_key`, T12). */
+/** `POST /auth/register` with an email already in use (`users_email_lower_key`). */
 export class EmailTakenError extends ApplicationError {
   readonly type = "urn:repz:problem:email-taken";
   readonly title = "Email Taken";
@@ -13,8 +13,8 @@ export class EmailTakenError extends ApplicationError {
 
 /**
  * `POST /auth/login` with an unknown email or a wrong password. Both cases throw this one
- * error so the response can never reveal which was wrong (T11); the log line matches that
- * intent by never naming the attempted email either.
+ * error so the response can never reveal which was wrong; the log line matches that intent by
+ * never naming the attempted email either.
  */
 export class InvalidCredentialsError extends ApplicationError {
   readonly type = "urn:repz:problem:invalid-credentials";
@@ -40,9 +40,9 @@ export class InvalidRefreshTokenError extends ApplicationError {
 
 /**
  * A refresh token was presented outside the reuse grace window after its family had already
- * rotated (§3.3). Same wire shape as `InvalidRefreshTokenError` (T13: reuse is visible only in
+ * rotated (ADR-0011). Same wire shape as `InvalidRefreshTokenError` (reuse is visible only in
  * the log, never in the response); the whole family is revoked, and committed, before this is
- * thrown (T9).
+ * thrown.
  */
 export class RefreshTokenReusedError extends ApplicationError {
   readonly type = "urn:repz:problem:invalid-refresh-token";

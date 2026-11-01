@@ -156,6 +156,25 @@ describe("createAccessTokens", () => {
     await expect(tokens.verify(token)).rejects.toBeInstanceOf(InvalidAccessTokenError);
   });
 
+  it("given a correctly signed token with no exp claim, when verified, then it throws InvalidAccessTokenError", async () => {
+    const key = new TextEncoder().encode(SECRET);
+    const issuedAtSeconds = Math.floor(ISSUED_AT.getTime() / 1000);
+    const token = await new SignJWT({})
+      .setProtectedHeader({ alg: "HS256" })
+      .setSubject(USER_ID)
+      .setIssuedAt(issuedAtSeconds)
+      .setIssuer("repz-api")
+      .setAudience("repz-app")
+      .sign(key);
+
+    const tokens = createAccessTokens(
+      { secret: SECRET, ttlSeconds: TTL_SECONDS },
+      clockAt(ISSUED_AT),
+    );
+
+    await expect(tokens.verify(token)).rejects.toBeInstanceOf(InvalidAccessTokenError);
+  });
+
   it("given garbage input, when verified, then it throws InvalidAccessTokenError", async () => {
     const tokens = createAccessTokens(
       { secret: SECRET, ttlSeconds: TTL_SECONDS },

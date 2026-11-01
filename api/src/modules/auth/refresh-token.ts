@@ -11,7 +11,7 @@ export function generateRefreshToken(): string {
 /**
  * The value stored in `refresh_tokens.token_hash`. A fast hash is appropriate here (unlike a
  * password hash): the input already has 256 bits of entropy, so there is nothing to slow down
- * an attacker's guessing (T7).
+ * an attacker's guessing.
  */
 export function hashRefreshToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");

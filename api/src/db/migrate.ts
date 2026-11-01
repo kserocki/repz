@@ -9,7 +9,7 @@ import { createLogger } from "../shared/logger.ts";
  * no race between instances starting at once, and `/health` stays a pure liveness check.
  * Forward-only: migrations already on `main` are immutable, fixes are new migrations.
  * Validated against `migrationEnvSchema`, not the full `envSchema`: migrating needs no
- * `JWT_SECRET` (T6).
+ * `JWT_SECRET`.
  */
 const env = loadEnv(process.env, migrationEnvSchema);
 const logger = createLogger(env);

@@ -46,7 +46,7 @@ const RECORD_COLUMNS = {
   replacedBy: refreshTokens.replacedBy,
 };
 
-/** Drizzle queries only; `auth.service.ts` owns every rotation/reuse rule (§3.3). */
+/** Drizzle queries only; `auth.service.ts` owns every rotation/reuse rule. */
 function createRefreshTokensRepository(db: DatabaseExecutor): RefreshTokensRepository {
   return {
     async insert(token) {
@@ -95,7 +95,7 @@ function createRefreshTokensRepository(db: DatabaseExecutor): RefreshTokensRepos
 
 /**
  * Wraps a Postgres transaction with `users`/`refreshTokens` repositories bound to its `tx`, so
- * register, login, refresh and logout see one atomic view of both tables (§3.3).
+ * register, login, refresh and logout see one atomic view of both tables.
  */
 export function createAuthTransactions(db: PostgresJsDatabase<DatabaseSchema>): AuthTransactions {
   return {

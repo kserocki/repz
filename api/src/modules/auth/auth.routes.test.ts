@@ -1,4 +1,6 @@
+import pino from "pino";
 import { describe, expect, it } from "vitest";
+import { MemoryDestination } from "../../shared/testing/memory-destination.ts";
 import { createTestApp } from "../../shared/testing/test-app.ts";
 
 const VALID_REGISTER_BODY = {
@@ -95,6 +97,20 @@ describe("POST /auth/login", () => {
     expect((body.user as { email: string }).email).toBe("alex@example.com");
   });
 
+  it("given a password over 128 characters, when logging in, then it responds 400 validation-error", async () => {
+    const { app } = createTestApp();
+    await register(app);
+
+    const res = await postJson(app, "/auth/login", {
+      email: "alex@example.com",
+      password: "a".repeat(129),
+    });
+
+    expect(res.status).toBe(400);
+    const body = await readJson(res);
+    expect(body.type).toBe("urn:repz:problem:validation-error");
+  });
+
   it("given a wrong password and an unknown email, when logging in, then both respond with the identical invalid-credentials body (except requestId)", async () => {
     const { app } = createTestApp();
     await register(app);
@@ -165,6 +181,49 @@ describe("POST /auth/refresh", () => {
     const body = await readJson(res);
     expect(body.type).toBe("urn:repz:problem:invalid-refresh-token");
   });
+
+  it("given a refresh token over 256 characters, when refreshed, then it responds 400 validation-error", async () => {
+    const { app } = createTestApp();
+
+    const res = await postJson(app, "/auth/refresh", { refreshToken: "a".repeat(257) });
+
+    expect(res.status).toBe(400);
+    const body = await readJson(res);
+    expect(body.type).toBe("urn:repz:problem:validation-error");
+  });
+});
+
+describe("request-scoped logging", () => {
+  it("given a register, login and grace replay, when logged, then each line carries the request's own requestId", async () => {
+    const destination = new MemoryDestination();
+    const logger = pino({ level: "info" }, destination);
+
+    const register = createTestApp({ logger, generateRequestId: () => "register-request-id" });
+    await postJson(register.app, "/auth/register", VALID_REGISTER_BODY);
+
+    const login = createTestApp({ logger, generateRequestId: () => "login-request-id" });
+    await postJson(login.app, "/auth/register", VALID_REGISTER_BODY);
+    await postJson(login.app, "/auth/login", {
+      email: "alex@example.com",
+      password: VALID_REGISTER_BODY.password,
+    });
+
+    const replay = createTestApp({ logger, generateRequestId: () => "replay-request-id" });
+    const session = await readJson(
+      await postJson(replay.app, "/auth/register", VALID_REGISTER_BODY),
+    );
+    await postJson(replay.app, "/auth/refresh", { refreshToken: session.refreshToken });
+    await postJson(replay.app, "/auth/refresh", { refreshToken: session.refreshToken });
+
+    const registered = destination.entries.find((entry) => entry.msg === "user registered");
+    const loggedIn = destination.entries.find((entry) => entry.msg === "user logged in");
+    const replayed = destination.entries.find(
+      (entry) => entry.msg === "refresh token replayed within grace window",
+    );
+    expect(registered?.requestId).toBe("register-request-id");
+    expect(loggedIn?.requestId).toBe("login-request-id");
+    expect(replayed?.requestId).toBe("replay-request-id");
+  });
 });
 
 describe("POST /auth/logout", () => {
@@ -185,5 +244,15 @@ describe("POST /auth/logout", () => {
     const res = await postJson(app, "/auth/logout", { refreshToken: "unknown-token" });
 
     expect(res.status).toBe(204);
+  });
+
+  it("given a refresh token over 256 characters, when logged out, then it responds 400 validation-error", async () => {
+    const { app } = createTestApp();
+
+    const res = await postJson(app, "/auth/logout", { refreshToken: "a".repeat(257) });
+
+    expect(res.status).toBe(400);
+    const body = await readJson(res);
+    expect(body.type).toBe("urn:repz:problem:validation-error");
   });
 });

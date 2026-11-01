@@ -45,6 +45,7 @@ export function createAccessTokens(settings: AccessTokenSettings, clock: Clock):
           issuer: ISSUER,
           audience: AUDIENCE,
           currentDate: clock.now(),
+          requiredClaims: ["sub", "exp", "iat"],
         });
         subject = payload.sub;
       } catch {

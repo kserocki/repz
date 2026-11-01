@@ -217,7 +217,7 @@ describe("errorHandler", () => {
     expect(errorEntries).toHaveLength(0);
   });
 
-  it("given a handler that throws an HTTPException with a status >= 500, when requested, then it is logged at error level (Q8)", async () => {
+  it("given a handler that throws an HTTPException with a status >= 500, when requested, then it is logged at error level", async () => {
     const destination = new MemoryDestination();
     const app = createTestApp(destination);
 

@@ -11,5 +11,5 @@ export type AppEnv = {
   };
 };
 
-/** `AppEnv` plus the user id `requireAuth` sets once a bearer token verifies (REP-15 mounts it on `/sync/*`). */
+/** `AppEnv` plus the user id `requireAuth` sets once a bearer token verifies. */
 export type AuthenticatedAppEnv = AppEnv & { Variables: { userId: string } };

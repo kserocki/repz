@@ -32,7 +32,7 @@ function toUserRecord(row: typeof users.$inferSelect): UserRecord {
     email: row.email,
     passwordHash: row.passwordHash,
     displayName: row.displayName,
-    unitSystem: row.unitSystem as UnitSystem,
+    unitSystem: row.unitSystem,
   };
 }
 

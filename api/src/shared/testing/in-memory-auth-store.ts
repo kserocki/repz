@@ -19,7 +19,7 @@ type StoredToken = RefreshTokenRecord & { tokenHash: string };
 /**
  * DB-free `AuthTransactions` fake: `run` executes synchronously (no real concurrency, since
  * every unit test is single-threaded), so it provides no row locking. The "row locked by a
- * concurrent refresh" and parallel-race behaviour is Spotter's job against real Postgres (Q9).
+ * concurrent refresh" and parallel-race behaviour is Spotter's job against real Postgres.
  */
 export function createInMemoryAuthStore(
   generateId: () => string = () => crypto.randomUUID(),

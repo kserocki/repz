@@ -8,7 +8,7 @@ export type PasswordHasher = {
 /**
  * OWASP Password Storage Cheat Sheet's first argon2id configuration (19 MiB, 2 passes, 1
  * thread). The algorithm is left to `@node-rs/argon2`'s default (argon2id): its `Algorithm`
- * export is an ambient `const enum`, which `erasableSyntaxOnly` can't import as a value (T16).
+ * export is an ambient `const enum`, which `erasableSyntaxOnly` can't import as a value.
  * `verify` reads the parameters back from the PHC string, so they can be raised later without
  * invalidating existing hashes.
  */

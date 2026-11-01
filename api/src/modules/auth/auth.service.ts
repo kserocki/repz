@@ -31,15 +31,18 @@ export type AuthSession = {
 export type AuthTokens = Omit<AuthSession, "user">;
 
 export type AuthService = {
-  register(input: { email: string; password: string; displayName: string }): Promise<AuthSession>;
-  login(input: { email: string; password: string }): Promise<AuthSession>;
-  refresh(refreshToken: string): Promise<AuthTokens>;
+  register(
+    input: { email: string; password: string; displayName: string },
+    logger: pino.Logger,
+  ): Promise<AuthSession>;
+  login(input: { email: string; password: string }, logger: pino.Logger): Promise<AuthSession>;
+  refresh(refreshToken: string, logger: pino.Logger): Promise<AuthTokens>;
   logout(refreshToken: string): Promise<void>;
 };
 
 /**
  * Used only when an email is unknown, so one argon2 verify always runs either way and login
- * timing doesn't reveal whether the account exists (T11).
+ * timing doesn't reveal whether the account exists.
  */
 const DUMMY_PASSWORD = "repz-dummy-password-for-constant-time-login-failures";
 
@@ -76,10 +79,13 @@ export function createAuthService(deps: {
   clock: Clock;
   generateId: () => string;
   settings: AuthSettings;
-  logger: pino.Logger;
 }): AuthService {
-  // Started once, at construction time (app startup), and reused by every login (T11).
+  // Started once, at construction time (app startup), and reused by every login.
   const dummyPasswordHash = deps.passwordHasher.hash(DUMMY_PASSWORD);
+  // Nothing awaits this promise until the first login; without a handler here, a rejection
+  // (e.g. the hasher failing) would surface as an unhandled rejection before that happens.
+  // `login()` still awaits the same promise and sees the real rejection there.
+  dummyPasswordHash.catch(() => {});
 
   function refreshTokenExpiry(): Date {
     return new Date(deps.clock.now().getTime() + deps.settings.refreshTokenTtlSeconds * 1000);
@@ -95,9 +101,9 @@ export function createAuthService(deps: {
   }
 
   return {
-    async register({ email, password, displayName }) {
-      // Defense in depth: the route's Zod schema already does this (Q2, Q3), but the stored
-      // value must be normalized regardless of caller.
+    async register({ email, password, displayName }, logger) {
+      // Defense in depth: the route's Zod schema already does this, but the stored value must
+      // be normalized regardless of caller.
       const normalizedEmail = email.trim().toLowerCase();
       const normalizedDisplayName = displayName.trim();
       const passwordHash = await deps.passwordHasher.hash(password);
@@ -118,12 +124,15 @@ export function createAuthService(deps: {
       });
 
       const { accessToken, expiresIn } = await deps.accessTokens.issue(user.id);
-      deps.logger.info({ userId: user.id }, "user registered");
+      logger.info({ userId: user.id }, "user registered");
       return { user, accessToken, refreshToken: rawToken, expiresIn };
     },
 
-    async login({ email, password }) {
-      const user = await deps.users.findByEmail(email);
+    async login({ email, password }, logger) {
+      // Defense in depth, matching register: the route already normalizes this, and the
+      // repository's lookup is already case-insensitive, so this changes nothing functionally.
+      const normalizedEmail = email.trim().toLowerCase();
+      const user = await deps.users.findByEmail(normalizedEmail);
       if (!user) {
         await deps.passwordHasher.verify(await dummyPasswordHash, password);
         throw new InvalidCredentialsError();
@@ -135,11 +144,11 @@ export function createAuthService(deps: {
       }
 
       const session = await startSession(user);
-      deps.logger.info({ userId: user.id }, "user logged in");
+      logger.info({ userId: user.id }, "user logged in");
       return session;
     },
 
-    async refresh(refreshToken) {
+    async refresh(refreshToken, logger) {
       const presentedHash = hashRefreshToken(refreshToken);
 
       const outcome: RefreshOutcome = await deps.transactions.run(async ({ refreshTokens }) => {
@@ -192,7 +201,7 @@ export function createAuthService(deps: {
         case "reuse":
           throw new RefreshTokenReusedError(outcome.userId, outcome.familyId);
         case "replay-within-grace":
-          deps.logger.info(
+          logger.info(
             { userId: outcome.userId, familyId: outcome.familyId },
             "refresh token replayed within grace window",
           );

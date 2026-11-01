@@ -80,7 +80,7 @@ const logoutRoute = createRoute({
 export function createAuthRoutes(authService: AuthService): OpenAPIHono<AppEnv> {
   const router = createRouter();
 
-  router.use(async (c, next) => {
+  router.use("/auth/*", async (c, next) => {
     try {
       await next();
     } finally {
@@ -89,18 +89,18 @@ export function createAuthRoutes(authService: AuthService): OpenAPIHono<AppEnv> 
   });
 
   router.openapi(registerRoute, async (c) => {
-    const session = await authService.register(c.req.valid("json"));
+    const session = await authService.register(c.req.valid("json"), c.var.logger);
     return c.json({ ...session, user: toUserResponse(session.user) }, 201);
   });
 
   router.openapi(loginRoute, async (c) => {
-    const session = await authService.login(c.req.valid("json"));
+    const session = await authService.login(c.req.valid("json"), c.var.logger);
     return c.json({ ...session, user: toUserResponse(session.user) }, 200);
   });
 
   router.openapi(refreshRoute, async (c) => {
     const { refreshToken } = c.req.valid("json");
-    const tokens = await authService.refresh(refreshToken);
+    const tokens = await authService.refresh(refreshToken, c.var.logger);
     return c.json(tokens, 200);
   });
 

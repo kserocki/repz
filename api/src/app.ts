@@ -60,12 +60,11 @@ export function createApp(deps: AppDependencies): OpenAPIHono<AppEnv> {
       refreshTokenTtlSeconds: deps.auth.refreshTokenTtlSeconds,
       refreshTokenReuseGraceSeconds: deps.auth.refreshTokenReuseGraceSeconds,
     },
-    logger: deps.logger,
   });
 
   const usersService = createUsersService(deps.repositories.users);
 
-  // REP-17 reads this when it starts serving /openapi.json; `/me` routes declare `security`.
+  // Read by the OpenAPI document generator; `/me` routes declare `security: [{ bearerAuth: [] }]`.
   app.openAPIRegistry.registerComponent("securitySchemes", "bearerAuth", {
     type: "http",
     scheme: "bearer",

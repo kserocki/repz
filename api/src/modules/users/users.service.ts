@@ -8,7 +8,7 @@ export type UsersService = {
 
 /**
  * Behind `requireAuth`: `userId` always comes from a verified access token, so a missing user
- * means the account was deleted after the token was issued (T13).
+ * means the account was deleted after the token was issued.
  */
 export function createUsersService(users: UsersRepository): UsersService {
   return {

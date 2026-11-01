@@ -13,7 +13,7 @@ export type DatabaseSchema = typeof schema;
 /**
  * Accepted by every repository: either the top-level Drizzle client or the `tx` a
  * `db.transaction(...)` callback receives, so a repository works unchanged inside a
- * transaction (`AuthTransactions`, REP-14) and outside one.
+ * transaction (`AuthTransactions`) and outside one.
  */
 export type DatabaseExecutor = PgDatabase<
   PostgresJsQueryResultHKT,

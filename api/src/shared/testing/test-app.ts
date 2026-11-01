@@ -25,10 +25,10 @@ export type TestApp = {
 };
 
 /**
- * `createApp` wired entirely with DB-free fakes (Q9): an in-memory auth store, a fast
- * deterministic password hasher and a settable clock. Returns the app alongside the clock and
- * store so a test can advance time (e.g. access/refresh token expiry) or inspect what was
- * stored, without reaching into `createApp`'s internals.
+ * `createApp` wired entirely with DB-free fakes: an in-memory auth store, a fast deterministic
+ * password hasher and a settable clock. Returns the app alongside the clock and store so a test
+ * can advance time (e.g. access/refresh token expiry) or inspect what was stored, without
+ * reaching into `createApp`'s internals.
  */
 export function createTestApp(overrides: TestAppOverrides = {}): TestApp {
   const generateId = overrides.generateId ?? (() => crypto.randomUUID());

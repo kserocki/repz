@@ -18,6 +18,7 @@ const ACCESS_TOKEN_TTL_SECONDS = 900;
 const REFRESH_TOKEN_TTL_SECONDS = 2_592_000;
 const GRACE_SECONDS = 30;
 const NOW = new Date("2026-01-01T00:00:00.000Z");
+const TEST_LOGGER = pino({ level: "silent" });
 
 function setup(graceSeconds = GRACE_SECONDS) {
   let nextId = 0;
@@ -39,7 +40,6 @@ function setup(graceSeconds = GRACE_SECONDS) {
       refreshTokenTtlSeconds: REFRESH_TOKEN_TTL_SECONDS,
       refreshTokenReuseGraceSeconds: graceSeconds,
     },
-    logger: pino({ level: "silent" }),
   });
   return { service, store, clock, generateId };
 }
@@ -52,11 +52,14 @@ describe("register", () => {
   it("given a new email, when registered, then it creates the user and one refresh token in a new family", async () => {
     const { service, store } = setup();
 
-    const session = await service.register({
-      email: "Alex@Example.com",
-      password: "password123",
-      displayName: "  Alex  ",
-    });
+    const session = await service.register(
+      {
+        email: "Alex@Example.com",
+        password: "password123",
+        displayName: "  Alex  ",
+      },
+      TEST_LOGGER,
+    );
 
     expect(session.user.email).toBe("alex@example.com");
     expect(session.user.displayName).toBe("Alex");
@@ -73,11 +76,10 @@ describe("register", () => {
   it("given a registered password, when stored, then the stored hash is not the raw password", async () => {
     const { service, store } = setup();
 
-    const session = await service.register({
-      email: "alex@example.com",
-      password: "password123",
-      displayName: "Alex",
-    });
+    const session = await service.register(
+      { email: "alex@example.com", password: "password123", displayName: "Alex" },
+      TEST_LOGGER,
+    );
 
     const stored = await store.users.findById(session.user.id);
     expect(stored?.passwordHash).not.toBe("password123");
@@ -85,19 +87,17 @@ describe("register", () => {
 
   it("given an email already registered in a different case, when registered again, then it throws EmailTakenError and creates no token", async () => {
     const { service, store } = setup();
-    await service.register({
-      email: "alex@example.com",
-      password: "password123",
-      displayName: "Alex",
-    });
+    await service.register(
+      { email: "alex@example.com", password: "password123", displayName: "Alex" },
+      TEST_LOGGER,
+    );
     const tokenCountBefore = store.listRefreshTokens().length;
 
     await expect(
-      service.register({
-        email: "ALEX@example.com",
-        password: "password456",
-        displayName: "Alex Two",
-      }),
+      service.register(
+        { email: "ALEX@example.com", password: "password456", displayName: "Alex Two" },
+        TEST_LOGGER,
+      ),
     ).rejects.toBeInstanceOf(EmailTakenError);
 
     expect(store.listRefreshTokens()).toHaveLength(tokenCountBefore);
@@ -106,19 +106,24 @@ describe("register", () => {
 
 describe("login", () => {
   async function registerUser(service: ReturnType<typeof setup>["service"]) {
-    return service.register({
-      email: "alex@example.com",
-      password: "password123",
-      displayName: "Alex",
-    });
+    return service.register(
+      { email: "alex@example.com", password: "password123", displayName: "Alex" },
+      TEST_LOGGER,
+    );
   }
 
   it("given correct credentials, when logging in twice, then each login starts a new family", async () => {
     const { service } = setup();
     await registerUser(service);
 
-    const first = await service.login({ email: "alex@example.com", password: "password123" });
-    const second = await service.login({ email: "alex@example.com", password: "password123" });
+    const first = await service.login(
+      { email: "alex@example.com", password: "password123" },
+      TEST_LOGGER,
+    );
+    const second = await service.login(
+      { email: "alex@example.com", password: "password123" },
+      TEST_LOGGER,
+    );
 
     expect(first.refreshToken).not.toBe(second.refreshToken);
   });
@@ -128,7 +133,7 @@ describe("login", () => {
     await registerUser(service);
 
     await expect(
-      service.login({ email: "alex@example.com", password: "wrong-password" }),
+      service.login({ email: "alex@example.com", password: "wrong-password" }, TEST_LOGGER),
     ).rejects.toBeInstanceOf(InvalidCredentialsError);
   });
 
@@ -158,11 +163,13 @@ describe("login", () => {
         refreshTokenTtlSeconds: REFRESH_TOKEN_TTL_SECONDS,
         refreshTokenReuseGraceSeconds: GRACE_SECONDS,
       },
-      logger: pino({ level: "silent" }),
     });
 
     await expect(
-      serviceWithCountingHasher.login({ email: "unknown@example.com", password: "whatever" }),
+      serviceWithCountingHasher.login(
+        { email: "unknown@example.com", password: "whatever" },
+        TEST_LOGGER,
+      ),
     ).rejects.toBeInstanceOf(InvalidCredentialsError);
 
     expect(verifyCalls).toBe(1);
@@ -171,11 +178,10 @@ describe("login", () => {
 
 describe("refresh", () => {
   async function registerUser(service: ReturnType<typeof setup>["service"]) {
-    return service.register({
-      email: "alex@example.com",
-      password: "password123",
-      displayName: "Alex",
-    });
+    return service.register(
+      { email: "alex@example.com", password: "password123", displayName: "Alex" },
+      TEST_LOGGER,
+    );
   }
 
   it("given a live token, when refreshed, then the presented row is revoked with replacedBy set and the successor shares the family with a sliding expiry", async () => {
@@ -183,7 +189,7 @@ describe("refresh", () => {
     const session = await registerUser(service);
     const presentedBefore = await tokenRowFor(store, session.refreshToken);
 
-    const tokens = await service.refresh(session.refreshToken);
+    const tokens = await service.refresh(session.refreshToken, TEST_LOGGER);
 
     const presentedAfter = await tokenRowFor(store, session.refreshToken);
     const successor = await tokenRowFor(store, tokens.refreshToken);
@@ -199,10 +205,10 @@ describe("refresh", () => {
   it("given a replay within the grace window, when refreshed again with the old token, then it gets a new sibling and the first successor stays live", async () => {
     const { service, store, clock } = setup();
     const session = await registerUser(service);
-    const firstRotation = await service.refresh(session.refreshToken);
+    const firstRotation = await service.refresh(session.refreshToken, TEST_LOGGER);
 
     clock.advance(10_000);
-    const replay = await service.refresh(session.refreshToken);
+    const replay = await service.refresh(session.refreshToken, TEST_LOGGER);
 
     expect(replay.refreshToken).not.toBe(firstRotation.refreshToken);
 
@@ -216,22 +222,22 @@ describe("refresh", () => {
     expect(sibling?.familyId).toBe(presented?.familyId);
 
     // The first successor still rotates normally afterwards (the family is still live).
-    const rotatedAgain = await service.refresh(firstRotation.refreshToken);
+    const rotatedAgain = await service.refresh(firstRotation.refreshToken, TEST_LOGGER);
     expect(rotatedAgain.refreshToken).toEqual(expect.any(String));
   });
 
   it("given two replays within the window followed by a replay after it, when refreshed, then every sibling is revoked (reuse)", async () => {
     const { service, store, clock } = setup();
     const session = await registerUser(service);
-    const firstRotation = await service.refresh(session.refreshToken);
+    const firstRotation = await service.refresh(session.refreshToken, TEST_LOGGER);
 
     clock.advance(5_000);
-    const replayOne = await service.refresh(session.refreshToken);
+    const replayOne = await service.refresh(session.refreshToken, TEST_LOGGER);
     clock.advance(5_000);
-    const replayTwo = await service.refresh(session.refreshToken);
+    const replayTwo = await service.refresh(session.refreshToken, TEST_LOGGER);
 
     clock.advance(30_000);
-    await expect(service.refresh(session.refreshToken)).rejects.toBeInstanceOf(
+    await expect(service.refresh(session.refreshToken, TEST_LOGGER)).rejects.toBeInstanceOf(
       RefreshTokenReusedError,
     );
 
@@ -246,10 +252,10 @@ describe("refresh", () => {
   it("given a retry after the grace window has passed, when refreshed, then it throws RefreshTokenReusedError and revokes the whole family (even after the call returns)", async () => {
     const { service, store, clock } = setup();
     const session = await registerUser(service);
-    const rotated = await service.refresh(session.refreshToken);
+    const rotated = await service.refresh(session.refreshToken, TEST_LOGGER);
 
     clock.advance(31_000);
-    await expect(service.refresh(session.refreshToken)).rejects.toBeInstanceOf(
+    await expect(service.refresh(session.refreshToken, TEST_LOGGER)).rejects.toBeInstanceOf(
       RefreshTokenReusedError,
     );
 
@@ -262,15 +268,15 @@ describe("refresh", () => {
   it("given a family revoked by reuse, when its live successor at sweep time is presented, then it is reuse again and the family stays revoked", async () => {
     const { service, store, clock } = setup();
     const session = await registerUser(service);
-    const rotated = await service.refresh(session.refreshToken);
+    const rotated = await service.refresh(session.refreshToken, TEST_LOGGER);
 
     clock.advance(31_000);
-    await expect(service.refresh(session.refreshToken)).rejects.toBeInstanceOf(
+    await expect(service.refresh(session.refreshToken, TEST_LOGGER)).rejects.toBeInstanceOf(
       RefreshTokenReusedError,
     );
     const sweepTimestamp = clock.now();
 
-    await expect(service.refresh(rotated.refreshToken)).rejects.toBeInstanceOf(
+    await expect(service.refresh(rotated.refreshToken, TEST_LOGGER)).rejects.toBeInstanceOf(
       RefreshTokenReusedError,
     );
 
@@ -281,11 +287,11 @@ describe("refresh", () => {
   it("given the successor was already rotated, when the oldest token is replayed inside the grace window, then it is reuse and the whole family (including the newest token) is revoked", async () => {
     const { service, store, clock } = setup();
     const session = await registerUser(service);
-    const rotatedOnce = await service.refresh(session.refreshToken);
-    const rotatedTwice = await service.refresh(rotatedOnce.refreshToken);
+    const rotatedOnce = await service.refresh(session.refreshToken, TEST_LOGGER);
+    const rotatedTwice = await service.refresh(rotatedOnce.refreshToken, TEST_LOGGER);
 
     clock.advance(5_000);
-    await expect(service.refresh(session.refreshToken)).rejects.toBeInstanceOf(
+    await expect(service.refresh(session.refreshToken, TEST_LOGGER)).rejects.toBeInstanceOf(
       RefreshTokenReusedError,
     );
 
@@ -296,10 +302,10 @@ describe("refresh", () => {
   it("given a token rotated and then logged out, when the old token is replayed inside the grace window, then it is 401 and no sibling is created", async () => {
     const { service, store } = setup();
     const session = await registerUser(service);
-    const rotated = await service.refresh(session.refreshToken);
+    const rotated = await service.refresh(session.refreshToken, TEST_LOGGER);
 
     await service.logout(rotated.refreshToken);
-    await expect(service.refresh(session.refreshToken)).rejects.toBeInstanceOf(
+    await expect(service.refresh(session.refreshToken, TEST_LOGGER)).rejects.toBeInstanceOf(
       RefreshTokenReusedError,
     );
 
@@ -314,7 +320,7 @@ describe("refresh", () => {
     const session = await registerUser(service);
     clock.advance((REFRESH_TOKEN_TTL_SECONDS + 1) * 1000);
 
-    await expect(service.refresh(session.refreshToken)).rejects.toBeInstanceOf(
+    await expect(service.refresh(session.refreshToken, TEST_LOGGER)).rejects.toBeInstanceOf(
       InvalidRefreshTokenError,
     );
 
@@ -325,17 +331,18 @@ describe("refresh", () => {
   it("given an unknown token, when refreshed, then it throws InvalidRefreshTokenError", async () => {
     const { service } = setup();
 
-    await expect(service.refresh("unknown-token")).rejects.toBeInstanceOf(InvalidRefreshTokenError);
+    await expect(service.refresh("unknown-token", TEST_LOGGER)).rejects.toBeInstanceOf(
+      InvalidRefreshTokenError,
+    );
   });
 });
 
 describe("logout", () => {
   async function registerUser(service: ReturnType<typeof setup>["service"]) {
-    return service.register({
-      email: "alex@example.com",
-      password: "password123",
-      displayName: "Alex",
-    });
+    return service.register(
+      { email: "alex@example.com", password: "password123", displayName: "Alex" },
+      TEST_LOGGER,
+    );
   }
 
   it("given a live token, when logged out, then the whole family is revoked", async () => {
@@ -346,7 +353,7 @@ describe("logout", () => {
 
     const presented = await tokenRowFor(store, session.refreshToken);
     expect(presented?.revokedAt).not.toBeNull();
-    await expect(service.refresh(session.refreshToken)).rejects.toBeInstanceOf(
+    await expect(service.refresh(session.refreshToken, TEST_LOGGER)).rejects.toBeInstanceOf(
       RefreshTokenReusedError,
     );
   });
@@ -363,10 +370,10 @@ describe("logout", () => {
   it("given a second, unrelated login family, when one family is logged out, then the other is unaffected", async () => {
     const { service, store } = setup();
     const registerSession = await registerUser(service);
-    const loginSession = await service.login({
-      email: "alex@example.com",
-      password: "password123",
-    });
+    const loginSession = await service.login(
+      { email: "alex@example.com", password: "password123" },
+      TEST_LOGGER,
+    );
 
     await service.logout(registerSession.refreshToken);
 

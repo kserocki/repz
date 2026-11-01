@@ -11,7 +11,8 @@ const BEARER_SCHEME = /^bearer /i;
  * injected verifier, setting `c.var.userId` on success. A missing header or a header using a
  * different scheme (RFC 6750 §3.1: no bearer credentials were presented) throws
  * `InvalidAccessTokenError("missing")`; `verify` is responsible for every other failure.
- * REP-15 mounts this on `/sync/*`.
+ * Mount it with `router.use("<protected-path>", requireAuth(...))` — never unscoped, which
+ * would turn it into a global middleware once the router is mounted at the app root.
  */
 export function requireAuth(verify: AccessTokenVerifier): MiddlewareHandler<AuthenticatedAppEnv> {
   return async (c, next) => {
