@@ -7,26 +7,28 @@ class RepzMotionSchemeTest {
     @Test
     fun given_notReduced_whenReadingEverySlot_thenMatchesTheCorrespondingRepzSpring() {
         val scheme = repzMotionScheme(reducedMotion = false)
-        val springs = RepzSprings(reducedMotion = false)
+        val spatialSprings = RepzSpatialSprings(reducedMotion = false)
+        val effectsSprings = RepzEffectsSprings(reducedMotion = false)
 
-        assertEquals(springs.spatialDefault<Float>(), scheme.defaultSpatialSpec())
-        assertEquals(springs.spatialFast<Float>(), scheme.fastSpatialSpec())
-        assertEquals(springs.spatialSlow<Float>(), scheme.slowSpatialSpec())
-        assertEquals(springs.effectsDefault<Float>(), scheme.defaultEffectsSpec())
-        assertEquals(springs.effectsFast<Float>(), scheme.fastEffectsSpec())
-        assertEquals(springs.effectsSlow<Float>(), scheme.slowEffectsSpec())
+        assertEquals(spatialSprings.spatialDefault<Float>(), scheme.defaultSpatialSpec())
+        assertEquals(spatialSprings.spatialFast<Float>(), scheme.fastSpatialSpec())
+        assertEquals(spatialSprings.spatialSlow<Float>(), scheme.slowSpatialSpec())
+        assertEquals(effectsSprings.effectsDefault<Float>(), scheme.defaultEffectsSpec())
+        assertEquals(effectsSprings.effectsFast<Float>(), scheme.fastEffectsSpec())
+        assertEquals(effectsSprings.effectsSlow<Float>(), scheme.slowEffectsSpec())
     }
 
     @Test
     fun given_reduced_whenReadingEverySlot_thenMatchesTheCorrespondingRepzSpring() {
         val scheme = repzMotionScheme(reducedMotion = true)
-        val springs = RepzSprings(reducedMotion = true)
+        val spatialSprings = RepzSpatialSprings(reducedMotion = true)
+        val effectsSprings = RepzEffectsSprings(reducedMotion = true)
 
-        assertEquals(springs.spatialDefault<Float>(), scheme.defaultSpatialSpec())
-        assertEquals(springs.spatialFast<Float>(), scheme.fastSpatialSpec())
-        assertEquals(springs.spatialSlow<Float>(), scheme.slowSpatialSpec())
-        assertEquals(springs.effectsDefault<Float>(), scheme.defaultEffectsSpec())
-        assertEquals(springs.effectsFast<Float>(), scheme.fastEffectsSpec())
-        assertEquals(springs.effectsSlow<Float>(), scheme.slowEffectsSpec())
+        assertEquals(spatialSprings.spatialDefault<Float>(), scheme.defaultSpatialSpec())
+        assertEquals(spatialSprings.spatialFast<Float>(), scheme.fastSpatialSpec())
+        assertEquals(spatialSprings.spatialSlow<Float>(), scheme.slowSpatialSpec())
+        assertEquals(effectsSprings.effectsDefault<Float>(), scheme.defaultEffectsSpec())
+        assertEquals(effectsSprings.effectsFast<Float>(), scheme.fastEffectsSpec())
+        assertEquals(effectsSprings.effectsSlow<Float>(), scheme.slowEffectsSpec())
     }
 }

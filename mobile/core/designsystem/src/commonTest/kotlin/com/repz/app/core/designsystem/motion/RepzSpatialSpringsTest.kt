@@ -2,26 +2,18 @@ package com.repz.app.core.designsystem.motion
 
 import androidx.compose.animation.core.SnapSpec
 import androidx.compose.animation.core.SpringSpec
-import androidx.compose.animation.core.TweenSpec
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
-class RepzSpringsTest {
+class RepzSpatialSpringsTest {
     @Test
     fun given_notReduced_whenReadingEverySpring_thenReturnsASpringSpecWithTheTokenValues() {
-        val springs = RepzSprings(reducedMotion = false)
+        val springs = RepzSpatialSprings(reducedMotion = false)
 
         assertEquals(
             SpringSpec<Float>(dampingRatio = RepzSpringTokens.spatialFast.dampingRatio, stiffness = RepzSpringTokens.spatialFast.stiffness),
             springs.spatialFast(),
-        )
-        assertEquals(
-            SpringSpec<Float>(
-                dampingRatio = RepzSpringTokens.effectsDefault.dampingRatio,
-                stiffness = RepzSpringTokens.effectsDefault.stiffness,
-            ),
-            springs.effectsDefault(),
         )
         assertEquals(
             SpringSpec<Float>(dampingRatio = RepzSpringTokens.celebrate.dampingRatio, stiffness = RepzSpringTokens.celebrate.stiffness),
@@ -37,8 +29,8 @@ class RepzSpringsTest {
     }
 
     @Test
-    fun given_reduced_whenReadingASpatialSpring_thenReturnsASnapSpec() {
-        val springs = RepzSprings(reducedMotion = true)
+    fun given_reduced_whenReadingAnySpring_thenReturnsASnapSpec() {
+        val springs = RepzSpatialSprings(reducedMotion = true)
 
         assertIs<SnapSpec<Float>>(springs.spatialFast<Float>())
         assertIs<SnapSpec<Float>>(springs.spatialDefault<Float>())
@@ -50,15 +42,5 @@ class RepzSpringsTest {
         assertIs<SnapSpec<Float>>(springs.logoPlatePr<Float>())
         assertIs<SnapSpec<Float>>(springs.logoImpact<Float>())
         assertIs<SnapSpec<Float>>(springs.logoWordmark<Float>())
-    }
-
-    @Test
-    fun given_reduced_whenReadingAnEffectsSpring_thenReturnsA150MsTween() {
-        val springs = RepzSprings(reducedMotion = true)
-        val expected = TweenSpec<Float>(durationMillis = 150)
-
-        assertEquals(expected, springs.effectsFast())
-        assertEquals(expected, springs.effectsDefault())
-        assertEquals(expected, springs.effectsSlow())
     }
 }

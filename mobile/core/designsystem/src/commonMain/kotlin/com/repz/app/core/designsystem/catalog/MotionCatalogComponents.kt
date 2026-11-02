@@ -265,7 +265,7 @@ internal fun StaggerChipRow(modifier: Modifier = Modifier) {
     ) {
         CatalogSectionLabel("stagger.listPerItem (${RepzStagger.listPerItem.inWholeMilliseconds} ms/item)")
         Row(horizontalArrangement = Arrangement.spacedBy(RepzSpacing.xs)) {
-            repeat(RepzStagger.listMaxItems) { index ->
+            repeat(RepzStagger.LIST_MAX_ITEMS) { index ->
                 val delayMillis = (RepzStagger.listPerItem * index).inWholeMilliseconds.toInt()
                 AnimatedVisibility(
                     visible = target.value,

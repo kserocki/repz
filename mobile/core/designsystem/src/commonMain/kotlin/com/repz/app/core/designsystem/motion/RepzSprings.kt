@@ -8,13 +8,13 @@ import androidx.compose.runtime.Stable
 import kotlin.time.Duration
 
 /**
- * MOTION.md §2's 13 springs as reduced-motion-aware [FiniteAnimationSpec] factories (one per
- * `RepzMotion.springs.*` token). With [reducedMotion], spatial springs (shape/position) `snap()`
- * and effects springs (colour/alpha) become a [RepzDurations.reducedMotionFade] crossfade — the
- * table in MOTION.md §2 "Reduced motion".
+ * MOTION.md §2's spatial springs (`RepzSpringKind.Spatial`: shape or position, never colour/alpha)
+ * as reduced-motion-aware [FiniteAnimationSpec] factories, one per `RepzMotion.springs.*` token.
+ * With [reducedMotion], every spring here `snap()`s — MOTION.md §2 "Reduced motion": "Spatial
+ * springs snap instantly".
  */
 @Stable
-class RepzSprings internal constructor(
+class RepzSpatialSprings internal constructor(
     private val reducedMotion: Boolean,
 ) {
     fun <T> spatialFast(): FiniteAnimationSpec<T> = specFor(RepzSpringTokens.spatialFast)
@@ -22,12 +22,6 @@ class RepzSprings internal constructor(
     fun <T> spatialDefault(): FiniteAnimationSpec<T> = specFor(RepzSpringTokens.spatialDefault)
 
     fun <T> spatialSlow(): FiniteAnimationSpec<T> = specFor(RepzSpringTokens.spatialSlow)
-
-    fun <T> effectsFast(): FiniteAnimationSpec<T> = specFor(RepzSpringTokens.effectsFast)
-
-    fun <T> effectsDefault(): FiniteAnimationSpec<T> = specFor(RepzSpringTokens.effectsDefault)
-
-    fun <T> effectsSlow(): FiniteAnimationSpec<T> = specFor(RepzSpringTokens.effectsSlow)
 
     fun <T> celebrate(): FiniteAnimationSpec<T> = specFor(RepzSpringTokens.celebrate)
 
@@ -44,13 +38,30 @@ class RepzSprings internal constructor(
     fun <T> logoWordmark(): FiniteAnimationSpec<T> = specFor(RepzSpringTokens.logoWordmark)
 
     private fun <T> specFor(token: RepzSpringToken): FiniteAnimationSpec<T> =
+        if (!reducedMotion) spring(dampingRatio = token.dampingRatio, stiffness = token.stiffness) else snap()
+}
+
+/**
+ * MOTION.md §2's effects springs (`RepzSpringKind.Effects`: colour or alpha only) as reduced-
+ * motion-aware [FiniteAnimationSpec] factories, one per `RepzMotion.effectsSprings.*` token. With
+ * [reducedMotion], every spring here becomes a [RepzDurations.reducedMotionFade] crossfade —
+ * MOTION.md §2 "Reduced motion": "Effects become a 150 ms crossfade".
+ */
+@Stable
+class RepzEffectsSprings internal constructor(
+    private val reducedMotion: Boolean,
+) {
+    fun <T> effectsFast(): FiniteAnimationSpec<T> = specFor(RepzSpringTokens.effectsFast)
+
+    fun <T> effectsDefault(): FiniteAnimationSpec<T> = specFor(RepzSpringTokens.effectsDefault)
+
+    fun <T> effectsSlow(): FiniteAnimationSpec<T> = specFor(RepzSpringTokens.effectsSlow)
+
+    private fun <T> specFor(token: RepzSpringToken): FiniteAnimationSpec<T> =
         if (!reducedMotion) {
             spring(dampingRatio = token.dampingRatio, stiffness = token.stiffness)
         } else {
-            when (token.kind) {
-                RepzSpringKind.Spatial -> snap()
-                RepzSpringKind.Effects -> tween(RepzDurations.reducedMotionFade.inWholeMilliseconds.toInt())
-            }
+            tween(RepzDurations.reducedMotionFade.inWholeMilliseconds.toInt())
         }
 }
 

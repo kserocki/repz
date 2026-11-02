@@ -13,8 +13,10 @@ import androidx.compose.runtime.staticCompositionLocalOf
  */
 internal val LocalReducedMotion = staticCompositionLocalOf { false }
 
-private val NormalRepzSprings = RepzSprings(reducedMotion = false)
-private val ReducedRepzSprings = RepzSprings(reducedMotion = true)
+private val NormalRepzSpatialSprings = RepzSpatialSprings(reducedMotion = false)
+private val ReducedRepzSpatialSprings = RepzSpatialSprings(reducedMotion = true)
+private val NormalRepzEffectsSprings = RepzEffectsSprings(reducedMotion = false)
+private val ReducedRepzEffectsSprings = RepzEffectsSprings(reducedMotion = true)
 private val NormalRepzTweens = RepzTweens(reducedMotion = false)
 private val ReducedRepzTweens = RepzTweens(reducedMotion = true)
 
@@ -24,9 +26,13 @@ private val ReducedRepzTweens = RepzTweens(reducedMotion = true)
  * write `spring(`/`tween(` themselves and never read [LocalReducedMotion].
  */
 object RepzMotion {
-    val springs: RepzSprings
+    val springs: RepzSpatialSprings
         @Composable @ReadOnlyComposable
-        get() = if (LocalReducedMotion.current) ReducedRepzSprings else NormalRepzSprings
+        get() = if (LocalReducedMotion.current) ReducedRepzSpatialSprings else NormalRepzSpatialSprings
+
+    val effectsSprings: RepzEffectsSprings
+        @Composable @ReadOnlyComposable
+        get() = if (LocalReducedMotion.current) ReducedRepzEffectsSprings else NormalRepzEffectsSprings
 
     val tweens: RepzTweens
         @Composable @ReadOnlyComposable

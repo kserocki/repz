@@ -28,7 +28,7 @@ class RepzMotionTokensTest {
     fun given_repzStagger_whenReadingEveryToken_thenMatchesMotionDoc() {
         assertEquals(110.milliseconds, RepzStagger.logoPlatesPerPair)
         assertEquals(30.milliseconds, RepzStagger.listPerItem)
-        assertEquals(8, RepzStagger.listMaxItems)
+        assertEquals(8, RepzStagger.LIST_MAX_ITEMS)
         assertEquals(70.milliseconds, RepzStagger.summaryPerBlock)
         assertEquals(12.milliseconds, RepzStagger.heatmapPerDiagonal)
         assertEquals(20.milliseconds, RepzStagger.digitsPerDigit)

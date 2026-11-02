@@ -19,23 +19,11 @@ style:
     # detekt gate; inactive today is an accepted gap (user, 2026-10-29). ignoreAnnotated still
     # documents the intent (private previews look unused) for when the gate gains type resolution.
     ignoreAnnotated: ['Preview']
-  MayBeConstant:
-    active: true
-    # RepzMotionTokens.kt's `RepzStagger.listMaxItems` is a token name (MOTION.md §2
-    # `RepzMotion.stagger.*`) that must stay camelCase; ktlint's PropertyNaming rule forces any
-    # `const val` into SCREAMING_SNAKE_CASE, so the two rules can't both be satisfied for it.
-    excludes: ['**/motion/RepzMotionTokens.kt']
 
 complexity:
   LongParameterList:
     active: true
     ignoreDefaultParameters: true
-  TooManyFunctions:
-    active: true
-    # Default is 11; RepzSprings mirrors MOTION.md §2's 13 spring tokens as 13 generic factory
-    # methods (one per token, so call sites read `springs.spatialFast()` rather than an indirection
-    # like `springs.spec(SpringToken.SpatialFast)`) plus one private dispatch helper.
-    allowedFunctionsPerClass: 14
   CyclomaticComplexMethod:
     active: true
     # RepzDesignSystemCatalog's `when` is one `RepzCatalogPage -> FooCatalogPage()` branch per

@@ -25,8 +25,8 @@ internal fun MotionSpringsCatalogPage1() {
         SpringDotRow(springLabel("spatialSlow", RepzSpringTokens.spatialSlow), RepzMotion.springs.spatialSlow())
         SpringDotRow(springLabel("celebrate", RepzSpringTokens.celebrate), RepzMotion.springs.celebrate())
         SpringDotRow(springLabel("pressMorph", RepzSpringTokens.pressMorph), RepzMotion.springs.pressMorph())
-        SwatchFadeRow(springLabel("effectsFast", RepzSpringTokens.effectsFast), RepzMotion.springs.effectsFast())
-        SwatchFadeRow(springLabel("effectsDefault", RepzSpringTokens.effectsDefault), RepzMotion.springs.effectsDefault())
-        SwatchFadeRow(springLabel("effectsSlow", RepzSpringTokens.effectsSlow), RepzMotion.springs.effectsSlow())
+        SwatchFadeRow(springLabel("effectsFast", RepzSpringTokens.effectsFast), RepzMotion.effectsSprings.effectsFast())
+        SwatchFadeRow(springLabel("effectsDefault", RepzSpringTokens.effectsDefault), RepzMotion.effectsSprings.effectsDefault())
+        SwatchFadeRow(springLabel("effectsSlow", RepzSpringTokens.effectsSlow), RepzMotion.effectsSprings.effectsSlow())
     }
 }

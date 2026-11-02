@@ -3,7 +3,8 @@ package com.repz.app.core.designsystem.motion
 /**
  * One row of MOTION.md §2's spring table: a `dampingRatio`/`stiffness` pair plus whether it
  * animates shape or position ([RepzSpringKind.Spatial]) or colour/alpha ([RepzSpringKind.Effects]).
- * [RepzSprings] uses [kind] to pick each spring's reduced-motion fallback.
+ * [kind] is also how the tokens are split between [RepzSpatialSprings] and [RepzEffectsSprings],
+ * whose reduced-motion fallback follows from which one exposes a given token.
  */
 internal class RepzSpringToken(
     val dampingRatio: Float,

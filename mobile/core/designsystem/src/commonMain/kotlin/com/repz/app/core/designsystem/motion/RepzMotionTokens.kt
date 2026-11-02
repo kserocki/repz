@@ -7,8 +7,8 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
-/** MOTION.md §2's plain duration tokens (no reduced-motion logic: see [RepzSprings]/[RepzTweens]
- * for the tokens that are). */
+/** MOTION.md §2's plain duration tokens (no reduced-motion logic: see [RepzSpatialSprings]/
+ * [RepzEffectsSprings]/[RepzTweens] for the tokens that are). */
 object RepzDurations {
     val short: Duration = 100.milliseconds
     val medium: Duration = 200.milliseconds
@@ -29,11 +29,12 @@ object RepzEasing {
     val linear: Easing = LinearEasing
 }
 
-/** MOTION.md §2's stagger tokens. */
+/** MOTION.md §2's stagger tokens. [LIST_MAX_ITEMS] is `const` (and so SCREAMING_SNAKE_CASE, unlike
+ * its `RepzMotion.stagger.*` siblings) because it is a plain compile-time `Int`, not a `Duration`. */
 object RepzStagger {
     val logoPlatesPerPair: Duration = 110.milliseconds
     val listPerItem: Duration = 30.milliseconds
-    val listMaxItems: Int = 8
+    const val LIST_MAX_ITEMS: Int = 8
     val summaryPerBlock: Duration = 70.milliseconds
     val heatmapPerDiagonal: Duration = 12.milliseconds
     val digitsPerDigit: Duration = 20.milliseconds
