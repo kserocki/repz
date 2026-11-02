@@ -89,7 +89,7 @@ See `docs/ARCHITECTURE.md` §10.3 and ADR-0011 (with its REP-14 amendment) for t
 
 ## Exercise catalog
 
-The catalog (ADR-0012, ADR-0021) is 144 exercises adapted from [wger.de](https://wger.de), English only for now.
+The catalog (ADR-0012, ADR-0021) is 143 exercises adapted from [wger.de](https://wger.de), English only for now.
 
 - **Add or change an exercise:** edit `src/db/seed/curation.json`. Each entry has our own uuid (mint a new one, never reuse an id) and the wger id. Override the name, instructions, muscles or equipment, and give a `reviewNote` explaining why. Then run `pnpm import:wger`, review the diff of `exercises.json` and `ATTRIBUTION.md`, and run `pnpm db:seed`.
 - **Add a language:** add `names.<locale>` (and optionally `instructions.<locale>`) to **every** curation entry, then re-import and re-seed. No code changes, no API change. The import fails if any entry lacks the new locale.

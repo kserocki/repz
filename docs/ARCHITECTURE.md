@@ -373,7 +373,7 @@ Layers: **routes** (HTTP + validation) → **service** (business rules) → **re
 **Exercise catalog:** imported from [wger.de](https://wger.de) by `pnpm import:wger` (run by hand) into a **committed snapshot**, with per-row licences (CC BY-SA 3.0/4.0, CC0; the compilation is CC BY-SA 4.0, see `api/src/db/seed/ATTRIBUTION.md`). The seed is deterministic and there is no runtime dependency on wger. Catalog rows carry `license`, `author`, `sourceUrl` and `translations[]` (ADR-0021); the app shows them on the exercise About tab and the About & licenses screen.
 
 **Exercise illustrations (every exercise has one):**
-- The catalog is **curated to ~150 exercises** from wger (144 common movements covering every muscle group and equipment value; English only for now, more languages are data-only, ADR-0021). That keeps a consistent hand-checked illustration per exercise realistic.
+- The catalog is **curated to ~150 exercises** from wger (143 common movements covering every muscle group and equipment value; English only for now, more languages are data-only, ADR-0021). That keeps a consistent hand-checked illustration per exercise realistic.
 - Each catalog exercise gets an **AI-generated illustration** in one art style defined in the Claude Design pass. Generation uses a fixed style prompt plus per-exercise variables, through a script `api/src/scripts/generate-illustrations.ts`. Outputs are reviewed by hand and committed as WebP.
 - The API serves them as static files (`/static/exercises/{id}.webp`) with immutable cache headers, and `imageUrl` is part of the exercise payload.
 - **Offline:** Coil 3 disk cache. After the initial sync, a low-priority job prefetches all catalog images, so the library looks complete without network.

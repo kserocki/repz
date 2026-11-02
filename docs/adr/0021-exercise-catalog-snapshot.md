@@ -26,21 +26,21 @@ The app has to work offline and switch language without re-syncing. Adding a lan
   - The client picks the device locale, then `en`, then `name`.
   - **No code anywhere names a specific second language.** A locale that some entries have and others don't fails the import (the completeness rule).
   - **The catalog currently ships English only** (user decision, 2026-11-02). Adding a language is data-only: add `names.<locale>` (and optionally `instructions.<locale>`) to every curation entry, re-import, then re-seed.
-- **Instructions are plain text**: paragraphs plus `1.` / `•` lines, converted from wger HTML. Poor or empty English instructions may be rewritten and flagged as modified.
+- **Instructions are plain text**: paragraphs plus `1.` / `•` lines, converted from wger HTML by a strict converter that reports any unexpected markup as an import problem. Poor, empty, wrong or possibly copied English instructions are rewritten in our own words and flagged as modified. Review tables show the instruction text.
 - **Licence and attribution.**
-  - Each row keeps the more restrictive of the exercise's and the translation's licence, plus the wger authors.
+  - Each row keeps the more restrictive licence family of the exercise and its translation (CC BY-SA > CC BY > CC0); within a family the higher version wins (3.0 material may be adapted under 4.0, not the reverse). The row also keeps the wger authors and wger's original title.
   - The compilation is CC BY-SA 4.0. 3.0 material may be adapted under 4.0, and CC0 is free.
-  - `ATTRIBUTION.md` lists every row and states that Repz modified the data.
+  - `ATTRIBUTION.md` lists every row with its original title (required by CC BY-SA 3.0 §4(c)), author, licence and wger link, and states that Repz modified the data ("and translated" only when a non-English locale is present).
   - The app's exercise About tab and its About & licenses screen show each row's licence, author and wger link.
 - **Seeder** (`pnpm db:seed`, with `--check` for a dry run):
   - It takes `lockCatalogSyncWrites` (ADR-0020) as its first statement.
   - It inserts new rows, and bumps the version only when content changes.
   - It tombstones catalog rows that are no longer in the snapshot.
-  - It refuses to write anything if a snapshot id is already tombstoned (delete wins, no revive; re-adding an exercise gets a new id) or belongs to a user's custom exercise.
+  - It refuses to write anything (the whole batch, so `--check` stays meaningful) if a snapshot id is already tombstoned (delete wins, no revive; re-adding an exercise gets a new id) or belongs to a user's custom exercise.
   - CI seeds twice and then runs `--check`.
 
 ## Consequences
-- The catalog has 144 exercises, every primary group and every equipment value is covered, and the content is English only.
+- The catalog has 143 exercises after the content review, every primary group and every equipment value is covered, and the content is English only.
 - Translating the catalog is a content task (curation entries), not a code task. The app's UI strings are still localised separately via Compose Resources.
 - Workouts that reference a removed catalog exercise keep a dangling reference. ADR-0019 allows this.
 - A future wger re-import can change rows. The diff is reviewed before it is committed.
