@@ -1,0 +1,13 @@
+{
+  "accepted": [],
+  "rejected": [
+    {
+      "type": "exercise",
+      "id": "b6e6b6a0-3333-4a22-8a33-000000000099",
+      "problem": {
+        "type": "urn:repz:problem:read-only",
+        "title": "Read Only"
+      }
+    }
+  ]
+}

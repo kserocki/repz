@@ -1,0 +1,7 @@
+{
+  "type": "urn:repz:problem:email-taken",
+  "title": "Email Taken",
+  "status": 409,
+  "instance": "/auth/register",
+  "requestId": "b6e6b6a0-9999-4a22-8a33-000000000000"
+}

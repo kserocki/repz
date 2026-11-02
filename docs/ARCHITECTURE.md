@@ -42,6 +42,7 @@ repz/
 ├── .github/workflows/           # mobile.yml, api.yml
 ├── docker-compose.yml           # Postgres only; the API runs on the host with `pnpm dev` (REP-59 adds a container)
 ├── api/                         # TypeScript backend (pnpm)
+├── contract/fixtures/           # shared API fixtures, validated against api/openapi.json (ADR-0010)
 └── mobile/                      # Gradle root for KMP
     ├── build-logic/             # convention plugins
     ├── gradle/libs.versions.toml
@@ -50,8 +51,8 @@ repz/
     │   └── shared/              # KMP umbrella: RepzRoot(), root navigation, Koin graph, iOS framework export
     ├── iosApp/                  # Xcode project – thin SwiftUI host; BGTaskScheduler registration later (REP-26)
     ├── core/
-    │   ├── common/              # Result/AppError, DispatcherProvider, Clock & Id providers
-    │   ├── domain/              # models, repository interfaces, shared use cases (pure Kotlin)
+    │   ├── common/              # IdGenerator (UuidV7IdGenerator), AppDispatchers (pure Kotlin, Koin-free)
+    │   ├── domain/              # models + value types (Weight, Rpe, ids), DomainResult/DomainError, ValidationLimits, PR calculator; repository interfaces + use cases from REP-27 (pure Kotlin)
     │   ├── data/                # repository implementations (Room + outbox)
     │   ├── database/            # Room KMP: entities, DAOs, migrations
     │   ├── network/             # Ktor client, DTOs, auth plugin, API services
@@ -130,24 +131,27 @@ graph TD
 ```
 User(id, email, displayName, unitSystem)
 
-Exercise(id, name, primaryMuscle, secondaryMuscles, equipment, isCustom)
+Exercise(id, name, primaryMuscle: Muscle, secondaryMuscles: Set<Muscle>, equipment, origin, translations: List<ExerciseTranslation>)
+  origin: Custom | Catalog(imageUrl?, ExerciseAttribution(license, author, sourceUrl))   // isCustom is derived
+  ExerciseTranslation(languageTag, name, instructions?)   // catalog only; name = English / the user's own name
 
-WorkoutTemplate(id, name, notes, exercises: List<TemplateExercise>)
-  TemplateExercise(exerciseId, order, targetSets, targetReps: IntRange?, restSeconds)
+WorkoutTemplate(id, name, notes, exercises: List<TemplateExercise>)          // list order = position
+  TemplateExercise(exerciseId, targetSets, targetReps: IntRange?, rest: Duration)
 
-Workout(id, templateId?, name, startedAt, finishedAt?, notes, exercises: List<WorkoutExercise>)
-  WorkoutExercise(id, exerciseId, order, notes, sets: List<WorkoutSet>)
-    WorkoutSet(id, order, weight: Weight, reps, rpe?, type: WARMUP|NORMAL|DROP|FAILURE, completedAt?)
+Workout(id, templateId?, name, notes, startedAt, finishedAt?, exercises: List<WorkoutExercise>)
+  WorkoutExercise(id, exerciseId, notes, sets: List<WorkoutSet>)
+    WorkoutSet(id, type: WARMUP|NORMAL|DROP|FAILURE, weight: Weight, reps, rpe: Rpe?, completedAt?)
 
-PersonalRecord(exerciseId, type: EST_1RM|HEAVIEST|BEST_SET_VOLUME|MOST_REPS, value, workoutId, achievedAt)
+PersonalRecord(exerciseId, type: EST_1RM|HEAVIEST|BEST_SET_VOLUME|MOST_REPS, weight, reps, workoutId, setId, achievedAt)
 ```
 
 Decisions:
 
 - **IDs are generated on the client** (UUID). This is a hard requirement of offline-first, because entities must exist before the server knows about them.
-- **Weight is stored in grams** (`Long`) inside a `Weight` value class. That gives exact arithmetic with no float drift. kg/lb exists only at the presentation layer.
+- **Weight is stored in grams** (`Long`) inside a `Weight` value class. That gives exact arithmetic with no float drift. Conversion from and to kg/lb lives on `Weight` (half-up to the nearest gram, ADR-0022); which unit to show is a presentation concern (`User.unitSystem`).
 - **Aggregates:** `Workout` (with exercises and sets), `WorkoutTemplate` and custom `Exercise` are aggregate roots. **The aggregate is the unit of sync.**
-- **Personal records are derived data.** They are recomputed locally (`RecalculatePersonalRecordsUseCase`) after a workout finishes or after a sync pull, and they are never synced. Est. 1RM uses the Epley formula.
+- **Personal records are derived data.** They are recomputed locally (`RecalculatePersonalRecordsUseCase`, REP-27) after a workout finishes or after a sync pull, and they are never synced. Est. 1RM uses the Epley formula; the counting rules are in ADR-0022.
+- **Value types** (`Weight`, `Rpe`, typed ids over UUID v7) enforce their own invariants; aggregates don't, so drafts stay representable and use cases validate on save (ADR-0022).
 - **Time:** `kotlin.time.Clock` and `Instant` are injected, so tests are deterministic.
 
 ---
@@ -324,7 +328,7 @@ class HistoryViewModel(
 
 - The `repz.koin` convention plugin applies the compiler plugin (`io.insert-koin.compiler.plugin`) and the `koin-core`/`koin-annotations` runtime to every module with Koin definitions: `app:shared`, `core:testing` and the six `feature:*:impl` modules (via `repz.kmp.feature.impl`). `core:domain` and `core:common` never see Koin.
 - Every Gradle module with definitions exposes **one** `@Module` class whose bindings are explicit `@Single`/`@Factory` provider functions declared inside it, e.g. `@Module class HistoryModule { @Factory fun observeWorkoutHistoryUseCase(...) = ObserveWorkoutHistoryUseCase(...) }`. `@KoinViewModel fun` providers follow the same shape, but using one as a cross-module provider on Kotlin/Native is unverified until REP-28 confirms it. No cross-module `@ComponentScan`: on Kotlin 2.4.20+ the Koin compiler plugin's `@ComponentScan` hints are dropped by the Kotlin/Native KLIB serializer across Gradle module boundaries (koin-compiler-plugin#106 / KT-79565, found and verified in REP-7), so a definition scanned in one module is invisible when another module compiles against it. `app:shared` is the exception: its own module and the `@KoinApplication` entry point always compile together, so it may keep a local `@ComponentScan("com.repz.app.shared")`. Re-checked in REP-58 once koin-compiler-plugin 1.2.2 (PR #129) ships the fix.
-- Shared `core:domain` use cases and `core:common` platform primitives (`Clock`, `IdGenerator`, dispatchers) are provided from `app:shared`, not from `core:domain`/`core:common` themselves (which stay Koin-free): a `DomainModule` for the former, a `CommonModule` for the latter (both land with REP-23). Features provide only their own feature-local use cases. **Each definition has exactly one owner** — Koin resolves a duplicate binding last-wins at runtime, and the compiler plugin isn't verified to flag that at compile time (a Konsist rule is a REP-9 candidate).
+- Shared `core:domain` use cases and `core:common` platform primitives (`Clock`, `IdGenerator`, dispatchers) are provided from `app:shared`, not from `core:domain`/`core:common` themselves (which stay Koin-free): a `DomainModule` for the former (lands with REP-27), a `CommonModule` for the latter (REP-23: `Clock`, `IdGenerator` = `UuidV7IdGenerator`, `AppDispatchers`). Features provide only their own feature-local use cases. **Each definition has exactly one owner** — Koin resolves a duplicate binding last-wins at runtime, and the compiler plugin isn't verified to flag that at compile time (Konsist rule D5 enforces one owner).
 - Platform-specific bindings (WorkManager, Keychain, Room builder) are provided through `expect`/`actual` classes in the module's platform source sets.
 - `app:shared` is the only entry point: `@KoinApplication(modules = [AppModule::class, ...]) object RepzApp`, started via `startRepzKoin()` (wraps `startKoin<RepzApp>()`). New `@Module` classes are added to `RepzApp`'s explicit `modules` list, never auto-discovered (no `@Configuration`). Android calls `startRepzKoin` from `Application`, iOS from the SwiftUI `App` init (REP-11).
 - **The full graph is verified at compile time** (missing bindings, cycles, qualifier clashes) by `app:shared`'s per-platform main and test compile tasks — not its common-metadata compile — so a broken graph does not compile and no runtime `verify()` test is needed. Leaf modules without an entry point get no compile-time diagnostics. Those per-platform tasks cache normally (UP-TO-DATE on an unchanged rebuild). This also auto-enables `strictSafety`, which keeps `app:shared`'s common-metadata compile task from ever reporting up-to-date; that task itself runs no graph check (verified in REP-7).
@@ -337,7 +341,7 @@ class HistoryViewModel(
 ### 10.1 Stack
 
 Node.js 26 LTS (runs `.ts` via type stripping) · TypeScript 7 (`tsc` for typecheck/build only) · Hono + `@hono/zod-openapi` · Zod · Drizzle ORM + drizzle-kit migrations · Postgres (docker) · pino (JSON logs) · JWT · argon2 password hashing · Vitest · Biome · pnpm. See ADR-0016.
-API docs: OpenAPI generated from Zod schemas, served at `/openapi.json`, with an interactive UI at `/docs`.
+API docs: OpenAPI 3.1 generated from Zod schemas, committed as `api/openapi.json` (`pnpm openapi:export`), served at `/openapi.json`, with an interactive Scalar UI at `/docs` (ADR-0010).
 
 ### 10.2 Structure
 
@@ -351,14 +355,15 @@ api/src/
 │   ├── migrate.ts           # `pnpm db:migrate` entry: applies committed migrations, never at boot
 │   ├── schema/              # one file per table group + vocabularies.ts (as const value lists) + sync.ts (sequence, sync columns)
 │   ├── migrations/          # generated by drizzle-kit, committed, forward-only
-│   └── seed/                # exercise catalog snapshot (wger.de, CC-BY-SA) + seeder
-├── scripts/import-wger.ts   # one-off import: wger API → normalized snapshot JSON (committed)
+│   └── seed/                # curation.json (hand-edited) → exercises.json + ATTRIBUTION.md (generated) + seeder (`pnpm db:seed`)
+├── scripts/                 # import-wger.ts (`pnpm import:wger`, run by hand), export-openapi.ts (`pnpm openapi:export`), later generate-illustrations.ts
+├── contract/                # contract-test helpers: fixture catalog, strict-schema transform, Ajv setup (tests only, excluded from the build)
 ├── modules/
 │   ├── auth/      {routes, service, repository, schemas, errors}.ts + access-tokens, refresh-token, refresh-rotation (pure decideRefresh), password-hasher
 │   ├── users/     {routes, service, repository, schemas}.ts (GET/PATCH /me)
 │   └── sync/      {routes, service, schemas, types, errors}.ts, sync.decisions (pure decideChange), sync.repository (transactions, advisory locks)
 │       └── handlers/        # SyncHandler per type (workout, template, custom exercise, read-only catalog exercise) + one repository per aggregate
-└── shared/                  # app-env, router (OpenAPIHono factory), problem-details, errors (error handler), request-id, logger, request-logger, clock (injected time), application-error (typed errors → Problem Details), auth (`requireAuth` bearer middleware)
+└── shared/                  # app-env, router (OpenAPIHono factory), problem-details, errors (error handler), request-id, logger, request-logger, clock (injected time), application-error (typed errors → Problem Details), auth (`requireAuth` bearer middleware), openapi (document config, `/openapi.json` + `/docs`)
 ```
 
 Layers: **routes** (HTTP + validation) → **service** (business rules) → **repository** (Drizzle). Dependencies are wired through plain factory functions in `app.ts`, with no DI framework.
@@ -376,11 +381,11 @@ Layers: **routes** (HTTP + validation) → **service** (business rules) → **re
 | GET | `/sync/pull` | bearer; `?cursor=0&limit=500` (1–500) → `{ changes: [{ type, id, version, deleted, updatedAt, payload }], nextCursor, hasMore, totalEstimate: { total, workout, template, exercise } }`. Includes the global exercise catalog; tombstones have `payload: null` |
 | GET | `/health` | liveness only (`200 {"status":"ok"}`); the DB is checked once at boot and the process exits if it is unreachable |
 
-**Exercise catalog:** imported from [wger.de](https://wger.de) (CC-BY-SA 4.0) by a one-off script into a **committed snapshot**. The seed is deterministic and there is no runtime dependency on wger. Attribution appears in the README and on the app's About screen. Catalog rows carry `license` and `author` fields.
+**Exercise catalog:** imported from [wger.de](https://wger.de) by `pnpm import:wger` (run by hand) into a **committed snapshot**, with per-row licences (CC BY-SA 3.0/4.0, CC0; the compilation is CC BY-SA 4.0, see `api/src/db/seed/ATTRIBUTION.md`). The seed is deterministic and there is no runtime dependency on wger. Catalog rows carry `license`, `author`, `sourceUrl` and `translations[]` (ADR-0021); the app shows them on the exercise About tab and the About & licenses screen.
 
 **Exercise illustrations (every exercise has one):**
-- The catalog is **curated to ~150 exercises** from wger (the most common movements, with EN + PL names). That keeps a consistent hand-checked illustration per exercise realistic.
-- Each catalog exercise gets an **AI-generated illustration** in one art style defined in the Claude Design pass. Generation uses a fixed style prompt plus per-exercise variables, through a script `api/scripts/generate-illustrations.ts`. Outputs are reviewed by hand and committed as WebP.
+- The catalog is **curated to ~150 exercises** from wger (143 common movements covering every muscle group and equipment value; English only for now, more languages are data-only, ADR-0021). That keeps a consistent hand-checked illustration per exercise realistic.
+- Each catalog exercise gets an **AI-generated illustration** in one art style defined in the Claude Design pass. Generation uses a fixed style prompt plus per-exercise variables, through a script `api/src/scripts/generate-illustrations.ts`. Outputs are reviewed by hand and committed as WebP.
 - The API serves them as static files (`/static/exercises/{id}.webp`) with immutable cache headers, and `imageUrl` is part of the exercise payload.
 - **Offline:** Coil 3 disk cache. After the initial sync, a low-priority job prefetches all catalog images, so the library looks complete without network.
 - **Custom (user) exercises** get an illustration for their primary muscle group (about 12 generic illustrations in the same style, bundled in the app as Compose resources). Nothing is ever shown without an image.
@@ -405,6 +410,8 @@ Conventions: ADR-0019. Schema source: `api/src/db/schema/`.
 | `workout_sets` | `id`, `workout_exercise_id` + `position` (unique together), `type`, `weight_grams bigint`, `reps`, `rpe numeric(3,1)`, `completed_at` |
 
 **Advisory-lock namespaces** (first argument of `pg_advisory_xact_lock(int4, int4)`): `1` = refresh-token family (`REFRESH_TOKEN_FAMILY_LOCK_SPACE` in `modules/auth/auth.repository.ts`, ADR-0011); `2` = per-user sync writes and `3` = catalog gate (`SYNC_USER_WRITE_LOCK_SPACE`, `SYNC_CATALOG_GATE_LOCK_SPACE` in `modules/sync/sync.repository.ts`, ADR-0020). A new lock picks the next free number and is listed here.
+
+`exercise_translations(exercise_id, locale, name, instructions)` holds localised catalog text (no locale check, so a new language is new rows); `exercises.source_url` links the wger page; `primary_muscle` / `secondary_muscles` are checked against `MUSCLES` (ADR-0021).
 
 Tombstoning a sync root (`deleted_at` set) hard-deletes its children in the same transaction; the root row stays as the tombstone (ADR-0020).
 
@@ -495,8 +502,11 @@ Re-verified on npm, nodejs.org and Docker Hub on 2026-10-29 (REP-12).
 | pino / pino-pretty | 10.4.0 / 13.2.0 | JSON logger; pretty output only in `pnpm dev` |
 | @types/node | 26.6.6 | |
 | Postgres (docker) | 18.6 | |
+| @scalar/hono-api-reference | 0.12.17 | `/docs` UI; browser bundle pinned to `@scalar/api-reference` 1.76.4 |
+| Ajv / ajv-formats | 8.20.0 / 3.0.1 | contract test (2020-12 mode) |
+| @seriousme/openapi-schema-validator | 2.11.0 | validates `openapi.json` against the OAS 3.1 schema |
 
-**API contract:** the OpenAPI spec is generated from Zod (`/openapi.json`) and committed to `api/openapi.json`. Kotlin DTOs are **hand-written** in `core:network`. A CI contract test validates JSON fixtures shared by both sides against the spec, so neither side can drift without the build failing. Generators (openapi-generator `kotlin`/`multiplatform`) produce noisy code that needs fixups, which is not worth it for an API we fully own.
+**API contract:** the OpenAPI spec is generated from Zod (`/openapi.json`) and committed to `api/openapi.json`. Kotlin DTOs are **hand-written** in `core:network`. A contract test (`api/src/contract/`, part of `pnpm test`) validates the JSON fixtures in `contract/fixtures/<operationId>/{request|<status>}/<case>.json` strictly against the spec, and from REP-25 on the mobile side decodes the same fixtures, so neither side can drift without the build failing. Generators (openapi-generator `kotlin`/`multiplatform`) produce noisy code that needs fixups, which is not worth it for an API we fully own.
 
 ---
 
@@ -510,6 +520,7 @@ Re-verified on npm, nodejs.org and Docker Hub on 2026-10-29 (REP-12).
 | DI graph | Koin Compiler Plugin, full-graph check at compile time | build (incl. `assembleDebug` in CI) |
 | Unit tests | `commonTest` on the Android host test (`testAndroidHostTest`) + iOS simulator (`iosSimulatorArm64Test`) | `./gradlew check`; CI `mobile.yml` `android` job + `ios` job for `iosSimulatorArm64Test` |
 | TS | Biome (`pnpm lint`), TypeScript 7 `tsc --noEmit` (`pnpm typecheck`), Vitest (`pnpm test`) | `pnpm lint && pnpm typecheck && pnpm test && pnpm build`; CI `api.yml` |
+| OpenAPI contract | `pnpm openapi:export` with a clean tree (no spec drift); strict fixture validation and coverage in `pnpm test` | CI `api.yml` |
 | DB migrations in sync and applicable | `pnpm db:check` + `pnpm db:generate` with a clean tree; `pnpm db:migrate` twice on Postgres 18.6 | CI `api.yml` |
 | iOS app build | `xcodebuild` simulator build, no signing | CI `mobile.yml` `ios` job |
 | Compose resources packaged on Android | `verifyComposeResourcesPackaged` (every module with `composeResources` must ship them in the merged Android assets; KMP library targets need `androidResources { enable = true }`, set in the `repz.kmp.library` convention) | `./gradlew check`; CI `mobile.yml` `android` job |
@@ -559,6 +570,8 @@ A plain Kotlin/JVM module, not a KMP one: it reads source **text** (via Konsist 
 | N6 | `@Test` functions match `^given.+_when.+_then.+$` | Konsist |
 | N7 | No `io.mockk`/`org.mockito` imports | Konsist |
 | B1 | `RepzBrandColors` equals the platform shells that paint brand colour before Kotlin runs: B1a, Android `app/android/src/main/res/values/colors.xml` `brand_cyan`/`brand_deep`/`brand_ink`/`brand_paper`; B1b, the iOS `LaunchBackground.colorset` (light = `Paper`, dark = `Ink`) | plain text / XML / JSON, read directly; fixtures `b1-matching`, `b1-android-drift`, `b1-ios-drift` |
+| I1 | `Clock.System` and `Uuid.random`/`generateV4`/`generateV7` appear only in `app:shared`'s `CommonModule` and in `UuidV7IdGenerator`, tests included, so time and ids are always injected (ADR-0022) | plain text |
+| E1 | No bare `runCatching`, `mapCatching` or `recoverCatching`; a `catch` of `Throwable`/`Exception`/`RuntimeException`/`IllegalStateException`/`CancellationException` must rethrow the same caught value (a bare `throw e`) or call `rethrowIfCancellation()` on it; only `core:common`'s `CancellationSafety.kt` is exempt; test source sets are exempt (ADR-0022) | plain text |
 | C1 | A `REP-<n>` key in a comment only ever appears as `TODO(REP-<n>):`; every `TODO` is written exactly that way; upstream tracker references are unrestricted | plain text, incl. `.kts` (its own comment extractor: skips string/char literals, tracks Kotlin's nestable block comments) |
 
 "Plain text" rules read every `.kt`/`.kts` file directly (`RepzTextFile`) rather than through a Konsist `KoScope`, needed wherever a rule must see `.gradle.kts` content.
@@ -575,7 +588,7 @@ A plain Kotlin/JVM module, not a KMP one: it reads source **text** (via Konsist 
 
 ## 14. Decision log
 
-All decisions live in [`docs/adr/`](adr/) (ADR-0001 … ADR-0020). Add a new ADR for every decision that changes this document.
+All decisions live in [`docs/adr/`](adr/) (ADR-0001 … ADR-0022). Add a new ADR for every decision that changes this document.
 
 ## 15. Risks to verify in the first scaffold spike
 

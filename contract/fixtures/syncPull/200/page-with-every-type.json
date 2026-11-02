@@ -1,0 +1,122 @@
+{
+  "changes": [
+    {
+      "type": "exercise",
+      "id": "b6e6b6a0-3333-4a22-8a33-000000000098",
+      "version": 1,
+      "deleted": false,
+      "updatedAt": "2026-11-01T10:00:00.000Z",
+      "payload": {
+        "name": "Bench press",
+        "primaryMuscle": "chest",
+        "secondaryMuscles": [
+          "triceps",
+          "shoulders"
+        ],
+        "equipment": "barbell",
+        "isCustom": false,
+        "imageUrl": "/static/exercises/b6e6b6a0-3333-4a22-8a33-000000000098.webp",
+        "license": "CC-BY-SA 4.0",
+        "author": "wger.de",
+        "sourceUrl": "https://wger.de/exercise/73/view-base",
+        "translations": [
+          {
+            "locale": "en",
+            "name": "Bench press",
+            "instructions": "Lie on a flat bench, grip the bar slightly wider than shoulder width, lower it to your chest, then press it back up."
+          }
+        ]
+      }
+    },
+    {
+      "type": "exercise",
+      "id": "b6e6b6a0-3333-4a22-8a33-000000000097",
+      "version": 2,
+      "deleted": false,
+      "updatedAt": "2026-11-01T10:00:00.000Z",
+      "payload": {
+        "name": "Zottman curl",
+        "primaryMuscle": "biceps",
+        "secondaryMuscles": [
+          "forearms"
+        ],
+        "equipment": "dumbbell",
+        "isCustom": true,
+        "imageUrl": null,
+        "license": null,
+        "author": null,
+        "sourceUrl": null,
+        "translations": []
+      }
+    },
+    {
+      "type": "template",
+      "id": "b6e6b6a0-4444-4a22-8a33-000000000097",
+      "version": 3,
+      "deleted": false,
+      "updatedAt": "2026-11-01T10:00:00.000Z",
+      "payload": {
+        "name": "Push day",
+        "notes": "",
+        "exercises": [
+          {
+            "exerciseId": "b6e6b6a0-3333-4a22-8a33-000000000098",
+            "targetSets": 3,
+            "targetReps": {
+              "min": 8,
+              "max": 12
+            },
+            "restSeconds": 90
+          }
+        ]
+      }
+    },
+    {
+      "type": "workout",
+      "id": "b6e6b6a0-2222-4a22-8a33-000000000096",
+      "version": 5,
+      "deleted": true,
+      "updatedAt": "2026-11-01T10:00:00.000Z",
+      "payload": null
+    },
+    {
+      "type": "workout",
+      "id": "b6e6b6a0-2222-4a22-8a33-000000000095",
+      "version": 6,
+      "deleted": false,
+      "updatedAt": "2026-11-01T10:00:00.000Z",
+      "payload": {
+        "templateId": null,
+        "name": "Push day",
+        "notes": "",
+        "startedAt": "2026-11-01T10:00:00.000Z",
+        "finishedAt": "2026-11-01T10:45:00.000Z",
+        "exercises": [
+          {
+            "id": "b6e6b6a0-2222-4a22-8a33-000000000094",
+            "exerciseId": "b6e6b6a0-3333-4a22-8a33-000000000098",
+            "notes": "",
+            "sets": [
+              {
+                "id": "b6e6b6a0-2222-4a22-8a33-000000000093",
+                "type": "normal",
+                "weightGrams": 60000,
+                "reps": 8,
+                "rpe": 8,
+                "completedAt": "2026-11-01T10:05:00.000Z"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "nextCursor": 6,
+  "hasMore": true,
+  "totalEstimate": {
+    "total": 6,
+    "workout": 2,
+    "template": 1,
+    "exercise": 3
+  }
+}

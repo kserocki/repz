@@ -8,7 +8,15 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!dist", "!coverage", "!src/db/migrations"]
+    "includes": [
+      "**",
+      "!dist",
+      "!coverage",
+      "!src/db/migrations",
+      "!src/db/seed/exercises.json",
+      "!src/db/seed/ATTRIBUTION.md",
+      "!openapi.json"
+    ]
   },
   "formatter": {
     "enabled": true,

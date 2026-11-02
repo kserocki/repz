@@ -1,0 +1,7 @@
+{
+  "type": "urn:repz:problem:invalid-access-token",
+  "title": "Invalid Access Token",
+  "status": 401,
+  "instance": "/sync/pull",
+  "requestId": "b6e6b6a0-9999-4a22-8a33-000000000000"
+}

@@ -15,6 +15,13 @@
       "when": 1793539417806,
       "tag": "0001_refresh_token_replaced_by",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793618814675,
+      "tag": "0002_exercise_translations",
+      "breakpoints": true
     }
   ]
 }

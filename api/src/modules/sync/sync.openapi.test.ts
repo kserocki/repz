@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
+import { buildOpenApiDocument } from "../../shared/openapi.ts";
 import { createTestApp } from "../../shared/testing/test-app.ts";
 
 function generateDocument() {
   const { app } = createTestApp();
-  return app.getOpenAPIDocument({ openapi: "3.0.0", info: { title: "Repz API", version: "test" } });
+  return buildOpenApiDocument(app);
 }
 
 describe("OpenAPI document: /sync/*", () => {
@@ -15,6 +16,7 @@ describe("OpenAPI document: /sync/*", () => {
       TemplatePayload: expect.any(Object),
       CustomExercisePayload: expect.any(Object),
       ExercisePayload: expect.any(Object),
+      ExerciseTranslation: expect.any(Object),
     });
   });
 
@@ -53,5 +55,29 @@ describe("OpenAPI document: /sync/*", () => {
 
     expect(document.paths?.["/sync/push"]?.post?.security).toEqual([{ bearerAuth: [] }]);
     expect(document.paths?.["/sync/pull"]?.get?.security).toEqual([{ bearerAuth: [] }]);
+  });
+
+  it("given the generated document, when the pull cursor parameter is inspected, then it is a non-null integer with minimum 0 and default 0", () => {
+    const document = generateDocument();
+
+    const parameters = document.paths?.["/sync/pull"]?.get?.parameters as
+      | Array<{ name?: string; schema?: unknown }>
+      | undefined;
+    const cursorParameter = parameters?.find((parameter) => parameter.name === "cursor");
+
+    expect(cursorParameter?.schema).toMatchObject({ type: "integer", minimum: 0, default: 0 });
+  });
+
+  it("given the generated document, when ExercisePayload is inspected, then sourceUrl is a nullable uri", () => {
+    const document = generateDocument();
+
+    const exercisePayload = document.components?.schemas?.ExercisePayload as
+      | { properties?: Record<string, unknown> }
+      | undefined;
+
+    expect(exercisePayload?.properties?.sourceUrl).toEqual({
+      type: ["string", "null"],
+      format: "uri",
+    });
   });
 });

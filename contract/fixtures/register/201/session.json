@@ -1,0 +1,11 @@
+{
+  "user": {
+    "id": "b6e6b6a0-1111-4a22-8a33-000000000001",
+    "email": "alex@example.com",
+    "displayName": "Alex",
+    "unitSystem": "kg"
+  },
+  "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiNmU2YjZhMC0xMTExLTRhMjItOGEzMy0wMDAwMDAwMDAwMDEiLCJpYXQiOjE3OTM1MjcyMDAsImV4cCI6MTc5MzUyODEwMCwiaXNzIjoicmVwei1hcGkiLCJhdWQiOiJyZXB6LWFwcCJ9.YcqSOWoVkFPflx5bfoAGwb_FzUDSQKZTIDFog5acAu8",
+  "refreshToken": "FUx6z8JDiLIDAHFH1hkmGBX-DIKqrGx6P47ninbR73Y",
+  "expiresIn": 900
+}

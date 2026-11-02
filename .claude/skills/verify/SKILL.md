@@ -1,6 +1,6 @@
 ---
 name: verify
-description: Run the Repz quality gates before a commit or PR (mobile: ./gradlew check = ktlint, Detekt + Compose rules, Konsist architecture tests, Android lint, Koin graph, unit tests; API: lint, typecheck, test, build; later the OpenAPI contract), what CI runs and the pre-commit checklist. Use before every commit, when asked to check, or when finishing a task.
+description: Run the Repz quality gates before a commit or PR (mobile: ./gradlew check = ktlint, Detekt + Compose rules, Konsist architecture tests, Android lint, Koin graph, unit tests; API: lint, typecheck, test incl. the OpenAPI contract test, build, spec export), what CI runs and the pre-commit checklist. Use before every commit, when asked to check, or when finishing a task.
 ---
 
 # Verify
@@ -26,9 +26,9 @@ No baselines and no blanket suppression: fix findings. A scoped suppression, or 
 ```bash
 pnpm lint && pnpm typecheck && pnpm test && pnpm build
 pnpm db:check && pnpm db:generate && git status --porcelain   # must print nothing: every schema change has a committed migration
-pnpm openapi:export && git diff --exit-code openapi.json   # from REP-17 on: contract is committed and current
+pnpm openapi:export && git status --porcelain   # must print nothing: openapi.json is committed and current
 ```
-**Contract:** shared fixtures are decoded by a `core:network` test (from REP-17 on).
+**Contract:** `pnpm test` validates every `contract/fixtures` file strictly against `api/openapi.json` and checks coverage both ways. The `core:network` decoding test arrives with REP-25.
 
 **Brand assets** (from the repo root, when `brand/`, Android `res/` or `mobile/iosApp/` changed):
 ```bash

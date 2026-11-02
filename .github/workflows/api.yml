@@ -32,6 +32,7 @@ jobs:
           filters: |
             api:
               - 'api/**'
+              - 'contract/**'
               - '.github/workflows/api.yml'
 
   api:
@@ -81,6 +82,7 @@ jobs:
       - run: pnpm build
       - run: pnpm db:check
       - run: pnpm db:generate
+      - run: pnpm openapi:export
 
       - name: Apply migrations to Postgres 18.6
         run: pnpm db:migrate
@@ -88,7 +90,16 @@ jobs:
       - name: Re-apply migrations (must be a no-op)
         run: pnpm db:migrate
 
-      - name: Workspace is clean after install, build and db:generate
+      - name: Seed the exercise catalog
+        run: pnpm db:seed
+
+      - name: Re-seed the exercise catalog (must be a no-op)
+        run: pnpm db:seed
+
+      - name: Seed check must converge (no pending changes)
+        run: pnpm db:seed -- --check
+
+      - name: Workspace is clean after install, build, db:generate and openapi:export
         run: |
           git status --short
           test -z "$(git status --porcelain)"

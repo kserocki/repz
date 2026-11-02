@@ -24,6 +24,7 @@ Repz is an **offline-first workout logger** (Compose Multiplatform, Android + iO
 
 ```
 api/        TypeScript API (Hono, Zod/OpenAPI, Drizzle, Postgres), pnpm
+contract/   shared API fixtures (validated against api/openapi.json)
 mobile/     KMP Gradle root: app/{android,shared}, core/*, feature/*/{api,impl}, build-logic, iosApp
 brand/      logo generators (src/) + exported logo and app-icon files. Never hand-edit exports
 docs/       architecture, ADRs, design system, motion, Claude Design prompts
@@ -47,7 +48,7 @@ design/     git-ignored local design export
 - **Use cases:** `VerbNounUseCase` with a single `operator fun invoke`.
 - **Repositories:** the interface lives in domain (`WorkoutRepository`); the implementation is `OfflineFirstWorkoutRepository` in `core:data`.
 - **DI:** every module **that has bindings** exposes exactly one `@Module` class that declares them as **explicit provider functions** (`@Single fun workoutRepository(dao: WorkoutDao, clock: Clock): WorkoutRepository = OfflineFirstWorkoutRepository(dao, clock)`). `core:domain` and `core:common` stay Koin-free. Their shared use cases are provided by `DomainModule`, and `Clock`, `IdGenerator` and dispatchers by `CommonModule`, both in `app:shared`. Features provide only their own feature-local use cases. **Each definition has exactly one owner**, because the compiler plugin isn't verified to flag duplicates (Koin resolves them last-wins at runtime). Don't use cross-module `@ComponentScan` (Koin compiler plugin 1.2.1 loses those hints on iOS, see ADR-0008 and REP-58). `app:shared` lists all modules in its `@KoinApplication`. The ViewModel provider shape (`@KoinViewModel` as a module function) gets verified on iOS in REP-28.
-- **Errors:** domain returns typed results (`DomainResult<T, DomainError>`). No exceptions across layers.
+- **Errors:** domain returns typed results (`DomainResult<T, DomainError>`). No exceptions across layers. Never swallow `CancellationException`: use `suspendRunCatching { }` instead of `runCatching`, and in a hand-written `catch (e: Exception)` call `e.rethrowIfCancellation()` first (both in `core:common`; Konsist rule E1).
 - **Time and IDs:** inject `kotlin.time.Clock` and `IdGenerator`. Never call `Clock.System` or `Uuid.random()` directly in logic.
 - **Strings and i18n:** every user-facing text lives in Compose Resources (`strings.xml`, English default, `values-pl` for Polish). Never hard-code text in Kotlin, including content descriptions, notification texts and error messages. Adding a language must only mean adding a new `values-<lang>` folder, never a code change:
   - placeholders (`%1$s`, `%1$d`) instead of concatenating strings; `plurals` for anything counted (sets, reps, workouts); one key per full sentence, never sentence fragments glued together;
@@ -81,6 +82,7 @@ Run from `mobile/` unless noted. One-time setup: create the git-ignored `mobile/
 | Postgres for the API | `docker compose up -d` (from the repo root; needs Docker/OrbStack running) | works |
 | API setup / dev | `cd api && pnpm install` · `pnpm dev` (Node 26, `.env` from `.env.example`) | works |
 | API gates (from `api/`) | `pnpm lint` · `pnpm typecheck` · `pnpm test` · `pnpm build` | works |
+| OpenAPI export (from `api/`) | `pnpm openapi:export` (commit `api/openapi.json`); browse at `http://localhost:<port>/docs` | works |
 | DB schema and migrations (from `api/`) | `pnpm db:generate` (after a schema change) · `pnpm db:migrate` (needs Postgres) · `pnpm db:check`; reset with `docker compose down -v` | works |
 | Brand assets reproducible (from the repo root) | `python3 brand/logo/src/android_vectors.py && mobile/iosApp/scripts/sync-brand-assets.sh && git status --porcelain` (must print nothing) | works |
 

@@ -1,0 +1,1619 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Repz API",
+    "version": "0.1.0",
+    "description": "The Repz backend: auth, the signed-in user's profile and offline-first sync."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local API (pnpm dev)"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Health",
+      "description": "Liveness."
+    },
+    {
+      "name": "Auth",
+      "description": "Registration, sign-in and the refresh/access token lifecycle."
+    },
+    {
+      "name": "Users",
+      "description": "The signed-in user's profile."
+    },
+    {
+      "name": "Sync",
+      "description": "Offline-first push/pull synchronization."
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "WorkoutPayload": {
+        "type": "object",
+        "properties": {
+          "templateId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000,
+            "default": ""
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "exercises": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkoutExercisePayload"
+            },
+            "maxItems": 50
+          }
+        },
+        "required": [
+          "templateId",
+          "name",
+          "startedAt",
+          "finishedAt",
+          "exercises"
+        ],
+        "additionalProperties": false,
+        "example": {
+          "templateId": "b6e6b6a0-4444-4a22-8a33-000000000001",
+          "name": "Push day",
+          "notes": "",
+          "startedAt": "2026-11-01T10:00:00.000Z",
+          "finishedAt": "2026-11-01T10:45:00.000Z",
+          "exercises": [
+            {
+              "id": "b6e6b6a0-2222-4a22-8a33-000000000002",
+              "exerciseId": "b6e6b6a0-3333-4a22-8a33-000000000001",
+              "notes": "",
+              "sets": [
+                {
+                  "id": "b6e6b6a0-2222-4a22-8a33-000000000003",
+                  "type": "normal",
+                  "weightGrams": 60000,
+                  "reps": 8,
+                  "rpe": 8,
+                  "completedAt": "2026-11-01T10:05:00.000Z"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "WorkoutExercisePayload": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "exerciseId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000,
+            "default": ""
+          },
+          "sets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkoutSetPayload"
+            },
+            "maxItems": 50
+          }
+        },
+        "required": [
+          "id",
+          "exerciseId",
+          "sets"
+        ],
+        "additionalProperties": false,
+        "example": {
+          "id": "b6e6b6a0-2222-4a22-8a33-000000000002",
+          "exerciseId": "b6e6b6a0-3333-4a22-8a33-000000000001",
+          "notes": "",
+          "sets": [
+            {
+              "id": "b6e6b6a0-2222-4a22-8a33-000000000003",
+              "type": "normal",
+              "weightGrams": 60000,
+              "reps": 8,
+              "rpe": 8,
+              "completedAt": "2026-11-01T10:05:00.000Z"
+            }
+          ]
+        }
+      },
+      "WorkoutSetPayload": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "warmup",
+              "normal",
+              "drop",
+              "failure"
+            ]
+          },
+          "weightGrams": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "reps": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 999
+          },
+          "rpe": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 6,
+            "maximum": 10
+          },
+          "completedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "weightGrams",
+          "reps",
+          "rpe",
+          "completedAt"
+        ],
+        "additionalProperties": false,
+        "example": {
+          "id": "b6e6b6a0-2222-4a22-8a33-000000000003",
+          "type": "normal",
+          "weightGrams": 60000,
+          "reps": 8,
+          "rpe": 8,
+          "completedAt": "2026-11-01T10:05:00.000Z"
+        }
+      },
+      "TemplatePayload": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000,
+            "default": ""
+          },
+          "exercises": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TemplateExercisePayload"
+            },
+            "maxItems": 50
+          }
+        },
+        "required": [
+          "name",
+          "exercises"
+        ],
+        "additionalProperties": false,
+        "example": {
+          "name": "Push day",
+          "notes": "",
+          "exercises": [
+            {
+              "exerciseId": "b6e6b6a0-3333-4a22-8a33-000000000001",
+              "targetSets": 3,
+              "targetReps": {
+                "min": 8,
+                "max": 12
+              },
+              "restSeconds": 90
+            }
+          ]
+        }
+      },
+      "TemplateExercisePayload": {
+        "type": "object",
+        "properties": {
+          "exerciseId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "targetSets": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20
+          },
+          "targetReps": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "min": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 999
+              },
+              "max": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 999
+              }
+            },
+            "required": [
+              "min",
+              "max"
+            ],
+            "additionalProperties": false
+          },
+          "restSeconds": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 3600
+          }
+        },
+        "required": [
+          "exerciseId",
+          "targetSets",
+          "targetReps",
+          "restSeconds"
+        ],
+        "additionalProperties": false,
+        "example": {
+          "exerciseId": "b6e6b6a0-3333-4a22-8a33-000000000001",
+          "targetSets": 3,
+          "targetReps": {
+            "min": 8,
+            "max": 12
+          },
+          "restSeconds": 90
+        }
+      },
+      "CustomExercisePayload": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "primaryMuscle": {
+            "type": "string",
+            "enum": [
+              "chest",
+              "back",
+              "shoulders",
+              "biceps",
+              "triceps",
+              "forearms",
+              "abs",
+              "glutes",
+              "quadriceps",
+              "hamstrings",
+              "calves",
+              "full_body"
+            ]
+          },
+          "secondaryMuscles": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "chest",
+                "back",
+                "shoulders",
+                "biceps",
+                "triceps",
+                "forearms",
+                "abs",
+                "glutes",
+                "quadriceps",
+                "hamstrings",
+                "calves",
+                "full_body"
+              ]
+            },
+            "maxItems": 11
+          },
+          "equipment": {
+            "type": "string",
+            "enum": [
+              "barbell",
+              "dumbbell",
+              "kettlebell",
+              "machine",
+              "cable",
+              "bodyweight",
+              "band",
+              "other"
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "primaryMuscle",
+          "secondaryMuscles",
+          "equipment"
+        ],
+        "additionalProperties": false,
+        "example": {
+          "name": "Zottman curl",
+          "primaryMuscle": "biceps",
+          "secondaryMuscles": [
+            "forearms"
+          ],
+          "equipment": "dumbbell"
+        }
+      },
+      "ExercisePayload": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "primaryMuscle": {
+            "type": "string",
+            "enum": [
+              "chest",
+              "back",
+              "shoulders",
+              "biceps",
+              "triceps",
+              "forearms",
+              "abs",
+              "glutes",
+              "quadriceps",
+              "hamstrings",
+              "calves",
+              "full_body"
+            ]
+          },
+          "secondaryMuscles": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "chest",
+                "back",
+                "shoulders",
+                "biceps",
+                "triceps",
+                "forearms",
+                "abs",
+                "glutes",
+                "quadriceps",
+                "hamstrings",
+                "calves",
+                "full_body"
+              ]
+            },
+            "maxItems": 11
+          },
+          "equipment": {
+            "type": "string",
+            "enum": [
+              "barbell",
+              "dumbbell",
+              "kettlebell",
+              "machine",
+              "cable",
+              "bodyweight",
+              "band",
+              "other"
+            ]
+          },
+          "isCustom": {
+            "type": "boolean"
+          },
+          "imageUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "license": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "author": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "sourceUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "translations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExerciseTranslation"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "primaryMuscle",
+          "secondaryMuscles",
+          "equipment",
+          "isCustom",
+          "imageUrl",
+          "license",
+          "author",
+          "sourceUrl",
+          "translations"
+        ],
+        "additionalProperties": false,
+        "example": {
+          "name": "Bench press",
+          "primaryMuscle": "chest",
+          "secondaryMuscles": [
+            "triceps",
+            "shoulders"
+          ],
+          "equipment": "barbell",
+          "isCustom": false,
+          "imageUrl": "/static/exercises/b6e6b6a0-3333-4a22-8a33-000000000001.webp",
+          "license": "CC-BY-SA 4.0",
+          "author": "wger.de",
+          "sourceUrl": "https://wger.de/exercise/73/view-base",
+          "translations": [
+            {
+              "locale": "en",
+              "name": "Bench press",
+              "instructions": "Lie on a flat bench, grip the bar slightly wider than shoulder width, lower it to your chest, then press it back up."
+            }
+          ]
+        }
+      },
+      "ExerciseTranslation": {
+        "type": "object",
+        "properties": {
+          "locale": {
+            "type": "string",
+            "pattern": "^[a-z]{2,3}(-[A-Z]{2})?$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "instructions": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "locale",
+          "name",
+          "instructions"
+        ],
+        "additionalProperties": false,
+        "example": {
+          "locale": "en",
+          "name": "Bench press",
+          "instructions": "Lie on a flat bench, grip the bar slightly wider than shoulder width, lower it to your chest, then press it back up."
+        }
+      },
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "example": {
+          "status": "ok"
+        }
+      },
+      "AuthSession": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuthTokens"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "user": {
+                "$ref": "#/components/schemas/User"
+              }
+            },
+            "required": [
+              "user"
+            ]
+          }
+        ],
+        "example": {
+          "accessToken": "eyJhbGciOiJIUzI1NiJ9...",
+          "refreshToken": "3q2+7w==",
+          "expiresIn": 900,
+          "user": {
+            "id": "b6e6b6a0-1111-4a22-8a33-000000000001",
+            "email": "alex@example.com",
+            "displayName": "Alex",
+            "unitSystem": "kg"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "unitSystem": {
+            "type": "string",
+            "enum": [
+              "kg",
+              "lb"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "displayName",
+          "unitSystem"
+        ],
+        "example": {
+          "id": "b6e6b6a0-1111-4a22-8a33-000000000001",
+          "email": "alex@example.com",
+          "displayName": "Alex",
+          "unitSystem": "kg"
+        }
+      },
+      "AuthTokens": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          },
+          "refreshToken": {
+            "type": "string"
+          },
+          "expiresIn": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          }
+        },
+        "required": [
+          "accessToken",
+          "refreshToken",
+          "expiresIn"
+        ],
+        "example": {
+          "accessToken": "eyJhbGciOiJIUzI1NiJ9...",
+          "refreshToken": "3q2+7w==",
+          "expiresIn": 900
+        }
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "instance": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path",
+                "message"
+              ]
+            }
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "requestId"
+        ],
+        "example": {
+          "type": "about:blank",
+          "title": "Not Found",
+          "status": 404,
+          "instance": "/unknown",
+          "requestId": "b6e6b6a0-1111-4a22-8a33-000000000000"
+        }
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "displayName"
+        ],
+        "example": {
+          "email": "alex@example.com",
+          "password": "correct horse battery staple",
+          "displayName": "Alex"
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ],
+        "example": {
+          "email": "alex@example.com",
+          "password": "correct horse battery staple"
+        }
+      },
+      "RefreshRequest": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "refreshToken"
+        ],
+        "example": {
+          "refreshToken": "3q2+7w=="
+        }
+      },
+      "LogoutRequest": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "refreshToken"
+        ],
+        "example": {
+          "refreshToken": "3q2+7w=="
+        }
+      },
+      "UpdateProfileRequest": {
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "unitSystem": {
+            "type": "string",
+            "enum": [
+              "kg",
+              "lb"
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "example": {
+          "unitSystem": "lb"
+        }
+      },
+      "PushResponse": {
+        "type": "object",
+        "properties": {
+          "accepted": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AcceptedChange"
+            }
+          },
+          "rejected": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RejectedChange"
+            }
+          }
+        },
+        "required": [
+          "accepted",
+          "rejected"
+        ],
+        "example": {
+          "accepted": [
+            {
+              "type": "workout",
+              "id": "b6e6b6a0-2222-4a22-8a33-000000000001",
+              "version": 1042,
+              "deleted": false
+            }
+          ],
+          "rejected": []
+        }
+      },
+      "AcceptedChange": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "workout",
+              "template",
+              "exercise"
+            ]
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "deleted": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "type",
+          "id",
+          "version",
+          "deleted"
+        ],
+        "example": {
+          "type": "workout",
+          "id": "b6e6b6a0-2222-4a22-8a33-000000000001",
+          "version": 1042,
+          "deleted": false
+        }
+      },
+      "RejectedChange": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "workout",
+              "template",
+              "exercise"
+            ]
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "problem": {
+            "$ref": "#/components/schemas/ItemProblem"
+          }
+        },
+        "required": [
+          "type",
+          "id",
+          "problem"
+        ],
+        "example": {
+          "type": "exercise",
+          "id": "b6e6b6a0-3333-4a22-8a33-000000000001",
+          "problem": {
+            "type": "urn:repz:problem:read-only",
+            "title": "Read Only"
+          }
+        }
+      },
+      "ItemProblem": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path",
+                "message"
+              ]
+            }
+          }
+        },
+        "required": [
+          "type",
+          "title"
+        ],
+        "example": {
+          "type": "urn:repz:problem:read-only",
+          "title": "Read Only"
+        }
+      },
+      "PushRequest": {
+        "type": "object",
+        "properties": {
+          "changes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "workout",
+                    "template",
+                    "exercise"
+                  ]
+                },
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "deleted": {
+                  "type": "boolean"
+                },
+                "payload": {
+                  "description": "The aggregate payload. Required (and an object) when deleted is false; absent or null when deleted is true. Shape depends on type and is validated per item, never at the envelope level.",
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/WorkoutPayload"
+                    },
+                    {
+                      "$ref": "#/components/schemas/TemplatePayload"
+                    },
+                    {
+                      "$ref": "#/components/schemas/CustomExercisePayload"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "type",
+                "id",
+                "deleted"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "changes"
+        ],
+        "additionalProperties": false,
+        "example": {
+          "changes": [
+            {
+              "type": "workout",
+              "id": "b6e6b6a0-2222-4a22-8a33-000000000001",
+              "deleted": false,
+              "payload": {
+                "templateId": null,
+                "name": "Push day",
+                "notes": "",
+                "startedAt": "2026-11-01T10:00:00.000Z",
+                "finishedAt": "2026-11-01T10:45:00.000Z",
+                "exercises": []
+              }
+            },
+            {
+              "type": "template",
+              "id": "b6e6b6a0-4444-4a22-8a33-000000000001",
+              "deleted": true
+            }
+          ]
+        }
+      },
+      "PullResponse": {
+        "type": "object",
+        "properties": {
+          "changes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SyncChange"
+            }
+          },
+          "nextCursor": {
+            "type": "integer"
+          },
+          "hasMore": {
+            "type": "boolean"
+          },
+          "totalEstimate": {
+            "$ref": "#/components/schemas/TotalEstimate"
+          }
+        },
+        "required": [
+          "changes",
+          "nextCursor",
+          "hasMore",
+          "totalEstimate"
+        ],
+        "example": {
+          "changes": [],
+          "nextCursor": 7,
+          "hasMore": false,
+          "totalEstimate": {
+            "total": 1300,
+            "workout": 1000,
+            "template": 20,
+            "exercise": 280
+          }
+        }
+      },
+      "SyncChange": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "workout",
+              "template",
+              "exercise"
+            ]
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "deleted": {
+            "type": "boolean"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "payload": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WorkoutPayload"
+              },
+              {
+                "$ref": "#/components/schemas/TemplatePayload"
+              },
+              {
+                "$ref": "#/components/schemas/ExercisePayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "id",
+          "version",
+          "deleted",
+          "updatedAt",
+          "payload"
+        ],
+        "example": {
+          "type": "exercise",
+          "id": "b6e6b6a0-3333-4a22-8a33-000000000001",
+          "version": 3,
+          "deleted": false,
+          "updatedAt": "2026-11-01T10:00:00.000Z",
+          "payload": {
+            "name": "Bench press",
+            "primaryMuscle": "chest",
+            "secondaryMuscles": [
+              "triceps",
+              "shoulders"
+            ],
+            "equipment": "barbell",
+            "isCustom": false,
+            "imageUrl": "/static/exercises/b6e6b6a0-3333-4a22-8a33-000000000001.webp",
+            "license": "CC-BY-SA 4.0",
+            "author": "wger.de",
+            "sourceUrl": "https://wger.de/exercise/73/view-base",
+            "translations": [
+              {
+                "locale": "en",
+                "name": "Bench press",
+                "instructions": "Lie on a flat bench, grip the bar slightly wider than shoulder width, lower it to your chest, then press it back up."
+              }
+            ]
+          }
+        }
+      },
+      "TotalEstimate": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "workout": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "template": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "exercise": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "total",
+          "workout",
+          "template",
+          "exercise"
+        ],
+        "example": {
+          "total": 1300,
+          "workout": 1000,
+          "template": 20,
+          "exercise": 280
+        }
+      }
+    },
+    "parameters": {}
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "getHealth",
+        "tags": [
+          "Health"
+        ],
+        "summary": "Liveness check",
+        "responses": {
+          "200": {
+            "description": "The process is alive.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "operationId": "register",
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Create an account",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The account was created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthSession"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request body failed validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The email is already registered.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "login",
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Sign in",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Signed in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthSession"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request body failed validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The email or password is incorrect.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "operationId": "refreshTokens",
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Rotate an access/refresh token pair",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A new access/refresh token pair.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthTokens"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request body failed validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The refresh token is unknown, expired, revoked or reused.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "logout",
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Revoke a refresh token family",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogoutRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "The token's family was revoked, or there was nothing to revoke."
+          },
+          "400": {
+            "description": "The request body failed validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/me": {
+      "get": {
+        "operationId": "getMe",
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get the signed-in user's profile",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The signed-in user's profile.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The access token is missing, invalid or expired.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateMe",
+        "tags": [
+          "Users"
+        ],
+        "summary": "Update the signed-in user's profile",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated profile.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request body failed validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The access token is missing, invalid or expired.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sync/push": {
+      "post": {
+        "operationId": "syncPush",
+        "tags": [
+          "Sync"
+        ],
+        "summary": "Push offline changes",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PushRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Every change was decided; see each item's accepted/rejected outcome.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request body failed envelope validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The access token is missing, invalid or expired.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "The request body is over the size limit.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sync/pull": {
+      "get": {
+        "operationId": "syncPull",
+        "tags": [
+          "Sync"
+        ],
+        "summary": "Pull changes since a cursor",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "example": 0
+            },
+            "required": false,
+            "name": "cursor",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 500,
+              "example": 500
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Every change visible to the user with `version > cursor`, up to `limit`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PullResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The query parameters failed validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The access token is missing, invalid or expired.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "webhooks": {}
+}

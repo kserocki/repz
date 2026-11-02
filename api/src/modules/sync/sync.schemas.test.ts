@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   CustomExercisePayloadSchema,
+  ExercisePayloadSchema,
+  INSTRUCTIONS_MAX,
   NAME_MAX,
   PUSH_MAX_CHANGES,
   PushRequestSchema,
@@ -336,6 +338,111 @@ describe("CustomExercisePayloadSchema", () => {
       false,
     );
   });
+});
+
+describe("ExercisePayloadSchema (pull) translations", () => {
+  function baseExercisePayload(overrides: Record<string, unknown> = {}) {
+    return {
+      name: "Bench press",
+      primaryMuscle: "chest",
+      secondaryMuscles: ["triceps"],
+      equipment: "barbell",
+      isCustom: false,
+      imageUrl: "/static/exercises/b6e6b6a0-3333-4a22-8a33-000000000001.webp",
+      license: "CC-BY-SA 4.0",
+      author: "wger.de",
+      sourceUrl: "https://wger.de/exercise/73/view-base",
+      translations: [
+        { locale: "en", name: "Bench press", instructions: "Lie on a flat bench." },
+        { locale: "de", name: "Bankdrücken", instructions: null },
+      ],
+      ...overrides,
+    };
+  }
+
+  it("given a catalog payload with en and an extra, arbitrary locale, when parsed, then it is accepted (no locale is special-cased)", () => {
+    expect(ExercisePayloadSchema.safeParse(baseExercisePayload()).success).toBe(true);
+  });
+
+  it("given a custom payload with no translations and null sourceUrl, when parsed, then it is accepted", () => {
+    const result = ExercisePayloadSchema.safeParse(
+      baseExercisePayload({ isCustom: true, imageUrl: null, sourceUrl: null, translations: [] }),
+    );
+    expect(result.success).toBe(true);
+  });
+
+  it.each(["e", "ENG", "en-us", "en-USA", "123"])(
+    "given a translation with locale %s, when parsed, then it is rejected",
+    (locale) => {
+      const result = ExercisePayloadSchema.safeParse(
+        baseExercisePayload({
+          translations: [{ locale, name: "Bench press", instructions: null }],
+        }),
+      );
+      expect(result.success).toBe(false);
+    },
+  );
+
+  it.each(["en", "de", "pt-BR"])(
+    "given a translation with locale %s, when parsed, then it is accepted",
+    (locale) => {
+      const result = ExercisePayloadSchema.safeParse(
+        baseExercisePayload({
+          translations: [{ locale, name: "Bench press", instructions: null }],
+        }),
+      );
+      expect(result.success).toBe(true);
+    },
+  );
+
+  it("given instructions over the max length, when parsed, then it is rejected", () => {
+    const result = ExercisePayloadSchema.safeParse(
+      baseExercisePayload({
+        translations: [
+          { locale: "en", name: "Bench press", instructions: "a".repeat(INSTRUCTIONS_MAX + 1) },
+        ],
+      }),
+    );
+    expect(result.success).toBe(false);
+  });
+
+  it("given instructions at the max length, when parsed, then it is accepted", () => {
+    const result = ExercisePayloadSchema.safeParse(
+      baseExercisePayload({
+        translations: [
+          { locale: "en", name: "Bench press", instructions: "a".repeat(INSTRUCTIONS_MAX) },
+        ],
+      }),
+    );
+    expect(result.success).toBe(true);
+  });
+
+  it("given an unknown key on a translation entry, when parsed, then it is rejected (strict object)", () => {
+    const result = ExercisePayloadSchema.safeParse(
+      baseExercisePayload({
+        translations: [{ locale: "en", name: "Bench press", instructions: null, extra: "nope" }],
+      }),
+    );
+    expect(result.success).toBe(false);
+  });
+
+  it.each(["https://wger.de/exercise/73/view-base", "http://wger.de/exercise/73/view-base", null])(
+    "given sourceUrl %s, when parsed, then it is accepted",
+    (sourceUrl) => {
+      expect(ExercisePayloadSchema.safeParse(baseExercisePayload({ sourceUrl })).success).toBe(
+        true,
+      );
+    },
+  );
+
+  it.each(["not a url", "javascript:alert(1)", "ftp://wger.de/x"])(
+    "given sourceUrl %s, when parsed, then it is rejected",
+    (sourceUrl) => {
+      expect(ExercisePayloadSchema.safeParse(baseExercisePayload({ sourceUrl })).success).toBe(
+        false,
+      );
+    },
+  );
 });
 
 describe("PushRequestSchema envelope rules", () => {

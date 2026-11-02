@@ -49,7 +49,13 @@ export type TemplateAggregate = {
   exercises: TemplateExerciseAggregate[];
 };
 
-/** `license`/`author` are always `null` for a custom (user-owned) exercise. */
+/** One exercise's name and instructions in one locale. `instructions` is plain text. */
+export type ExerciseTranslation = { locale: string; name: string; instructions: string | null };
+
+/**
+ * `license`/`author`/`sourceUrl` are always `null`, and `translations` always `[]`, for a custom
+ * (user-owned) exercise: only the catalog seeder sets them.
+ */
 export type ExerciseAggregate = {
   name: string;
   primaryMuscle: Muscle;
@@ -57,6 +63,8 @@ export type ExerciseAggregate = {
   equipment: Equipment;
   license: string | null;
   author: string | null;
+  sourceUrl: string | null;
+  translations: ExerciseTranslation[];
 };
 
 /** One root's pull-relevant state, as returned by a pull's `headsAfter`. */

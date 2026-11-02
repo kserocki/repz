@@ -9,7 +9,7 @@ import org.koin.plugin.module.dsl.startKoin
  * time wherever this annotation's generated `startKoin<RepzApp>()` call is compiled: here, in
  * `app:shared`'s main sources and its `commonTest` sources.
  */
-@org.koin.core.annotation.KoinApplication(modules = [AppModule::class])
+@org.koin.core.annotation.KoinApplication(modules = [AppModule::class, CommonModule::class])
 object RepzApp
 
 /**

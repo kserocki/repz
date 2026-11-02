@@ -12,7 +12,7 @@ import { createTemplateSyncHandler } from "./handlers/template.handler.ts";
 import { createWorkoutSyncHandler } from "./handlers/workout.handler.ts";
 import { SyncIdConflict } from "./sync.errors.ts";
 import { createSyncService, type PushEnvelope } from "./sync.service.ts";
-import type { SyncTransactions } from "./sync.types.ts";
+import type { ExerciseAggregate, SyncTransactions } from "./sync.types.ts";
 
 const USER_A = "b6e6b6a0-0000-4a22-8a33-00000000000a";
 const USER_B = "b6e6b6a0-0000-4a22-8a33-00000000000b";
@@ -57,6 +57,20 @@ function customExercisePayload(overrides: Record<string, unknown> = {}) {
     primaryMuscle: "biceps",
     secondaryMuscles: ["forearms"],
     equipment: "dumbbell",
+    ...overrides,
+  };
+}
+
+function catalogExerciseAggregate(overrides: Partial<ExerciseAggregate> = {}): ExerciseAggregate {
+  return {
+    name: "Bench press",
+    primaryMuscle: "chest",
+    secondaryMuscles: [],
+    equipment: "barbell",
+    license: "CC-BY-SA 4.0",
+    author: "wger.de",
+    sourceUrl: "https://wger.de/exercise/73/view-base",
+    translations: [{ locale: "en", name: "Bench press", instructions: null }],
     ...overrides,
   };
 }
@@ -131,14 +145,7 @@ describe("sync.service push: decision table outcomes", () => {
 
   it("given a push targeting a catalog exercise's id, when pushed, then it is rejected read-only", async () => {
     const { store, service } = harness();
-    store.seedCatalogExercise("catalog-1", {
-      name: "Bench press",
-      primaryMuscle: "chest",
-      secondaryMuscles: [],
-      equipment: "barbell",
-      license: "CC-BY-SA 4.0",
-      author: "wger.de",
-    });
+    store.seedCatalogExercise("catalog-1", catalogExerciseAggregate());
 
     const result = await service.push(USER_A, [
       upsert("exercise", "catalog-1", customExercisePayload()),
@@ -220,6 +227,16 @@ describe("sync.service push: decision table outcomes", () => {
     expect(retry.accepted).toEqual(first.accepted);
   });
 
+  it("given an identical retry of a custom exercise (always null sourceUrl, empty translations), when pushed again, then the version does not bump", async () => {
+    const { service } = harness();
+    const payload = customExercisePayload();
+
+    const first = await service.push(USER_A, [upsert("exercise", "ex1", payload)]);
+    const retry = await service.push(USER_A, [upsert("exercise", "ex1", payload)]);
+
+    expect(retry.accepted).toEqual(first.accepted);
+  });
+
   it("given a changed payload, when pushed again (LWW), then the version bumps and deleted stays false", async () => {
     const { service } = harness();
 
@@ -282,14 +299,7 @@ describe("sync.service push: decision table outcomes", () => {
 
   it("given a dangling, catalog or own-tombstoned template/exercise reference, when pushed, then it is accepted", async () => {
     const { store, service } = harness();
-    store.seedCatalogExercise(CATALOG_EXERCISE_ID, {
-      name: "Bench press",
-      primaryMuscle: "chest",
-      secondaryMuscles: [],
-      equipment: "barbell",
-      license: "CC-BY-SA 4.0",
-      author: "wger.de",
-    });
+    store.seedCatalogExercise(CATALOG_EXERCISE_ID, catalogExerciseAggregate());
     await service.push(USER_A, [upsert("template", OWN_TEMPLATE_ID, templatePayload())]);
     await service.push(USER_A, [remove("template", OWN_TEMPLATE_ID)]);
 
@@ -442,14 +452,7 @@ describe("sync.service push: savepoint isolation", () => {
 describe("sync.service pull", () => {
   it("given changes across every reader, when pulled, then they are merged by version in one page", async () => {
     const { store, service } = harness();
-    store.seedCatalogExercise("catalog-1", {
-      name: "Bench press",
-      primaryMuscle: "chest",
-      secondaryMuscles: [],
-      equipment: "barbell",
-      license: "CC-BY-SA 4.0",
-      author: "wger.de",
-    });
+    store.seedCatalogExercise("catalog-1", catalogExerciseAggregate());
     await service.push(USER_A, [upsert("workout", "w1", workoutPayload())]);
     await service.push(USER_A, [upsert("template", "t1", templatePayload())]);
     await service.push(USER_A, [upsert("exercise", "e1", customExercisePayload())]);
@@ -461,6 +464,42 @@ describe("sync.service pull", () => {
       [...page.changes.map((change) => change.version)].sort((a, b) => a - b),
     );
     expect(page.hasMore).toBe(false);
+  });
+
+  it("given a catalog exercise stored with translations sorted by locale, when pulled, then its payload carries sourceUrl and the same order (the repository is what sorts; this proves the pull pipeline passes it through unchanged)", async () => {
+    const { store, service } = harness();
+    const sortedTranslations = [
+      { locale: "en", name: "Bench press", instructions: "Lie on a flat bench." },
+      { locale: "fr", name: "Développé couché", instructions: null },
+    ];
+    store.seedCatalogExercise(
+      "catalog-1",
+      catalogExerciseAggregate({
+        sourceUrl: "https://wger.de/exercise/73/view-base",
+        translations: sortedTranslations,
+      }),
+    );
+
+    const page = await service.pull(USER_A, 0, 500);
+
+    expect(page.changes[0]?.payload).toMatchObject({
+      isCustom: false,
+      sourceUrl: "https://wger.de/exercise/73/view-base",
+      translations: sortedTranslations,
+    });
+  });
+
+  it("given a pushed custom exercise, when pulled, then its payload carries an empty translations array and a null sourceUrl", async () => {
+    const { service } = harness();
+    await service.push(USER_A, [upsert("exercise", "e1", customExercisePayload())]);
+
+    const page = await service.pull(USER_A, 0, 500);
+
+    expect(page.changes[0]?.payload).toMatchObject({
+      isCustom: true,
+      sourceUrl: null,
+      translations: [],
+    });
   });
 
   it("given more changes than the limit, when pulled, then hasMore is true and nextCursor follows the page, and the next page completes it", async () => {
@@ -502,14 +541,7 @@ describe("sync.service pull", () => {
 
   it("given changes owned by another user, when pulled, then they are excluded (catalog stays included)", async () => {
     const { store, service } = harness();
-    store.seedCatalogExercise("catalog-1", {
-      name: "Bench press",
-      primaryMuscle: "chest",
-      secondaryMuscles: [],
-      equipment: "barbell",
-      license: "CC-BY-SA 4.0",
-      author: "wger.de",
-    });
+    store.seedCatalogExercise("catalog-1", catalogExerciseAggregate());
     await service.push(USER_B, [upsert("workout", "b-workout", workoutPayload())]);
 
     const page = await service.pull(USER_A, 0, 500);

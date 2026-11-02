@@ -9,4 +9,5 @@ Every exercise must have a picture in one consistent style, without licensing is
 Curate ~150 exercises from wger.de (CC-BY-SA, attribution in README and About) into a committed snapshot. Generate a capsule-figure illustration per exercise from the design's prompt template. Custom exercises use one of 12 bundled muscle-group fallbacks.
 
 ## Consequences
+The snapshot format, localisation, mapping, attribution and seeder are specified in ADR-0021.
 An image pipeline script plus manual review. Coil disk cache + prefetch makes images available offline.
