@@ -42,6 +42,7 @@ repz/
 ├── .github/workflows/           # mobile.yml, api.yml
 ├── docker-compose.yml           # Postgres only; the API runs on the host with `pnpm dev` (REP-59 adds a container)
 ├── api/                         # TypeScript backend (pnpm)
+├── contract/fixtures/           # shared API fixtures, validated against api/openapi.json (ADR-0010)
 └── mobile/                      # Gradle root for KMP
     ├── build-logic/             # convention plugins
     ├── gradle/libs.versions.toml
@@ -331,7 +332,7 @@ class HistoryViewModel(
 ### 10.1 Stack
 
 Node.js 26 LTS (runs `.ts` via type stripping) · TypeScript 7 (`tsc` for typecheck/build only) · Hono + `@hono/zod-openapi` · Zod · Drizzle ORM + drizzle-kit migrations · Postgres (docker) · pino (JSON logs) · JWT · argon2 password hashing · Vitest · Biome · pnpm. See ADR-0016.
-API docs: OpenAPI generated from Zod schemas, served at `/openapi.json`, with an interactive UI at `/docs`.
+API docs: OpenAPI 3.1 generated from Zod schemas, committed as `api/openapi.json` (`pnpm openapi:export`), served at `/openapi.json`, with an interactive Scalar UI at `/docs` (ADR-0010).
 
 ### 10.2 Structure
 
@@ -491,8 +492,11 @@ Re-verified on npm, nodejs.org and Docker Hub on 2026-10-29 (REP-12).
 | pino / pino-pretty | 10.4.0 / 13.2.0 | JSON logger; pretty output only in `pnpm dev` |
 | @types/node | 26.6.6 | |
 | Postgres (docker) | 18.6 | |
+| @scalar/hono-api-reference | 0.12.17 | `/docs` UI; browser bundle pinned to `@scalar/api-reference` 1.76.4 |
+| Ajv / ajv-formats | 8.20.0 / 3.0.1 | contract test (2020-12 mode) |
+| @seriousme/openapi-schema-validator | 2.11.0 | validates `openapi.json` against the OAS 3.1 schema |
 
-**API contract:** the OpenAPI spec is generated from Zod (`/openapi.json`) and committed to `api/openapi.json`. Kotlin DTOs are **hand-written** in `core:network`. A CI contract test validates JSON fixtures shared by both sides against the spec, so neither side can drift without the build failing. Generators (openapi-generator `kotlin`/`multiplatform`) produce noisy code that needs fixups, which is not worth it for an API we fully own.
+**API contract:** the OpenAPI spec is generated from Zod (`/openapi.json`) and committed to `api/openapi.json`. Kotlin DTOs are **hand-written** in `core:network`. A contract test (`api/src/contract/`, part of `pnpm test`) validates the JSON fixtures in `contract/fixtures/<operationId>/{request|<status>}/<case>.json` strictly against the spec, and the mobile side decodes the same fixtures (REP-25), so neither side can drift without the build failing. Generators (openapi-generator `kotlin`/`multiplatform`) produce noisy code that needs fixups, which is not worth it for an API we fully own.
 
 ---
 
@@ -506,6 +510,7 @@ Re-verified on npm, nodejs.org and Docker Hub on 2026-10-29 (REP-12).
 | DI graph | Koin Compiler Plugin, full-graph check at compile time | build (incl. `assembleDebug` in CI) |
 | Unit tests | `commonTest` on the Android host test (`testAndroidHostTest`) + iOS simulator (`iosSimulatorArm64Test`) | `./gradlew check`; CI `mobile.yml` `android` job + `ios` job for `iosSimulatorArm64Test` |
 | TS | Biome (`pnpm lint`), TypeScript 7 `tsc --noEmit` (`pnpm typecheck`), Vitest (`pnpm test`) | `pnpm lint && pnpm typecheck && pnpm test && pnpm build`; CI `api.yml` |
+| OpenAPI contract | `pnpm openapi:export` with a clean tree (no spec drift); strict fixture validation and coverage in `pnpm test` | CI `api.yml` |
 | DB migrations in sync and applicable | `pnpm db:check` + `pnpm db:generate` with a clean tree; `pnpm db:migrate` twice on Postgres 18.6 | CI `api.yml` |
 | iOS app build | `xcodebuild` simulator build, no signing | CI `mobile.yml` `ios` job |
 | Brand assets reproducible | `android_vectors.py` + `sync-brand-assets.sh`, then a clean `git status` | CI `mobile.yml` `brand-assets` job |
