@@ -29,7 +29,7 @@ fun calculatePersonalRecords(workouts: List<Workout>): List<PersonalRecord> =
     countedSets(workouts)
         .groupBy { it.exerciseId }
         .flatMap { (exerciseId, sets) -> PersonalRecordType.entries.mapNotNull { type -> bestRecord(exerciseId, type, sets) } }
-        .sortedWith(compareBy({ it.exerciseId.value.toString() }, { it.type.ordinal }))
+        .sortedWith(compareBy({ it.exerciseId.value }, { it.type.ordinal }))
 
 private fun countedSets(workouts: List<Workout>): List<CountedSet> =
     workouts
@@ -59,7 +59,7 @@ private fun bestRecord(
         contenders.maxOfOrNull(valueOf)?.let { bestValue ->
             contenders
                 .filter { valueOf(it) == bestValue }
-                .minWithOrNull(compareBy({ it.completedAt }, { it.workoutId.value.toString() }, { it.setId.value.toString() }))
+                .minWithOrNull(compareBy({ it.completedAt }, { it.workoutId.value }, { it.setId.value }))
         }
 
     return winner?.let { set ->

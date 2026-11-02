@@ -9,9 +9,9 @@ private const val EPLEY_ROUNDING_OFFSET = EPLEY_DENOMINATOR / 2
 
 /**
  * Epley's estimated one-rep max, in integer grams: `(grams * (30 + reps) + 15) / 30`, the `+ 15`
- * rounding the integer division half up to the nearest gram. `reps == 1` is the identity (a real
- * single is its own 1RM) rather than going through the formula, which would not return the exact
- * weight for every gram value.
+ * rounding the integer division half up to the nearest gram. `reps == 1` is defined as the weight
+ * itself by convention - a performed single is its own 1RM - rather than going through the
+ * formula, which would otherwise add `weight / 30` even at a single rep.
  */
 fun estimateOneRepMax(
     weight: Weight,

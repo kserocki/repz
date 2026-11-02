@@ -20,8 +20,11 @@ fun Exercise.localizedInstructions(languageTag: String): String? =
     translationsByLocalePriority(languageTag).firstNotNullOfOrNull { it.instructions }
 
 private fun Exercise.translationsByLocalePriority(languageTag: String): List<ExerciseTranslation> {
-    val primaryLanguage = languageTag.substringBefore('-')
-    val exactTag = translations.filter { it.languageTag.equals(languageTag, ignoreCase = true) }
+    // Normalises a `pl_PL`-style (underscore) tag to `pl-PL` so a caller that passes a platform
+    // locale string (for example Android's Locale.toString()) still finds its primary language.
+    val normalizedTag = languageTag.replace('_', '-')
+    val primaryLanguage = normalizedTag.substringBefore('-')
+    val exactTag = translations.filter { it.languageTag.equals(normalizedTag, ignoreCase = true) }
     val samePrimaryLanguage = translations.filter { it.languageTag.substringBefore('-').equals(primaryLanguage, ignoreCase = true) }
     val english = translations.filter { it.languageTag.equals(FALLBACK_LANGUAGE_TAG, ignoreCase = true) }
     return exactTag + samePrimaryLanguage + english

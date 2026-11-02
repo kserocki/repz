@@ -14,7 +14,7 @@ data class Exercise(
     val origin: ExerciseOrigin,
     val translations: List<ExerciseTranslation>,
 ) {
-    val isCustom: Boolean get() = origin == ExerciseOrigin.Custom
+    val isCustom: Boolean get() = origin is ExerciseOrigin.Custom
 }
 
 /**

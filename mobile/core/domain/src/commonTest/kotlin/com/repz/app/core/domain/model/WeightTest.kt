@@ -69,6 +69,16 @@ class WeightTest {
     }
 
     @Test
+    fun givenAMultiplicationThatWouldOverflow_whenMultiplied_thenRequireFailsInsteadOfWrapping() {
+        assertFailsWith<IllegalArgumentException> { Weight(Long.MAX_VALUE / 2) * 3 }
+    }
+
+    @Test
+    fun givenZeroReps_whenMultiplied_thenItNeverOverflows() {
+        assertEquals(Weight.ZERO, Weight(Long.MAX_VALUE) * 0)
+    }
+
+    @Test
     fun givenTwoWeights_whenCompared_thenOrderIsByGrams() {
         assertTrue(Weight(500) < Weight(1000))
         assertTrue(Weight(1000) > Weight(500))

@@ -163,11 +163,19 @@ class PersonalRecordCalculatorTest {
 
     @Test
     fun givenAnEqualLaterValue_whenCalculated_thenTheEarlierSetKeepsTheRecord() {
-        val earlier = testSet(seed = 1, weight = Weight.fromKilograms(100.0), reps = 5, completedAt = Instant.fromEpochSeconds(100))
-        val later = testSet(seed = 2, weight = Weight.fromKilograms(100.0), reps = 5, completedAt = Instant.fromEpochSeconds(200))
+        // "later" has the smaller workoutId and setId and is listed first; "earlier" has the
+        // larger workoutId and setId and is listed second. Only completedAt - never setId,
+        // workoutId or list order - can make "earlier" win here.
+        val later = testSet(seed = 1, weight = Weight.fromKilograms(100.0), reps = 5, completedAt = Instant.fromEpochSeconds(200))
+        val earlier = testSet(seed = 2, weight = Weight.fromKilograms(100.0), reps = 5, completedAt = Instant.fromEpochSeconds(100))
 
         val records =
-            calculatePersonalRecords(listOf(testWorkoutForOneExercise(1, exerciseA, listOf(earlier, later)))).forExercise(exerciseA)
+            calculatePersonalRecords(
+                listOf(
+                    testWorkoutForOneExercise(seed = 1, exerciseA, listOf(later)),
+                    testWorkoutForOneExercise(seed = 2, exerciseA, listOf(earlier)),
+                ),
+            ).forExercise(exerciseA)
 
         assertEquals(earlier.id, records.ofType(PersonalRecordType.HEAVIEST).setId)
         assertEquals(earlier.completedAt, records.ofType(PersonalRecordType.HEAVIEST).achievedAt)
@@ -187,18 +195,21 @@ class PersonalRecordCalculatorTest {
     @Test
     fun givenTheSameCompletedAtInDifferentWorkouts_whenCalculated_thenTheSmallerWorkoutIdWins() {
         val sameInstant = Instant.fromEpochSeconds(100)
-        val inFirstWorkout = testSet(seed = 10, weight = Weight.fromKilograms(100.0), reps = 5, completedAt = sameInstant)
-        val inSecondWorkout = testSet(seed = 20, weight = Weight.fromKilograms(100.0), reps = 5, completedAt = sameInstant)
+        // Workout 10 (the smaller workoutId) holds the LARGER setId (90) and is listed second;
+        // workout 20 (the larger workoutId) holds the SMALLER setId (80) and is listed first. Only
+        // ordering by workoutId - never setId or list order - picks workout 10's set.
+        val inLargerWorkout = testSet(seed = 80, weight = Weight.fromKilograms(100.0), reps = 5, completedAt = sameInstant)
+        val inSmallerWorkout = testSet(seed = 90, weight = Weight.fromKilograms(100.0), reps = 5, completedAt = sameInstant)
 
         val records =
             calculatePersonalRecords(
                 listOf(
-                    testWorkoutForOneExercise(seed = 10, exerciseA, listOf(inFirstWorkout)),
-                    testWorkoutForOneExercise(seed = 20, exerciseA, listOf(inSecondWorkout)),
+                    testWorkoutForOneExercise(seed = 20, exerciseA, listOf(inLargerWorkout)),
+                    testWorkoutForOneExercise(seed = 10, exerciseA, listOf(inSmallerWorkout)),
                 ),
             ).forExercise(exerciseA)
 
-        assertEquals(inFirstWorkout.id, records.ofType(PersonalRecordType.HEAVIEST).setId)
+        assertEquals(inSmallerWorkout.id, records.ofType(PersonalRecordType.HEAVIEST).setId)
     }
 
     @Test

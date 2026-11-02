@@ -25,6 +25,7 @@ value class Weight(
 
     operator fun times(reps: Int): Weight {
         require(reps >= 0) { "Reps can't be negative: $reps" }
+        require(reps == 0 || grams <= Long.MAX_VALUE / reps) { "Weight overflows at $grams g * $reps" }
         return Weight(grams * reps)
     }
 

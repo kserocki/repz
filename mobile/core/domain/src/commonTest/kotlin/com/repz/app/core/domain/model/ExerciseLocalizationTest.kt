@@ -60,6 +60,39 @@ class ExerciseLocalizationTest {
     }
 
     @Test
+    fun givenEnglishListedBeforeTheSamePrimaryLanguage_whenLocalized_thenThePrimaryLanguageStillWins() {
+        val exercise =
+            testExercise(
+                listOf(
+                    ExerciseTranslation("en", "Bench press", "Lie on a bench."),
+                    ExerciseTranslation("pl", "Wyciskanie leżąc", "Połóż się na ławce."),
+                ),
+            )
+
+        assertEquals("Wyciskanie leżąc", exercise.localizedName("pl-PL"))
+    }
+
+    @Test
+    fun givenASiblingRegionListedBeforeTheExactTag_whenLocalized_thenTheExactTagStillWins() {
+        val exercise =
+            testExercise(
+                listOf(
+                    ExerciseTranslation("pt-BR", "Supino reto", "Deite-se no banco."),
+                    ExerciseTranslation("pt-PT", "Supino plano", "Deite-se no banco plano."),
+                ),
+            )
+
+        assertEquals("Supino plano", exercise.localizedName("pt-PT"))
+    }
+
+    @Test
+    fun givenAnUnderscoreSeparatedDeviceTag_whenLocalized_thenItNormalizesToHyphenated() {
+        val exercise = testExercise(listOf(ExerciseTranslation("pl", "Wyciskanie leżąc", "Połóż się na ławce.")))
+
+        assertEquals("Wyciskanie leżąc", exercise.localizedName("pl_PL"))
+    }
+
+    @Test
     fun givenNoMatchingLanguage_whenLocalized_thenEnglishWins() {
         val exercise =
             testExercise(

@@ -5,10 +5,7 @@ import com.repz.app.core.domain.model.Weight
 /** Marker for every typed failure a domain operation can return (no exceptions across layers). */
 sealed interface DomainError
 
-/**
- * Only the validation failures this issue's code returns. Other error families (not found,
- * unauthorized, network, sync) are added by the first issue that needs them.
- */
+/** A validation failure for a name, notes, a set weight, reps or an RPE value. */
 sealed interface ValidationError : DomainError {
     data object NameBlank : ValidationError
 
