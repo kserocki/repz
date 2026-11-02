@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="brand_cyan">#123456</color>
+    <color name="brand_deep">#234567</color>
+    <color name="brand_ink">#111111</color>
+    <color name="brand_paper">#EEEEEE</color>
+
+</resources>

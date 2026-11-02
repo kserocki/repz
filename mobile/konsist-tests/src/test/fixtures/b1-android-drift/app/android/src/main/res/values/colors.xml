@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Drifted on purpose: brand_cyan no longer matches RepzBrandColors.Cyan (#123456). -->
+    <color name="brand_cyan">#654321</color>
+    <color name="brand_deep">#234567</color>
+    <color name="brand_ink">#111111</color>
+    <color name="brand_paper">#EEEEEE</color>
+
+</resources>
