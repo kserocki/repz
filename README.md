@@ -34,4 +34,4 @@ Node 26 · TypeScript 7 · Hono 4 · Zod 4 · Drizzle · Postgres 18 · jose · 
 
 ## Credits
 
-Exercise data from [wger.de](https://wger.de) (CC-BY-SA 4.0). Fonts: Archivo and Inter (SIL OFL 1.1).
+Exercise data from [wger.de](https://wger.de) (CC BY-SA 3.0/4.0 and CC0; see [`api/src/db/seed/ATTRIBUTION.md`](api/src/db/seed/ATTRIBUTION.md)). Fonts: Archivo and Inter (SIL OFL 1.1).

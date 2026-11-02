@@ -307,6 +307,8 @@ describe("createInMemorySyncStore seedCatalogExercise", () => {
       equipment: "barbell",
       license: "CC-BY-SA 4.0",
       author: "wger.de",
+      sourceUrl: "https://wger.de/exercise/73/view-base",
+      translations: [{ locale: "en", name: "Bench press", instructions: null }],
     });
 
     const heads = await store.transactions.readSnapshot((stores) =>

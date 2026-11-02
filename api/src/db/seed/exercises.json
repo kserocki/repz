@@ -1,0 +1,3169 @@
+{
+  "source": "https://wger.de/api/v2/exerciseinfo/",
+  "exercises": [
+    {
+      "id": "02492df4-c6a1-48fa-b8bb-8d236ae072e9",
+      "primaryMuscle": "quadriceps",
+      "secondaryMuscles": [
+        "abs",
+        "glutes",
+        "calves"
+      ],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 4.0",
+      "author": "admin, hektkaso",
+      "source": {
+        "wgerId": 1312,
+        "wgerUuid": "edc3f6b7-96b0-4967-90d7-bba9d7d442cb",
+        "url": "https://wger.de/exercise/1312/view-base",
+        "originalName": "Bodyweight Squat HD"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Bodyweight Squat",
+          "instructions": "Squat is a type of bodyweight exercise. It is one of the most popular exercises for strength and muscle growth. Squat is particularly effective for focusing on the muscles of the leg and hips. Squat are an easy exercise for beginners to do. It can help strengthen leg muscles, tighten hip muscles and burn calories to lose weight. It tightens the butt and legs. Squats are very effective for firming and strengthening your legs by acting on the gluteus,hip flexors, quadriceps, hamstrings and inner thigh muscles. Also, bodyweight squats can help shape your glutes and butt."
+        }
+      ]
+    },
+    {
+      "id": "05cef4f8-afa9-4a94-b64c-464d70203696",
+      "primaryMuscle": "full_body",
+      "secondaryMuscles": [],
+      "equipment": "other",
+      "license": "CC-BY-SA 4.0",
+      "author": "flanny",
+      "source": {
+        "wgerId": 1523,
+        "wgerUuid": "32cc7175-3fda-4c7e-900f-8766c22e3b2b",
+        "url": "https://wger.de/exercise/1523/view-base",
+        "originalName": "Sled Push"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Sled Push",
+          "instructions": "1. Load the sled with 25% of your maximum load. If you don’t know this, choose a weight you can push for 10 minutes with short breaks. Beginners may choose to push the sled with no weight.\n2. Stand behind the sled and grab the poles with a high-grip hand position.\n3. Engage your core muscles and start pushing the sled forward as fast as you can, powering through your entire leg. Extend your hips and knees as you move the sled forward. Your foot stance should resemble your natural running position."
+        }
+      ]
+    },
+    {
+      "id": "097496de-b2ad-48fe-a69c-a10145cc860b",
+      "primaryMuscle": "shoulders",
+      "secondaryMuscles": [],
+      "equipment": "machine",
+      "license": "CC-BY-SA 4.0",
+      "author": "novadani",
+      "source": {
+        "wgerId": 916,
+        "wgerUuid": "cbf4cf16-f188-4a60-a223-aa50b163f4b7",
+        "url": "https://wger.de/exercise/916/view-base",
+        "originalName": "Smith Press"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Smith Machine Shoulder Press",
+          "instructions": "1. Sit on a bench inside a Smith machine with the bar at shoulder height, back nearly upright.\n2. Press the bar straight up until your arms are fully extended.\n3. Lower it back down to shoulder height with control."
+        }
+      ]
+    },
+    {
+      "id": "0a205f5d-7624-4b2a-8866-72977fb56f3f",
+      "primaryMuscle": "back",
+      "secondaryMuscles": [],
+      "equipment": "cable",
+      "license": "CC-BY-SA 4.0",
+      "author": "Franpol",
+      "source": {
+        "wgerId": 1127,
+        "wgerUuid": "4eb41bfb-cbeb-4683-b9c6-902ee7e028e0",
+        "url": "https://wger.de/exercise/1127/view-base",
+        "originalName": "Close-grip supinated lat pulldown"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Close-Grip Supinated Lat Pulldown",
+          "instructions": "Downward movement:\n\n• Pull the bar down so that it passes close to your chin and touches the upper part of your chest.\n• Keep the rest of your body still."
+        }
+      ]
+    },
+    {
+      "id": "0c8d6676-9936-4465-b381-311e3cdb0998",
+      "primaryMuscle": "quadriceps",
+      "secondaryMuscles": [
+        "glutes"
+      ],
+      "equipment": "machine",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 374,
+        "wgerUuid": "661287d4-d1dc-485c-896b-73f90b000536",
+        "url": "https://wger.de/exercise/374/view-base",
+        "originalName": "Leg Presses (wide)"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Leg Press (Wide Stance)",
+          "instructions": "Sit on the machine and put your feet on the platform, a bit more than shoulder wide. The feet are turned outwards by a few degrees.\n\nLower the weight so much, that the knees form a right angle. Push immediately the platform up again, without any pause. When in the lower position, the knees point a bit outwards and the movement should be always fluid."
+        }
+      ]
+    },
+    {
+      "id": "0db28cae-9003-464a-81d4-d6f9cde72fb0",
+      "primaryMuscle": "hamstrings",
+      "secondaryMuscles": [
+        "glutes"
+      ],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "tuckerm",
+      "source": {
+        "wgerId": 627,
+        "wgerUuid": "22c59ede-970b-43e1-bb51-ac1c2be0b0e0",
+        "url": "https://wger.de/exercise/627/view-base",
+        "originalName": "Stiff-legged Deadlifts"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Stiff-Legged Deadlift",
+          "instructions": "1. Stand holding a barbell in front of your thighs, feet hip-width apart.\n2. Keeping your legs almost straight and your back flat, hinge at the hips and lower the bar along your legs until you feel a stretch in your hamstrings.\n3. Drive your hips forward to return to standing."
+        }
+      ]
+    },
+    {
+      "id": "0f155d90-3e9f-4f53-a9b0-dc48cd0fab6a",
+      "primaryMuscle": "biceps",
+      "secondaryMuscles": [],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "cgoob883",
+      "source": {
+        "wgerId": 465,
+        "wgerUuid": "dd52fb99-9426-4a78-b446-20a8e3e4ec47",
+        "url": "https://wger.de/exercise/465/view-base",
+        "originalName": "Preacher Curls"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Preacher Curl",
+          "instructions": "Place the EZ curl bar on the rest handles in front of the preacher bench. Lean over the bench and grab the EZ curl bar with palms up. Sit down on the preacher bench seat so your upper arms rest on top of the pad and your chest is pressed against the pad. Lower the weight until your elbows are extended and arms are straight. Bring the weights back up to the starting point by contracting biceps. Repeat"
+        }
+      ]
+    },
+    {
+      "id": "0f24782f-d92c-4553-8e8a-aa917e0d19d6",
+      "primaryMuscle": "abs",
+      "secondaryMuscles": [
+        "back"
+      ],
+      "equipment": "cable",
+      "license": "CC-BY-SA 4.0",
+      "author": "Robertcoop",
+      "source": {
+        "wgerId": 672,
+        "wgerUuid": "90e9f590-7d68-4afb-9f95-8429246ea4aa",
+        "url": "https://wger.de/exercise/672/view-base",
+        "originalName": "Trunk Rotation With Cable"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Cable Trunk Rotation",
+          "instructions": "1. Sit on a bench side-on to a cable machine set at chest height, holding the handle with both hands.\n2. Keeping your hips facing forward, rotate your torso away from the machine.\n3. Return under control to the starting position, then repeat for all reps before switching sides."
+        }
+      ]
+    },
+    {
+      "id": "10547301-0428-4cc7-bf45-8fcbf4ac9560",
+      "primaryMuscle": "abs",
+      "secondaryMuscles": [],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 4.0",
+      "author": "sevae",
+      "source": {
+        "wgerId": 41,
+        "wgerUuid": "a6bced3c-72f5-42a3-9438-5569d46f49fd",
+        "url": "https://wger.de/exercise/41/view-base",
+        "originalName": "Barbell Ab Rollout"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Barbell Ab Rollout",
+          "instructions": "Place a barbell on the floor at your feet.\n\nBending at the waist, grip the barbell with a shoulder with overhand grip.\n\nWith a slow controlled motion, roll the bar out so that your back is straight.\n\nRoll back up raising your hips and butt as you return to the starting position."
+        }
+      ]
+    },
+    {
+      "id": "10ff9d67-d0e9-457f-82e0-d1698bffff3a",
+      "primaryMuscle": "triceps",
+      "secondaryMuscles": [],
+      "equipment": "other",
+      "license": "CC-BY-SA 4.0",
+      "author": "Nash",
+      "source": {
+        "wgerId": 501,
+        "wgerUuid": "7671b16c-5023-4663-b00d-86dd018e024f",
+        "url": "https://wger.de/exercise/501/view-base",
+        "originalName": "Ring Dips"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Ring Dip",
+          "instructions": "1. Support yourself above two gymnastic rings with arms straight, rings at your sides.\n2. Lower your body by bending your elbows until your upper arms are roughly parallel to the floor, keeping the rings close to your body.\n3. Press back up to full arm extension."
+        }
+      ]
+    },
+    {
+      "id": "125d675e-b67e-459e-aa1f-225b741ea36f",
+      "primaryMuscle": "back",
+      "secondaryMuscles": [],
+      "equipment": "machine",
+      "license": "CC-BY-SA 3.0",
+      "author": "drthurlow",
+      "source": {
+        "wgerId": 354,
+        "wgerUuid": "8c496646-baa8-4ed3-97b1-702e213fdeca",
+        "url": "https://wger.de/exercise/354/view-base",
+        "originalName": "Lat Pull Down (Leaning Back)"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Lat Pulldown (Leaning Back)",
+          "instructions": "1. Sit at the lat pulldown machine and grip the bar wider than shoulder width.\n2. Lean your torso back slightly and pull the bar down to your upper chest, squeezing your shoulder blades together.\n3. Slowly let the bar rise back to the starting position with control."
+        }
+      ]
+    },
+    {
+      "id": "16226612-cd0c-48aa-a5c3-1ca43d462939",
+      "primaryMuscle": "triceps",
+      "secondaryMuscles": [],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 246,
+        "wgerUuid": "95a7e546-e8f8-4521-a76b-983d94161b25",
+        "url": "https://wger.de/exercise/246/view-base",
+        "originalName": "Skullcrusher SZ-bar"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Skull Crusher (EZ-Bar)",
+          "instructions": "Hold the SZ-bar and lay down on a flat bench in such a way that around 1/4 of your head is over the edge. Stretch your arms with the bar and bend them so that the bar is lowered. Just before it touches your forehead, push it up.\n\nPay attention to your elbows and arms: only the triceps are doing the work, the rest of the arms should not move."
+        }
+      ]
+    },
+    {
+      "id": "1633fda7-157a-4328-a1eb-a861522b1d29",
+      "primaryMuscle": "hamstrings",
+      "secondaryMuscles": [],
+      "equipment": "machine",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 365,
+        "wgerUuid": "3bc8b411-a28d-4e1c-a6d1-769e18fe9881",
+        "url": "https://wger.de/exercise/365/view-base",
+        "originalName": "Leg Curls (laying)"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Lying Leg Curl",
+          "instructions": "Lay on a bench and put your calves behind the leg holder (better if they are hold on around the lower calves). Hold a grip on the bars to make sure the body is firmly in place. Bend your legs bringing the weight up, go slowly back. During the exercise the body should not move, all work is done by the legs."
+        }
+      ]
+    },
+    {
+      "id": "1816a076-3521-4e59-901d-91e70f1f1c34",
+      "primaryMuscle": "glutes",
+      "secondaryMuscles": [
+        "quadriceps",
+        "hamstrings",
+        "calves"
+      ],
+      "equipment": "cable",
+      "license": "CC-BY-SA 4.0",
+      "author": "manuher89",
+      "source": {
+        "wgerId": 1751,
+        "wgerUuid": "821e289e-bd39-4410-b436-6f2a43bc3649",
+        "url": "https://wger.de/exercise/1751/view-base",
+        "originalName": "Cable pull through"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Cable Pull-Through",
+          "instructions": "The Cable Pull Through is a lower-body exercise that targets the glutes and hamstrings using a \"hip hinge\" motion. To perform it, attach a rope to the lowest pulley setting, face away from the machine with the rope between your legs, and step forward to create tension. Keeping your back flat and knees slightly soft, push your hips backward as if trying to close a door behind you until you feel a deep stretch in your hamstrings.\n\nTo finish the rep, explosively drive your hips forward to return to a standing position, squeezing your glutes hard at the top. It is vital to remember that this is not a squat; your knees should not bend deeply, and your arms should remain straight and relaxed, acting only as hooks for the rope. This movement provides constant tension on the glutes while placing less stress on the lower back than a traditional deadlift."
+        }
+      ]
+    },
+    {
+      "id": "1a1c051c-0f28-4689-9844-ef0adfcf0e49",
+      "primaryMuscle": "chest",
+      "secondaryMuscles": [],
+      "equipment": "machine",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 129,
+        "wgerUuid": "5c414175-fe72-455a-ba8f-a0575cf792bd",
+        "url": "https://wger.de/exercise/129/view-base",
+        "originalName": "Chest Press"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Machine Chest Press",
+          "instructions": "1. Adjust the seat height so that the grips are parallel to your chest.\n2. Use your legs to push the foot forward pedal.\n3. Bring the handles to the start position.\n4. Keep your back in contact with the back pad, press outwards.\n5. Press the handles away from your chest and exhale.\n6. Allow the handles to come in gently until they reach your chest.\n7. Allow the handles to return to your chest as you inhale."
+        }
+      ]
+    },
+    {
+      "id": "1b1b244c-b544-49f2-ad24-a592b1e87557",
+      "primaryMuscle": "quadriceps",
+      "secondaryMuscles": [],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 4.0",
+      "author": "student1234",
+      "source": {
+        "wgerId": 320,
+        "wgerUuid": "4d255f25-f199-401a-bc81-7ffab1d0ed24",
+        "url": "https://wger.de/exercise/320/view-base",
+        "originalName": "Jumping Jacks"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Jumping Jack",
+          "instructions": "A jumping jack or star jump, also called side-straddle hop in the US military, is a physical jumping exercise performed by jumping to a position with the legs spread wide and the hands going overhead, sometimes in a clap, and then returning to a position with the feet together and the arms at the sides"
+        }
+      ]
+    },
+    {
+      "id": "1cd29fa3-bccf-4791-8949-d4da99a05bee",
+      "primaryMuscle": "glutes",
+      "secondaryMuscles": [
+        "hamstrings"
+      ],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 4.0",
+      "author": "tdprice12",
+      "source": {
+        "wgerId": 265,
+        "wgerUuid": "ceb0c2d0-06ac-4a49-89e7-8d7b1c1e5672",
+        "url": "https://wger.de/exercise/265/view-base",
+        "originalName": "Glute Bridge"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Glute Bridge",
+          "instructions": "Lie on you back with your hips and knees flexed, feet on the ground. From this position, raise your butt off of the ground to a height where your body makes a straight line from your knees to your shoulders. To make the exercise more intense, you can add weight by letting a barbell rest on your hips as you complete the motion, or you can put your feet on a slightly higher surface such as a step or a bench."
+        }
+      ]
+    },
+    {
+      "id": "1d90bd7b-feda-4c1a-bef5-e807f3ea8545",
+      "primaryMuscle": "back",
+      "secondaryMuscles": [
+        "triceps"
+      ],
+      "equipment": "cable",
+      "license": "CC-BY-SA 3.0",
+      "author": "tuckerm",
+      "source": {
+        "wgerId": 628,
+        "wgerUuid": "0f5fc602-afb6-4500-87da-f115f3ef3f47",
+        "url": "https://wger.de/exercise/628/view-base",
+        "originalName": "Straight-arm Pull Down (bar Attachment)"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Straight-Arm Pulldown",
+          "instructions": "Use the straight bar attachment on a high pulley. Grasp the two ends of the bar with your palms facing downward and your arms straight out in front of you. Pull your hands down towards your hips, while keeping your arms straight, then raise them back up to the starting position."
+        }
+      ]
+    },
+    {
+      "id": "2043e466-4cc7-4ce7-99c7-f84b3e073eb4",
+      "primaryMuscle": "abs",
+      "secondaryMuscles": [],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 591,
+        "wgerUuid": "f38e9c23-031d-44d0-ac27-7f1026212c73",
+        "url": "https://wger.de/exercise/591/view-base",
+        "originalName": "Sit-ups"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Sit-Up",
+          "instructions": "Sit on a mat, your calves are resting on a bench, the knees make a right angle. Hold your hands behind your neck. Go now up with a rolling movement of your back, you should feel how the individual vertebrae lose contact with the mat. At the highest point, contract your abs as much as you can and hold there for 2 sec. Go now down, unrolling your back."
+        }
+      ]
+    },
+    {
+      "id": "2239adc3-d759-4b72-bcd3-62799e8daf4d",
+      "primaryMuscle": "triceps",
+      "secondaryMuscles": [],
+      "equipment": "cable",
+      "license": "CC-BY-SA 4.0",
+      "author": "cshep442",
+      "source": {
+        "wgerId": 805,
+        "wgerUuid": "ea63d85c-8579-4dda-b99f-c4c8930f9af6",
+        "url": "https://wger.de/exercise/805/view-base",
+        "originalName": "Tricep Pushdown on Cable"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Rope Triceps Pushdown",
+          "instructions": "The cable rope push-down is a popular exercise targeting the triceps muscles. It's easy to learn and perform, making it a favorite for everyone from beginners to advanced lifters. It is usually performed for moderate to high reps, such as 8-12 reps or more per set, as part of an upper-body or arm-focused workout."
+        }
+      ]
+    },
+    {
+      "id": "234d9af4-a8d6-473f-b0a4-0ca966cd86e8",
+      "primaryMuscle": "shoulders",
+      "secondaryMuscles": [],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 566,
+        "wgerUuid": "8b0a0371-c0a9-42a7-aab7-68d520542fb2",
+        "url": "https://wger.de/exercise/566/view-base",
+        "originalName": "Shoulder Press, Barbell"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Barbell Shoulder Press",
+          "instructions": "Sit on a bench, the back rest should be almost vertical. Take a barbell with a shoulder wide grip and bring it up to chest height. Press the weight up, but don't stretch the arms completely. Go slowly down and repeat."
+        }
+      ]
+    },
+    {
+      "id": "24d00470-c21e-4506-88bf-1340e5c21047",
+      "primaryMuscle": "biceps",
+      "secondaryMuscles": [],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 91,
+        "wgerUuid": "7b99a081-6b1a-4aa5-b86a-5a935d083a35",
+        "url": "https://wger.de/exercise/91/view-base",
+        "originalName": "Biceps Curls With Barbell"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Barbell Bicep Curl",
+          "instructions": "Hold the Barbell shoulder-wide, the back is straight, the shoulders slightly back, the arms are streched. Bend the arms, bringing the weight up, with a fast movement. Without pausing, let down the bar with a slow and controlled movement.\n\nDon't allow your body to swing during the exercise, all work is done by the biceps, which are the only mucles that should move (pay attention to the elbows)."
+        }
+      ]
+    },
+    {
+      "id": "29124af9-a4bc-478d-b1b3-24da397cfa71",
+      "primaryMuscle": "quadriceps",
+      "secondaryMuscles": [],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 4.0",
+      "author": "ataraxie67",
+      "source": {
+        "wgerId": 203,
+        "wgerUuid": "b7c6a444-90ea-4f5b-9fea-748311606eaa",
+        "url": "https://wger.de/exercise/203/view-base",
+        "originalName": "Dumbbell Goblet Squat"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Dumbbell Goblet Squat",
+          "instructions": "Grasp dumbbell with both hands at the sides of the upper plates. Hold dumbbell in front of chest, close to torso. Place feet about shoulderwide apart, keep knees slightly bent.\n\nSquat down until thighs are parallel to floor. Keep back straight, bend and move hips backward to keep knees above feet. Return, keep knees slightly flexed. Repeat.\n\nKeep bodyweight on heels and look ahead or slightly above to keep back straight."
+        }
+      ]
+    },
+    {
+      "id": "2c0ebc96-8155-4037-af19-3cbdbf039072",
+      "primaryMuscle": "forearms",
+      "secondaryMuscles": [],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 4.0",
+      "author": "philip",
+      "source": {
+        "wgerId": 1116,
+        "wgerUuid": "3393db0b-98b7-4d53-a0d4-985f97875295",
+        "url": "https://wger.de/exercise/1116/view-base",
+        "originalName": "Dumbbell farmer's carry"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Dumbbell Farmer's Carry",
+          "instructions": "Grab half your body weight in each hand and walk."
+        }
+      ]
+    },
+    {
+      "id": "2db4fa21-695c-417b-a63b-5e8b33e63d2c",
+      "primaryMuscle": "abs",
+      "secondaryMuscles": [],
+      "equipment": "bodyweight",
+      "license": "CC0 1.0",
+      "author": "BFad07",
+      "source": {
+        "wgerId": 376,
+        "wgerUuid": "c2078aac-e4e2-4103-a845-6252a3eb795e",
+        "url": "https://wger.de/exercise/376/view-base",
+        "originalName": "Leg Raise"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Leg Raise",
+          "instructions": "The leg raise is a strength training exercise which targets the iliopsoas (the anterior hip flexors). Because the abdominal muscles are used isometrically to stabilize the body during the motion, leg raises are also often used to strengthen the rectus abdominis muscle and the internal and external oblique muscles."
+        }
+      ]
+    },
+    {
+      "id": "34d7f237-3f70-4219-8845-7be648ba2849",
+      "primaryMuscle": "quadriceps",
+      "secondaryMuscles": [
+        "glutes"
+      ],
+      "equipment": "machine",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 373,
+        "wgerUuid": "5f0b757c-0d6a-430b-9d5e-3bfba202878e",
+        "url": "https://wger.de/exercise/373/view-base",
+        "originalName": "Leg Presses (narrow)"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Leg Press (Narrow Stance)",
+          "instructions": "The exercise is very similar to the wide leg press:\n\nSit on the machine and put your feet on the platform so far apart that you could just put another foot in between them. The feet are parallel and point up.\n\nLower the weight so much, that the knees form a right angle. Push immediately the platform up again, without any pause. When in the lower position, the knees point a bit outwards and the movement should be always fluid."
+        }
+      ]
+    },
+    {
+      "id": "3558437c-15df-416a-b2b2-ee17634f5f38",
+      "primaryMuscle": "shoulders",
+      "secondaryMuscles": [],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 567,
+        "wgerUuid": "87affa4b-395b-437c-9581-2bd20ea5aa7c",
+        "url": "https://wger.de/exercise/567/view-base",
+        "originalName": "Shoulder Press, Dumbbells"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Dumbbell Shoulder Press",
+          "instructions": "Sit on a bench, the back rest should be almost vertical. Take two dumbbells and bring them up to shoulder height, the palms and the elbows point during the whole exercise to the front. Press the weights up, at the highest point they come very near but don't touch. Go slowly down and repeat."
+        }
+      ]
+    },
+    {
+      "id": "359d019f-cd3c-4e30-83be-1124930bf819",
+      "primaryMuscle": "chest",
+      "secondaryMuscles": [
+        "shoulders",
+        "triceps"
+      ],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "sistab2",
+      "source": {
+        "wgerId": 73,
+        "wgerUuid": "3717d144-7815-4a97-9a56-956fb889c996",
+        "url": "https://wger.de/exercise/73/view-base",
+        "originalName": "Bench Press"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Barbell Bench Press",
+          "instructions": "Lay down on a bench, the bar should be directly above your eyes, the knees are somewhat angled and the feet are firmly on the floor. Concentrate, breath deeply and grab the bar more than shoulder wide. Bring it slowly down till it briefly touches your chest at the height of your nipples. Push the bar up.\n\nIf you train with a high weight it is advisable to have a spotter that can help you up if you can't lift the weight on your own.\n\nWith the width of the grip you can also control which part of the chest is trained more:\n\n• wide grip: outer chest muscles\n• narrow grip: inner chest muscles and triceps"
+        }
+      ]
+    },
+    {
+      "id": "36c1878e-bc56-418e-ab85-8b8cc84ec83f",
+      "primaryMuscle": "abs",
+      "secondaryMuscles": [
+        "biceps",
+        "triceps",
+        "quadriceps"
+      ],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 3.0",
+      "author": "YYCfit / BFad07",
+      "source": {
+        "wgerId": 458,
+        "wgerUuid": "c9e57bbe-e839-44c6-861d-1c8dd2845e36",
+        "url": "https://wger.de/exercise/458/view-base",
+        "originalName": "Plank"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Plank",
+          "instructions": "Get into a position on the floor supporting your weight on your forearms and toes. Arms are bent and directly below the shoulder.\n\nKeep your body straight at all times and hold this position as long as possible. To increase difficulty an arm or leg can be raised while performing this exercise."
+        }
+      ]
+    },
+    {
+      "id": "3715dc1d-a31e-4237-b199-58ce894eb992",
+      "primaryMuscle": "shoulders",
+      "secondaryMuscles": [],
+      "equipment": "cable",
+      "license": "CC-BY-SA 3.0",
+      "author": "lauroernesto",
+      "source": {
+        "wgerId": 142,
+        "wgerUuid": "dc3a2072-abc3-4ef9-b8e6-f5ae6b11bc7f",
+        "url": "https://wger.de/exercise/142/view-base",
+        "originalName": "Cable External Rotation"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Cable External Rotation",
+          "instructions": "Steps:\n\n1. Start off placing an extension band around a post or in a secure position where it will not release and is at elbow level.\n2. Position yourself to the side of the band and with your hand that is opposite of the band, reach out and grab the handle.\n3. Bring the band to your chest keeping your elbow bent in a 90 degree angle then slowly rotate your arm in a backhand motion so that the band externally rotates out\n4. Continue out as far as possible so that you feel a stretch in your shoulders, hold for a count and then return back to the starting position.\n5. Repeat for as many reps and sets as desired."
+        }
+      ]
+    },
+    {
+      "id": "37665db9-cca7-47dd-b2e8-611f52468089",
+      "primaryMuscle": "shoulders",
+      "secondaryMuscles": [
+        "back"
+      ],
+      "equipment": "cable",
+      "license": "CC-BY-SA 4.0",
+      "author": "Expenses7000",
+      "source": {
+        "wgerId": 1473,
+        "wgerUuid": "39c13706-6a8c-4ab5-b605-b9b716665a20",
+        "url": "https://wger.de/exercise/1473/view-base",
+        "originalName": "Reverse Cable Flye"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Cable Reverse Fly",
+          "instructions": "Attach D-Handles to two cable pulleys in the upper position. Grab the left on with your right hand and vice-versa."
+        }
+      ]
+    },
+    {
+      "id": "382ba550-aebd-43da-a94e-9c95a4165025",
+      "primaryMuscle": "abs",
+      "secondaryMuscles": [],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 4.0",
+      "author": "hpmbala@gmail.com",
+      "source": {
+        "wgerId": 1412,
+        "wgerUuid": "fcf5039b-7784-4f82-830a-b213b597a646",
+        "url": "https://wger.de/exercise/1412/view-base",
+        "originalName": "bicycle crunches"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Bicycle Crunch",
+          "instructions": "Bicycle crunches are a core exercise performed on the floor. Lie on your back with your hands behind your head and legs extended. Lift your shoulders off the ground, bring one knee toward your chest, and twist your torso so your opposite elbow meets the knee. Alternate sides in a pedaling motion, ensuring controlled movements and engaging your core throughout the exercise."
+        }
+      ]
+    },
+    {
+      "id": "3cb9e8cb-8998-4fc0-85ea-a35a9b51945a",
+      "primaryMuscle": "biceps",
+      "secondaryMuscles": [],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 94,
+        "wgerUuid": "42227131-9b1e-4220-b082-c523f0651057",
+        "url": "https://wger.de/exercise/94/view-base",
+        "originalName": "Biceps Curls With SZ-bar"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "EZ-Bar Bicep Curl",
+          "instructions": "Hold the SZ-bar shoulder-wide, the back is straight, the shoulders slightly back, the arms are streched. Bend the arms, bringing the weight up, with a fast movement. Without pausing, let down the bar with a slow and controlled movement.\n\nDon't allow your body to swing during the exercise, all work is done by the biceps, which are the only mucles that should move (pay attention to the elbows)."
+        }
+      ]
+    },
+    {
+      "id": "3cc99842-a95d-4041-8014-d59b74809eef",
+      "primaryMuscle": "full_body",
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 4.0",
+      "author": "nishant0712",
+      "source": {
+        "wgerId": 1901,
+        "wgerUuid": "2a125f64-1d10-4926-95ad-33a48e61b3d6",
+        "url": "https://wger.de/exercise/1901/view-base",
+        "originalName": "Clean and Press"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Clean and Press",
+          "instructions": "• The First Pull: Lift the bar from the floor to knee-height by driving with the legs, keeping the angle of your back constant.\n• The \"Power\" Position: As the bar reaches mid-thigh, explosively shrug and extend your hips to create vertical momentum.\n• The Quick Elbow Turnover: In the catch phase, rotate your elbows rapidly under the bar to create a \"shelf\" on your front deltoids.\n• The Vertical Press: Press the bar in a straight line; your head should shift slightly forward once the bar clears your forehead to reach full lockout."
+        }
+      ]
+    },
+    {
+      "id": "3dfe1b3b-008e-4ce7-97b4-132a57b3a231",
+      "primaryMuscle": "forearms",
+      "secondaryMuscles": [],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 4.0",
+      "author": "burenl",
+      "source": {
+        "wgerId": 48,
+        "wgerUuid": "67c26c9b-32f3-4b8b-b13a-4d8be4803975",
+        "url": "https://wger.de/exercise/48/view-base",
+        "originalName": "Barbell Reverse Wrist Curl"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Barbell Reverse Wrist Curl",
+          "instructions": "Sitting on a bench, grab a barbell with your palms facing down and your hands shoulder-width apart. Rest your forearms on your thighs and allow your wrists to hang over your knees.\n\nCurl your knuckles towards your face, lifting the barbell. Pause for a moment in the top position, then slowly return the barbell to the starting position."
+        }
+      ]
+    },
+    {
+      "id": "3fe9069a-1e2b-45be-be89-24403222a0f5",
+      "primaryMuscle": "back",
+      "secondaryMuscles": [
+        "shoulders",
+        "biceps"
+      ],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de, warchildmd",
+      "source": {
+        "wgerId": 83,
+        "wgerUuid": "4af6dbd9-8991-484b-9810-68f117c21edf",
+        "url": "https://wger.de/exercise/83/view-base",
+        "originalName": "Bent Over Rowing"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Barbell Bent-Over Row",
+          "instructions": "1. Holding a barbell with a pronated grip (palms facing down), bend your knees slightly and bring your torso forward, by bending at the waist, while keeping the back straight until it is almost parallel to the floor. Tip: Make sure that you keep the head up. The barbell should hang directly in front of you as your arms hang perpendicular to the floor and your torso. This is your starting position.\n2. Now, while keeping the torso stationary, breathe out and lift the barbell to you. Keep the elbows close to the body and only use the forearms to hold the weight. At the top contracted position, squeeze the back muscles and hold for a brief pause.\n3. Then inhale and slowly lower the barbell back to the starting position.\n4. Repeat for the recommended amount of repetitions."
+        }
+      ]
+    },
+    {
+      "id": "409de933-1819-47a0-863e-09ad39afb19b",
+      "primaryMuscle": "biceps",
+      "secondaryMuscles": [],
+      "equipment": "dumbbell",
+      "license": "CC0 1.0",
+      "author": "BFad07",
+      "source": {
+        "wgerId": 621,
+        "wgerUuid": "eb61c7a1-e1c9-4c44-a8ce-2bbe98a39857",
+        "url": "https://wger.de/exercise/621/view-base",
+        "originalName": "Standing Bicep Curl"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Standing Bicep Curl",
+          "instructions": "Stand holding dumbbells at shoulder width apart. Face forearm upward and keep upper arm still while raising each dumbbell up to your shoulder."
+        }
+      ]
+    },
+    {
+      "id": "42f7b7c7-5945-4c77-859d-b6d5da0f1d38",
+      "primaryMuscle": "chest",
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "equipment": "cable",
+      "license": "CC-BY-SA 4.0",
+      "author": "FEFFO",
+      "source": {
+        "wgerId": 1270,
+        "wgerUuid": "d5116fbd-bf14-492a-86b3-140035cb48b2",
+        "url": "https://wger.de/exercise/1270/view-base",
+        "originalName": "Low Pulley Cable Fly"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Low Cable Fly",
+          "instructions": "Adjust the cable machine: Set the pulley to the lowest setting possible. Choose your handles: You can use neutral grip handles (palms facing each other) or straight handles depending on your preference. Neutral grip might be easier on your wrists. Stand with proper form: Stand with your feet shoulder-width apart, knees slightly bent, and core engaged. Maintain a slight arch in your lower back throughout the exercise. Grip the handles: Grab the handles with your chosen grip and step back a small step or two until there's slight tension on the cables. Initiate the movement: Keep your elbows slightly bent throughout the exercise. Imagine you're giving someone a big hug. Squeeze your chest muscles as you bring your hands together in front of your chest. Control the movement: Focus on squeezing your chest muscles rather than using your arms to pull the handles. Peak contraction: Briefly hold the squeeze at the top of the movement with your hands together at chest level. Return slowly: Slowly release the tension and return the handles back down to the starting position with your arms slightly extended but not locked out."
+        }
+      ]
+    },
+    {
+      "id": "43aa23fb-beb7-4c61-ba65-689f78dc4e68",
+      "primaryMuscle": "quadriceps",
+      "secondaryMuscles": [
+        "glutes"
+      ],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 4.0",
+      "author": "Vilhelmo",
+      "source": {
+        "wgerId": 291,
+        "wgerUuid": "1d610575-eed0-42cf-8737-29788a372af6",
+        "url": "https://wger.de/exercise/291/view-base",
+        "originalName": "Hindu Squats"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Hindu Squat",
+          "instructions": "Start with your feet shoulder width apart and arms slightly behind your back.\n\nAs you descend towards the floor, raise your heels off the ground, while keeping your back as vertical as possible.\n\nUpon attaining the bottom position, touch the hands to the heels.\n\nThen stand up ending with the heels on the ground, arms extended in front of the chest then rowing into the start position."
+        }
+      ]
+    },
+    {
+      "id": "4791a113-72cf-448c-b147-a8c67204f1b2",
+      "primaryMuscle": "shoulders",
+      "secondaryMuscles": [],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 4.0",
+      "author": "novadani",
+      "source": {
+        "wgerId": 918,
+        "wgerUuid": "6d010eae-2e36-4ec6-b191-c0373f237bb4",
+        "url": "https://wger.de/exercise/918/view-base",
+        "originalName": "Seated Dumbbell Side Lateral"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Seated Dumbbell Lateral Raise",
+          "instructions": "seated slightly leaned forward at beginning of exercise"
+        }
+      ]
+    },
+    {
+      "id": "49c02804-9395-4ce9-b87e-b5f521de3d75",
+      "primaryMuscle": "quadriceps",
+      "secondaryMuscles": [
+        "glutes"
+      ],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de, axel",
+      "source": {
+        "wgerId": 615,
+        "wgerUuid": "a2f5b6ef-b780-49c0-8d96-fdaff23e27ce",
+        "url": "https://wger.de/exercise/615/view-base",
+        "originalName": "Squats"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Barbell Back Squat",
+          "instructions": "Place a barbell in a rack just below shoulder-height. Dip under the bar to put it behind the neck across the top of the back, and grip the bar with the hands wider than shoulder-width apart. Lift the chest up and squeeze the shoulder blades together to keep the straight back throughout the entire movement. Stand up to bring the bar off the rack and step backwards, then place the feet so that they are a little wider than shoulder-width apart. Sit back into hips and keep the back straight and the chest up, squatting down so the hips are below the knees. From the bottom of the squat, press feet into the ground and push hips forward to return to the top of the standing position."
+        }
+      ]
+    },
+    {
+      "id": "4c96fdbb-64c4-4d4d-b1b1-f070a1f0cb2a",
+      "primaryMuscle": "triceps",
+      "secondaryMuscles": [
+        "chest",
+        "shoulders"
+      ],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 4.0",
+      "author": "sevae",
+      "source": {
+        "wgerId": 50,
+        "wgerUuid": "13234b53-ea0c-41f1-9069-776865ea8eff",
+        "url": "https://wger.de/exercise/50/view-base",
+        "originalName": "Barbell Triceps Extension"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Barbell Triceps Extension",
+          "instructions": "Position barbell overhead with narrow overhand grip.\n\nLower forearm behind upper arm with elbows remaining overhead. Extend forearm overhead. Lower and repeat."
+        }
+      ]
+    },
+    {
+      "id": "4e7a75d9-14c3-4d67-bd9e-38fa75eb4f3c",
+      "primaryMuscle": "glutes",
+      "secondaryMuscles": [],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 4.0",
+      "author": "Bret Contreras",
+      "source": {
+        "wgerId": 294,
+        "wgerUuid": "19a289c0-33af-4055-bb34-3570c2975d3d",
+        "url": "https://wger.de/exercise/294/view-base",
+        "originalName": "Hip Thrust"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Barbell Hip Thrust",
+          "instructions": "The bar should go directly on your upper thigh, directly below your crotch. Your feet should be directly under your knees. Push your hips up so that you form a straight line from your knees to your shoulders. Use a pad for comfort."
+        }
+      ]
+    },
+    {
+      "id": "51383da2-16a6-4dd6-ac0c-aeaf826eebf0",
+      "primaryMuscle": "glutes",
+      "secondaryMuscles": [
+        "hamstrings"
+      ],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 4.0",
+      "author": "paolo.dev (imported from Feeel), Miroslav Mazel (imported from Feeel)",
+      "source": {
+        "wgerId": 990,
+        "wgerUuid": "6ddea666-5a57-4ac0-926f-01f8cfdaa4fd",
+        "url": "https://wger.de/exercise/990/view-base",
+        "originalName": "Kneeling kickbacks"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Kneeling Glute Kickback",
+          "instructions": "Starting position:\n\nGet down on all fours.\n\nSteps:\n\n1. Push one foot back until fully extended, concentrating on the gluteus muscles.\n2. Stay for one second, then return to the initial position.\n3. Repeat, alternating feet."
+        }
+      ]
+    },
+    {
+      "id": "522adf10-9d33-4b94-8f8f-c4740db11340",
+      "primaryMuscle": "hamstrings",
+      "secondaryMuscles": [
+        "glutes"
+      ],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 4.0",
+      "author": "admin, captive0592",
+      "source": {
+        "wgerId": 1388,
+        "wgerUuid": "957ca37c-b6d7-4c30-8ba9-9512b0fa2659",
+        "url": "https://wger.de/exercise/1388/view-base",
+        "originalName": "Single Leg RDL"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Single-Leg Romanian Deadlift",
+          "instructions": "1. Stand upright and hold weights in both hands if using loads.\n2. Brace your core and lift one leg off the ground.\n3. Keep your back straight, hinge at the hips while lowering your torso forward, ensuring you don’t rotate your hips.\n4. Lower until you feel a stretch in your standing leg's hamstring, then return to standing position. Repeat on both sides."
+        }
+      ]
+    },
+    {
+      "id": "5248854e-0c1b-42b4-a6cc-ee3e1688a76f",
+      "primaryMuscle": "hamstrings",
+      "secondaryMuscles": [],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 4.0",
+      "author": "captive0592",
+      "source": {
+        "wgerId": 1392,
+        "wgerUuid": "77a56810-d050-4083-9501-d648f773376a",
+        "url": "https://wger.de/exercise/1392/view-base",
+        "originalName": "Good Morning"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Good Morning",
+          "instructions": "Stand with your feet more than shoulder-width apart (wider stance) and place your hands on your hips. Hinge at your hips and lower your upper body towards the ground while keeping your back straight then come back up."
+        }
+      ]
+    },
+    {
+      "id": "561fd5ff-28d1-4deb-a868-815a55e8fbd8",
+      "primaryMuscle": "shoulders",
+      "secondaryMuscles": [],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 4.0",
+      "author": "nishant0712",
+      "source": {
+        "wgerId": 1893,
+        "wgerUuid": "2500c212-6f14-4a8d-a997-04e9e7c04116",
+        "url": "https://wger.de/exercise/1893/view-base",
+        "originalName": "Overhead Barbell Press"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Standing Barbell Overhead Press",
+          "instructions": "• Setup: Stand with feet together and grip the bar slightly wider than shoulders.\n• Position: Rest the bar on your upper chest.\n• Press: Brace your core and push the bar straight up until your arms lock out.\n• Finish: Control the bar back down to your chest.\n• https://youtu.be/ZXpdJOLNoWw?si=u27cGyODoblXHBu1"
+        }
+      ]
+    },
+    {
+      "id": "58456573-2026-4b1e-b84c-297872dc69d9",
+      "primaryMuscle": "quadriceps",
+      "secondaryMuscles": [
+        "glutes"
+      ],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 4.0",
+      "author": "Mikko Ruohola",
+      "source": {
+        "wgerId": 46,
+        "wgerUuid": "04e7d7e4-f8d2-406d-97df-3df3bceec22c",
+        "url": "https://wger.de/exercise/46/view-base",
+        "originalName": "Barbell Lunges Standing"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Standing Barbell Lunge",
+          "instructions": "Put barbell on the back of your shoulders. Stand upright, then take the first step forward. Step should bring you forward so that your supporting legs knee can touch the floor. Then stand back up and repeat with the other leg.\n\nRemember to keep good posture."
+        }
+      ]
+    },
+    {
+      "id": "59baaaef-22df-4b3e-834d-00ac6d8eba1a",
+      "primaryMuscle": "abs",
+      "secondaryMuscles": [
+        "chest"
+      ],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 167,
+        "wgerUuid": "b186f1f8-4957-44dc-bf30-d0b00064ce6f",
+        "url": "https://wger.de/exercise/167/view-base",
+        "originalName": "Crunches"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Crunch",
+          "instructions": "Lay down on your back a soft surface, the feet are on the floor. Ask a partner or use some other help (barbell, etc.) to keep them fixed, your hands are behind your head. From this position move your upper body up till your head or elbows touch your knees. Do this movement by rolling up your back."
+        }
+      ]
+    },
+    {
+      "id": "5a4caf83-c834-44eb-ba91-3e324c698fb7",
+      "primaryMuscle": "glutes",
+      "secondaryMuscles": [],
+      "equipment": "band",
+      "license": "CC-BY-SA 4.0",
+      "author": "Tierrasverdes",
+      "source": {
+        "wgerId": 1613,
+        "wgerUuid": "4221c8af-b3ca-4a53-9176-bd66e46d10f2",
+        "url": "https://wger.de/exercise/1613/view-base",
+        "originalName": "rubber band glute kickback"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Band Glute Kickback",
+          "instructions": "A rubber band glute kickback is an exercise performed on hands and knees, where you anchor a resistance band to your foot and kick your heel back and up, squeezing your glute at the top of the movement, while maintaining a stable core and flat back to target and strengthen the gluteal muscles."
+        }
+      ]
+    },
+    {
+      "id": "5b2dc1d7-56de-4e99-b427-7806e99e1ab3",
+      "primaryMuscle": "chest",
+      "secondaryMuscles": [],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 185,
+        "wgerUuid": "bcd801f0-9a38-4615-a91c-900153c8c234",
+        "url": "https://wger.de/exercise/185/view-base",
+        "originalName": "Decline Bench Press Barbell"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Decline Barbell Bench Press",
+          "instructions": "Lay down on a decline bench, the bar should be directly above your eyes, the knees are somewhat angled and the feet are firmly on the floor. Concentrate, breath deeply and grab the bar more than shoulder wide. Bring it slowly down till it briefly touches your chest at the height of your nipples. Push the bar up."
+        }
+      ]
+    },
+    {
+      "id": "5c146679-01a9-4e1e-abad-9f031e1e114c",
+      "primaryMuscle": "chest",
+      "secondaryMuscles": [],
+      "equipment": "machine",
+      "license": "CC-BY-SA 4.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 1904,
+        "wgerUuid": "71b9da1a-ac07-49c8-8b2d-7179032181fd",
+        "url": "https://wger.de/exercise/1904/view-base",
+        "originalName": "Pec Deck"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Pec Deck Fly",
+          "instructions": "Pectoral issolation exercise - full range of motion is best with full contraction and slow negative"
+        }
+      ]
+    },
+    {
+      "id": "5e07be82-4071-4fd1-b1cf-8c50671c8276",
+      "primaryMuscle": "glutes",
+      "secondaryMuscles": [],
+      "equipment": "machine",
+      "license": "CC-BY-SA 4.0",
+      "author": "Iko",
+      "source": {
+        "wgerId": 1672,
+        "wgerUuid": "b144ac00-ec0c-4c43-898f-b2ac65048d98",
+        "url": "https://wger.de/exercise/1672/view-base",
+        "originalName": "Seated Hip Abduction"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Seated Hip Abduction",
+          "instructions": "Starting Position:\n\n• Adjust the seat height so that your knees are aligned with the pivot point of the machine.\n• Sit with your back flat against the backrest, maintaining good posture.\n• Place the outside of your thighs against the machine's padded levers.\n• Position your feet flat on the footrests or platform of the machine.\n• Grasp the handles or sides of the seat for stability.\n• Ensure your spine is neutral and your core is slightly engaged.\n\nMovement:\n\n• Exhale as you slowly push your legs outward against the resistance pads.\n• Focus on initiating the movement from your hips, not your knees.\n• Continue opening your legs until you feel a strong contraction in your outer hips and thighs.\n• Hold the fully abducted position briefly (1-2 seconds) to maximize muscle engagement.\n• Inhale as you slowly control the return of your legs to the starting position, resisting the weight throughout the movement.\n• Avoid allowing the weight stack to touch down between repetitions to maintain constant tension on the muscles.\n• Repeat for the desired number of repetitions, maintaining control throughout the set."
+        }
+      ]
+    },
+    {
+      "id": "602f9958-f735-4897-b9ed-600550f86137",
+      "primaryMuscle": "shoulders",
+      "secondaryMuscles": [],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de, BFad07",
+      "source": {
+        "wgerId": 348,
+        "wgerUuid": "63375f5b-2d81-471c-bea4-fc3d207e96cb",
+        "url": "https://wger.de/exercise/348/view-base",
+        "originalName": "Lateral Raises"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Dumbbell Lateral Raise",
+          "instructions": "This exercise works the deltoid muscle of the shoulder. The movement starts with the arms straight, and the hands holding weights at the sides or in front of the body. Body is in a slight forward-leaning position with hips and knees bent a little. Arms are kept straight or slightly bent, and raised through an arc of movement in the coronal plane that terminates when the hands are at approximately shoulder height. Weights are lowered to the starting position, completing one rep. When using a cable machine the individual stands with the coronal plane in line with the pulley, which is at or near the ground.[9] The exercise can be completed one shoulder at a time (with the other hand used to stabilize the body against the weight moved), or with both hands simultaneously if two parallel pulleys are available."
+        }
+      ]
+    },
+    {
+      "id": "60caed1f-ed4a-4856-bd8a-4c588a1b07e7",
+      "primaryMuscle": "abs",
+      "secondaryMuscles": [],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 3.0",
+      "author": "robhoyt",
+      "source": {
+        "wgerId": 283,
+        "wgerUuid": "9b993e99-8701-43f0-84d6-689123183880",
+        "url": "https://wger.de/exercise/283/view-base",
+        "originalName": "Hanging Leg Raises"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Hanging Leg Raise",
+          "instructions": "Hanging from bar or straps, bring legs up with knees extended or flexed"
+        }
+      ]
+    },
+    {
+      "id": "6236a03c-b1b3-4cb7-9448-218be0f256ff",
+      "primaryMuscle": "triceps",
+      "secondaryMuscles": [],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "http://www.bodybuilding.com/",
+      "source": {
+        "wgerId": 655,
+        "wgerUuid": "5915fabe-c941-4dac-b196-bc4e8c7ce57b",
+        "url": "https://wger.de/exercise/655/view-base",
+        "originalName": "Tricep Dumbbell Kickback"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Dumbbell Triceps Kickback",
+          "instructions": "1. Hold a dumbbell in each hand and hinge forward at the hips until your torso is close to parallel with the floor, keeping your back flat.\n2. Raise your upper arms so they're parallel to the floor and tucked close to your sides, with your elbows bent roughly 90 degrees and forearms hanging down. This is the starting position.\n3. Without moving your upper arms, extend your elbows to straighten your arms, squeezing your triceps at the top.\n4. Pause briefly, then bend your elbows to lower the dumbbells back to the starting position under control."
+        }
+      ]
+    },
+    {
+      "id": "6428469f-b084-41fd-9335-5c90749ddf09",
+      "primaryMuscle": "abs",
+      "secondaryMuscles": [],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 4.0",
+      "author": "http://www.bodybuilding.com/",
+      "source": {
+        "wgerId": 580,
+        "wgerUuid": "e1b99153-0102-47fc-b0cd-c21509827b0b",
+        "url": "https://wger.de/exercise/580/view-base",
+        "originalName": "Side Plank"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Side Plank",
+          "instructions": "1. Lie on your side with your legs stacked and extended, then prop yourself up on your forearm, with your elbow positioned directly under your shoulder.\n2. Lift your hips off the floor so your body forms a straight line from your ankles to your shoulders, supporting your weight on your forearm and the side of your lower foot.\n3. Keep your hips lifted and your core braced, holding the position without letting your hips sag.\n4. Lower back down under control, then repeat on the other side."
+        }
+      ]
+    },
+    {
+      "id": "670f1bde-5d37-470a-8c78-9d28567e9eff",
+      "primaryMuscle": "back",
+      "secondaryMuscles": [
+        "biceps"
+      ],
+      "equipment": "cable",
+      "license": "CC-BY-SA 4.0",
+      "author": "Franpol",
+      "source": {
+        "wgerId": 1117,
+        "wgerUuid": "0ecfec6f-5d0f-4e8a-8d37-f6203a8923b8",
+        "url": "https://wger.de/exercise/1117/view-base",
+        "originalName": "Seated Cable Row"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Seated Cable Row",
+          "instructions": "1. Take a seat on the machine with your feet planted, a little wider than shoulder width. Drive the heels, and squeeze the glutes. Grab onto the cable handle.\n2. Sit up tall with a slight bend through the knees. Tighten up the abs and low back to maintain a perpendicular angle to the floor with your torso.\n3. Roll the shoulders back and down. Squeeze them together as you row, thinking about pinching a pencil in between them. As you do this, pull the handle back towards you, landing right above your belly button.\n4. Pause here for a moment before returning the handle, still squeezing the shoulder blades. Once you've returned the weight to the stack, then allow the shoulder blades to relax, without pulling the torso forward.\n5. Repeat the movement."
+        }
+      ]
+    },
+    {
+      "id": "67be5fff-25c2-4cc8-b0b2-b954f284c7b3",
+      "primaryMuscle": "back",
+      "secondaryMuscles": [
+        "chest",
+        "shoulders",
+        "biceps"
+      ],
+      "equipment": "cable",
+      "license": "CC-BY-SA 3.0",
+      "author": "tuckerm",
+      "source": {
+        "wgerId": 723,
+        "wgerUuid": "55b9d286-c4cc-4a29-97ad-58cb13c2bb7e",
+        "url": "https://wger.de/exercise/723/view-base",
+        "originalName": "Wide-grip Pulldown"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Wide-Grip Lat Pulldown",
+          "instructions": "1. Sit at the lat pulldown machine and secure your thighs under the pad.\n2. Starting position: grip the bar wide and extend your arms overhead, feeling a stretch in your lats. Keep your shoulders depressed rather than shrugged up.\n3. Pulling phase: pull the bar down to your upper chest, driving your elbows down and back, keeping your chest lifted.\n4. Squeeze your shoulder blades together at the bottom, then let the bar rise back under control."
+        }
+      ]
+    },
+    {
+      "id": "6b1c7926-7e5b-4051-b038-71f866ac6084",
+      "primaryMuscle": "full_body",
+      "secondaryMuscles": [],
+      "equipment": "other",
+      "license": "CC-BY-SA 4.0",
+      "author": "flanny",
+      "source": {
+        "wgerId": 1524,
+        "wgerUuid": "a5d1f45b-ff07-45d7-a699-a654f9328934",
+        "url": "https://wger.de/exercise/1524/view-base",
+        "originalName": "Battle Ropes"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Battle Ropes",
+          "instructions": "1. Hold the ends of the rope at arm's length in front of your hips with your hands shoulder-width apart.\n2. Brace your core and begin alternately raising and lowering each arm explosively.\n3. Keep alternating arms for three to four sets of 1 to 2 minutes."
+        }
+      ]
+    },
+    {
+      "id": "6fc50236-887a-4a0b-81c5-068f6150c667",
+      "primaryMuscle": "hamstrings",
+      "secondaryMuscles": [
+        "glutes"
+      ],
+      "equipment": "machine",
+      "license": "CC-BY-SA 4.0",
+      "author": "clafal",
+      "source": {
+        "wgerId": 1294,
+        "wgerUuid": "caccd791-ff30-452a-816e-790edadb78cd",
+        "url": "https://wger.de/exercise/1294/view-base",
+        "originalName": "Single-leg hamstring curl"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Single-Leg Hamstring Curl",
+          "instructions": "Specifically, the muscles involved are: biceps femoris, semimembranosus and semitendinosus."
+        }
+      ]
+    },
+    {
+      "id": "7139e8e3-39cf-4f64-9e91-018881567b30",
+      "primaryMuscle": "chest",
+      "secondaryMuscles": [
+        "shoulders",
+        "triceps"
+      ],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de, tuckerm",
+      "source": {
+        "wgerId": 537,
+        "wgerUuid": "57e17672-52b9-43cf-8d0d-4b3f06a0c0d0",
+        "url": "https://wger.de/exercise/537/view-base",
+        "originalName": "Incline Bench Press - Dumbbell"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Incline Dumbbell Bench Press",
+          "instructions": "1. Set the bench to a 30-45 degree incline and sit down with a dumbbell resting on each thigh.\n2. Lean back against the bench, using your knees to help push the dumbbells up to shoulder height.\n3. Plant your feet firmly on the floor and retract your shoulder blades into the bench to stabilise your upper body.\n4. Lower the dumbbells slowly toward the upper part of your chest, keeping your elbows at roughly 45-60 degrees from your torso rather than flared out to the sides.\n5. Press the dumbbells back up and slightly inward as you exhale, stopping just short of locking out your elbows to keep tension on the upper chest."
+        }
+      ]
+    },
+    {
+      "id": "7264791e-ab7e-4a16-a413-5666f23cc87b",
+      "primaryMuscle": "shoulders",
+      "secondaryMuscles": [],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "Manu, wikipedia",
+      "source": {
+        "wgerId": 256,
+        "wgerUuid": "9c35594c-bbcc-4656-bdcb-376814c90e96",
+        "url": "https://wger.de/exercise/256/view-base",
+        "originalName": "Front Raises"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Barbell Front Raise",
+          "instructions": "To execute the exercise, the lifter stands with their feet shoulder width apart and weights or resistance handles held by their side with a pronated (overhand) grip.\n\nThe movement is to bring the arms up in front of the body to eye level and with only a slight bend in the elbow. This isolates the anterior deltoid muscle (front of the shoulder) and uses the anterior deltoid to lift the weight.\n\nWhen lifting it is important to keep the body still so the anterior deltoid is fully utilised; if the weight cannot be lifted by standing still then it is too heavy and a lower weight is needed. It is important to keep a slight bend in the elbow when lifting as keeping the elbow locked will add stress to the elbow joint and could cause injury.\n\nA neutral grip, similar to that used in the hammer curl, can also be used. With this variation the weight is again raised to eye level, but out to a 45 degree angle from the front of the body. This may be beneficial for those with shoulder injuries, particularly those related to the rotator cuff."
+        }
+      ]
+    },
+    {
+      "id": "7bbe281b-14c7-44a5-b237-50e4e3f2e5a1",
+      "primaryMuscle": "quadriceps",
+      "secondaryMuscles": [
+        "glutes",
+        "hamstrings"
+      ],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 4.0",
+      "author": "BePieToday",
+      "source": {
+        "wgerId": 43,
+        "wgerUuid": "dae6f6ed-9408-4e62-a59a-1a33f4e8ab36",
+        "url": "https://wger.de/exercise/43/view-base",
+        "originalName": "Barbell Hack Squats"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Barbell Hack Squat",
+          "instructions": "Place a barbell on the floor just behind your heels. Stand with your feet about hip-width apart or closer, keep your chest up and your back straight, and squat down to grip the bar behind you with straight arms.\n\nStand up by extending your knees and hips, sliding the bar up along the back of your legs. Lower it under control to complete the rep."
+        }
+      ]
+    },
+    {
+      "id": "7d01fc1b-fe23-40a9-84fc-3851ae76f0ad",
+      "primaryMuscle": "full_body",
+      "secondaryMuscles": [
+        "glutes",
+        "quadriceps",
+        "back"
+      ],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 4.0",
+      "author": "M9",
+      "source": {
+        "wgerId": 1438,
+        "wgerUuid": "a8f76beb-b6d8-430b-8e45-cc03d4959043",
+        "url": "https://wger.de/exercise/1438/view-base",
+        "originalName": "Clean"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Barbell Clean",
+          "instructions": "Regular olympic lift clean. Pull bar from ground, catch on shoulders performing a front squat."
+        }
+      ]
+    },
+    {
+      "id": "7d6d6bab-50ef-47ef-8a99-913a9275fa1f",
+      "primaryMuscle": "back",
+      "secondaryMuscles": [
+        "biceps"
+      ],
+      "equipment": "cable",
+      "license": "CC-BY-SA 4.0",
+      "author": "apeschel",
+      "source": {
+        "wgerId": 695,
+        "wgerUuid": "d847301e-1613-4987-85cd-61d3ff9d7ef8",
+        "url": "https://wger.de/exercise/695/view-base",
+        "originalName": "V-Bar Pulldown"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "V-Bar Lat Pulldown",
+          "instructions": "1. Attach a V-bar to the lat pulldown cable and sit with your thighs secured under the pads.\n2. Grip the V-bar with palms facing each other and pull it down to your upper chest.\n3. Slowly let the bar rise back to the starting position with control."
+        }
+      ]
+    },
+    {
+      "id": "80872c99-5eae-4cd8-ae88-f40c9d199216",
+      "primaryMuscle": "abs",
+      "secondaryMuscles": [],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 4.0",
+      "author": "eufvksruh",
+      "source": {
+        "wgerId": 1772,
+        "wgerUuid": "5d8d3581-bce5-4a28-868f-8b299eaedbdd",
+        "url": "https://wger.de/exercise/1772/view-base",
+        "originalName": "Reverse crunch"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Reverse Crunch",
+          "instructions": "1. Lay down\n2. Place your hands near your butt (often slightly in front or under or both)\n3. Raise your legs, but about 70% of the way you should be able to also raise your pelvis\n4. (optional/variable) Hold 1/2 seconds at the top\n5. Go back to starting position"
+        }
+      ]
+    },
+    {
+      "id": "88ed110b-9b59-49dd-b42e-99bd86c3f645",
+      "primaryMuscle": "full_body",
+      "secondaryMuscles": [
+        "shoulders",
+        "quadriceps"
+      ],
+      "equipment": "barbell",
+      "license": "CC0 1.0",
+      "author": "BeLikeWater",
+      "source": {
+        "wgerId": 650,
+        "wgerUuid": "51420ded-5c17-4ce0-b005-89f1b67b7c65",
+        "url": "https://wger.de/exercise/650/view-base",
+        "originalName": "Thruster"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Barbell Thruster",
+          "instructions": "1. Start by doing a front squat\n2. At the top position, push the bar above your head (similar to a press)\n3. Lower the bar to the shoulders"
+        }
+      ]
+    },
+    {
+      "id": "8aa71683-971e-42e9-be98-47f5358ed13d",
+      "primaryMuscle": "biceps",
+      "secondaryMuscles": [],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 272,
+        "wgerUuid": "c0d9fe98-f4fe-49f3-8037-05e1984e7d2d",
+        "url": "https://wger.de/exercise/272/view-base",
+        "originalName": "Hammer Curls"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Hammer Curl",
+          "instructions": "• Start: Hold dumbbells at your sides with palms facing your torso.\n• Curl: Lift the weights toward your shoulders while maintaining the neutral grip (like holding a hammer).\n• Squeeze: Contract the biceps at the top without moving your elbows forward.\n• Lower: Slowly return to the starting position with full control."
+        }
+      ]
+    },
+    {
+      "id": "967bbd48-d699-48c5-a2cb-d87fc5494be3",
+      "primaryMuscle": "hamstrings",
+      "secondaryMuscles": [
+        "back",
+        "glutes"
+      ],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 184,
+        "wgerUuid": "ee8e8db4-2d82-49e1-ab7f-891e9a354934",
+        "url": "https://wger.de/exercise/184/view-base",
+        "originalName": "Deadlifts"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Barbell Deadlift",
+          "instructions": "Stand firmly, with your feet slightly more than shoulder wide apart. Stand directly behind the bar where it should barely touch your shin, your feet pointing a bit out. Bend down with a straight back, the knees also pointing somewhat out. Grab the bar with a shoulder wide grip, one overhand, one underhand (mixed grip).\n\nPull the weight up. At the highest point make a slight hollow back and pull the bar back. Hold 1 or 2 seconds that position. Go down, making sure the back is not bent. Once down you can either go back again as soon as the weights touch the floor, or make a pause, depending on the weight."
+        }
+      ]
+    },
+    {
+      "id": "971cdf52-9ac7-46fd-af05-634a541a6f14",
+      "primaryMuscle": "glutes",
+      "secondaryMuscles": [],
+      "equipment": "machine",
+      "license": "CC-BY-SA 3.0",
+      "author": "flori, Araaosf",
+      "source": {
+        "wgerId": 12,
+        "wgerUuid": "53906cd1-61f1-4d56-ac60-e4fcc5824861",
+        "url": "https://wger.de/exercise/12/view-base",
+        "originalName": "Seated Hip Adduction"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Seated Hip Adduction",
+          "instructions": "Starting Position: Sit on the machine with your knees inward and against the pads. Pull the pin to release the pads. Grab the handles on the sides.b"
+        }
+      ]
+    },
+    {
+      "id": "974798bc-bc50-4199-8f64-65328bdcce41",
+      "primaryMuscle": "calves",
+      "secondaryMuscles": [],
+      "equipment": "machine",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 590,
+        "wgerUuid": "6e46833d-fd83-4c1a-90af-eb3f3a917199",
+        "url": "https://wger.de/exercise/590/view-base",
+        "originalName": "Sitting Calf Raises"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Seated Calf Raise",
+          "instructions": "Sit on a bench for calf raises and check that the feet are half free and that you can completely stretch the calf muscles down. Pull your calves up, going as far (up) as you can. Make at the highest point a short pause of 1 or 2 seconds and go down."
+        }
+      ]
+    },
+    {
+      "id": "9b58f459-e2bb-40b3-8beb-6801f7b56080",
+      "primaryMuscle": "shoulders",
+      "secondaryMuscles": [],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 572,
+        "wgerUuid": "72a945ec-3a7f-424b-9a05-1616ef7dce91",
+        "url": "https://wger.de/exercise/572/view-base",
+        "originalName": "Shrugs, Dumbbells"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Dumbbell Shrug",
+          "instructions": "Stand with straight body, the hands are hanging freely on the side and hold each a dumbbell. Lift from this position the shoulders as high as you can, but don't bend the arms during the movement. On the highest point, make a short pause of 1 or 2 seconds before returning slowly to the initial position.\n\nWhen training with a higher weight, make sure that you still do the whole movement!"
+        }
+      ]
+    },
+    {
+      "id": "9e3a4656-ef8c-416a-901b-8312440a65aa",
+      "primaryMuscle": "shoulders",
+      "secondaryMuscles": [
+        "back",
+        "biceps"
+      ],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "Mahoney",
+      "source": {
+        "wgerId": 289,
+        "wgerUuid": "b526b17b-408d-4da2-8940-ceaf9dae9d93",
+        "url": "https://wger.de/exercise/289/view-base",
+        "originalName": "High Pull"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Barbell Upright Row",
+          "instructions": "1. Stand holding a barbell with an overhand grip, hands about shoulder-width apart, arms extended in front of your thighs.\n2. Keeping the bar close to your body, pull it straight up toward your chin by lifting your elbows out and up.\n3. Pause briefly when your elbows reach shoulder height, then lower the bar back down under control.\n4. Keep your torso upright throughout; the lift comes from your shoulders and arms, not from swinging your hips."
+        }
+      ]
+    },
+    {
+      "id": "9f1b19d3-f87f-4004-ab7d-73574ee5ddf6",
+      "primaryMuscle": "chest",
+      "secondaryMuscles": [],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 238,
+        "wgerUuid": "95d226ad-3bf7-4cd6-aa64-2f26b526d8b6",
+        "url": "https://wger.de/exercise/238/view-base",
+        "originalName": "Fly With Dumbbells"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Dumbbell Fly",
+          "instructions": "Take two dumbbells and lay on a bench, make sure the feet are firmly on the ground and your back is not arched, but has good contact with the bench. The arms are stretched in front of you, about shoulder wide. Bend now the arms a bit and let them down with a half-circle movement to the side. Without changing the angle of the elbow bring them in a fluid movement back up."
+        }
+      ]
+    },
+    {
+      "id": "9f43c978-9240-4215-9cf7-42acfee34ab0",
+      "primaryMuscle": "calves",
+      "secondaryMuscles": [],
+      "equipment": "band",
+      "license": "CC-BY-SA 4.0",
+      "author": "erikocobra",
+      "source": {
+        "wgerId": 1241,
+        "wgerUuid": "29a361d5-1300-4fb4-90d6-d6350bec9cb9",
+        "url": "https://wger.de/exercise/1241/view-base",
+        "originalName": "Exercise Band Dorsiflexion"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Band Dorsiflexion",
+          "instructions": "This exercise uses an exercise band. It targets the Soleus and Tibialis anterior."
+        }
+      ]
+    },
+    {
+      "id": "a02a9bbf-c692-4678-b151-1f9a1e5734a2",
+      "primaryMuscle": "biceps",
+      "secondaryMuscles": [],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "tuckerm",
+      "source": {
+        "wgerId": 584,
+        "wgerUuid": "c85e6137-2577-4e28-82c2-427407d534eb",
+        "url": "https://wger.de/exercise/584/view-base",
+        "originalName": "Single-arm Preacher Curl"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Single-Arm Preacher Curl",
+          "instructions": "Sit on the preacher curl bench and perform a bicep curl with a dumbbell in one hand. Your other hand can be at rest, or beneath your curling arm's elbow."
+        }
+      ]
+    },
+    {
+      "id": "a266b560-52f9-4724-8d71-eff161d8be1e",
+      "primaryMuscle": "shoulders",
+      "secondaryMuscles": [],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 571,
+        "wgerUuid": "270e108d-3cd2-45a9-807b-c357317eb15c",
+        "url": "https://wger.de/exercise/571/view-base",
+        "originalName": "Shrugs, Barbells"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Barbell Shrug",
+          "instructions": "Take a barbell and stand with a straight body, the arms are hanging freely in front of you. Lift from this position the shoulders as high as you can, but don't bend the arms during the movement. On the highest point, make a short pause of 1 or 2 seconds before returning slowly to the initial position.\n\nWhen training with a higher weight, make sure that you still do the whole movement!"
+        }
+      ]
+    },
+    {
+      "id": "a5c670ce-b7d4-4d0e-8e99-8c292496b46a",
+      "primaryMuscle": "triceps",
+      "secondaryMuscles": [],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 245,
+        "wgerUuid": "893c07ea-2e24-49b6-92e4-d0033eedec62",
+        "url": "https://wger.de/exercise/245/view-base",
+        "originalName": "Skullcrusher Dumbbells"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Dumbbell Skull Crusher",
+          "instructions": "Hold the dumbbells and lay down on a flat bench in such a way that around 1/4 of your head is over the edge. Stretch arms straight up and then lean dumbbells away from your toes to a 10-20 degree angle. Keep upper arm at this angle throughout exercise. Dumbbell shall not be amed at your head, but away over your head. This will maximise gain from exercise with load on triceps all the time.\n\nPay attention to your elbows and arms: only the triceps are doing the work, the rest of the arms should not move."
+        }
+      ]
+    },
+    {
+      "id": "a67cf868-9641-4651-9da7-ab0fbb0ca531",
+      "primaryMuscle": "back",
+      "secondaryMuscles": [
+        "shoulders",
+        "biceps"
+      ],
+      "equipment": "machine",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 513,
+        "wgerUuid": "32c129f7-cc28-4ebc-8465-e4fa62e220b1",
+        "url": "https://wger.de/exercise/513/view-base",
+        "originalName": "Rowing, T-bar"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "T-Bar Row (Narrow Grip)",
+          "instructions": "The execution of this exercise is very similar to the regular bent over rowing, only that the bar is fixed here.\n\nGrab the barbell with a wide grip (slightly more than shoulder wide) and lean forward. Your upper body is not quite parallel to the floor, but forms a slight angle. The chest's out during the whole exercise. Pull now the barbell with a fast movement towards your belly button, not further up. Go slowly down to the initial position. Don't swing with your body and keep your arms next to your body."
+        }
+      ]
+    },
+    {
+      "id": "a75fdb7f-fd68-408a-8e8b-149ccac98d98",
+      "primaryMuscle": "back",
+      "secondaryMuscles": [],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 4.0",
+      "author": "novadani",
+      "source": {
+        "wgerId": 919,
+        "wgerUuid": "1eeccede-29c5-4f38-9ba7-d77c7c47993d",
+        "url": "https://wger.de/exercise/919/view-base",
+        "originalName": "T-Bar row"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "T-Bar Row",
+          "instructions": "bent over with triangle grip, slightly bent knees"
+        }
+      ]
+    },
+    {
+      "id": "ac968b92-06ce-4fd2-9d55-09b268c515da",
+      "primaryMuscle": "hamstrings",
+      "secondaryMuscles": [
+        "glutes"
+      ],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 4.0",
+      "author": "personal use",
+      "source": {
+        "wgerId": 2478,
+        "wgerUuid": "537b41a8-870b-4b45-b8a5-e9672c6a359b",
+        "url": "https://wger.de/exercise/2478/view-base",
+        "originalName": "Glute-Ham Raise"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Glute-Ham Raise",
+          "instructions": "1. Kneel on a glute-ham developer (or have a partner brace your ankles) with your hips just in front of the pad and your body upright.\n2. Keeping your hips extended and your body in a straight line, slowly lower your torso toward the floor by letting your knees bend.\n3. Once you feel a strong stretch through your hamstrings, reverse the movement by contracting your hamstrings and glutes to pull yourself back up to the starting position.\n4. Keep the motion slow and controlled in both directions rather than letting gravity do the work."
+        }
+      ]
+    },
+    {
+      "id": "aca05c49-5cdc-4767-b2ac-313de6f9371f",
+      "primaryMuscle": "biceps",
+      "secondaryMuscles": [],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "http://www.exrx.net/WeightExercises/Brachialis/DBC",
+      "source": {
+        "wgerId": 202,
+        "wgerUuid": "46e0f60c-fdc0-489a-82e4-a5b7476a5c21",
+        "url": "https://wger.de/exercise/202/view-base",
+        "originalName": "Dumbbell Concentration Curl"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Dumbbell Concentration Curl",
+          "instructions": "1. Sit on the end of a bench with your feet wide apart, holding a dumbbell in one hand.\n2. Lean forward and brace the back of your working upper arm against the inside of your thigh, letting the arm hang straight down.\n3. Curl the dumbbell up toward your shoulder by bending your elbow, keeping your upper arm pinned against your thigh throughout.\n4. Squeeze at the top, then lower the dumbbell under control back to a full stretch.\n5. Complete all repetitions, then switch arms."
+        }
+      ]
+    },
+    {
+      "id": "aeb7426a-af99-413c-8e5c-a518f7b5adf5",
+      "primaryMuscle": "abs",
+      "secondaryMuscles": [],
+      "equipment": "other",
+      "license": "CC-BY-SA 4.0",
+      "author": "clafal",
+      "source": {
+        "wgerId": 1089,
+        "wgerUuid": "66c7eb38-77b5-4d2f-810f-cddd8d97d5a3",
+        "url": "https://wger.de/exercise/1089/view-base",
+        "originalName": "Medicine ball twist"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Medicine Ball Twist",
+          "instructions": "In a seated position, the torso is rotated from side to side without forcing, approaching the knees and making the ball touch the ground from time to time"
+        }
+      ]
+    },
+    {
+      "id": "afe37fc1-3431-4a2a-87b8-f47978273730",
+      "primaryMuscle": "shoulders",
+      "secondaryMuscles": [],
+      "equipment": "barbell",
+      "license": "CC0 1.0",
+      "author": "Mens Fitness",
+      "source": {
+        "wgerId": 599,
+        "wgerUuid": "8161de8b-7802-46c0-9bd4-db60f39b7677",
+        "url": "https://wger.de/exercise/599/view-base",
+        "originalName": "Snatch"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Barbell Snatch",
+          "instructions": "Stand with your feet at hip width and your shins against the bar. Grasp the bar at double shoulder width and, keeping your lower back flat, drive your heels into the floor to begin lifting the bar. When it's above your knees, explosively extend your hips and shrug your shoulders. Let the momentum carry the weight overhead."
+        }
+      ]
+    },
+    {
+      "id": "b24dee19-53ea-405d-a766-72adb376e4ad",
+      "primaryMuscle": "full_body",
+      "secondaryMuscles": [],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 4.0",
+      "author": "er0355",
+      "source": {
+        "wgerId": 132,
+        "wgerUuid": "48ee1385-47c5-4821-8b6a-57fac6130776",
+        "url": "https://wger.de/exercise/132/view-base",
+        "originalName": "Burpees"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Burpee",
+          "instructions": "Jump, lay down on your chest, do a pushup then jump, repeat"
+        }
+      ]
+    },
+    {
+      "id": "b2a9fca0-5024-4c71-a105-d811831e941c",
+      "primaryMuscle": "shoulders",
+      "secondaryMuscles": [
+        "back",
+        "triceps"
+      ],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "trzr23",
+      "source": {
+        "wgerId": 20,
+        "wgerUuid": "f24cb758-9c0d-42d4-ad9e-6025c527dd13",
+        "url": "https://wger.de/exercise/20/view-base",
+        "originalName": "Arnold Shoulder Press"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Arnold Press",
+          "instructions": "Sit on a bench with your back supported. Hold a pair of dumbbells in front of your shoulders, palms facing you and elbows in front of your body.\n\nPress the dumbbells overhead while rotating your hands, so that your palms face forward at the top. Stop just before your elbows lock out.\n\nReverse the movement under control: lower the dumbbells and turn your palms back towards you until you are in the starting position again.\n\nAs shown here: https://www.youtube.com/watch?v=vj2w851ZHRM"
+        }
+      ]
+    },
+    {
+      "id": "b32d824a-7b59-47e6-88cd-636c253a557a",
+      "primaryMuscle": "abs",
+      "secondaryMuscles": [],
+      "equipment": "machine",
+      "license": "CC-BY-SA 3.0",
+      "author": "MaddieBeasley",
+      "source": {
+        "wgerId": 505,
+        "wgerUuid": "af2f774c-296c-4d14-8e4a-fad77175ae37",
+        "url": "https://wger.de/exercise/505/view-base",
+        "originalName": "Roman Chair Crunch"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Roman Chair Crunch",
+          "instructions": "Crunches on roman chair. Keep your torso straight, abs tight, and don't come up all the way vertical or lie flat to keep constant tension on your abs."
+        }
+      ]
+    },
+    {
+      "id": "b35a856f-24a4-406a-9f7e-48a9ab6856b8",
+      "primaryMuscle": "calves",
+      "secondaryMuscles": [],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 4.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 2661,
+        "wgerUuid": "456f0781-30c6-4f58-a5b4-3da8f4878065",
+        "url": "https://wger.de/exercise/2661/view-base",
+        "originalName": "Dumbbell Calf Raise"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Dumbbell Calf Raise",
+          "instructions": "Stand upright with a dumbbell in each hand, arms hanging at your sides and feet hip-width apart. For a larger range of motion, stand with the balls of your feet on a step or a weight plate.\n\nRise up onto your toes as high as you can and pause briefly at the top. Then lower your heels slowly until you feel a stretch in your calves. Keep your knees straight but not locked and your upper body upright."
+        }
+      ]
+    },
+    {
+      "id": "b4b4778c-e978-44ed-a345-f99285f9e372",
+      "primaryMuscle": "chest",
+      "secondaryMuscles": [
+        "shoulders",
+        "triceps"
+      ],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 75,
+        "wgerUuid": "28321cf3-70e6-48a4-ade1-d11382180cb3",
+        "url": "https://wger.de/exercise/75/view-base",
+        "originalName": "Benchpress Dumbbells"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Dumbbell Bench Press",
+          "instructions": "1. Sit at the end of a flat bench with a dumbbell resting vertically on each thigh, then lie back while using your knees to help bring the dumbbells up to chest height.\n2. Plant your feet firmly on the floor, retract your shoulder blades against the bench, and keep a slight natural arch in your lower back.\n3. Press the dumbbells up until your arms are extended, wrists stacked over your elbows, rotating them slightly inward so your elbows don't flare out.\n4. Lower the dumbbells under control toward the sides of your chest, elbows at roughly 45-60 degrees from your torso, until you feel a stretch.\n5. Press the dumbbells back up in a slight arc without locking out your elbows or letting them touch at the top, exhaling as you press."
+        }
+      ]
+    },
+    {
+      "id": "b77afc09-f447-4e9d-9bdc-51b184530f9c",
+      "primaryMuscle": "biceps",
+      "secondaryMuscles": [],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 4.0",
+      "author": "meldun",
+      "source": {
+        "wgerId": 1683,
+        "wgerUuid": "9564ab2d-2534-4b47-bdf7-f2f653aae3de",
+        "url": "https://wger.de/exercise/1683/view-base",
+        "originalName": "Zottman curl"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Zottman Curl",
+          "instructions": "With your palms facing forward, curl the weights up to your shoulders. Turn your hands so that that your palms downwards and slowly return the weights back down. Finally face your palms back forward."
+        }
+      ]
+    },
+    {
+      "id": "ba4c19b6-5a0b-4ce1-a027-a3fc7a5865b8",
+      "primaryMuscle": "biceps",
+      "secondaryMuscles": [],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 92,
+        "wgerUuid": "1ae6a28d-10e7-4ecf-af4f-905f8193e2c6",
+        "url": "https://wger.de/exercise/92/view-base",
+        "originalName": "Biceps Curls With Dumbbell"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Dumbbell Bicep Curl",
+          "instructions": "Hold two dumbbells, the arms are streched, the hands are on your side, the palms face inwards. Bend the arms and bring the weight with a fast movement up. At the same time, rotate your arms by 90 degrees at the very beginning of the movement. At the highest point, rotate a little the weights further outwards. Without a pause, bring them down, slowly.\n\nDon't allow your body to swing during the exercise, all work is done by the biceps, which are the only mucles that should move (pay attention to the elbows)."
+        }
+      ]
+    },
+    {
+      "id": "bc0c00ad-a8e4-4773-99f5-5fb3bcf69574",
+      "primaryMuscle": "triceps",
+      "secondaryMuscles": [],
+      "equipment": "cable",
+      "license": "CC-BY-SA 4.0",
+      "author": "anto.kreegyr",
+      "source": {
+        "wgerId": 1185,
+        "wgerUuid": "6ebb138e-bb0a-402e-84e5-68fe0896e897",
+        "url": "https://wger.de/exercise/1185/view-base",
+        "originalName": "Triceps Pushdown"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Cable Triceps Pushdown",
+          "instructions": "1. Attach a straight or lat bar to a high cable pulley and grip it with both hands, elbows tucked at your sides.\n2. Push the bar down until your arms are fully extended, keeping your upper arms still.\n3. Slowly let the bar rise back to the starting position with control."
+        }
+      ]
+    },
+    {
+      "id": "bc44ac39-b117-49b9-be1c-c36629f5df6d",
+      "primaryMuscle": "abs",
+      "secondaryMuscles": [],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 4.0",
+      "author": "Happy",
+      "source": {
+        "wgerId": 1743,
+        "wgerUuid": "026d2939-9156-408b-bf11-21cfa8278851",
+        "url": "https://wger.de/exercise/1743/view-base",
+        "originalName": "Windshield Wipers"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Windshield Wipers",
+          "instructions": "Hang from a pull-up bar, raise your legs to the ceiling. Move lower body from left to right with straight legs like a windshield wiper"
+        }
+      ]
+    },
+    {
+      "id": "bd8424fe-592a-42ad-a1c9-b085cd163a6a",
+      "primaryMuscle": "chest",
+      "secondaryMuscles": [
+        "triceps"
+      ],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 4.0",
+      "author": "notdefine",
+      "source": {
+        "wgerId": 386,
+        "wgerUuid": "de22963a-5d42-4999-860e-377f64359432",
+        "url": "https://wger.de/exercise/386/view-base",
+        "originalName": "Diamond push ups"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Diamond Push-Up",
+          "instructions": "Start: Get into a plank. Place hands close together under your chest so thumbs and index fingers form a diamond shape.\n\nLower: Bend your elbows to lower your chest toward your hands. Keep your body straight.\n\nPush: Push back up until arms are fully extended.\n\nNew note Keep elbows close to your body and core tight."
+        }
+      ]
+    },
+    {
+      "id": "be631237-c40d-4e51-951a-2e51b20c8b9b",
+      "primaryMuscle": "abs",
+      "secondaryMuscles": [],
+      "equipment": "cable",
+      "license": "CC-BY-SA 3.0",
+      "author": "robhoyt",
+      "source": {
+        "wgerId": 145,
+        "wgerUuid": "c867836d-2929-4977-b23c-014bc21ec08d",
+        "url": "https://wger.de/exercise/145/view-base",
+        "originalName": "Cable Woodchoppers"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Cable Woodchopper",
+          "instructions": "Set cable pulley slightly lower than chest height. Keep body facing forward with hips stable. Grab the pulley handle, fully extend your arms and bring your arms forward and across your body. Hold for 1 second at the end of the movement and slowly return to starting position."
+        }
+      ]
+    },
+    {
+      "id": "be804a42-e082-423d-9d14-db25ce16a3d3",
+      "primaryMuscle": "chest",
+      "secondaryMuscles": [
+        "shoulders",
+        "triceps"
+      ],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de, Mahoney",
+      "source": {
+        "wgerId": 538,
+        "wgerUuid": "275fb49f-975c-4d6e-9d63-2c86ed740f40",
+        "url": "https://wger.de/exercise/538/view-base",
+        "originalName": "Incline Bench Press - Barbell"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Incline Barbell Bench Press",
+          "instructions": "1. Lie back on an incline bench and grip the bar slightly wider than shoulder width.\n2. Lower the bar slowly and under control to your upper chest.\n3. Press the bar back up to full arm extension.\n\nA slow, controlled tempo (for example, a 4-second lowering phase) emphasises time under tension."
+        }
+      ]
+    },
+    {
+      "id": "bf5939de-b151-42dc-be82-36957a17ab6c",
+      "primaryMuscle": "glutes",
+      "secondaryMuscles": [
+        "biceps"
+      ],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "Mahoney",
+      "source": {
+        "wgerId": 484,
+        "wgerUuid": "a6c2a970-a621-4e03-be1d-4a29118b1687",
+        "url": "https://wger.de/exercise/484/view-base",
+        "originalName": "Rack Deadlift"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Rack Pull",
+          "instructions": "Deadlift to be done using a Smith machine or a free rack. Bar or barbell hould be just right under the knee cap level. Lift using the glutes and through the heels, then come back to starting postion with a control movement of 2 seconds.\n\nThis exercise targets mainly the lower back and glutes."
+        }
+      ]
+    },
+    {
+      "id": "c3a78d29-5c72-4925-89b0-cee1b41f5c75",
+      "primaryMuscle": "triceps",
+      "secondaryMuscles": [],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 197,
+        "wgerUuid": "7c8eb1ac-2d7e-4ca7-919a-1848ba38e0f4",
+        "url": "https://wger.de/exercise/197/view-base",
+        "originalName": "Dips Between Two Benches"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Bench Dip",
+          "instructions": "Put two benches so far appart, that you can hold onto one with your hands and are just able to reach the other with your feet. The legs stay during the exercise completely stretched. With your elbows facing back, bend them as much as you can. Push yourself up, but don't stretch out the arms."
+        }
+      ]
+    },
+    {
+      "id": "c444d445-1d65-442b-9355-5b5b0f566b8e",
+      "primaryMuscle": "triceps",
+      "secondaryMuscles": [
+        "chest",
+        "shoulders"
+      ],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "tuninx",
+      "source": {
+        "wgerId": 211,
+        "wgerUuid": "d8bddb58-91b0-4d7b-8ec1-cd742584b607",
+        "url": "https://wger.de/exercise/211/view-base",
+        "originalName": "Dumbbell Triceps Extension"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Dumbbell Triceps Extension",
+          "instructions": "Position one dumbbell over head with both hands under inner plate (heart shaped grip).\n\nWith elbows over head, lower forearm behind upper arm by flexing elbows. Flex wrists at bottom to avoid hitting dumbbell on back of neck. Raise dumbbell over head by extending elbows while hyperextending wrists. Return and repeat."
+        }
+      ]
+    },
+    {
+      "id": "c44e45da-fece-44bb-bcb1-b1ebc9de0acf",
+      "primaryMuscle": "triceps",
+      "secondaryMuscles": [
+        "chest",
+        "shoulders"
+      ],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 76,
+        "wgerUuid": "3db63138-a047-4a4d-b616-1a0b7dfca105",
+        "url": "https://wger.de/exercise/76/view-base",
+        "originalName": "Bench Press Narrow Grip"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Close-Grip Bench Press",
+          "instructions": "• Setup: Lie flat on the bench and grip the bar at shoulder-width (closer than a standard bench press).\n• Descent: Lower the bar with control to your lower chest.\n• Form: Keep your elbows tucked in tight against your torso—do not let them flare out.\n• Ascent: Press the bar straight back up, squeezing your triceps at the top."
+        }
+      ]
+    },
+    {
+      "id": "c525dc7c-b07f-4f60-8ec5-ee13c7d7145e",
+      "primaryMuscle": "back",
+      "secondaryMuscles": [],
+      "equipment": "cable",
+      "license": "CC-BY-SA 4.0",
+      "author": "Expenses7000",
+      "source": {
+        "wgerId": 1510,
+        "wgerUuid": "3cad7b92-a16b-45dc-a53e-d6a01a158f8e",
+        "url": "https://wger.de/exercise/1510/view-base",
+        "originalName": "Neutral Grip Lat Pulldown"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Neutral-Grip Lat Pulldown",
+          "instructions": "1. Sit at the lat pulldown machine and grip the neutral-grip (parallel) handles.\n2. Pull the handles down to your upper chest, squeezing your shoulder blades together.\n3. Slowly let the handles rise back to the starting position with control."
+        }
+      ]
+    },
+    {
+      "id": "c7dcaa70-c865-4c13-8222-f62d9b48dbe4",
+      "primaryMuscle": "chest",
+      "secondaryMuscles": [],
+      "equipment": "cable",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 237,
+        "wgerUuid": "07c5b9f4-2be5-4a3d-b6d2-16235da1ae3a",
+        "url": "https://wger.de/exercise/237/view-base",
+        "originalName": "Fly With Cable"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Cable Fly",
+          "instructions": "cable machine, two steps forward, straight back"
+        }
+      ]
+    },
+    {
+      "id": "c8fa162b-6568-48e7-ad5e-493a0ca5a7e0",
+      "primaryMuscle": "quadriceps",
+      "secondaryMuscles": [
+        "glutes",
+        "abs"
+      ],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "sistab2",
+      "source": {
+        "wgerId": 257,
+        "wgerUuid": "d677de4c-5bd9-412a-91f1-857116a666a2",
+        "url": "https://wger.de/exercise/257/view-base",
+        "originalName": "Front Squats"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Barbell Front Squat",
+          "instructions": "1. Rest a barbell across the front of your shoulders, gripping it with a clean grip (fingertips under the bar, elbows high) or with crossed arms, keeping your elbows up throughout.\n2. Stand with your feet shoulder-width apart, brace your core, and keep your torso upright.\n3. Squat down by bending your hips and knees together, keeping your elbows high and chest up so the bar stays balanced on your shoulders.\n4. Lower until your hip crease drops below your knees, then drive back up through your feet to standing.\n\nThe upright torso this position demands shifts more of the work onto the quadriceps than a back squat."
+        }
+      ]
+    },
+    {
+      "id": "cac51092-a997-4f84-b0d5-db855bce16a6",
+      "primaryMuscle": "back",
+      "secondaryMuscles": [
+        "shoulders",
+        "biceps"
+      ],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 84,
+        "wgerUuid": "2f0ddf9a-f520-4c55-8883-f0d4a789f481",
+        "url": "https://wger.de/exercise/84/view-base",
+        "originalName": "Bent Over Rowing Reverse"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Barbell Reverse-Grip Row",
+          "instructions": "The same as regular rowing, but holding a reversed grip (your palms pointing forwards):\n\nGrab the barbell with a wide grIp (slightly more than shoulder wide) and lean forward. Your upper body is not quite parallel to the floor, but forms a slight angle. The chest's out during the whole exercise.\n\nPull now the barbell with a fast movement towards your belly button, not further up. Go slowly down to the initial position. Don't swing with your body and keep your arms next to your body."
+        }
+      ]
+    },
+    {
+      "id": "cb31e118-7a3f-428e-ac07-8b7aab4a3143",
+      "primaryMuscle": "quadriceps",
+      "secondaryMuscles": [
+        "glutes",
+        "hamstrings",
+        "calves"
+      ],
+      "equipment": "machine",
+      "license": "CC-BY-SA 4.0",
+      "author": "hpmbala@gmail.com",
+      "source": {
+        "wgerId": 1414,
+        "wgerUuid": "f462df26-3264-48c2-b5aa-2374d0670c24",
+        "url": "https://wger.de/exercise/1414/view-base",
+        "originalName": "Hack Squats"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Hack Squat Machine",
+          "instructions": "Hack squats target the lower body and are performed on a hack squat machine or with a barbell. For the machine variation, position yourself on the platform with your shoulders under the pads and feet slightly forward. Push through your heels to lift the weight, then bend your knees to lower the platform in a controlled motion until your thighs are parallel to the ground. Push back up to the starting position. For the barbell variation, hold the bar behind your legs with your arms extended and perform a squat-like motion."
+        }
+      ]
+    },
+    {
+      "id": "ce46a6c1-bd56-4292-a906-fe6839cc0a4f",
+      "primaryMuscle": "full_body",
+      "secondaryMuscles": [],
+      "equipment": "other",
+      "license": "CC-BY-SA 4.0",
+      "author": "Miroslav Mazel (imported from Feeel)",
+      "source": {
+        "wgerId": 993,
+        "wgerUuid": "cd51aa2a-52b3-43df-8011-0c8ef4b7ed11",
+        "url": "https://wger.de/exercise/993/view-base",
+        "originalName": "Jump rope: basic jumps"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Jump Rope",
+          "instructions": "Starting position:\n\nPut your feet close together, bend the knees a bit, keep your head and body straight, keep elbows in, open your arms.\n\nSteps:\n\n1. Spin only your wrists with enough force to make the rope spin.\n2. Jump just high enough to pass the rope below your feet.\n3. Repeat.\n\nNotes:\n\nThis exercise requires a jump rope. Make sure the rope length is adjusted to your height. One way to check is to grab both handles with one hand and stand on the middle of the rope hanging on the ground with one foot. If the rope (excluding the handles) reaches just below your chest, its length is right. A shorter rope would be hazardous, as you might hit yourself, and a longer rope would make for bad form."
+        }
+      ]
+    },
+    {
+      "id": "ce73c172-a255-410c-bd51-248daae677cf",
+      "primaryMuscle": "quadriceps",
+      "secondaryMuscles": [
+        "glutes"
+      ],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 206,
+        "wgerUuid": "dcc6e237-a8bb-4eca-bbc5-7fb852636f6a",
+        "url": "https://wger.de/exercise/206/view-base",
+        "originalName": "Dumbbell Lunges Walking"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Walking Dumbbell Lunge",
+          "instructions": "• Starting Position: Stand with feet hip-width apart and hands either on your hips or holding dumbbells at your sides.\n• The Stride: Take a wide step forward with your right leg.\n• The Descent: Lower your hips until both knees are bent at approximately 90-degree angles.\n• The Transition: Drive through your front heel to stand up, bringing your back foot forward to step directly into the next lunge."
+        }
+      ]
+    },
+    {
+      "id": "ce8b3814-1fdd-4da3-87bb-a9bf5fc74288",
+      "primaryMuscle": "calves",
+      "secondaryMuscles": [],
+      "equipment": "machine",
+      "license": "CC-BY-SA 4.0",
+      "author": "nate303303",
+      "source": {
+        "wgerId": 146,
+        "wgerUuid": "0d79f259-3b28-4258-8a08-cffec062a710",
+        "url": "https://wger.de/exercise/146/view-base",
+        "originalName": "Calf Press Using Leg Press Machine"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Calf Press (Leg Press Machine)",
+          "instructions": "Put the balls of your feet on an extended leg press pad. Use your calves to press the weight by flexing your feet/toes into a pointed position, and releasing back into a relaxed position.\n\nThis exercise builds mass and strength in the Gastrocnemius and Soleus muscles as well, if not better, than any calf exercise."
+        }
+      ]
+    },
+    {
+      "id": "cf52caa0-9cf9-4797-93e7-cb9efa02aa9d",
+      "primaryMuscle": "back",
+      "secondaryMuscles": [
+        "biceps"
+      ],
+      "equipment": "machine",
+      "license": "CC-BY-SA 3.0",
+      "author": "tuckerm",
+      "source": {
+        "wgerId": 684,
+        "wgerUuid": "76965848-9776-4be5-b879-e3c97033b80f",
+        "url": "https://wger.de/exercise/684/view-base",
+        "originalName": "Underhand Lat Pull Down"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Underhand Lat Pulldown",
+          "instructions": "Grip the pull-down bar with your palms facing you and your hands closer than shoulder-width apart. Lean back slightly and keep your back straight. Pull the bar down towards your chest, pulling your shoulders back slightly at the end of the motion."
+        }
+      ]
+    },
+    {
+      "id": "d241f150-06a0-48b9-8ffa-75d10be3c8eb",
+      "primaryMuscle": "chest",
+      "secondaryMuscles": [
+        "back"
+      ],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 4.0",
+      "author": "3leh",
+      "source": {
+        "wgerId": 1273,
+        "wgerUuid": "9ccd53e0-8392-4e61-91aa-e4e5f4ea339c",
+        "url": "https://wger.de/exercise/1273/view-base",
+        "originalName": "Pullover"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Dumbbell Pullover",
+          "instructions": "Doubling as a back and chest exercise, the Dumbbell Pullover can train both your pecs and lats."
+        }
+      ]
+    },
+    {
+      "id": "d3bd2781-876b-4228-832e-72b1637b9417",
+      "primaryMuscle": "abs",
+      "secondaryMuscles": [],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 4.0",
+      "author": "clafal",
+      "source": {
+        "wgerId": 978,
+        "wgerUuid": "f4991a98-6422-4884-8ad3-43412f91fac1",
+        "url": "https://wger.de/exercise/978/view-base",
+        "originalName": "Knee Raises"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Knee Raise",
+          "instructions": "The 90° leg raise on the bar is a very intense exercise that involves all the abdominal muscles."
+        }
+      ]
+    },
+    {
+      "id": "d5fc317a-5703-4ec5-98e6-1624b86d2419",
+      "primaryMuscle": "forearms",
+      "secondaryMuscles": [],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 4.0",
+      "author": "burenl",
+      "source": {
+        "wgerId": 51,
+        "wgerUuid": "cfb6a754-57be-431b-b8d0-d9963120bd5a",
+        "url": "https://wger.de/exercise/51/view-base",
+        "originalName": "Barbell Wrist Curl"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Barbell Wrist Curl",
+          "instructions": "Sitting on a bench, grab a barbell with your palms facing up and your hands shoulder-width apart. Rest your forearms on your thighs and allow your wrists to hang over your knees. Perform the movement by curling your palms and wrists towards your face.\n\nPause for a moment in the top position, then slowly return the barbell to the starting position."
+        }
+      ]
+    },
+    {
+      "id": "d764421a-6edf-4bcc-a601-32a5af0fe7aa",
+      "primaryMuscle": "chest",
+      "secondaryMuscles": [],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "tuckerm",
+      "source": {
+        "wgerId": 308,
+        "wgerUuid": "55ff32e6-24ab-4303-9b50-176d60d48796",
+        "url": "https://wger.de/exercise/308/view-base",
+        "originalName": "Incline Dumbbell Fly"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Incline Dumbbell Fly",
+          "instructions": "Use inclined bench. Hold dumbbells straight out to your sides, elbows slightly bent. Bring arms together above you, keeping angle of elbows fixed."
+        }
+      ]
+    },
+    {
+      "id": "d8bcc569-17ad-407b-8558-a4d4794f8d05",
+      "primaryMuscle": "full_body",
+      "secondaryMuscles": [
+        "shoulders",
+        "abs"
+      ],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 4.0",
+      "author": "dookie1481",
+      "source": {
+        "wgerId": 675,
+        "wgerUuid": "309bfd2b-1af4-49db-b64b-d7d7c7dd39bb",
+        "url": "https://wger.de/exercise/675/view-base",
+        "originalName": "Turkish Get-Up"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Turkish Get-Up",
+          "instructions": "Starting on back, move to the standing position with dumbbell in one hand. Switch hands between reps."
+        }
+      ]
+    },
+    {
+      "id": "d9a1564d-02e8-4623-a6f1-9c8f541fecf6",
+      "primaryMuscle": "full_body",
+      "secondaryMuscles": [
+        "glutes",
+        "hamstrings"
+      ],
+      "equipment": "kettlebell",
+      "license": "CC-BY-SA 3.0",
+      "author": "J120290,cerin",
+      "source": {
+        "wgerId": 331,
+        "wgerUuid": "8b311259-4f67-4dbf-9574-8c38faa92160",
+        "url": "https://wger.de/exercise/331/view-base",
+        "originalName": "Kettlebell Swings"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Kettlebell Swing",
+          "instructions": "Hold the kettlebell securely in both hands. Keep your back flat throughout the move, avoiding any rounding of the spine.Keeping your knees \"soft\", hinge your hips backwards, letting the kettlebell swing between your knees.\n\nYou want to bend from the hips as far as you can without letting your back round forwards. Then, snap your hips forwards quickly and standing up straight, locking your body in an upright posture.\n\nThe speed you do this will cause your arms and the kettlebell to swing up in front of you. Don't try to lift the kettlebell with your arms. The snapping forwards of your hips will cause the kettlebell to swing forwards through momentum. Depending on the weight of the kettlebell and the speed of your hip movement, your arms will swing up to about shoulder height. At the top of this swing, let your hips hinge backwards again as the kettlebell swings back down to between your legs and the start of the next repetition."
+        }
+      ]
+    },
+    {
+      "id": "dd723a66-a75c-496a-a1f7-b6cd0402c9ab",
+      "primaryMuscle": "back",
+      "secondaryMuscles": [
+        "shoulders",
+        "biceps"
+      ],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 475,
+        "wgerUuid": "8e420408-0682-4ab6-89f5-2681e54c7ce0",
+        "url": "https://wger.de/exercise/475/view-base",
+        "originalName": "Pull-ups"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Pull-Up",
+          "instructions": "Grab the pull up bar with a wide grip, the body is hanging freely. Keep your chest out and pull yourself up till your chin reaches the bar or it touches your neck, if you want to pull behind you. Go with a slow and controlled movement down, always keeping the chest out."
+        }
+      ]
+    },
+    {
+      "id": "ddde4742-f443-41fa-89e2-d93085c629e4",
+      "primaryMuscle": "quadriceps",
+      "secondaryMuscles": [
+        "glutes",
+        "hamstrings"
+      ],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 4.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 2557,
+        "wgerUuid": "15cfef4a-471f-4a00-a3c3-973b15bd7cda",
+        "url": "https://wger.de/exercise/2557/view-base",
+        "originalName": "Supported Split Squat"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Bulgarian Split Squat",
+          "instructions": "1. Stand a couple of feet in front of a bench, facing away from it, and rest the top of one foot on the bench behind you.\n2. Adjust your front foot forward or back until your stance feels balanced, keeping most of your weight on the front leg.\n3. Lower your hips straight down by bending the front knee until your front thigh is roughly parallel to the floor, letting the back knee bend naturally.\n4. Keep your torso upright and your front knee tracking over your front foot.\n5. Drive through your front heel to return to the starting position. Complete all repetitions, then switch legs."
+        }
+      ]
+    },
+    {
+      "id": "ddff9534-b0e0-48e9-b11a-49ae8381e8ff",
+      "primaryMuscle": "forearms",
+      "secondaryMuscles": [],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 4.0",
+      "author": "wakanda90",
+      "source": {
+        "wgerId": 1205,
+        "wgerUuid": "2cc92db8-b245-44b8-b1d6-bf91c78c2ab9",
+        "url": "https://wger.de/exercise/1205/view-base",
+        "originalName": "Wrist curl, dumbbells"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Dumbbell Wrist Curl",
+          "instructions": "1. Sitting on a bench, grab the dumbbell with your palms facing up and your hands shoulder-width apart. Rest your forearms on your thighs and allow your wrists to hang over your knees.\n2. Perform the movement by curling your palms and wrists towards your face.\n3. (optional/variable) Pause at the top.\n4. Slowly return to the starting position."
+        }
+      ]
+    },
+    {
+      "id": "e02f2322-0046-4b3a-bb12-46eaba8692f6",
+      "primaryMuscle": "abs",
+      "secondaryMuscles": [
+        "chest"
+      ],
+      "equipment": "other",
+      "license": "CC-BY-SA 4.0",
+      "author": "lhegedus",
+      "source": {
+        "wgerId": 1573,
+        "wgerUuid": "203a6fee-7436-4313-858f-c1e364136793",
+        "url": "https://wger.de/exercise/1573/view-base",
+        "originalName": "Ab wheel"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Ab Wheel Rollout",
+          "instructions": "1. Starting Position: Kneel on the floor with the ab wheel in front of you.\n2. Grip the Wheel: Hold the handles firmly.\n3. Roll Out: Slowly roll the wheel forward, extending your body while keeping your core tight.\n4. Return: Pull the wheel back towards your knees, maintaining tension in your core."
+        }
+      ]
+    },
+    {
+      "id": "e0838586-c3da-4869-b7a3-5bf3ea2a9fbd",
+      "primaryMuscle": "shoulders",
+      "secondaryMuscles": [
+        "back",
+        "triceps"
+      ],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "mbozi1",
+      "source": {
+        "wgerId": 418,
+        "wgerUuid": "7b1e458f-1857-4c2f-8463-7d67d4b2db93",
+        "url": "https://wger.de/exercise/418/view-base",
+        "originalName": "Military Press mit SZ-Bar"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Military Press (SZ-Bar)",
+          "instructions": "On an SZ-bar grip your hands on the outside of each bend and stand with your arms straight down, palms facing your legs. Pull the bar (bending your arms at the elbow) to your chest, and the push the bar above your head (arms as straight as possible). Return the bar to your chest by dropping your arms at the elbows. Return the bar to it's origional position (stand with your arms straight down, palms facing your legs.)"
+        }
+      ]
+    },
+    {
+      "id": "e22e9eec-ccfd-41c0-b165-aa59aa614840",
+      "primaryMuscle": "quadriceps",
+      "secondaryMuscles": [],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 3.0",
+      "author": "OGhTebfCxhexZXuf35mUxV9C--A",
+      "source": {
+        "wgerId": 614,
+        "wgerUuid": "5c0824dc-f2fb-4d19-a1e5-7c33219ad51d",
+        "url": "https://wger.de/exercise/614/view-base",
+        "originalName": "Squat Jumps"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Squat Jump",
+          "instructions": "1. Stand with your feet shoulder-width apart.\n2. Lower into a squat, then explosively jump straight up, swinging your arms up for momentum.\n3. Land softly with bent knees and immediately lower back into the next squat."
+        }
+      ]
+    },
+    {
+      "id": "e2e5da3c-63f1-48f6-80d5-21962a22f406",
+      "primaryMuscle": "chest",
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "equipment": "cable",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de, tuckerm",
+      "source": {
+        "wgerId": 323,
+        "wgerUuid": "b16e3e5d-8401-4d2b-919c-15b536f9ec5e",
+        "url": "https://wger.de/exercise/323/view-base",
+        "originalName": "Cable Cross-over"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Cable Crossover",
+          "instructions": "Begin with cables at about shoulder height, one in each hand. Take a step forward so that one foot is in front of the other, for stability, and so that there is tension on the cables. Bring hands together in front of you. Try to make your hands overlap (so that the cables cross) a few inches."
+        }
+      ]
+    },
+    {
+      "id": "e3935e4e-547f-4534-9124-da4f057dc752",
+      "primaryMuscle": "calves",
+      "secondaryMuscles": [],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 4.0",
+      "author": "erikocobra",
+      "source": {
+        "wgerId": 1243,
+        "wgerUuid": "58ca3e51-ea64-4771-a74a-a74d29f5c40c",
+        "url": "https://wger.de/exercise/1243/view-base",
+        "originalName": "Double Leg Calf Raise"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Double-Leg Calf Raise",
+          "instructions": "The double leg heel raise is important to strengthen and create control and stability around the ankle and knee, and provide balance and control for the hip and pelvis."
+        }
+      ]
+    },
+    {
+      "id": "e3ce2021-7b18-471c-ae48-ba8f05627c8c",
+      "primaryMuscle": "back",
+      "secondaryMuscles": [],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 4.0",
+      "author": "sebk",
+      "source": {
+        "wgerId": 81,
+        "wgerUuid": "94a5c406-7bcd-47f3-9687-bdf92a763932",
+        "url": "https://wger.de/exercise/81/view-base",
+        "originalName": "Bent Over Dumbbell Rows (Single Arm)"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Single-Arm Dumbbell Row",
+          "instructions": "With dumbbells in hand, bend at the hip until hands hang just below the knees (similar to straight-legged-deadlift starting position). Keep upper body angle constant while contracting your lats to pull you ellbows back pinching the shoulder blades at the top. Try not to stand up with every rep, check hands go below knees on every rep."
+        }
+      ]
+    },
+    {
+      "id": "e54c8991-65c4-4551-86d1-a07bd1401aa6",
+      "primaryMuscle": "chest",
+      "secondaryMuscles": [
+        "shoulders",
+        "biceps",
+        "triceps"
+      ],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 4.0",
+      "author": "admin",
+      "source": {
+        "wgerId": 1084,
+        "wgerUuid": "e4966cb8-9089-4595-9c78-99a27821e6ff",
+        "url": "https://wger.de/exercise/1084/view-base",
+        "originalName": "Dumbbell Floor Press"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Dumbbell Floor Press",
+          "instructions": "Grab your dumbbells and lay flat on your back with your knees bent and your feet flat on the ground (use a bench if you have one). Press the weights up, locking out your elbows (A). Lower them slowly until your upper arms are resting on the floor (B) close to your body. Pause here before explosively pressing back up. Squeeze your chest hard and repeat."
+        }
+      ]
+    },
+    {
+      "id": "e6a6a16d-791f-4f25-917c-01877deccd1e",
+      "primaryMuscle": "back",
+      "secondaryMuscles": [],
+      "equipment": "machine",
+      "license": "CC-BY-SA 3.0",
+      "author": "tuckerm",
+      "source": {
+        "wgerId": 158,
+        "wgerUuid": "63fbb8e5-6ebc-4def-8844-3e65e097213b",
+        "url": "https://wger.de/exercise/158/view-base",
+        "originalName": "Close-grip Lat Pull Down"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Close-Grip Lat Pulldown",
+          "instructions": "Grip the pull-down bar with your hands closer than shoulder width apart, with your palms facing away from you. Lean back slightly. Pull the bar down towards your chest, keeping your elbows close to your sides as you come down. Pull your shoulders back at the end of the motion."
+        }
+      ]
+    },
+    {
+      "id": "e7b4fa35-ffa6-4dd7-bd9f-837c8b4d4172",
+      "primaryMuscle": "back",
+      "secondaryMuscles": [],
+      "equipment": "cable",
+      "license": "CC-BY-SA 4.0",
+      "author": "abeworld",
+      "source": {
+        "wgerId": 222,
+        "wgerUuid": "d7a418d4-d0cb-4f85-8a7c-1e9d97152cbd",
+        "url": "https://wger.de/exercise/222/view-base",
+        "originalName": "Facepull"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Face Pull",
+          "instructions": "Attach a rope to a pulley station set at about chest level.\n\nStep back so you're supporting the weight with arms completely outstretched and assume a staggered (one foot forward) stance. Bend the knees slightly for a stable base.\n\nRetract the scapulae (squeeze your partner's finger with your shoulder blades) and pull the center of the rope slightly up towards the face. A good cue is to think about pulling the ends of the rope apart, not just pulling back.\n\nAs you near your face, externally rotate so your knuckles are facing the ceiling.\n\nHold for one second at the top position and slowly lower."
+        }
+      ]
+    },
+    {
+      "id": "ea77cf7b-ecc5-4739-a6e0-582fe80ff58f",
+      "primaryMuscle": "chest",
+      "secondaryMuscles": [
+        "shoulders",
+        "triceps",
+        "abs"
+      ],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 4.0",
+      "author": "Settebello",
+      "source": {
+        "wgerId": 1551,
+        "wgerUuid": "f5b84269-18af-4464-a61f-b767cbcd81dc",
+        "url": "https://wger.de/exercise/1551/view-base",
+        "originalName": "Push-Up"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Push-Up",
+          "instructions": "The push-up is a fundamental bodyweight exercise that targets the chest, arms, and shoulders while engaging the core for stability. It requires no equipment and is excellent for building upper body strength.\n\nInstructions:\n\n1. Start in a plank position with hands placed slightly wider than shoulder-width, feet together, and body in a straight line from head to heels.\n2. Engage your core and lower your body by bending your elbows, keeping them close to your body or flared slightly outward.\n3. Lower until your chest nearly touches the ground while maintaining a neutral spine.\n4. Push through your palms to return to the starting position, fully extending your arms."
+        }
+      ]
+    },
+    {
+      "id": "eba4b7d1-951f-4ee1-8703-933645a5a469",
+      "primaryMuscle": "back",
+      "secondaryMuscles": [
+        "biceps",
+        "triceps"
+      ],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "Nallitnas",
+      "source": {
+        "wgerId": 448,
+        "wgerUuid": "748e9635-7958-4a41-b1ed-93de74c7ef72",
+        "url": "https://wger.de/exercise/448/view-base",
+        "originalName": "Pendelay Rows"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Pendlay Row",
+          "instructions": "Back excercise with a barbell with a starting position which is in a bent over position with the back paralell to the ground. The barbell is on the ground at chest level.For the movement grab the barbell at shoulder width grip and pull towards your chest without losing the bent over position and without moving anything but your arms"
+        }
+      ]
+    },
+    {
+      "id": "f0361c36-9c66-4b2a-8154-d7266eca15b2",
+      "primaryMuscle": "hamstrings",
+      "secondaryMuscles": [],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 4.0",
+      "author": "eriktrinkle",
+      "source": {
+        "wgerId": 1688,
+        "wgerUuid": "107ea68a-d976-49ed-be75-3b0cf253c36a",
+        "url": "https://wger.de/exercise/1688/view-base",
+        "originalName": "Kickstand RDL"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Kickstand Romanian Deadlift",
+          "instructions": "use non-working leg's toes to help with balance and perform an RDL."
+        }
+      ]
+    },
+    {
+      "id": "f106b558-8c25-4337-a312-8ebdeb91a9af",
+      "primaryMuscle": "calves",
+      "secondaryMuscles": [],
+      "equipment": "machine",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 622,
+        "wgerUuid": "7ce443b6-eb84-4f65-b05f-461c1cc8bcc0",
+        "url": "https://wger.de/exercise/622/view-base",
+        "originalName": "Standing Calf Raises"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Standing Calf Raise",
+          "instructions": "Get onto the calf raises machine, you should able to completely push your calves down. Stand straight, don't make a hollow back and don't bend your legs. Pull yourself up as high as you can. Make a small pause of 1 - 2 seconds and go slowly down."
+        }
+      ]
+    },
+    {
+      "id": "f30b6791-67cb-4776-884f-de134b43af55",
+      "primaryMuscle": "quadriceps",
+      "secondaryMuscles": [
+        "hamstrings"
+      ],
+      "equipment": "barbell",
+      "license": "CC-BY-SA 4.0",
+      "author": "kmcalderwood",
+      "source": {
+        "wgerId": 1803,
+        "wgerUuid": "d18407c2-75d0-43d8-8bbc-dfbb256b6b2f",
+        "url": "https://wger.de/exercise/1803/view-base",
+        "originalName": "Trap Bar Squat"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Trap Bar Squat",
+          "instructions": "A combination of squat and deadlift principles with the use of a hex/trap bar, easing stress on the lower back by better centering the weight."
+        }
+      ]
+    },
+    {
+      "id": "f3f93403-c551-45da-95a9-3bff295acb9d",
+      "primaryMuscle": "back",
+      "secondaryMuscles": [],
+      "equipment": "machine",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 301,
+        "wgerUuid": "37f6bd56-815a-4975-99af-05e749fae4b2",
+        "url": "https://wger.de/exercise/301/view-base",
+        "originalName": "Hyperextensions"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Hyperextension",
+          "instructions": "Lie on the hyperextension pillow with your navel at the front edge, allowing your upper body to hang freely. Tighten all your back muscles and raise your torso until you're horizontal, but no higher. Lower yourself slowly, maintaining a steady flow of muscles."
+        }
+      ]
+    },
+    {
+      "id": "f560f415-a384-4b1e-aa7e-916c39dda601",
+      "primaryMuscle": "hamstrings",
+      "secondaryMuscles": [
+        "glutes",
+        "calves"
+      ],
+      "equipment": "other",
+      "license": "CC-BY-SA 4.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 1833,
+        "wgerUuid": "d6b2ac1d-4363-45e9-8fdb-9fba0a47b27d",
+        "url": "https://wger.de/exercise/1833/view-base",
+        "originalName": "Floor Glider Hamstring Curls"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Sliding Leg Curl",
+          "instructions": "Lie on back with heels on floor gliders or towels. Lift hips into a bridge, then slide heels toward glutes while keeping hips elevated. Slowly return to the starting position while maintaining the hip bridge."
+        }
+      ]
+    },
+    {
+      "id": "f643fcdf-014f-4246-930a-432b0c5eb57b",
+      "primaryMuscle": "hamstrings",
+      "secondaryMuscles": [
+        "glutes"
+      ],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 4.0",
+      "author": "karly",
+      "source": {
+        "wgerId": 910,
+        "wgerUuid": "9b0f7101-b78a-4c47-b680-fbef15469a8a",
+        "url": "https://wger.de/exercise/910/view-base",
+        "originalName": "Nordic Curl"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Nordic Curl",
+          "instructions": "The Nordic hamstring curl is one of the best lower-body exercises to build posterior leg strength, improve knee health, and prevent injury."
+        }
+      ]
+    },
+    {
+      "id": "f9f33ba5-5e33-4172-a1b2-8f1af3bc1400",
+      "primaryMuscle": "quadriceps",
+      "secondaryMuscles": [],
+      "equipment": "machine",
+      "license": "CC0 1.0",
+      "author": "BFad07",
+      "source": {
+        "wgerId": 369,
+        "wgerUuid": "62170477-90ec-463c-907e-9e523abc0a15",
+        "url": "https://wger.de/exercise/369/view-base",
+        "originalName": "Leg Extension"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Leg Extension",
+          "instructions": "The leg extension is a resistance weight training exercise that targets the quadriceps muscle in the legs. The exercise is done using a machine called the Leg Extension Machine. There are various manufacturers of these machines and each one is slightly different. Most gym and weight rooms will have the machine in their facility. The leg extension is an isolated exercise targeting one specific muscle group, the quadriceps. It should not be considered as a total leg workout, such as the squat or deadlift. The exercise consists of bending the leg at the knee and extending the legs, then lowering them back to the original position."
+        }
+      ]
+    },
+    {
+      "id": "fa2b641b-085a-4cd1-ab73-403164ec425f",
+      "primaryMuscle": "biceps",
+      "secondaryMuscles": [],
+      "equipment": "cable",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 95,
+        "wgerUuid": "bcb7020c-8678-496d-8f4d-aad0e233a5bd",
+        "url": "https://wger.de/exercise/95/view-base",
+        "originalName": "Biceps Curl With Cable"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Cable Bicep Curl",
+          "instructions": "Stand around 30 - 40cm away from the cable, the feet are firmly on the floor. Take the bar and lift the weight with a fast movements. Lower the weight as with the dumbbell curls slowly and controlled."
+        }
+      ]
+    },
+    {
+      "id": "faa06f5e-69ac-4e01-a08c-5999f6dde7d0",
+      "primaryMuscle": "chest",
+      "secondaryMuscles": [
+        "triceps"
+      ],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 4.0",
+      "author": "Nash",
+      "source": {
+        "wgerId": 454,
+        "wgerUuid": "3b96a05b-9705-48da-b43e-6e098234bb35",
+        "url": "https://wger.de/exercise/454/view-base",
+        "originalName": "Pike Push Ups"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Pike Push-Up",
+          "instructions": "Push Up performed from a pike position (optional to have feet elevated)."
+        }
+      ]
+    },
+    {
+      "id": "faf44f41-2b69-461f-98a6-e3283056d6a1",
+      "primaryMuscle": "full_body",
+      "secondaryMuscles": [],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 4.0",
+      "author": "mondstern (imported from Feeel), Miroslav Mazel (imported from Feeel)",
+      "source": {
+        "wgerId": 996,
+        "wgerUuid": "53324f8e-df38-456f-9b7d-8f3a43f45f31",
+        "url": "https://wger.de/exercise/996/view-base",
+        "originalName": "Mountain climbers"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Mountain Climber",
+          "instructions": "Starting position:\n\nStart in the upright push-up position, aka. the high plank position.Hands should be directly under your shoulders.Keep your head in line with your back, facing the floor.Feet should be about hip-width apart.\n\nSteps:\n\n1. Move one knee toward the center of your body, towards your elbows, keeping the other leg extended.\n2. In a quick jumping movement, straighten the bent leg out and pull the other knee toward your body.\n3. Keep repeating step 2, alternating legs.\n\nNotes:\n\nThroughout the exercise, your back should remain as straight as possible – avoid a hump or a sagging back."
+        }
+      ]
+    },
+    {
+      "id": "fd5c57f7-6468-4fcb-bf1c-273e7f9290d8",
+      "primaryMuscle": "quadriceps",
+      "secondaryMuscles": [
+        "glutes"
+      ],
+      "equipment": "dumbbell",
+      "license": "CC-BY-SA 3.0",
+      "author": "wger.de",
+      "source": {
+        "wgerId": 205,
+        "wgerUuid": "2f1a2707-e7ff-46ac-9112-3e31e6e961ee",
+        "url": "https://wger.de/exercise/205/view-base",
+        "originalName": "Dumbbell Lunges Standing"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Standing Dumbbell Lunge",
+          "instructions": "1. Stand upright holding a dumbbell in each hand, arms at your sides.\n2. Step forward with one leg and lower your hips until both knees are bent at about 90 degrees, with the back knee hovering just above the floor.\n3. Push through the front heel to return to the starting position.\n4. Repeat, alternating legs."
+        }
+      ]
+    },
+    {
+      "id": "ff2cfcf4-f112-4951-a2e8-524f7e8081e7",
+      "primaryMuscle": "glutes",
+      "secondaryMuscles": [],
+      "equipment": "bodyweight",
+      "license": "CC-BY-SA 4.0",
+      "author": "Happy",
+      "source": {
+        "wgerId": 1740,
+        "wgerUuid": "68f1efb8-e7d2-4a79-99bb-65f128e10a11",
+        "url": "https://wger.de/exercise/1740/view-base",
+        "originalName": "Single Leg Glute Bridge"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Single-Leg Glute Bridge",
+          "instructions": "A glute bridge, where you use just one leg at a time."
+        }
+      ]
+    },
+    {
+      "id": "ff88a95c-be37-430a-a719-a36731610110",
+      "primaryMuscle": "full_body",
+      "secondaryMuscles": [],
+      "equipment": "machine",
+      "license": "CC-BY-SA 4.0",
+      "author": "Boertie",
+      "source": {
+        "wgerId": 1093,
+        "wgerUuid": "f6d8e157-c233-4a22-9c1a-83cb8f613ea5",
+        "url": "https://wger.de/exercise/1093/view-base",
+        "originalName": "Rowing Machine"
+      },
+      "translations": [
+        {
+          "locale": "en",
+          "name": "Rowing Machine",
+          "instructions": "Sit on a rowing machine with your back straight."
+        }
+      ]
+    }
+  ]
+}

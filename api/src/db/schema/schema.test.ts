@@ -2,6 +2,7 @@ import { getTableConfig, PgDialect, type PgTable } from "drizzle-orm/pg-core";
 import { describe, expect, it } from "vitest";
 import {
   exercises,
+  exerciseTranslations,
   refreshTokens,
   templateExercises,
   users,
@@ -10,7 +11,7 @@ import {
   workouts,
   workoutTemplates,
 } from "./index.ts";
-import { EQUIPMENT, SET_TYPES, UNIT_SYSTEMS } from "./vocabularies.ts";
+import { EQUIPMENT, MUSCLES, SET_TYPES, UNIT_SYSTEMS } from "./vocabularies.ts";
 
 const dialect = new PgDialect();
 const TIMESTAMPTZ_3 = "timestamp (3) with time zone";
@@ -41,16 +42,37 @@ function index(table: PgTable, name: string) {
   return getTableConfig(table).indexes.find((i) => i.config.name === name);
 }
 
+function primaryKeyOn(table: PgTable, name: string) {
+  const found = getTableConfig(table).primaryKeys.find((pk) => pk.getName() === name);
+  if (!found) {
+    throw new Error(`Primary key "${name}" not found on "${getTableConfig(table).name}"`);
+  }
+  return found;
+}
+
 function tableName(table: PgTable): string {
   return getTableConfig(table).name;
 }
 
+/** The raw rendered SQL of a check constraint, for substring assertions (e.g. "no bound params"). */
+function renderedSql(checkSql: ReturnType<typeof check>): string {
+  return dialect.sqlToQuery(checkSql.value).sql;
+}
+
 /** The literal values of a `col in ('a', 'b', ...)` check, in the order they were written. */
 function inListValues(checkSql: ReturnType<typeof check>): string[] {
-  const { sql } = dialect.sqlToQuery(checkSql.value);
-  const match = sql.match(/in \(([^)]*)\)/i);
+  const match = renderedSql(checkSql).match(/in \(([^)]*)\)/i);
   if (!match?.[1]) {
-    throw new Error(`No "in (...)" list found in: ${sql}`);
+    throw new Error(`No "in (...)" list found in: ${renderedSql(checkSql)}`);
+  }
+  return match[1].split(",").map((value) => value.trim().slice(1, -1));
+}
+
+/** The literal values of a `col <@ array['a', 'b', ...]::text[]` check, in the order they were written. */
+function arrayCheckValues(checkSql: ReturnType<typeof check>): string[] {
+  const match = renderedSql(checkSql).match(/array\[([^\]]*)\]/i);
+  if (!match?.[1]) {
+    throw new Error(`No "array[...]" list found in: ${renderedSql(checkSql)}`);
   }
   return match[1].split(",").map((value) => value.trim().slice(1, -1));
 }
@@ -130,6 +152,7 @@ describe("child tables", () => {
     ["templateExercises", templateExercises, "template_id", workoutTemplates],
     ["workoutExercises", workoutExercises, "workout_id", workouts],
     ["workoutSets", workoutSets, "workout_exercise_id", workoutExercises],
+    ["exerciseTranslations", exerciseTranslations, "exercise_id", exercises],
   ];
 
   it.each(childrenWithCascadingParentFk)(
@@ -155,6 +178,14 @@ describe("child tables", () => {
       expect(foreignKeyOn(table, columnName)).toBeUndefined();
     },
   );
+});
+
+describe("exercise_translations", () => {
+  it("given exerciseTranslations, then its primary key is (exercise_id, locale)", () => {
+    const pk = primaryKeyOn(exerciseTranslations, "exercise_translations_pkey");
+
+    expect(pk.columns.map((c) => c.name)).toEqual(["exercise_id", "locale"]);
+  });
 });
 
 describe("refresh token rotation", () => {
@@ -190,6 +221,20 @@ describe("vocabularies", () => {
 
   it("given the users unit_system check, when read, then it matches UNIT_SYSTEMS", () => {
     expect(inListValues(check(users, "users_unit_system_check"))).toEqual([...UNIT_SYSTEMS]);
+  });
+
+  it("given the exercises primary_muscle check, when read, then it matches all 12 MUSCLES", () => {
+    const primaryMuscleCheck = check(exercises, "exercises_primary_muscle_check");
+
+    expect(inListValues(primaryMuscleCheck)).toEqual([...MUSCLES]);
+    expect(renderedSql(primaryMuscleCheck)).not.toContain("$");
+  });
+
+  it("given the exercises secondary_muscles check, when read, then it matches all 12 MUSCLES", () => {
+    const secondaryMusclesCheck = check(exercises, "exercises_secondary_muscles_check");
+
+    expect(arrayCheckValues(secondaryMusclesCheck)).toEqual([...MUSCLES]);
+    expect(renderedSql(secondaryMusclesCheck)).not.toContain("$");
   });
 });
 

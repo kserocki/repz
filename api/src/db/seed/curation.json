@@ -1,0 +1,1214 @@
+{
+  "exercises": [
+    {
+      "id": "359d019f-cd3c-4e30-83be-1124930bf819",
+      "wgerId": 73,
+      "names": {
+        "en": "Barbell Bench Press"
+      }
+    },
+    {
+      "id": "b4b4778c-e978-44ed-a345-f99285f9e372",
+      "wgerId": 75,
+      "names": {
+        "en": "Dumbbell Bench Press"
+      },
+      "instructions": {
+        "en": "1. Sit at the end of a flat bench with a dumbbell resting vertically on each thigh, then lie back while using your knees to help bring the dumbbells up to chest height.\n2. Plant your feet firmly on the floor, retract your shoulder blades against the bench, and keep a slight natural arch in your lower back.\n3. Press the dumbbells up until your arms are extended, wrists stacked over your elbows, rotating them slightly inward so your elbows don't flare out.\n4. Lower the dumbbells under control toward the sides of your chest, elbows at roughly 45-60 degrees from your torso, until you feel a stretch.\n5. Press the dumbbells back up in a slight arc without locking out your elbows or letting them touch at the top, exhaling as you press."
+      },
+      "reviewNote": "EN instructions rewritten: wger's original HTML nested a <p> inside a <li> (and, for 75, also ended with a \"Translated with DeepL.com\" footer), which our plain-text converter correctly refuses to silently flatten"
+    },
+    {
+      "id": "be804a42-e082-423d-9d14-db25ce16a3d3",
+      "wgerId": 538,
+      "names": {
+        "en": "Incline Barbell Bench Press"
+      },
+      "instructions": {
+        "en": "1. Lie back on an incline bench and grip the bar slightly wider than shoulder width.\n2. Lower the bar slowly and under control to your upper chest.\n3. Press the bar back up to full arm extension.\n\nA slow, controlled tempo (for example, a 4-second lowering phase) emphasises time under tension."
+      },
+      "reviewNote": "EN instructions rewritten: wger's original was too terse to be useful"
+    },
+    {
+      "id": "7139e8e3-39cf-4f64-9e91-018881567b30",
+      "wgerId": 537,
+      "names": {
+        "en": "Incline Dumbbell Bench Press"
+      },
+      "instructions": {
+        "en": "1. Set the bench to a 30-45 degree incline and sit down with a dumbbell resting on each thigh.\n2. Lean back against the bench, using your knees to help push the dumbbells up to shoulder height.\n3. Plant your feet firmly on the floor and retract your shoulder blades into the bench to stabilise your upper body.\n4. Lower the dumbbells slowly toward the upper part of your chest, keeping your elbows at roughly 45-60 degrees from your torso rather than flared out to the sides.\n5. Press the dumbbells back up and slightly inward as you exhale, stopping just short of locking out your elbows to keep tension on the upper chest."
+      },
+      "reviewNote": "EN instructions rewritten: wger's original HTML nested a <p> inside a <li> (and, for 75, also ended with a \"Translated with DeepL.com\" footer), which our plain-text converter correctly refuses to silently flatten"
+    },
+    {
+      "id": "5b2dc1d7-56de-4e99-b427-7806e99e1ab3",
+      "wgerId": 185,
+      "names": {
+        "en": "Decline Barbell Bench Press"
+      }
+    },
+    {
+      "id": "9f1b19d3-f87f-4004-ab7d-73574ee5ddf6",
+      "wgerId": 238,
+      "names": {
+        "en": "Dumbbell Fly"
+      }
+    },
+    {
+      "id": "d764421a-6edf-4bcc-a601-32a5af0fe7aa",
+      "wgerId": 308,
+      "names": {
+        "en": "Incline Dumbbell Fly"
+      }
+    },
+    {
+      "id": "e2e5da3c-63f1-48f6-80d5-21962a22f406",
+      "wgerId": 323,
+      "names": {
+        "en": "Cable Crossover"
+      }
+    },
+    {
+      "id": "c7dcaa70-c865-4c13-8222-f62d9b48dbe4",
+      "wgerId": 237,
+      "names": {
+        "en": "Cable Fly"
+      }
+    },
+    {
+      "id": "42f7b7c7-5945-4c77-859d-b6d5da0f1d38",
+      "wgerId": 1270,
+      "names": {
+        "en": "Low Cable Fly"
+      }
+    },
+    {
+      "id": "ea77cf7b-ecc5-4739-a6e0-582fe80ff58f",
+      "wgerId": 1551,
+      "names": {
+        "en": "Push-Up"
+      }
+    },
+    {
+      "id": "bd8424fe-592a-42ad-a1c9-b085cd163a6a",
+      "wgerId": 386,
+      "names": {
+        "en": "Diamond Push-Up"
+      }
+    },
+    {
+      "id": "5c146679-01a9-4e1e-abad-9f031e1e114c",
+      "wgerId": 1904,
+      "names": {
+        "en": "Pec Deck Fly"
+      },
+      "equipment": "machine",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "1a1c051c-0f28-4689-9844-ef0adfcf0e49",
+      "wgerId": 129,
+      "names": {
+        "en": "Machine Chest Press"
+      },
+      "equipment": "machine",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "d241f150-06a0-48b9-8ffa-75d10be3c8eb",
+      "wgerId": 1273,
+      "names": {
+        "en": "Dumbbell Pullover"
+      }
+    },
+    {
+      "id": "faa06f5e-69ac-4e01-a08c-5999f6dde7d0",
+      "wgerId": 454,
+      "names": {
+        "en": "Pike Push-Up"
+      }
+    },
+    {
+      "id": "e54c8991-65c4-4551-86d1-a07bd1401aa6",
+      "wgerId": 1084,
+      "names": {
+        "en": "Dumbbell Floor Press"
+      }
+    },
+    {
+      "id": "967bbd48-d699-48c5-a2cb-d87fc5494be3",
+      "wgerId": 184,
+      "names": {
+        "en": "Barbell Deadlift"
+      },
+      "primaryMuscle": "hamstrings",
+      "secondaryMuscles": ["back", "glutes"],
+      "reviewNote": "wger lists Latissimus dorsi (back) as the sole primary muscle; the deadlift is primarily a posterior-chain (hamstrings/glutes) hip-hinge with the back as a major secondary mover"
+    },
+    {
+      "id": "3fe9069a-1e2b-45be-be89-24403222a0f5",
+      "wgerId": 83,
+      "names": {
+        "en": "Barbell Bent-Over Row"
+      }
+    },
+    {
+      "id": "cac51092-a997-4f84-b0d5-db855bce16a6",
+      "wgerId": 84,
+      "names": {
+        "en": "Barbell Reverse-Grip Row"
+      }
+    },
+    {
+      "id": "eba4b7d1-951f-4ee1-8703-933645a5a469",
+      "wgerId": 448,
+      "names": {
+        "en": "Pendlay Row"
+      }
+    },
+    {
+      "id": "e3ce2021-7b18-471c-ae48-ba8f05627c8c",
+      "wgerId": 81,
+      "names": {
+        "en": "Single-Arm Dumbbell Row"
+      }
+    },
+    {
+      "id": "dd723a66-a75c-496a-a1f7-b6cd0402c9ab",
+      "wgerId": 475,
+      "names": {
+        "en": "Pull-Up"
+      }
+    },
+    {
+      "id": "cf52caa0-9cf9-4797-93e7-cb9efa02aa9d",
+      "wgerId": 684,
+      "names": {
+        "en": "Underhand Lat Pulldown"
+      },
+      "equipment": "machine",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "67be5fff-25c2-4cc8-b0b2-b954f284c7b3",
+      "wgerId": 723,
+      "names": {
+        "en": "Wide-Grip Lat Pulldown"
+      },
+      "instructions": {
+        "en": "1. Sit at the lat pulldown machine and secure your thighs under the pad.\n2. Starting position: grip the bar wide and extend your arms overhead, feeling a stretch in your lats. Keep your shoulders depressed rather than shrugged up.\n3. Pulling phase: pull the bar down to your upper chest, driving your elbows down and back, keeping your chest lifted.\n4. Squeeze your shoulder blades together at the bottom, then let the bar rise back under control."
+      },
+      "reviewNote": "EN instructions rewritten: wger's original HTML nested a <p> inside a <li> (and, for 75, also ended with a \"Translated with DeepL.com\" footer), which our plain-text converter correctly refuses to silently flatten"
+    },
+    {
+      "id": "125d675e-b67e-459e-aa1f-225b741ea36f",
+      "wgerId": 354,
+      "names": {
+        "en": "Lat Pulldown (Leaning Back)"
+      },
+      "instructions": {
+        "en": "1. Sit at the lat pulldown machine and grip the bar wider than shoulder width.\n2. Lean your torso back slightly and pull the bar down to your upper chest, squeezing your shoulder blades together.\n3. Slowly let the bar rise back to the starting position with control."
+      },
+      "equipment": "machine",
+      "reviewNote": "wger has no equipment on this entry; EN instructions rewritten: wger's original was too terse to be useful"
+    },
+    {
+      "id": "670f1bde-5d37-470a-8c78-9d28567e9eff",
+      "wgerId": 1117,
+      "names": {
+        "en": "Seated Cable Row"
+      }
+    },
+    {
+      "id": "a75fdb7f-fd68-408a-8e8b-149ccac98d98",
+      "wgerId": 919,
+      "names": {
+        "en": "T-Bar Row"
+      }
+    },
+    {
+      "id": "a67cf868-9641-4651-9da7-ab0fbb0ca531",
+      "wgerId": 513,
+      "names": {
+        "en": "T-Bar Row (Narrow Grip)"
+      },
+      "equipment": "machine",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "e7b4fa35-ffa6-4dd7-bd9f-837c8b4d4172",
+      "wgerId": 222,
+      "names": {
+        "en": "Face Pull"
+      }
+    },
+    {
+      "id": "f3f93403-c551-45da-95a9-3bff295acb9d",
+      "wgerId": 301,
+      "names": {
+        "en": "Hyperextension"
+      },
+      "equipment": "machine",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "a266b560-52f9-4724-8d71-eff161d8be1e",
+      "wgerId": 571,
+      "names": {
+        "en": "Barbell Shrug"
+      }
+    },
+    {
+      "id": "9b58f459-e2bb-40b3-8beb-6801f7b56080",
+      "wgerId": 572,
+      "names": {
+        "en": "Dumbbell Shrug"
+      }
+    },
+    {
+      "id": "e6a6a16d-791f-4f25-917c-01877deccd1e",
+      "wgerId": 158,
+      "names": {
+        "en": "Close-Grip Lat Pulldown"
+      },
+      "equipment": "machine",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "0a205f5d-7624-4b2a-8866-72977fb56f3f",
+      "wgerId": 1127,
+      "names": {
+        "en": "Close-Grip Supinated Lat Pulldown"
+      }
+    },
+    {
+      "id": "c525dc7c-b07f-4f60-8ec5-ee13c7d7145e",
+      "wgerId": 1510,
+      "names": {
+        "en": "Neutral-Grip Lat Pulldown"
+      },
+      "instructions": {
+        "en": "1. Sit at the lat pulldown machine and grip the neutral-grip (parallel) handles.\n2. Pull the handles down to your upper chest, squeezing your shoulder blades together.\n3. Slowly let the handles rise back to the starting position with control."
+      },
+      "reviewNote": "EN instructions rewritten: wger's original was too terse to be useful"
+    },
+    {
+      "id": "7d6d6bab-50ef-47ef-8a99-913a9275fa1f",
+      "wgerId": 695,
+      "names": {
+        "en": "V-Bar Lat Pulldown"
+      },
+      "instructions": {
+        "en": "1. Attach a V-bar to the lat pulldown cable and sit with your thighs secured under the pads.\n2. Grip the V-bar with palms facing each other and pull it down to your upper chest.\n3. Slowly let the bar rise back to the starting position with control."
+      },
+      "reviewNote": "EN instructions rewritten: wger's original was too terse to be useful"
+    },
+    {
+      "id": "1d90bd7b-feda-4c1a-bef5-e807f3ea8545",
+      "wgerId": 628,
+      "names": {
+        "en": "Straight-Arm Pulldown"
+      }
+    },
+    {
+      "id": "234d9af4-a8d6-473f-b0a4-0ca966cd86e8",
+      "wgerId": 566,
+      "names": {
+        "en": "Barbell Shoulder Press"
+      }
+    },
+    {
+      "id": "3558437c-15df-416a-b2b2-ee17634f5f38",
+      "wgerId": 567,
+      "names": {
+        "en": "Dumbbell Shoulder Press"
+      }
+    },
+    {
+      "id": "b2a9fca0-5024-4c71-a105-d811831e941c",
+      "wgerId": 20,
+      "names": {
+        "en": "Arnold Press"
+      }
+    },
+    {
+      "id": "602f9958-f735-4897-b9ed-600550f86137",
+      "wgerId": 348,
+      "names": {
+        "en": "Dumbbell Lateral Raise"
+      }
+    },
+    {
+      "id": "7264791e-ab7e-4a16-a413-5666f23cc87b",
+      "wgerId": 256,
+      "names": {
+        "en": "Barbell Front Raise"
+      }
+    },
+    {
+      "id": "4791a113-72cf-448c-b147-a8c67204f1b2",
+      "wgerId": 918,
+      "names": {
+        "en": "Seated Dumbbell Lateral Raise"
+      }
+    },
+    {
+      "id": "37665db9-cca7-47dd-b2e8-611f52468089",
+      "wgerId": 1473,
+      "names": {
+        "en": "Cable Reverse Fly"
+      }
+    },
+    {
+      "id": "3715dc1d-a31e-4237-b199-58ce894eb992",
+      "wgerId": 142,
+      "names": {
+        "en": "Cable External Rotation"
+      }
+    },
+    {
+      "id": "afe37fc1-3431-4a2a-87b8-f47978273730",
+      "wgerId": 599,
+      "names": {
+        "en": "Barbell Snatch"
+      }
+    },
+    {
+      "id": "9e3a4656-ef8c-416a-901b-8312440a65aa",
+      "wgerId": 289,
+      "names": {
+        "en": "Barbell Upright Row"
+      },
+      "equipment": "barbell",
+      "reviewNote": "wger lists no equipment on this entry, but its own description names a barbell; its description also depicted an explosive, hip-driven high pull rather than a strict upright row, so the instructions were rewritten to match this entry's name. secondaryMuscles overridden from wger's derived [\"glutes\"] (trapezius maps to back, biceps assist the pull) to back and biceps: glutes came from the original hip-driven High Pull and no longer apply to the rewritten strict upright row",
+      "instructions": {
+        "en": "1. Stand holding a barbell with an overhand grip, hands about shoulder-width apart, arms extended in front of your thighs.\n2. Keeping the bar close to your body, pull it straight up toward your chin by lifting your elbows out and up.\n3. Pause briefly when your elbows reach shoulder height, then lower the bar back down under control.\n4. Keep your torso upright throughout; the lift comes from your shoulders and arms, not from swinging your hips."
+      },
+      "secondaryMuscles": ["back", "biceps"]
+    },
+    {
+      "id": "097496de-b2ad-48fe-a69c-a10145cc860b",
+      "wgerId": 916,
+      "names": {
+        "en": "Smith Machine Shoulder Press"
+      },
+      "instructions": {
+        "en": "1. Sit on a bench inside a Smith machine with the bar at shoulder height, back nearly upright.\n2. Press the bar straight up until your arms are fully extended.\n3. Lower it back down to shoulder height with control."
+      },
+      "equipment": "machine",
+      "reviewNote": "wger has no equipment on this entry; EN instructions rewritten: wger's original was too terse to be useful"
+    },
+    {
+      "id": "e0838586-c3da-4869-b7a3-5bf3ea2a9fbd",
+      "wgerId": 418,
+      "names": {
+        "en": "Military Press (SZ-Bar)"
+      }
+    },
+    {
+      "id": "561fd5ff-28d1-4deb-a868-815a55e8fbd8",
+      "wgerId": 1893,
+      "names": {
+        "en": "Standing Barbell Overhead Press"
+      }
+    },
+    {
+      "id": "3cc99842-a95d-4041-8014-d59b74809eef",
+      "wgerId": 1901,
+      "names": {
+        "en": "Clean and Press"
+      },
+      "primaryMuscle": "full_body",
+      "secondaryMuscles": ["shoulders"],
+      "reviewNote": "wger lists shoulders as the sole primary muscle; this is a full-body power movement (legs, hips, back, shoulders)"
+    },
+    {
+      "id": "24d00470-c21e-4506-88bf-1340e5c21047",
+      "wgerId": 91,
+      "names": {
+        "en": "Barbell Bicep Curl"
+      }
+    },
+    {
+      "id": "3cb9e8cb-8998-4fc0-85ea-a35a9b51945a",
+      "wgerId": 94,
+      "names": {
+        "en": "EZ-Bar Bicep Curl"
+      }
+    },
+    {
+      "id": "ba4c19b6-5a0b-4ce1-a027-a3fc7a5865b8",
+      "wgerId": 92,
+      "names": {
+        "en": "Dumbbell Bicep Curl"
+      }
+    },
+    {
+      "id": "8aa71683-971e-42e9-be98-47f5358ed13d",
+      "wgerId": 272,
+      "names": {
+        "en": "Hammer Curl"
+      }
+    },
+    {
+      "id": "aca05c49-5cdc-4767-b2ac-313de6f9371f",
+      "wgerId": 202,
+      "names": {
+        "en": "Dumbbell Concentration Curl"
+      },
+      "instructions": {
+        "en": "1. Sit on the end of a bench with your feet wide apart, holding a dumbbell in one hand.\n2. Lean forward and brace the back of your working upper arm against the inside of your thigh, letting the arm hang straight down.\n3. Curl the dumbbell up toward your shoulder by bending your elbow, keeping your upper arm pinned against your thigh throughout.\n4. Squeeze at the top, then lower the dumbbell under control back to a full stretch.\n5. Complete all repetitions, then switch arms."
+      },
+      "reviewNote": "EN instructions rewritten from scratch (not a close paraphrase): wger's author is a URL (exrx.net), so the original text may have been copied from that site"
+    },
+    {
+      "id": "0f155d90-3e9f-4f53-a9b0-dc48cd0fab6a",
+      "wgerId": 465,
+      "names": {
+        "en": "Preacher Curl"
+      }
+    },
+    {
+      "id": "fa2b641b-085a-4cd1-ab73-403164ec425f",
+      "wgerId": 95,
+      "names": {
+        "en": "Cable Bicep Curl"
+      }
+    },
+    {
+      "id": "a02a9bbf-c692-4678-b151-1f9a1e5734a2",
+      "wgerId": 584,
+      "names": {
+        "en": "Single-Arm Preacher Curl"
+      }
+    },
+    {
+      "id": "b77afc09-f447-4e9d-9bdc-51b184530f9c",
+      "wgerId": 1683,
+      "names": {
+        "en": "Zottman Curl"
+      }
+    },
+    {
+      "id": "409de933-1819-47a0-863e-09ad39afb19b",
+      "wgerId": 621,
+      "names": {
+        "en": "Standing Bicep Curl"
+      },
+      "equipment": "dumbbell",
+      "reviewNote": "wger has no equipment on this entry; the standard gym variant uses dumbbells"
+    },
+    {
+      "id": "4c96fdbb-64c4-4d4d-b1b1-f070a1f0cb2a",
+      "wgerId": 50,
+      "names": {
+        "en": "Barbell Triceps Extension"
+      }
+    },
+    {
+      "id": "c444d445-1d65-442b-9355-5b5b0f566b8e",
+      "wgerId": 211,
+      "names": {
+        "en": "Dumbbell Triceps Extension"
+      }
+    },
+    {
+      "id": "bc0c00ad-a8e4-4773-99f5-5fb3bcf69574",
+      "wgerId": 1185,
+      "names": {
+        "en": "Cable Triceps Pushdown"
+      },
+      "instructions": {
+        "en": "1. Attach a straight or lat bar to a high cable pulley and grip it with both hands, elbows tucked at your sides.\n2. Push the bar down until your arms are fully extended, keeping your upper arms still.\n3. Slowly let the bar rise back to the starting position with control."
+      },
+      "reviewNote": "EN instructions rewritten: wger's original was too terse to be useful"
+    },
+    {
+      "id": "2239adc3-d759-4b72-bcd3-62799e8daf4d",
+      "wgerId": 805,
+      "names": {
+        "en": "Rope Triceps Pushdown"
+      }
+    },
+    {
+      "id": "16226612-cd0c-48aa-a5c3-1ca43d462939",
+      "wgerId": 246,
+      "names": {
+        "en": "Skull Crusher (EZ-Bar)"
+      }
+    },
+    {
+      "id": "a5c670ce-b7d4-4d0e-8e99-8c292496b46a",
+      "wgerId": 245,
+      "names": {
+        "en": "Dumbbell Skull Crusher"
+      }
+    },
+    {
+      "id": "6236a03c-b1b3-4cb7-9448-218be0f256ff",
+      "wgerId": 655,
+      "names": {
+        "en": "Dumbbell Triceps Kickback"
+      },
+      "instructions": {
+        "en": "1. Hold a dumbbell in each hand and hinge forward at the hips until your torso is close to parallel with the floor, keeping your back flat.\n2. Raise your upper arms so they're parallel to the floor and tucked close to your sides, with your elbows bent roughly 90 degrees and forearms hanging down. This is the starting position.\n3. Without moving your upper arms, extend your elbows to straighten your arms, squeezing your triceps at the top.\n4. Pause briefly, then bend your elbows to lower the dumbbells back to the starting position under control."
+      },
+      "reviewNote": "EN instructions rewritten from scratch (not a close paraphrase): wger's author is a URL (bodybuilding.com), so the original text may have been copied from that site"
+    },
+    {
+      "id": "c3a78d29-5c72-4925-89b0-cee1b41f5c75",
+      "wgerId": 197,
+      "names": {
+        "en": "Bench Dip"
+      }
+    },
+    {
+      "id": "10ff9d67-d0e9-457f-82e0-d1698bffff3a",
+      "wgerId": 501,
+      "names": {
+        "en": "Ring Dip"
+      },
+      "instructions": {
+        "en": "1. Support yourself above two gymnastic rings with arms straight, rings at your sides.\n2. Lower your body by bending your elbows until your upper arms are roughly parallel to the floor, keeping the rings close to your body.\n3. Press back up to full arm extension."
+      },
+      "equipment": "other",
+      "reviewNote": "wger has no equipment on this entry; performed on gymnastic rings; EN instructions rewritten: wger's original was too terse to be useful"
+    },
+    {
+      "id": "c44e45da-fece-44bb-bcb1-b1ebc9de0acf",
+      "wgerId": 76,
+      "names": {
+        "en": "Close-Grip Bench Press"
+      }
+    },
+    {
+      "id": "d5fc317a-5703-4ec5-98e6-1624b86d2419",
+      "wgerId": 51,
+      "names": {
+        "en": "Barbell Wrist Curl"
+      },
+      "primaryMuscle": "forearms",
+      "secondaryMuscles": [],
+      "reviewNote": "wger has no forearms muscle; overridden, this exercise targets the forearm flexors"
+    },
+    {
+      "id": "3dfe1b3b-008e-4ce7-97b4-132a57b3a231",
+      "wgerId": 48,
+      "names": {
+        "en": "Barbell Reverse Wrist Curl"
+      },
+      "primaryMuscle": "forearms",
+      "secondaryMuscles": [],
+      "reviewNote": "wger has no forearms muscle; overridden, this exercise targets the forearm extensors"
+    },
+    {
+      "id": "ddff9534-b0e0-48e9-b11a-49ae8381e8ff",
+      "wgerId": 1205,
+      "names": {
+        "en": "Dumbbell Wrist Curl"
+      },
+      "primaryMuscle": "forearms",
+      "secondaryMuscles": [],
+      "reviewNote": "wger has no forearms muscle; overridden, this exercise targets the forearm flexors"
+    },
+    {
+      "id": "2c0ebc96-8155-4037-af19-3cbdbf039072",
+      "wgerId": 1116,
+      "names": {
+        "en": "Dumbbell Farmer's Carry"
+      },
+      "primaryMuscle": "forearms",
+      "secondaryMuscles": [],
+      "reviewNote": "wger has no forearms muscle; overridden, grip/forearm endurance is the primary target of this carry"
+    },
+    {
+      "id": "59baaaef-22df-4b3e-834d-00ac6d8eba1a",
+      "wgerId": 167,
+      "names": {
+        "en": "Crunch"
+      }
+    },
+    {
+      "id": "36c1878e-bc56-418e-ab85-8b8cc84ec83f",
+      "wgerId": 458,
+      "names": {
+        "en": "Plank"
+      }
+    },
+    {
+      "id": "6428469f-b084-41fd-9335-5c90749ddf09",
+      "wgerId": 580,
+      "names": {
+        "en": "Side Plank"
+      },
+      "instructions": {
+        "en": "1. Lie on your side with your legs stacked and extended, then prop yourself up on your forearm, with your elbow positioned directly under your shoulder.\n2. Lift your hips off the floor so your body forms a straight line from your ankles to your shoulders, supporting your weight on your forearm and the side of your lower foot.\n3. Keep your hips lifted and your core braced, holding the position without letting your hips sag.\n4. Lower back down under control, then repeat on the other side."
+      },
+      "reviewNote": "EN instructions rewritten from scratch (not a close paraphrase): wger's author is a URL (bodybuilding.com), so the original text may have been copied from that site"
+    },
+    {
+      "id": "60caed1f-ed4a-4856-bd8a-4c588a1b07e7",
+      "wgerId": 283,
+      "names": {
+        "en": "Hanging Leg Raise"
+      }
+    },
+    {
+      "id": "d3bd2781-876b-4228-832e-72b1637b9417",
+      "wgerId": 978,
+      "names": {
+        "en": "Knee Raise"
+      }
+    },
+    {
+      "id": "2043e466-4cc7-4ce7-99c7-f84b3e073eb4",
+      "wgerId": 591,
+      "names": {
+        "en": "Sit-Up"
+      },
+      "equipment": "bodyweight",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "382ba550-aebd-43da-a94e-9c95a4165025",
+      "wgerId": 1412,
+      "names": {
+        "en": "Bicycle Crunch"
+      }
+    },
+    {
+      "id": "10547301-0428-4cc7-bf45-8fcbf4ac9560",
+      "wgerId": 41,
+      "names": {
+        "en": "Barbell Ab Rollout"
+      }
+    },
+    {
+      "id": "e02f2322-0046-4b3a-bb12-46eaba8692f6",
+      "wgerId": 1573,
+      "names": {
+        "en": "Ab Wheel Rollout"
+      },
+      "equipment": "other",
+      "reviewNote": "no EQUIPMENT value fits an ab wheel; wger lists no equipment on this entry"
+    },
+    {
+      "id": "be631237-c40d-4e51-951a-2e51b20c8b9b",
+      "wgerId": 145,
+      "names": {
+        "en": "Cable Woodchopper"
+      }
+    },
+    {
+      "id": "2db4fa21-695c-417b-a63b-5e8b33e63d2c",
+      "wgerId": 376,
+      "names": {
+        "en": "Leg Raise"
+      },
+      "equipment": "bodyweight",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "aeb7426a-af99-413c-8e5c-a518f7b5adf5",
+      "wgerId": 1089,
+      "names": {
+        "en": "Medicine Ball Twist"
+      }
+    },
+    {
+      "id": "0f24782f-d92c-4553-8e8a-aa917e0d19d6",
+      "wgerId": 672,
+      "names": {
+        "en": "Cable Trunk Rotation"
+      },
+      "instructions": {
+        "en": "1. Sit on a bench side-on to a cable machine set at chest height, holding the handle with both hands.\n2. Keeping your hips facing forward, rotate your torso away from the machine.\n3. Return under control to the starting position, then repeat for all reps before switching sides."
+      },
+      "reviewNote": "EN instructions rewritten: wger's original was too terse to be useful"
+    },
+    {
+      "id": "b32d824a-7b59-47e6-88cd-636c253a557a",
+      "wgerId": 505,
+      "names": {
+        "en": "Roman Chair Crunch"
+      },
+      "equipment": "machine",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "80872c99-5eae-4cd8-ae88-f40c9d199216",
+      "wgerId": 1772,
+      "names": {
+        "en": "Reverse Crunch"
+      }
+    },
+    {
+      "id": "bc44ac39-b117-49b9-be1c-c36629f5df6d",
+      "wgerId": 1743,
+      "names": {
+        "en": "Windshield Wipers"
+      }
+    },
+    {
+      "id": "4e7a75d9-14c3-4d67-bd9e-38fa75eb4f3c",
+      "wgerId": 294,
+      "names": {
+        "en": "Barbell Hip Thrust"
+      }
+    },
+    {
+      "id": "1cd29fa3-bccf-4791-8949-d4da99a05bee",
+      "wgerId": 265,
+      "names": {
+        "en": "Glute Bridge"
+      },
+      "equipment": "bodyweight",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "ff2cfcf4-f112-4951-a2e8-524f7e8081e7",
+      "wgerId": 1740,
+      "names": {
+        "en": "Single-Leg Glute Bridge"
+      }
+    },
+    {
+      "id": "1816a076-3521-4e59-901d-91e70f1f1c34",
+      "wgerId": 1751,
+      "names": {
+        "en": "Cable Pull-Through"
+      }
+    },
+    {
+      "id": "971cdf52-9ac7-46fd-af05-634a541a6f14",
+      "wgerId": 12,
+      "names": {
+        "en": "Seated Hip Adduction"
+      },
+      "equipment": "machine",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "5e07be82-4071-4fd1-b1cf-8c50671c8276",
+      "wgerId": 1672,
+      "names": {
+        "en": "Seated Hip Abduction"
+      },
+      "equipment": "machine",
+      "reviewNote": "wger derives bodyweight/no equipment for this entry, but its own description clearly depicts a seated hip-abduction machine (padded levers, weight stack); kept as the catalog's one machine hip-abduction exercise, removing the duplicate wger 1748 \"Machine Hip Abduction\" (whose own text inconsistently mixed abduction and adduction setup)"
+    },
+    {
+      "id": "51383da2-16a6-4dd6-ac0c-aeaf826eebf0",
+      "wgerId": 990,
+      "names": {
+        "en": "Kneeling Glute Kickback"
+      }
+    },
+    {
+      "id": "5a4caf83-c834-44eb-ba91-3e324c698fb7",
+      "wgerId": 1613,
+      "names": {
+        "en": "Band Glute Kickback"
+      }
+    },
+    {
+      "id": "bf5939de-b151-42dc-be82-36957a17ab6c",
+      "wgerId": 484,
+      "names": {
+        "en": "Rack Pull"
+      },
+      "equipment": "barbell",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "49c02804-9395-4ce9-b87e-b5f521de3d75",
+      "wgerId": 615,
+      "names": {
+        "en": "Barbell Back Squat"
+      }
+    },
+    {
+      "id": "c8fa162b-6568-48e7-ad5e-493a0ca5a7e0",
+      "wgerId": 257,
+      "names": {
+        "en": "Barbell Front Squat"
+      },
+      "primaryMuscle": "quadriceps",
+      "secondaryMuscles": ["glutes", "abs"],
+      "instructions": {
+        "en": "1. Rest a barbell across the front of your shoulders, gripping it with a clean grip (fingertips under the bar, elbows high) or with crossed arms, keeping your elbows up throughout.\n2. Stand with your feet shoulder-width apart, brace your core, and keep your torso upright.\n3. Squat down by bending your hips and knees together, keeping your elbows high and chest up so the bar stays balanced on your shoulders.\n4. Lower until your hip crease drops below your knees, then drive back up through your feet to standing.\n\nThe upright torso this position demands shifts more of the work onto the quadriceps than a back squat."
+      },
+      "reviewNote": "wger lists Gluteus maximus as the sole primary muscle and its description claims the exercise \"trains the hamstrings and gluteus maximus\"; a front squat's upright torso makes it quadriceps-dominant (unlike the back squat), so both the muscle mapping and the instructions were corrected"
+    },
+    {
+      "id": "29124af9-a4bc-478d-b1b3-24da397cfa71",
+      "wgerId": 203,
+      "names": {
+        "en": "Dumbbell Goblet Squat"
+      }
+    },
+    {
+      "id": "58456573-2026-4b1e-b84c-297872dc69d9",
+      "wgerId": 46,
+      "names": {
+        "en": "Standing Barbell Lunge"
+      }
+    },
+    {
+      "id": "fd5c57f7-6468-4fcb-bf1c-273e7f9290d8",
+      "wgerId": 205,
+      "names": {
+        "en": "Standing Dumbbell Lunge"
+      },
+      "instructions": {
+        "en": "1. Stand upright holding a dumbbell in each hand, arms at your sides.\n2. Step forward with one leg and lower your hips until both knees are bent at about 90 degrees, with the back knee hovering just above the floor.\n3. Push through the front heel to return to the starting position.\n4. Repeat, alternating legs."
+      },
+      "reviewNote": "EN instructions rewritten: wger's original was too terse to be useful"
+    },
+    {
+      "id": "ce73c172-a255-410c-bd51-248daae677cf",
+      "wgerId": 206,
+      "names": {
+        "en": "Walking Dumbbell Lunge"
+      }
+    },
+    {
+      "id": "7bbe281b-14c7-44a5-b237-50e4e3f2e5a1",
+      "wgerId": 43,
+      "names": {
+        "en": "Barbell Hack Squat"
+      }
+    },
+    {
+      "id": "cb31e118-7a3f-428e-ac07-8b7aab4a3143",
+      "wgerId": 1414,
+      "names": {
+        "en": "Hack Squat Machine"
+      },
+      "equipment": "machine",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "34d7f237-3f70-4219-8845-7be648ba2849",
+      "wgerId": 373,
+      "names": {
+        "en": "Leg Press (Narrow Stance)"
+      },
+      "equipment": "machine",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "0c8d6676-9936-4465-b381-311e3cdb0998",
+      "wgerId": 374,
+      "names": {
+        "en": "Leg Press (Wide Stance)"
+      },
+      "equipment": "machine",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "f9f33ba5-5e33-4172-a1b2-8f1af3bc1400",
+      "wgerId": 369,
+      "names": {
+        "en": "Leg Extension"
+      },
+      "equipment": "machine",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "e22e9eec-ccfd-41c0-b165-aa59aa614840",
+      "wgerId": 614,
+      "names": {
+        "en": "Squat Jump"
+      },
+      "instructions": {
+        "en": "1. Stand with your feet shoulder-width apart.\n2. Lower into a squat, then explosively jump straight up, swinging your arms up for momentum.\n3. Land softly with bent knees and immediately lower back into the next squat."
+      },
+      "equipment": "bodyweight",
+      "reviewNote": "wger has no equipment on this entry; EN instructions rewritten: wger's original was too terse to be useful"
+    },
+    {
+      "id": "02492df4-c6a1-48fa-b8bb-8d236ae072e9",
+      "wgerId": 1312,
+      "names": {
+        "en": "Bodyweight Squat"
+      }
+    },
+    {
+      "id": "43aa23fb-beb7-4c61-ba65-689f78dc4e68",
+      "wgerId": 291,
+      "names": {
+        "en": "Hindu Squat"
+      },
+      "equipment": "bodyweight",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "f30b6791-67cb-4776-884f-de134b43af55",
+      "wgerId": 1803,
+      "names": {
+        "en": "Trap Bar Squat"
+      },
+      "equipment": "barbell",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "1b1b244c-b544-49f2-ad24-a592b1e87557",
+      "wgerId": 320,
+      "names": {
+        "en": "Jumping Jack"
+      },
+      "equipment": "bodyweight",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "ddde4742-f443-41fa-89e2-d93085c629e4",
+      "wgerId": 2557,
+      "names": {
+        "en": "Bulgarian Split Squat"
+      },
+      "instructions": {
+        "en": "1. Stand a couple of feet in front of a bench, facing away from it, and rest the top of one foot on the bench behind you.\n2. Adjust your front foot forward or back until your stance feels balanced, keeping most of your weight on the front leg.\n3. Lower your hips straight down by bending the front knee until your front thigh is roughly parallel to the floor, letting the back knee bend naturally.\n4. Keep your torso upright and your front knee tracking over your front foot.\n5. Drive through your front heel to return to the starting position. Complete all repetitions, then switch legs."
+      },
+      "reviewNote": "wger's original description is a supported split squat (both feet on the floor, holding a rack, wall or chair for balance), not a true Bulgarian split squat; rewritten to describe the rear-foot-elevated version this entry is named for"
+    },
+    {
+      "id": "0db28cae-9003-464a-81d4-d6f9cde72fb0",
+      "wgerId": 627,
+      "names": {
+        "en": "Stiff-Legged Deadlift"
+      },
+      "instructions": {
+        "en": "1. Stand holding a barbell in front of your thighs, feet hip-width apart.\n2. Keeping your legs almost straight and your back flat, hinge at the hips and lower the bar along your legs until you feel a stretch in your hamstrings.\n3. Drive your hips forward to return to standing."
+      },
+      "reviewNote": "EN instructions rewritten: wger's original was too terse to be useful"
+    },
+    {
+      "id": "5248854e-0c1b-42b4-a6cc-ee3e1688a76f",
+      "wgerId": 1392,
+      "names": {
+        "en": "Good Morning"
+      },
+      "equipment": "barbell",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "1633fda7-157a-4328-a1eb-a861522b1d29",
+      "wgerId": 365,
+      "names": {
+        "en": "Lying Leg Curl"
+      },
+      "equipment": "machine",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "6fc50236-887a-4a0b-81c5-068f6150c667",
+      "wgerId": 1294,
+      "names": {
+        "en": "Single-Leg Hamstring Curl"
+      },
+      "equipment": "machine",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "f643fcdf-014f-4246-930a-432b0c5eb57b",
+      "wgerId": 910,
+      "names": {
+        "en": "Nordic Curl"
+      },
+      "equipment": "bodyweight",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "522adf10-9d33-4b94-8f8f-c4740db11340",
+      "wgerId": 1388,
+      "names": {
+        "en": "Single-Leg Romanian Deadlift"
+      },
+      "equipment": "bodyweight",
+      "reviewNote": "wger has no equipment on this entry; typically loaded with a dumbbell or kettlebell"
+    },
+    {
+      "id": "f0361c36-9c66-4b2a-8154-d7266eca15b2",
+      "wgerId": 1688,
+      "names": {
+        "en": "Kickstand Romanian Deadlift"
+      }
+    },
+    {
+      "id": "ac968b92-06ce-4fd2-9d55-09b268c515da",
+      "wgerId": 2478,
+      "names": {
+        "en": "Glute-Ham Raise"
+      },
+      "instructions": {
+        "en": "1. Kneel on a glute-ham developer (or have a partner brace your ankles) with your hips just in front of the pad and your body upright.\n2. Keeping your hips extended and your body in a straight line, slowly lower your torso toward the floor by letting your knees bend.\n3. Once you feel a strong stretch through your hamstrings, reverse the movement by contracting your hamstrings and glutes to pull yourself back up to the starting position.\n4. Keep the motion slow and controlled in both directions rather than letting gravity do the work."
+      },
+      "reviewNote": "EN instructions rewritten from scratch (not a close paraphrase): wger's author is listed as \"personal use\", so the original text may have been drawn from a non-wger source"
+    },
+    {
+      "id": "f560f415-a384-4b1e-aa7e-916c39dda601",
+      "wgerId": 1833,
+      "names": {
+        "en": "Sliding Leg Curl"
+      },
+      "equipment": "other",
+      "reviewNote": "wger has no equipment on this entry; performed with sliding discs/towels on a smooth floor"
+    },
+    {
+      "id": "f106b558-8c25-4337-a312-8ebdeb91a9af",
+      "wgerId": 622,
+      "names": {
+        "en": "Standing Calf Raise"
+      },
+      "equipment": "machine",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "974798bc-bc50-4199-8f64-65328bdcce41",
+      "wgerId": 590,
+      "names": {
+        "en": "Seated Calf Raise"
+      },
+      "equipment": "machine",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "b35a856f-24a4-406a-9f7e-48a9ab6856b8",
+      "wgerId": 2661,
+      "names": {
+        "en": "Dumbbell Calf Raise"
+      }
+    },
+    {
+      "id": "ce8b3814-1fdd-4da3-87bb-a9bf5fc74288",
+      "wgerId": 146,
+      "names": {
+        "en": "Calf Press (Leg Press Machine)"
+      },
+      "equipment": "machine",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "e3935e4e-547f-4534-9124-da4f057dc752",
+      "wgerId": 1243,
+      "names": {
+        "en": "Double-Leg Calf Raise"
+      },
+      "equipment": "bodyweight",
+      "reviewNote": "wger has no equipment on this entry"
+    },
+    {
+      "id": "9f43c978-9240-4215-9cf7-42acfee34ab0",
+      "wgerId": 1241,
+      "names": {
+        "en": "Band Dorsiflexion"
+      }
+    },
+    {
+      "id": "b24dee19-53ea-405d-a766-72adb376e4ad",
+      "wgerId": 132,
+      "names": {
+        "en": "Burpee"
+      },
+      "primaryMuscle": "full_body",
+      "secondaryMuscles": [],
+      "equipment": "bodyweight",
+      "reviewNote": "wger has no full_body muscle and no equipment on this entry; overridden, a classic full-body conditioning movement"
+    },
+    {
+      "id": "faf44f41-2b69-461f-98a6-e3283056d6a1",
+      "wgerId": 996,
+      "names": {
+        "en": "Mountain Climber"
+      },
+      "primaryMuscle": "full_body",
+      "secondaryMuscles": [],
+      "reviewNote": "wger has no full_body muscle; overridden, a full-body conditioning movement"
+    },
+    {
+      "id": "88ed110b-9b59-49dd-b42e-99bd86c3f645",
+      "wgerId": 650,
+      "names": {
+        "en": "Barbell Thruster"
+      },
+      "primaryMuscle": "full_body",
+      "secondaryMuscles": ["shoulders", "quadriceps"],
+      "reviewNote": "wger lists shoulders as the sole primary muscle; overridden to full_body, a combined front squat + overhead press"
+    },
+    {
+      "id": "d8bcc569-17ad-407b-8558-a4d4794f8d05",
+      "wgerId": 675,
+      "names": {
+        "en": "Turkish Get-Up"
+      },
+      "primaryMuscle": "full_body",
+      "secondaryMuscles": ["shoulders", "abs"],
+      "reviewNote": "wger lists four separate primary muscles; overridden to full_body, a classic total-body stability movement"
+    },
+    {
+      "id": "d9a1564d-02e8-4623-a6f1-9c8f541fecf6",
+      "wgerId": 331,
+      "names": {
+        "en": "Kettlebell Swing"
+      },
+      "primaryMuscle": "full_body",
+      "secondaryMuscles": ["glutes", "hamstrings"],
+      "reviewNote": "wger lists glutes as the sole primary muscle; overridden to full_body, the swing is driven by the whole posterior chain and core"
+    },
+    {
+      "id": "6b1c7926-7e5b-4051-b038-71f866ac6084",
+      "wgerId": 1524,
+      "names": {
+        "en": "Battle Ropes"
+      },
+      "primaryMuscle": "full_body",
+      "secondaryMuscles": [],
+      "equipment": "other",
+      "reviewNote": "wger has no full_body muscle and no equipment on this entry; overridden, a full-body conditioning movement"
+    },
+    {
+      "id": "05cef4f8-afa9-4a94-b64c-464d70203696",
+      "wgerId": 1523,
+      "names": {
+        "en": "Sled Push"
+      },
+      "primaryMuscle": "full_body",
+      "secondaryMuscles": [],
+      "equipment": "other",
+      "reviewNote": "wger has no full_body muscle and no equipment on this entry; overridden, a full-body conditioning movement"
+    },
+    {
+      "id": "ce46a6c1-bd56-4292-a906-fe6839cc0a4f",
+      "wgerId": 993,
+      "names": {
+        "en": "Jump Rope"
+      },
+      "primaryMuscle": "full_body",
+      "secondaryMuscles": [],
+      "equipment": "other",
+      "reviewNote": "wger has no full_body muscle; overridden, equipment set to \"other\" (a jump rope, not bodyweight-only)"
+    },
+    {
+      "id": "ff88a95c-be37-430a-a719-a36731610110",
+      "wgerId": 1093,
+      "names": {
+        "en": "Rowing Machine"
+      },
+      "primaryMuscle": "full_body",
+      "secondaryMuscles": [],
+      "equipment": "machine",
+      "reviewNote": "wger lists all 15 muscles as primary (clearly a data error) and no equipment; overridden to full_body on a rowing ergometer"
+    },
+    {
+      "id": "7d01fc1b-fe23-40a9-84fc-3851ae76f0ad",
+      "wgerId": 1438,
+      "names": {
+        "en": "Barbell Clean"
+      },
+      "primaryMuscle": "full_body",
+      "secondaryMuscles": ["glutes", "quadriceps", "back"],
+      "reviewNote": "wger lists three separate primary muscles; overridden to full_body, an Olympic-lift-derived total-body pull"
+    }
+  ]
+}
