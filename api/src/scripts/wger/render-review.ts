@@ -112,7 +112,7 @@ export function renderReviewTable(snapshot: SnapshotFile, curation: CurationFile
     `**${total} exercises.** Per primary group: ${renderCounts(groupCounts)}.`,
     `Per equipment: ${renderCounts(equipmentCounts)}.`,
     `Per licence: ${renderCounts(licenceCounts)}.`,
-    `Every EN name was Title-Cased from wger's original. ${dataOverrideCount} entries override a ` +
+    `Every EN name was Title-Cased or renamed from wger's original. ${dataOverrideCount} entries override a ` +
       `derived muscle or equipment value (see the Overrides column for the reason). ` +
       `${rewrittenCount} EN instructions were rewritten.`,
     "",

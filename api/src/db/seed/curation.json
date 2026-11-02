@@ -196,7 +196,7 @@
         "en": "Wide-Grip Lat Pulldown"
       },
       "instructions": {
-        "en": "1. Starting position: grip the bar wide and extend your arms overhead, feeling a stretch in your lats. Keep your shoulders depressed rather than shrugged up.\n2. Pulling phase: pull the bar down to your upper chest, driving your elbows down and back, keeping your chest lifted.\n3. Squeeze your shoulder blades together at the bottom, then let the bar rise back under control."
+        "en": "1. Sit at the lat pulldown machine and secure your thighs under the pad.\n2. Starting position: grip the bar wide and extend your arms overhead, feeling a stretch in your lats. Keep your shoulders depressed rather than shrugged up.\n3. Pulling phase: pull the bar down to your upper chest, driving your elbows down and back, keeping your chest lifted.\n4. Squeeze your shoulder blades together at the bottom, then let the bar rise back under control."
       },
       "reviewNote": "EN instructions rewritten: wger's original HTML nested a <p> inside a <li> (and, for 75, also ended with a \"Translated with DeepL.com\" footer), which our plain-text converter correctly refuses to silently flatten"
     },
@@ -380,10 +380,11 @@
         "en": "Barbell Upright Row"
       },
       "equipment": "barbell",
-      "reviewNote": "wger lists no equipment on this entry, but its own description names a barbell; its description also depicted an explosive, hip-driven high pull rather than a strict upright row, so the instructions were rewritten to match this entry's name",
+      "reviewNote": "wger lists no equipment on this entry, but its own description names a barbell; its description also depicted an explosive, hip-driven high pull rather than a strict upright row, so the instructions were rewritten to match this entry's name. secondaryMuscles overridden from wger's derived [\"glutes\"] (trapezius maps to back, biceps assist the pull) to back and biceps: glutes came from the original hip-driven High Pull and no longer apply to the rewritten strict upright row",
       "instructions": {
         "en": "1. Stand holding a barbell with an overhand grip, hands about shoulder-width apart, arms extended in front of your thighs.\n2. Keeping the bar close to your body, pull it straight up toward your chin by lifting your elbows out and up.\n3. Pause briefly when your elbows reach shoulder height, then lower the bar back down under control.\n4. Keep your torso upright throughout; the lift comes from your shoulders and arms, not from swinging your hips."
-      }
+      },
+      "secondaryMuscles": ["back", "biceps"]
     },
     {
       "id": "097496de-b2ad-48fe-a69c-a10145cc860b",

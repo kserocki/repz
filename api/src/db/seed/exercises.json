@@ -1293,7 +1293,7 @@
         {
           "locale": "en",
           "name": "Wide-Grip Lat Pulldown",
-          "instructions": "1. Starting position: grip the bar wide and extend your arms overhead, feeling a stretch in your lats. Keep your shoulders depressed rather than shrugged up.\n2. Pulling phase: pull the bar down to your upper chest, driving your elbows down and back, keeping your chest lifted.\n3. Squeeze your shoulder blades together at the bottom, then let the bar rise back under control."
+          "instructions": "1. Sit at the lat pulldown machine and secure your thighs under the pad.\n2. Starting position: grip the bar wide and extend your arms overhead, feeling a stretch in your lats. Keep your shoulders depressed rather than shrugged up.\n3. Pulling phase: pull the bar down to your upper chest, driving your elbows down and back, keeping your chest lifted.\n4. Squeeze your shoulder blades together at the bottom, then let the bar rise back under control."
         }
       ]
     },
@@ -1615,7 +1615,8 @@
       "id": "9e3a4656-ef8c-416a-901b-8312440a65aa",
       "primaryMuscle": "shoulders",
       "secondaryMuscles": [
-        "glutes"
+        "back",
+        "biceps"
       ],
       "equipment": "barbell",
       "license": "CC-BY-SA 3.0",
