@@ -34,7 +34,7 @@ class RepzElevationTest {
     }
 
     @Test
-    fun given_anyTheme_whenBuildingElevationScheme_thenOnlyLevel4HasAShadow() {
+    fun given_anyTheme_whenBuildingElevationScheme_thenAmongLevelsOnlyLevel4HasAShadow() {
         val light = repzElevationScheme(RepzLightColorScheme, darkTheme = false)
         val dark = repzElevationScheme(RepzDarkColorScheme, darkTheme = true)
 
