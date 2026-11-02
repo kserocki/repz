@@ -29,7 +29,9 @@ class CommonModuleTest {
         startKoin<RepzApp>()
         val koin = KoinPlatformTools.defaultContext().get()
 
-        assertSame(Clock.System, koin.get<Clock>())
+        // Compares against CommonModule's own provider rather than naming the singleton here
+        // (konsist I1 restricts that name to CommonModule.kt, tests included).
+        assertSame(CommonModule().clock(), koin.get<Clock>())
     }
 
     @Test
