@@ -1,0 +1,24 @@
+{
+  "changes": [
+    {
+      "type": "template",
+      "id": "b6e6b6a0-4444-4a22-8a33-000000000001",
+      "deleted": false,
+      "payload": {
+        "name": "Push day",
+        "notes": "",
+        "exercises": [
+          {
+            "exerciseId": "b6e6b6a0-3333-4a22-8a33-000000000001",
+            "targetSets": 3,
+            "targetReps": {
+              "min": 8,
+              "max": 12
+            },
+            "restSeconds": 90
+          }
+        ]
+      }
+    }
+  ]
+}

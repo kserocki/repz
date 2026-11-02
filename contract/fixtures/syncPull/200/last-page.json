@@ -1,0 +1,33 @@
+{
+  "changes": [
+    {
+      "type": "exercise",
+      "id": "b6e6b6a0-3333-4a22-8a33-000000000092",
+      "version": 7,
+      "deleted": false,
+      "updatedAt": "2026-11-02T14:33:46.140Z",
+      "payload": {
+        "name": "Hammer curl",
+        "primaryMuscle": "biceps",
+        "secondaryMuscles": [
+          "forearms"
+        ],
+        "equipment": "dumbbell",
+        "isCustom": true,
+        "imageUrl": null,
+        "license": null,
+        "author": null,
+        "sourceUrl": null,
+        "translations": []
+      }
+    }
+  ],
+  "nextCursor": 7,
+  "hasMore": false,
+  "totalEstimate": {
+    "total": 1,
+    "workout": 0,
+    "template": 0,
+    "exercise": 1
+  }
+}

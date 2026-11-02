@@ -1,0 +1,7 @@
+{
+  "type": "urn:repz:problem:invalid-refresh-token",
+  "title": "Invalid Refresh Token",
+  "status": 401,
+  "instance": "/auth/refresh",
+  "requestId": "b6e6b6a0-9999-4a22-8a33-000000000000"
+}

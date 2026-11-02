@@ -1,0 +1,19 @@
+{
+  "accepted": [],
+  "rejected": [
+    {
+      "type": "workout",
+      "id": "b6e6b6a0-2222-4a22-8a33-000000000077",
+      "problem": {
+        "type": "urn:repz:problem:validation-error",
+        "title": "Validation Error",
+        "errors": [
+          {
+            "path": "payload.name",
+            "message": "Too small: expected string to have >=1 characters"
+          }
+        ]
+      }
+    }
+  ]
+}

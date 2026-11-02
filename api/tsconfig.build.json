@@ -11,6 +11,7 @@
     "src/shared/testing/**",
     "src/db/migrate.ts",
     "src/scripts/**",
-    "src/db/seed/**"
+    "src/db/seed/**",
+    "src/contract/**"
   ]
 }

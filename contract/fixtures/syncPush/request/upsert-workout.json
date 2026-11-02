@@ -1,0 +1,33 @@
+{
+  "changes": [
+    {
+      "type": "workout",
+      "id": "b6e6b6a0-2222-4a22-8a33-000000000001",
+      "deleted": false,
+      "payload": {
+        "templateId": null,
+        "name": "Push day",
+        "notes": "",
+        "startedAt": "2026-11-01T10:00:00.000Z",
+        "finishedAt": "2026-11-01T10:45:00.000Z",
+        "exercises": [
+          {
+            "id": "b6e6b6a0-2222-4a22-8a33-000000000002",
+            "exerciseId": "b6e6b6a0-3333-4a22-8a33-000000000001",
+            "notes": "",
+            "sets": [
+              {
+                "id": "b6e6b6a0-2222-4a22-8a33-000000000003",
+                "type": "normal",
+                "weightGrams": 60000,
+                "reps": 8,
+                "rpe": 8,
+                "completedAt": "2026-11-01T10:05:00.000Z"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

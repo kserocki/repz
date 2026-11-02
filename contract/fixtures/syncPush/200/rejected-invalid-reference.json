@@ -1,0 +1,19 @@
+{
+  "accepted": [],
+  "rejected": [
+    {
+      "type": "workout",
+      "id": "b6e6b6a0-2222-4a22-8a33-000000000202",
+      "problem": {
+        "type": "urn:repz:problem:invalid-reference",
+        "title": "Invalid Reference",
+        "errors": [
+          {
+            "path": "payload.exercises.0.exerciseId",
+            "message": "exerciseId belongs to another user"
+          }
+        ]
+      }
+    }
+  ]
+}
