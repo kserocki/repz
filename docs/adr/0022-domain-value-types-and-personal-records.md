@@ -23,6 +23,7 @@
   - **MOST_REPS:** the most reps in one counted set, at any weight.
   - **Winning:** a record needs a value above 0, and only a strictly greater value beats it. On a tie the earliest set wins, ordered by `completedAt`, then `workoutId`, then `setId`, so the result never depends on input order.
   - **Stored data:** a record keeps its set's weight, reps, `workoutId` and `setId`, because the UI shows "82.5 kg × 8".
+- **Cancellation safety.** `core:common` provides `suspendRunCatching` (rethrows `CancellationException`) and `Throwable.rethrowIfCancellation()`. Konsist rule **E1** forbids bare `runCatching` and any broad `catch` (`Throwable`, `Exception`, `RuntimeException`, `IllegalStateException`, `CancellationException`) whose body doesn't rethrow that same caught value, outside the helper file. Test source sets are exempt. Added before the first `catch` exists, so data, network and sync code start cancellation-safe.
 - **Deferred.** Repository interfaces, `RecalculatePersonalRecordsUseCase` and `DomainModule` move to REP-27, which designs the repositories together with their first implementation. Fakes move to REP-29.
 
 ## Consequences

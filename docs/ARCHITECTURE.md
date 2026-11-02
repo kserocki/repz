@@ -555,6 +555,7 @@ A plain Kotlin/JVM module, not a KMP one: it reads source **text** (via Konsist 
 | N6 | `@Test` functions match `^given.+_when.+_then.+$` | Konsist |
 | N7 | No `io.mockk`/`org.mockito` imports | Konsist |
 | I1 | `Clock.System` and `Uuid.random`/`generateV4`/`generateV7` appear only in `app:shared`'s `CommonModule` and in `UuidV7IdGenerator`, tests included, so time and ids are always injected (ADR-0022) | plain text |
+| E1 | No bare `runCatching`; a `catch` of `Throwable`/`Exception`/`RuntimeException`/`IllegalStateException`/`CancellationException` must rethrow the same caught value or call `rethrowIfCancellation()` on it; only `core:common`'s `CancellationSafety.kt` is exempt; test source sets are exempt (ADR-0022) | plain text |
 | C1 | A `REP-<n>` key in a comment only ever appears as `TODO(REP-<n>):`; every `TODO` is written exactly that way; upstream tracker references are unrestricted | plain text, incl. `.kts` (its own comment extractor: skips string/char literals, tracks Kotlin's nestable block comments) |
 
 "Plain text" rules read every `.kt`/`.kts` file directly (`RepzTextFile`) rather than through a Konsist `KoScope`, needed wherever a rule must see `.gradle.kts` content.
