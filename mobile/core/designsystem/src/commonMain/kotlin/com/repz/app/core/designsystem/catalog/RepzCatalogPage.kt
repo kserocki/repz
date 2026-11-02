@@ -20,6 +20,10 @@ enum class RepzCatalogPage(
     Shapes("shapes"),
     SpacingElevation1("spacing-elevation-1"),
     SpacingElevation2("spacing-elevation-2"),
+    MotionSprings1("motion-springs-1"),
+    MotionSprings2("motion-springs-2"),
+    MotionMorphs("motion-morphs"),
+    Haptics("haptics"),
     ;
 
     companion object {

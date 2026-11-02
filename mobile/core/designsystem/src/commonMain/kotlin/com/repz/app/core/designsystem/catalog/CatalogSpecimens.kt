@@ -13,4 +13,7 @@ internal object CatalogSpecimens {
     // U+00A0 (non-breaking space) as both the thousands separator and the number-unit
     // separator before "kg", per DESIGN_SYSTEM §4.
     const val VOLUME_SAMPLE = "12 340 kg"
+
+    const val HAPTICS_ENABLED_LABEL = "Haptics enabled"
+    const val PLAY_ALL_LABEL = "Play all"
 }

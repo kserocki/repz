@@ -36,6 +36,13 @@ complexity:
     # methods (one per token, so call sites read `springs.spatialFast()` rather than an indirection
     # like `springs.spec(SpringToken.SpatialFast)`) plus one private dispatch helper.
     allowedFunctionsPerClass: 14
+  CyclomaticComplexMethod:
+    active: true
+    # RepzDesignSystemCatalog's `when` is one `RepzCatalogPage -> FooCatalogPage()` branch per
+    # catalog page, each a single call with no nested logic; this rule's own
+    # `ignoreSimpleWhenEntries` flag exists for exactly that shape. The `when` only grows as later
+    # issues add catalog pages, so this is a standing exception, not a one-off bump.
+    ignoreSimpleWhenEntries: true
 
 naming:
   TopLevelPropertyNaming:
