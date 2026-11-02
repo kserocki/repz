@@ -6,6 +6,7 @@ import type {
   SnapshotTranslation,
 } from "../../db/seed/snapshot.schema.ts";
 import { INSTRUCTIONS_MAX, NAME_MAX } from "../../modules/sync/sync.schemas.ts";
+import { compareCodePoints } from "../../shared/codepoint-compare.ts";
 import { collectAuthors, resolveLicense, sourceUrl } from "./attribution.ts";
 import { deriveEquipment } from "./equipment-mapping.ts";
 import { htmlToPlainText } from "./instructions-text.ts";
@@ -63,13 +64,13 @@ function buildTranslations(
       instructions: entry.instructions?.[locale] ?? null,
     });
   }
-  return translations.sort((a, b) => a.locale.localeCompare(b.locale));
+  return translations.sort((a, b) => compareCodePoints(a.locale, b.locale));
 }
 
 /**
  * Derives one entry's primary/secondary muscles: the curation override wins outright; otherwise
  * wger's mapped primary muscles must collapse to exactly one group, or it is a problem (0 or 2+
- * groups means the curator must set `primaryMuscle` by hand — Q2).
+ * groups means the curator must set `primaryMuscle` by hand).
  */
 function deriveMusclesForEntry(
   entry: CurationFile["exercises"][number],
@@ -180,7 +181,7 @@ export function buildSnapshot(
       const htmlResult = htmlToPlainText(enTranslation.description);
       if (!htmlResult.ok) {
         problems.push(
-          `curation ${entry.id} (wgerId ${entry.wgerId}): unknown HTML tag <${htmlResult.unknownTag}> in the EN description`,
+          `curation ${entry.id} (wgerId ${entry.wgerId}): invalid EN description HTML (${htmlResult.reason})`,
         );
         continue;
       }
@@ -208,7 +209,12 @@ export function buildSnapshot(
         enTranslation.license_author,
         enTranslation.author_history,
       ),
-      source: { wgerId: entry.wgerId, wgerUuid: wger.uuid, url: sourceUrl(entry.wgerId) },
+      source: {
+        wgerId: entry.wgerId,
+        wgerUuid: wger.uuid,
+        url: sourceUrl(entry.wgerId),
+        originalName: enTranslation.name,
+      },
       translations: buildTranslations(entry, enName, enInstructions),
     });
   }
@@ -217,6 +223,6 @@ export function buildSnapshot(
     return { ok: false, problems };
   }
 
-  const sorted = [...built].sort((a, b) => a.id.localeCompare(b.id));
+  const sorted = [...built].sort((a, b) => compareCodePoints(a.id, b.id));
   return { ok: true, snapshot: { source: WGER_SOURCE_URL, exercises: sorted } };
 }

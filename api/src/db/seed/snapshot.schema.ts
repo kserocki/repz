@@ -11,9 +11,11 @@ const SnapshotTranslationSchema = z.strictObject({
 export type SnapshotTranslation = z.infer<typeof SnapshotTranslationSchema>;
 
 /**
- * One row of the committed `exercises.json` (§3.7): the generated, on-disk shape, which keeps
- * full wger provenance (`source`) for `ATTRIBUTION.md` and for spotting upstream drift on a
- * re-import. `translations` always includes `"en"`, sorted by locale.
+ * One row of the committed `exercises.json`: the generated, on-disk shape, which keeps full wger
+ * provenance (`source`) for `ATTRIBUTION.md` and for spotting upstream drift on a re-import.
+ * `originalName` is wger's own EN name, untouched by our Title Case rename — CC BY-SA 3.0 §4(c)
+ * requires keeping "the title of the Work if supplied". `translations` always includes `"en"`,
+ * sorted by locale.
  */
 export const SnapshotExerciseSchema = z
   .strictObject({
@@ -27,6 +29,7 @@ export const SnapshotExerciseSchema = z
       wgerId: z.number().int().positive(),
       wgerUuid: z.string(),
       url: z.string(),
+      originalName: z.string(),
     }),
     translations: z.array(SnapshotTranslationSchema),
   })
@@ -57,9 +60,9 @@ export const SnapshotFileSchema = z.strictObject({
 export type SnapshotFile = z.infer<typeof SnapshotFileSchema>;
 
 /**
- * The seeder-facing shape (§3.8), shared by the import pipeline and `catalog-seed.*`: flatter
- * than `SnapshotExercise` because the seeder only ever writes `sourceUrl` to the database, never
- * the wger provenance ids. Reused as-is by WP-3's seeder types.
+ * The seeder-facing shape, shared by the import pipeline and `catalog-seed.*`: flatter than
+ * `SnapshotExercise` because the seeder only ever writes `sourceUrl` to the database, never the
+ * wger provenance fields.
  */
 export type CatalogExercise = {
   id: string;

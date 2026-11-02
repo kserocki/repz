@@ -37,14 +37,19 @@ describe("mostRestrictiveLicense", () => {
     expect(mostRestrictiveLicense("CC-BY 4.0", "CC0 1.0")).toBe("CC-BY 4.0");
   });
 
-  it("given the same family twice, when compared, then the first is returned", () => {
-    expect(mostRestrictiveLicense("CC-BY-SA 3.0", "CC-BY-SA 4.0")).toBe("CC-BY-SA 3.0");
+  it("given the same family at two versions, when compared, then the higher version wins regardless of argument order", () => {
+    expect(mostRestrictiveLicense("CC-BY-SA 3.0", "CC-BY-SA 4.0")).toBe("CC-BY-SA 4.0");
+    expect(mostRestrictiveLicense("CC-BY-SA 4.0", "CC-BY-SA 3.0")).toBe("CC-BY-SA 4.0");
+  });
+
+  it("given the same family and version, when compared, then either argument is returned", () => {
+    expect(mostRestrictiveLicense("CC-BY-SA 4.0", "CC-BY-SA 4.0")).toBe("CC-BY-SA 4.0");
   });
 });
 
 describe("resolveLicense", () => {
-  it("given a CC-BY-SA 3 exercise with a CC-BY-SA 4 EN translation (translation license id 2), when resolved, then the exercise's own license wins (same family, no version tie-break)", () => {
-    expect(resolveLicense("CC-BY-SA 3", 2)).toEqual({ ok: true, license: "CC-BY-SA 3.0" });
+  it("given a CC-BY-SA 3 exercise with a CC-BY-SA 4 EN translation (translation license id 2), when resolved, then the higher version wins (wger 2557)", () => {
+    expect(resolveLicense("CC-BY-SA 3", 2)).toEqual({ ok: true, license: "CC-BY-SA 4.0" });
   });
 
   it("given a CC0 exercise and a CC0 EN translation (license id 3), when resolved, then it is CC0 1.0", () => {

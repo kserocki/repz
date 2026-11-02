@@ -1,6 +1,7 @@
 import { MUSCLES } from "../../db/schema/vocabularies.ts";
 import type { CurationEntry, CurationFile } from "../../db/seed/curation.schema.ts";
 import type { SnapshotExercise, SnapshotFile } from "../../db/seed/snapshot.schema.ts";
+import { compareCodePoints } from "../../shared/codepoint-compare.ts";
 
 function nameOf(exercise: SnapshotExercise, locale: string): string {
   return exercise.translations.find((translation) => translation.locale === locale)?.name ?? "—";
@@ -47,7 +48,7 @@ function overridesOf(entry: CurationEntry | undefined): string {
 
 /**
  * Whether `entry` overrides a *derived* field (muscle or equipment) rather than just the routine
- * EN Title Case rename every entry gets (Q3) — the summary line counts these separately, since a
+ * EN Title Case rename every entry gets — the summary line counts these separately, since a
  * 100% "has an override" count would say nothing useful about how much the wger data needed
  * correcting.
  */
@@ -69,13 +70,13 @@ function countBy<T extends string>(values: readonly T[]): Map<T, number> {
 
 function renderCounts<T extends string>(counts: Map<T, number>): string {
   return [...counts.entries()]
-    .sort(([a], [b]) => a.localeCompare(b))
+    .sort(([a], [b]) => compareCodePoints(a, b))
     .map(([key, count]) => `${key} ${count}`)
     .join(", ");
 }
 
 /**
- * The markdown table for the WP-4 user gate: entries grouped by primary muscle, with every
+ * The markdown table for the user-approval gate: entries grouped by primary muscle, with every
  * manual override shown for cross-checking. No locale is special-cased: the catalog ships
  * English-only today, so every row shows just the EN name; if a later import adds another
  * locale's names, this table grows one "<locale> name" column per locale automatically, with no

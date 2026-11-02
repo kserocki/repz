@@ -12,7 +12,11 @@
       "wgerId": 75,
       "names": {
         "en": "Dumbbell Bench Press"
-      }
+      },
+      "instructions": {
+        "en": "1. Sit at the end of a flat bench with a dumbbell resting vertically on each thigh, then lie back while using your knees to help bring the dumbbells up to chest height.\n2. Plant your feet firmly on the floor, retract your shoulder blades against the bench, and keep a slight natural arch in your lower back.\n3. Press the dumbbells up until your arms are extended, wrists stacked over your elbows, rotating them slightly inward so your elbows don't flare out.\n4. Lower the dumbbells under control toward the sides of your chest, elbows at roughly 45-60 degrees from your torso, until you feel a stretch.\n5. Press the dumbbells back up in a slight arc without locking out your elbows or letting them touch at the top, exhaling as you press."
+      },
+      "reviewNote": "EN instructions rewritten: wger's original HTML nested a <p> inside a <li> (and, for 75, also ended with a \"Translated with DeepL.com\" footer), which our plain-text converter correctly refuses to silently flatten"
     },
     {
       "id": "be804a42-e082-423d-9d14-db25ce16a3d3",
@@ -30,7 +34,11 @@
       "wgerId": 537,
       "names": {
         "en": "Incline Dumbbell Bench Press"
-      }
+      },
+      "instructions": {
+        "en": "1. Set the bench to a 30-45 degree incline and sit down with a dumbbell resting on each thigh.\n2. Lean back against the bench, using your knees to help push the dumbbells up to shoulder height.\n3. Plant your feet firmly on the floor and retract your shoulder blades into the bench to stabilise your upper body.\n4. Lower the dumbbells slowly toward the upper part of your chest, keeping your elbows at roughly 45-60 degrees from your torso rather than flared out to the sides.\n5. Press the dumbbells back up and slightly inward as you exhale, stopping just short of locking out your elbows to keep tension on the upper chest."
+      },
+      "reviewNote": "EN instructions rewritten: wger's original HTML nested a <p> inside a <li> (and, for 75, also ended with a \"Translated with DeepL.com\" footer), which our plain-text converter correctly refuses to silently flatten"
     },
     {
       "id": "5b2dc1d7-56de-4e99-b427-7806e99e1ab3",
@@ -186,7 +194,11 @@
       "wgerId": 723,
       "names": {
         "en": "Wide-Grip Lat Pulldown"
-      }
+      },
+      "instructions": {
+        "en": "1. Starting position: grip the bar wide and extend your arms overhead, feeling a stretch in your lats. Keep your shoulders depressed rather than shrugged up.\n2. Pulling phase: pull the bar down to your upper chest, driving your elbows down and back, keeping your chest lifted.\n3. Squeeze your shoulder blades together at the bottom, then let the bar rise back under control."
+      },
+      "reviewNote": "EN instructions rewritten: wger's original HTML nested a <p> inside a <li> (and, for 75, also ended with a \"Translated with DeepL.com\" footer), which our plain-text converter correctly refuses to silently flatten"
     },
     {
       "id": "125d675e-b67e-459e-aa1f-225b741ea36f",
@@ -661,7 +673,8 @@
       "names": {
         "en": "Ab Wheel Rollout"
       },
-      "equipment": "other"
+      "equipment": "other",
+      "reviewNote": "no EQUIPMENT value fits an ab wheel; wger lists no equipment on this entry"
     },
     {
       "id": "be631237-c40d-4e51-951a-2e51b20c8b9b",
@@ -1017,7 +1030,7 @@
         "en": "Sliding Leg Curl"
       },
       "equipment": "other",
-      "reviewNote": "wger has no equipment on this entry; performed with sliding discs/towels on a smooth floor. PL name uncertain: \"ślizgacze\" (sliders) is niche gym slang, please double-check"
+      "reviewNote": "wger has no equipment on this entry; performed with sliding discs/towels on a smooth floor"
     },
     {
       "id": "f106b558-8c25-4337-a312-8ebdeb91a9af",

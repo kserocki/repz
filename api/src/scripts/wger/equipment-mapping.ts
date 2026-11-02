@@ -1,9 +1,9 @@
 import type { Equipment } from "../../db/schema/vocabularies.ts";
 
 /**
- * wger's "main" equipment items, mapped to Repz's `EQUIPMENT` vocabulary (Q2, approved
- * 2026-11-02, verified against the live `/api/v2/equipment/` list). SZ-Bar joins Barbell; a
- * pull-up bar and "none" (bodyweight exercise) both mean `bodyweight`.
+ * wger's "main" equipment items, mapped to Repz's `EQUIPMENT` vocabulary (verified against the
+ * live `/api/v2/equipment/` list). SZ-Bar joins Barbell; a pull-up bar and "none" (bodyweight
+ * exercise) both mean `bodyweight`.
  */
 export const WGER_EQUIPMENT_TO_MAIN: Readonly<Record<number, Equipment>> = {
   1: "barbell", // Barbell
@@ -34,7 +34,7 @@ const MAIN_PRECEDENCE: readonly Equipment[] = [
 export type EquipmentDerivation = { ok: true; equipment: Equipment } | { ok: false };
 
 /**
- * Derives one `EQUIPMENT` value from wger's equipment list (Q2). Empty, or every id being
+ * Derives one `EQUIPMENT` value from wger's equipment list. Empty, or every id being
  * unrecognised, is `ok: false`: the curator sets equipment by hand (usually `machine`, which
  * wger has no equivalent for).
  */

@@ -10,7 +10,7 @@ import { SnapshotFileSchema, toCatalogExercise } from "./snapshot.schema.ts";
 
 /**
  * `pnpm db:seed` (`-- --check` for a dry run): upserts the committed `exercises.json` into the
- * catalog, idempotently (§3.8). Validated against `migrationEnvSchema`, not the full `envSchema`:
+ * catalog, idempotently (ADR-0021). Validated against `migrationEnvSchema`, not the full `envSchema`:
  * seeding needs no `JWT_SECRET`, same as `migrate.ts`.
  */
 const check = process.argv.includes("--check");

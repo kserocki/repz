@@ -1,8 +1,8 @@
 import type { Muscle } from "../../db/schema/vocabularies.ts";
 
 /**
- * wger's 15 muscles mapped down to Repz's 12 groups (Q2, approved 2026-11-02, verified against
- * the live `/api/v2/muscle/` list). Exhaustive over every id wger has today: Serratus anterior →
+ * wger's 15 muscles mapped down to Repz's 12 groups (verified against the live `/api/v2/muscle/`
+ * list). Exhaustive over every id wger has today: Serratus anterior →
  * chest, Trapezius → back, Brachialis → biceps; every other wger muscle maps 1:1. wger has no
  * forearms, full_body or machine; those are only ever set by a curation override.
  */

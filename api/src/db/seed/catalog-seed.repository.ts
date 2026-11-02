@@ -32,7 +32,7 @@ async function insertTranslations(
     .values(translations.map((translation) => ({ exerciseId, ...translation })));
 }
 
-/** Drizzle-only implementation of `CatalogSeedStore` (§3.8). */
+/** Drizzle-only implementation of `CatalogSeedStore` (ADR-0021). */
 export function createCatalogSeedStore(executor: DatabaseExecutor): CatalogSeedStore {
   return {
     async lockCatalogSyncWrites() {

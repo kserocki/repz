@@ -69,6 +69,7 @@ describe("buildSnapshot happy path", () => {
             wgerId: 73,
             wgerUuid: "3717d144-7815-4a97-9a56-956fb889c996",
             url: "https://wger.de/exercise/73/view-base",
+            originalName: "Bench Press",
           },
           translations: [
             { locale: "en", name: "Bench Press", instructions: "Lay down on a bench." },
@@ -80,7 +81,10 @@ describe("buildSnapshot happy path", () => {
 
   it("given an empty-equipment exercise with an equipment override, when built, then the override is used", () => {
     const wger = wgerExercise({ equipment: [] });
-    const entry = curationEntry({ equipment: "machine" });
+    const entry = curationEntry({
+      equipment: "machine",
+      reviewNote: "wger has no equipment on this entry",
+    });
 
     const result = buildSnapshot([wger], curationFile([entry]));
 
@@ -129,6 +133,7 @@ describe("buildSnapshot overrides win", () => {
       equipment: "dumbbell",
       names: { en: "Custom Bench Variant" },
       instructions: { en: "Custom rewritten instructions." },
+      reviewNote: "test override",
     });
 
     const result = buildSnapshot([wger], curationFile([entry]));
@@ -248,7 +253,7 @@ describe("buildSnapshot problems", () => {
 
     expect(result.ok).toBe(false);
     if (!result.ok) {
-      expect(result.problems).toEqual([expect.stringContaining("unknown HTML tag <br>")]);
+      expect(result.problems).toEqual([expect.stringContaining("unknown tag <br>")]);
     }
   });
 

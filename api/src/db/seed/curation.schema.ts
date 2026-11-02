@@ -66,6 +66,20 @@ export const CurationEntrySchema = z
         message: "secondaryMuscles must not contain duplicates",
       });
     }
+    // The routine EN Title Case rename (`names.en`) needs no justification, but a muscle or
+    // equipment override always changes what the data says and must carry a reason (ADR-0021).
+    const hasDataOverride =
+      entry.primaryMuscle !== undefined ||
+      entry.secondaryMuscles !== undefined ||
+      entry.equipment !== undefined;
+    if (hasDataOverride && !entry.reviewNote?.trim()) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["reviewNote"],
+        message:
+          "reviewNote is required whenever primaryMuscle, secondaryMuscles or equipment is overridden",
+      });
+    }
   });
 
 export type CurationEntry = z.infer<typeof CurationEntrySchema>;

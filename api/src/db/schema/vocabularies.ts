@@ -26,10 +26,10 @@ export const UNIT_SYSTEMS = ["kg", "lb"] as const;
 export type UnitSystem = (typeof UNIT_SYSTEMS)[number];
 
 /**
- * The 12 muscle groups used for custom-exercise illustration fallbacks (design board 16) and,
- * since REP-16, for every catalog exercise (wger's own 15 muscles are mapped down to this list
- * by the importer). Enforced by `exercises_primary_muscle_check` and
- * `exercises_secondary_muscles_check`, which this tuple drives.
+ * The 12 muscle groups used for custom-exercise illustration fallbacks (design board 16) and for
+ * every catalog exercise (wger's own 15 muscles are mapped down to this list by the importer).
+ * Enforced by `exercises_primary_muscle_check` and `exercises_secondary_muscles_check`, which
+ * this tuple drives.
  */
 export const MUSCLES = [
   "chest",

@@ -1,3 +1,4 @@
+import { compareCodePoints } from "../../shared/codepoint-compare.ts";
 import type { CatalogExercise, SnapshotTranslation } from "./snapshot.schema.ts";
 
 export type StoredCatalogExercise = CatalogExercise & { deleted: boolean };
@@ -18,7 +19,7 @@ export type CatalogSeedPlanResult =
   | { ok: false; conflict: CatalogSeedConflict };
 
 function sortedByLocale(translations: readonly SnapshotTranslation[]): SnapshotTranslation[] {
-  return [...translations].sort((a, b) => a.locale.localeCompare(b.locale));
+  return [...translations].sort((a, b) => compareCodePoints(a.locale, b.locale));
 }
 
 function translationsEqual(
@@ -63,7 +64,7 @@ function contentEqual(stored: CatalogExercise, incoming: CatalogExercise): boole
 }
 
 /**
- * Pure decision table (§3.8): `(snapshot, stored, customIds)` → a plan to apply, or the first
+ * Pure decision table (ADR-0021): `(snapshot, stored, customIds)` → a plan to apply, or the first
  * conflict found (an id-owned-by-user conflict is checked before a revive conflict; the two
  * never overlap, since a custom row and a catalog row never share scope). No side effects — the
  * caller applies the plan inside the locked transaction.

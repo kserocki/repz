@@ -38,7 +38,7 @@ export const exercises = pgTable(
 );
 
 /**
- * Localised name + instructions (REP-16), one row per `(exercise, locale)`. No `CHECK` on
+ * Localised name + instructions, one row per `(exercise, locale)`. No `CHECK` on
  * `locale`: a vocabulary there would make adding a language a migration, which breaks the
  * "new language = new rows, no code change" rule (AGENTS.md). The tag format is validated by
  * Zod's `LocaleSchema` at the API edge. Child of the `exercises` root: cascades on delete, and

@@ -15,7 +15,8 @@
       "source": {
         "wgerId": 1312,
         "wgerUuid": "edc3f6b7-96b0-4967-90d7-bba9d7d442cb",
-        "url": "https://wger.de/exercise/1312/view-base"
+        "url": "https://wger.de/exercise/1312/view-base",
+        "originalName": "Bodyweight Squat HD"
       },
       "translations": [
         {
@@ -35,7 +36,8 @@
       "source": {
         "wgerId": 1523,
         "wgerUuid": "32cc7175-3fda-4c7e-900f-8766c22e3b2b",
-        "url": "https://wger.de/exercise/1523/view-base"
+        "url": "https://wger.de/exercise/1523/view-base",
+        "originalName": "Sled Push"
       },
       "translations": [
         {
@@ -55,7 +57,8 @@
       "source": {
         "wgerId": 916,
         "wgerUuid": "cbf4cf16-f188-4a60-a223-aa50b163f4b7",
-        "url": "https://wger.de/exercise/916/view-base"
+        "url": "https://wger.de/exercise/916/view-base",
+        "originalName": "Smith Press"
       },
       "translations": [
         {
@@ -75,7 +78,8 @@
       "source": {
         "wgerId": 1127,
         "wgerUuid": "4eb41bfb-cbeb-4683-b9c6-902ee7e028e0",
-        "url": "https://wger.de/exercise/1127/view-base"
+        "url": "https://wger.de/exercise/1127/view-base",
+        "originalName": "Close-grip supinated lat pulldown"
       },
       "translations": [
         {
@@ -97,7 +101,8 @@
       "source": {
         "wgerId": 374,
         "wgerUuid": "661287d4-d1dc-485c-896b-73f90b000536",
-        "url": "https://wger.de/exercise/374/view-base"
+        "url": "https://wger.de/exercise/374/view-base",
+        "originalName": "Leg Presses (wide)"
       },
       "translations": [
         {
@@ -119,7 +124,8 @@
       "source": {
         "wgerId": 627,
         "wgerUuid": "22c59ede-970b-43e1-bb51-ac1c2be0b0e0",
-        "url": "https://wger.de/exercise/627/view-base"
+        "url": "https://wger.de/exercise/627/view-base",
+        "originalName": "Stiff-legged Deadlifts"
       },
       "translations": [
         {
@@ -139,7 +145,8 @@
       "source": {
         "wgerId": 465,
         "wgerUuid": "dd52fb99-9426-4a78-b446-20a8e3e4ec47",
-        "url": "https://wger.de/exercise/465/view-base"
+        "url": "https://wger.de/exercise/465/view-base",
+        "originalName": "Preacher Curls"
       },
       "translations": [
         {
@@ -161,7 +168,8 @@
       "source": {
         "wgerId": 672,
         "wgerUuid": "90e9f590-7d68-4afb-9f95-8429246ea4aa",
-        "url": "https://wger.de/exercise/672/view-base"
+        "url": "https://wger.de/exercise/672/view-base",
+        "originalName": "Trunk Rotation With Cable"
       },
       "translations": [
         {
@@ -181,7 +189,8 @@
       "source": {
         "wgerId": 41,
         "wgerUuid": "a6bced3c-72f5-42a3-9438-5569d46f49fd",
-        "url": "https://wger.de/exercise/41/view-base"
+        "url": "https://wger.de/exercise/41/view-base",
+        "originalName": "Barbell Ab Rollout"
       },
       "translations": [
         {
@@ -201,7 +210,8 @@
       "source": {
         "wgerId": 501,
         "wgerUuid": "7671b16c-5023-4663-b00d-86dd018e024f",
-        "url": "https://wger.de/exercise/501/view-base"
+        "url": "https://wger.de/exercise/501/view-base",
+        "originalName": "Ring Dips"
       },
       "translations": [
         {
@@ -221,7 +231,8 @@
       "source": {
         "wgerId": 354,
         "wgerUuid": "8c496646-baa8-4ed3-97b1-702e213fdeca",
-        "url": "https://wger.de/exercise/354/view-base"
+        "url": "https://wger.de/exercise/354/view-base",
+        "originalName": "Lat Pull Down (Leaning Back)"
       },
       "translations": [
         {
@@ -241,7 +252,8 @@
       "source": {
         "wgerId": 246,
         "wgerUuid": "95a7e546-e8f8-4521-a76b-983d94161b25",
-        "url": "https://wger.de/exercise/246/view-base"
+        "url": "https://wger.de/exercise/246/view-base",
+        "originalName": "Skullcrusher SZ-bar"
       },
       "translations": [
         {
@@ -261,7 +273,8 @@
       "source": {
         "wgerId": 365,
         "wgerUuid": "3bc8b411-a28d-4e1c-a6d1-769e18fe9881",
-        "url": "https://wger.de/exercise/365/view-base"
+        "url": "https://wger.de/exercise/365/view-base",
+        "originalName": "Leg Curls (laying)"
       },
       "translations": [
         {
@@ -285,7 +298,8 @@
       "source": {
         "wgerId": 1751,
         "wgerUuid": "821e289e-bd39-4410-b436-6f2a43bc3649",
-        "url": "https://wger.de/exercise/1751/view-base"
+        "url": "https://wger.de/exercise/1751/view-base",
+        "originalName": "Cable pull through"
       },
       "translations": [
         {
@@ -305,7 +319,8 @@
       "source": {
         "wgerId": 129,
         "wgerUuid": "5c414175-fe72-455a-ba8f-a0575cf792bd",
-        "url": "https://wger.de/exercise/129/view-base"
+        "url": "https://wger.de/exercise/129/view-base",
+        "originalName": "Chest Press"
       },
       "translations": [
         {
@@ -325,7 +340,8 @@
       "source": {
         "wgerId": 320,
         "wgerUuid": "4d255f25-f199-401a-bc81-7ffab1d0ed24",
-        "url": "https://wger.de/exercise/320/view-base"
+        "url": "https://wger.de/exercise/320/view-base",
+        "originalName": "Jumping Jacks"
       },
       "translations": [
         {
@@ -347,7 +363,8 @@
       "source": {
         "wgerId": 265,
         "wgerUuid": "ceb0c2d0-06ac-4a49-89e7-8d7b1c1e5672",
-        "url": "https://wger.de/exercise/265/view-base"
+        "url": "https://wger.de/exercise/265/view-base",
+        "originalName": "Glute Bridge"
       },
       "translations": [
         {
@@ -369,7 +386,8 @@
       "source": {
         "wgerId": 628,
         "wgerUuid": "0f5fc602-afb6-4500-87da-f115f3ef3f47",
-        "url": "https://wger.de/exercise/628/view-base"
+        "url": "https://wger.de/exercise/628/view-base",
+        "originalName": "Straight-arm Pull Down (bar Attachment)"
       },
       "translations": [
         {
@@ -389,7 +407,8 @@
       "source": {
         "wgerId": 591,
         "wgerUuid": "f38e9c23-031d-44d0-ac27-7f1026212c73",
-        "url": "https://wger.de/exercise/591/view-base"
+        "url": "https://wger.de/exercise/591/view-base",
+        "originalName": "Sit-ups"
       },
       "translations": [
         {
@@ -409,7 +428,8 @@
       "source": {
         "wgerId": 805,
         "wgerUuid": "ea63d85c-8579-4dda-b99f-c4c8930f9af6",
-        "url": "https://wger.de/exercise/805/view-base"
+        "url": "https://wger.de/exercise/805/view-base",
+        "originalName": "Tricep Pushdown on Cable"
       },
       "translations": [
         {
@@ -429,7 +449,8 @@
       "source": {
         "wgerId": 566,
         "wgerUuid": "8b0a0371-c0a9-42a7-aab7-68d520542fb2",
-        "url": "https://wger.de/exercise/566/view-base"
+        "url": "https://wger.de/exercise/566/view-base",
+        "originalName": "Shoulder Press, Barbell"
       },
       "translations": [
         {
@@ -449,7 +470,8 @@
       "source": {
         "wgerId": 91,
         "wgerUuid": "7b99a081-6b1a-4aa5-b86a-5a935d083a35",
-        "url": "https://wger.de/exercise/91/view-base"
+        "url": "https://wger.de/exercise/91/view-base",
+        "originalName": "Biceps Curls With Barbell"
       },
       "translations": [
         {
@@ -469,7 +491,8 @@
       "source": {
         "wgerId": 203,
         "wgerUuid": "b7c6a444-90ea-4f5b-9fea-748311606eaa",
-        "url": "https://wger.de/exercise/203/view-base"
+        "url": "https://wger.de/exercise/203/view-base",
+        "originalName": "Dumbbell Goblet Squat"
       },
       "translations": [
         {
@@ -489,7 +512,8 @@
       "source": {
         "wgerId": 1116,
         "wgerUuid": "3393db0b-98b7-4d53-a0d4-985f97875295",
-        "url": "https://wger.de/exercise/1116/view-base"
+        "url": "https://wger.de/exercise/1116/view-base",
+        "originalName": "Dumbbell farmer's carry"
       },
       "translations": [
         {
@@ -509,7 +533,8 @@
       "source": {
         "wgerId": 376,
         "wgerUuid": "c2078aac-e4e2-4103-a845-6252a3eb795e",
-        "url": "https://wger.de/exercise/376/view-base"
+        "url": "https://wger.de/exercise/376/view-base",
+        "originalName": "Leg Raise"
       },
       "translations": [
         {
@@ -531,7 +556,8 @@
       "source": {
         "wgerId": 373,
         "wgerUuid": "5f0b757c-0d6a-430b-9d5e-3bfba202878e",
-        "url": "https://wger.de/exercise/373/view-base"
+        "url": "https://wger.de/exercise/373/view-base",
+        "originalName": "Leg Presses (narrow)"
       },
       "translations": [
         {
@@ -551,7 +577,8 @@
       "source": {
         "wgerId": 567,
         "wgerUuid": "87affa4b-395b-437c-9581-2bd20ea5aa7c",
-        "url": "https://wger.de/exercise/567/view-base"
+        "url": "https://wger.de/exercise/567/view-base",
+        "originalName": "Shoulder Press, Dumbbells"
       },
       "translations": [
         {
@@ -574,7 +601,8 @@
       "source": {
         "wgerId": 73,
         "wgerUuid": "3717d144-7815-4a97-9a56-956fb889c996",
-        "url": "https://wger.de/exercise/73/view-base"
+        "url": "https://wger.de/exercise/73/view-base",
+        "originalName": "Bench Press"
       },
       "translations": [
         {
@@ -598,7 +626,8 @@
       "source": {
         "wgerId": 458,
         "wgerUuid": "c9e57bbe-e839-44c6-861d-1c8dd2845e36",
-        "url": "https://wger.de/exercise/458/view-base"
+        "url": "https://wger.de/exercise/458/view-base",
+        "originalName": "Plank"
       },
       "translations": [
         {
@@ -618,7 +647,8 @@
       "source": {
         "wgerId": 142,
         "wgerUuid": "dc3a2072-abc3-4ef9-b8e6-f5ae6b11bc7f",
-        "url": "https://wger.de/exercise/142/view-base"
+        "url": "https://wger.de/exercise/142/view-base",
+        "originalName": "Cable External Rotation"
       },
       "translations": [
         {
@@ -640,7 +670,8 @@
       "source": {
         "wgerId": 1473,
         "wgerUuid": "39c13706-6a8c-4ab5-b605-b9b716665a20",
-        "url": "https://wger.de/exercise/1473/view-base"
+        "url": "https://wger.de/exercise/1473/view-base",
+        "originalName": "Reverse Cable Flye"
       },
       "translations": [
         {
@@ -660,7 +691,8 @@
       "source": {
         "wgerId": 1412,
         "wgerUuid": "fcf5039b-7784-4f82-830a-b213b597a646",
-        "url": "https://wger.de/exercise/1412/view-base"
+        "url": "https://wger.de/exercise/1412/view-base",
+        "originalName": "bicycle crunches"
       },
       "translations": [
         {
@@ -680,7 +712,8 @@
       "source": {
         "wgerId": 94,
         "wgerUuid": "42227131-9b1e-4220-b082-c523f0651057",
-        "url": "https://wger.de/exercise/94/view-base"
+        "url": "https://wger.de/exercise/94/view-base",
+        "originalName": "Biceps Curls With SZ-bar"
       },
       "translations": [
         {
@@ -702,7 +735,8 @@
       "source": {
         "wgerId": 1901,
         "wgerUuid": "2a125f64-1d10-4926-95ad-33a48e61b3d6",
-        "url": "https://wger.de/exercise/1901/view-base"
+        "url": "https://wger.de/exercise/1901/view-base",
+        "originalName": "Clean and Press"
       },
       "translations": [
         {
@@ -722,7 +756,8 @@
       "source": {
         "wgerId": 48,
         "wgerUuid": "67c26c9b-32f3-4b8b-b13a-4d8be4803975",
-        "url": "https://wger.de/exercise/48/view-base"
+        "url": "https://wger.de/exercise/48/view-base",
+        "originalName": "Barbell Reverse Wrist Curl"
       },
       "translations": [
         {
@@ -745,7 +780,8 @@
       "source": {
         "wgerId": 83,
         "wgerUuid": "4af6dbd9-8991-484b-9810-68f117c21edf",
-        "url": "https://wger.de/exercise/83/view-base"
+        "url": "https://wger.de/exercise/83/view-base",
+        "originalName": "Bent Over Rowing"
       },
       "translations": [
         {
@@ -765,7 +801,8 @@
       "source": {
         "wgerId": 621,
         "wgerUuid": "eb61c7a1-e1c9-4c44-a8ce-2bbe98a39857",
-        "url": "https://wger.de/exercise/621/view-base"
+        "url": "https://wger.de/exercise/621/view-base",
+        "originalName": "Standing Bicep Curl"
       },
       "translations": [
         {
@@ -787,7 +824,8 @@
       "source": {
         "wgerId": 1270,
         "wgerUuid": "d5116fbd-bf14-492a-86b3-140035cb48b2",
-        "url": "https://wger.de/exercise/1270/view-base"
+        "url": "https://wger.de/exercise/1270/view-base",
+        "originalName": "Low Pulley Cable Fly"
       },
       "translations": [
         {
@@ -809,7 +847,8 @@
       "source": {
         "wgerId": 291,
         "wgerUuid": "1d610575-eed0-42cf-8737-29788a372af6",
-        "url": "https://wger.de/exercise/291/view-base"
+        "url": "https://wger.de/exercise/291/view-base",
+        "originalName": "Hindu Squats"
       },
       "translations": [
         {
@@ -829,7 +868,8 @@
       "source": {
         "wgerId": 918,
         "wgerUuid": "6d010eae-2e36-4ec6-b191-c0373f237bb4",
-        "url": "https://wger.de/exercise/918/view-base"
+        "url": "https://wger.de/exercise/918/view-base",
+        "originalName": "Seated Dumbbell Side Lateral"
       },
       "translations": [
         {
@@ -851,7 +891,8 @@
       "source": {
         "wgerId": 615,
         "wgerUuid": "a2f5b6ef-b780-49c0-8d96-fdaff23e27ce",
-        "url": "https://wger.de/exercise/615/view-base"
+        "url": "https://wger.de/exercise/615/view-base",
+        "originalName": "Squats"
       },
       "translations": [
         {
@@ -874,7 +915,8 @@
       "source": {
         "wgerId": 50,
         "wgerUuid": "13234b53-ea0c-41f1-9069-776865ea8eff",
-        "url": "https://wger.de/exercise/50/view-base"
+        "url": "https://wger.de/exercise/50/view-base",
+        "originalName": "Barbell Triceps Extension"
       },
       "translations": [
         {
@@ -894,7 +936,8 @@
       "source": {
         "wgerId": 294,
         "wgerUuid": "19a289c0-33af-4055-bb34-3570c2975d3d",
-        "url": "https://wger.de/exercise/294/view-base"
+        "url": "https://wger.de/exercise/294/view-base",
+        "originalName": "Hip Thrust"
       },
       "translations": [
         {
@@ -916,7 +959,8 @@
       "source": {
         "wgerId": 990,
         "wgerUuid": "6ddea666-5a57-4ac0-926f-01f8cfdaa4fd",
-        "url": "https://wger.de/exercise/990/view-base"
+        "url": "https://wger.de/exercise/990/view-base",
+        "originalName": "Kneeling kickbacks"
       },
       "translations": [
         {
@@ -938,7 +982,8 @@
       "source": {
         "wgerId": 1388,
         "wgerUuid": "957ca37c-b6d7-4c30-8ba9-9512b0fa2659",
-        "url": "https://wger.de/exercise/1388/view-base"
+        "url": "https://wger.de/exercise/1388/view-base",
+        "originalName": "Single Leg RDL"
       },
       "translations": [
         {
@@ -958,7 +1003,8 @@
       "source": {
         "wgerId": 1392,
         "wgerUuid": "77a56810-d050-4083-9501-d648f773376a",
-        "url": "https://wger.de/exercise/1392/view-base"
+        "url": "https://wger.de/exercise/1392/view-base",
+        "originalName": "Good Morning"
       },
       "translations": [
         {
@@ -978,7 +1024,8 @@
       "source": {
         "wgerId": 1893,
         "wgerUuid": "2500c212-6f14-4a8d-a997-04e9e7c04116",
-        "url": "https://wger.de/exercise/1893/view-base"
+        "url": "https://wger.de/exercise/1893/view-base",
+        "originalName": "Overhead Barbell Press"
       },
       "translations": [
         {
@@ -1000,7 +1047,8 @@
       "source": {
         "wgerId": 46,
         "wgerUuid": "04e7d7e4-f8d2-406d-97df-3df3bceec22c",
-        "url": "https://wger.de/exercise/46/view-base"
+        "url": "https://wger.de/exercise/46/view-base",
+        "originalName": "Barbell Lunges Standing"
       },
       "translations": [
         {
@@ -1022,7 +1070,8 @@
       "source": {
         "wgerId": 167,
         "wgerUuid": "b186f1f8-4957-44dc-bf30-d0b00064ce6f",
-        "url": "https://wger.de/exercise/167/view-base"
+        "url": "https://wger.de/exercise/167/view-base",
+        "originalName": "Crunches"
       },
       "translations": [
         {
@@ -1042,7 +1091,8 @@
       "source": {
         "wgerId": 1613,
         "wgerUuid": "4221c8af-b3ca-4a53-9176-bd66e46d10f2",
-        "url": "https://wger.de/exercise/1613/view-base"
+        "url": "https://wger.de/exercise/1613/view-base",
+        "originalName": "rubber band glute kickback"
       },
       "translations": [
         {
@@ -1062,7 +1112,8 @@
       "source": {
         "wgerId": 185,
         "wgerUuid": "bcd801f0-9a38-4615-a91c-900153c8c234",
-        "url": "https://wger.de/exercise/185/view-base"
+        "url": "https://wger.de/exercise/185/view-base",
+        "originalName": "Decline Bench Press Barbell"
       },
       "translations": [
         {
@@ -1082,7 +1133,8 @@
       "source": {
         "wgerId": 1904,
         "wgerUuid": "71b9da1a-ac07-49c8-8b2d-7179032181fd",
-        "url": "https://wger.de/exercise/1904/view-base"
+        "url": "https://wger.de/exercise/1904/view-base",
+        "originalName": "Pec Deck"
       },
       "translations": [
         {
@@ -1102,7 +1154,8 @@
       "source": {
         "wgerId": 1672,
         "wgerUuid": "b144ac00-ec0c-4c43-898f-b2ac65048d98",
-        "url": "https://wger.de/exercise/1672/view-base"
+        "url": "https://wger.de/exercise/1672/view-base",
+        "originalName": "Seated Hip Abduction"
       },
       "translations": [
         {
@@ -1122,7 +1175,8 @@
       "source": {
         "wgerId": 348,
         "wgerUuid": "63375f5b-2d81-471c-bea4-fc3d207e96cb",
-        "url": "https://wger.de/exercise/348/view-base"
+        "url": "https://wger.de/exercise/348/view-base",
+        "originalName": "Lateral Raises"
       },
       "translations": [
         {
@@ -1142,7 +1196,8 @@
       "source": {
         "wgerId": 283,
         "wgerUuid": "9b993e99-8701-43f0-84d6-689123183880",
-        "url": "https://wger.de/exercise/283/view-base"
+        "url": "https://wger.de/exercise/283/view-base",
+        "originalName": "Hanging Leg Raises"
       },
       "translations": [
         {
@@ -1162,7 +1217,8 @@
       "source": {
         "wgerId": 655,
         "wgerUuid": "5915fabe-c941-4dac-b196-bc4e8c7ce57b",
-        "url": "https://wger.de/exercise/655/view-base"
+        "url": "https://wger.de/exercise/655/view-base",
+        "originalName": "Tricep Dumbbell Kickback"
       },
       "translations": [
         {
@@ -1182,7 +1238,8 @@
       "source": {
         "wgerId": 580,
         "wgerUuid": "e1b99153-0102-47fc-b0cd-c21509827b0b",
-        "url": "https://wger.de/exercise/580/view-base"
+        "url": "https://wger.de/exercise/580/view-base",
+        "originalName": "Side Plank"
       },
       "translations": [
         {
@@ -1204,7 +1261,8 @@
       "source": {
         "wgerId": 1117,
         "wgerUuid": "0ecfec6f-5d0f-4e8a-8d37-f6203a8923b8",
-        "url": "https://wger.de/exercise/1117/view-base"
+        "url": "https://wger.de/exercise/1117/view-base",
+        "originalName": "Seated Cable Row"
       },
       "translations": [
         {
@@ -1228,13 +1286,14 @@
       "source": {
         "wgerId": 723,
         "wgerUuid": "55b9d286-c4cc-4a29-97ad-58cb13c2bb7e",
-        "url": "https://wger.de/exercise/723/view-base"
+        "url": "https://wger.de/exercise/723/view-base",
+        "originalName": "Wide-grip Pulldown"
       },
       "translations": [
         {
           "locale": "en",
           "name": "Wide-Grip Lat Pulldown",
-          "instructions": "1. <p>Starting position:</p> <ul> <li>Arms extended overhead, feeling a stretch in your lats.\n2. Keep your shoulders depressed (don’t shrug upward).\n3. <p>Pulling phase (concentric):</p> <ul> <li>Pull the bar down to your upper chest or collarbone area by driving your elbows down and back.\n4. Keep your chest lifted and squeeze your shoulder blades together at the bottom."
+          "instructions": "1. Starting position: grip the bar wide and extend your arms overhead, feeling a stretch in your lats. Keep your shoulders depressed rather than shrugged up.\n2. Pulling phase: pull the bar down to your upper chest, driving your elbows down and back, keeping your chest lifted.\n3. Squeeze your shoulder blades together at the bottom, then let the bar rise back under control."
         }
       ]
     },
@@ -1248,7 +1307,8 @@
       "source": {
         "wgerId": 1524,
         "wgerUuid": "a5d1f45b-ff07-45d7-a699-a654f9328934",
-        "url": "https://wger.de/exercise/1524/view-base"
+        "url": "https://wger.de/exercise/1524/view-base",
+        "originalName": "Battle Ropes"
       },
       "translations": [
         {
@@ -1270,7 +1330,8 @@
       "source": {
         "wgerId": 1294,
         "wgerUuid": "caccd791-ff30-452a-816e-790edadb78cd",
-        "url": "https://wger.de/exercise/1294/view-base"
+        "url": "https://wger.de/exercise/1294/view-base",
+        "originalName": "Single-leg hamstring curl"
       },
       "translations": [
         {
@@ -1293,13 +1354,14 @@
       "source": {
         "wgerId": 537,
         "wgerUuid": "57e17672-52b9-43cf-8d0d-4b3f06a0c0d0",
-        "url": "https://wger.de/exercise/537/view-base"
+        "url": "https://wger.de/exercise/537/view-base",
+        "originalName": "Incline Bench Press - Dumbbell"
       },
       "translations": [
         {
           "locale": "en",
           "name": "Incline Dumbbell Bench Press",
-          "instructions": "This is a variation of the flat bench press designed to emphasize the clavicular head of the pectoralis major (the upper portion). By tilting the torso, the angle of the push changes, shifting more tension to the upper chest and shoulders, which helps achieve a more aesthetic, balanced, and three-dimensional development of the torso.\n\n1. <p>Bench Adjustment and Preparation: Set the bench to an incline of between 30 and 45 degrees (an incline greater than 45° will place too much strain on the shoulders and reduce the stimulus to the chest). Sit down with a dumbbell on each thigh.</p>\n2. <p>Starting position: Lean back, resting your back against the bench, while using your knees one after the other to push the dumbbells upward to shoulder height.</p>\n3. <p>Anatomical Stabilization: Plant your feet firmly on the floor. Retract your scapulas (bring your shoulder blades together and press them into the bench) to protect your shoulders and stabilize the load.</p>\n4. <p>Eccentric Phase (Lowering): Lower the dumbbells slowly and in a controlled manner toward the upper part of your chest. Your elbows should not splay out to the sides (90°); maintain a safe angle of about 45 to 60 degrees relative to your torso.</p>\n5. <p>Concentric Phase (Lift): Push the dumbbells vertically upward as you exhale. Follow a slightly converging path (without letting them touch at the top). Stop the movement just before locking out your elbows to maintain muscle tension in the upper pectoral.</p>"
+          "instructions": "1. Set the bench to a 30-45 degree incline and sit down with a dumbbell resting on each thigh.\n2. Lean back against the bench, using your knees to help push the dumbbells up to shoulder height.\n3. Plant your feet firmly on the floor and retract your shoulder blades into the bench to stabilise your upper body.\n4. Lower the dumbbells slowly toward the upper part of your chest, keeping your elbows at roughly 45-60 degrees from your torso rather than flared out to the sides.\n5. Press the dumbbells back up and slightly inward as you exhale, stopping just short of locking out your elbows to keep tension on the upper chest."
         }
       ]
     },
@@ -1313,7 +1375,8 @@
       "source": {
         "wgerId": 256,
         "wgerUuid": "9c35594c-bbcc-4656-bdcb-376814c90e96",
-        "url": "https://wger.de/exercise/256/view-base"
+        "url": "https://wger.de/exercise/256/view-base",
+        "originalName": "Front Raises"
       },
       "translations": [
         {
@@ -1336,7 +1399,8 @@
       "source": {
         "wgerId": 43,
         "wgerUuid": "dae6f6ed-9408-4e62-a59a-1a33f4e8ab36",
-        "url": "https://wger.de/exercise/43/view-base"
+        "url": "https://wger.de/exercise/43/view-base",
+        "originalName": "Barbell Hack Squats"
       },
       "translations": [
         {
@@ -1360,7 +1424,8 @@
       "source": {
         "wgerId": 1438,
         "wgerUuid": "a8f76beb-b6d8-430b-8e45-cc03d4959043",
-        "url": "https://wger.de/exercise/1438/view-base"
+        "url": "https://wger.de/exercise/1438/view-base",
+        "originalName": "Clean"
       },
       "translations": [
         {
@@ -1382,7 +1447,8 @@
       "source": {
         "wgerId": 695,
         "wgerUuid": "d847301e-1613-4987-85cd-61d3ff9d7ef8",
-        "url": "https://wger.de/exercise/695/view-base"
+        "url": "https://wger.de/exercise/695/view-base",
+        "originalName": "V-Bar Pulldown"
       },
       "translations": [
         {
@@ -1402,7 +1468,8 @@
       "source": {
         "wgerId": 1772,
         "wgerUuid": "5d8d3581-bce5-4a28-868f-8b299eaedbdd",
-        "url": "https://wger.de/exercise/1772/view-base"
+        "url": "https://wger.de/exercise/1772/view-base",
+        "originalName": "Reverse crunch"
       },
       "translations": [
         {
@@ -1425,7 +1492,8 @@
       "source": {
         "wgerId": 650,
         "wgerUuid": "51420ded-5c17-4ce0-b005-89f1b67b7c65",
-        "url": "https://wger.de/exercise/650/view-base"
+        "url": "https://wger.de/exercise/650/view-base",
+        "originalName": "Thruster"
       },
       "translations": [
         {
@@ -1445,7 +1513,8 @@
       "source": {
         "wgerId": 272,
         "wgerUuid": "c0d9fe98-f4fe-49f3-8037-05e1984e7d2d",
-        "url": "https://wger.de/exercise/272/view-base"
+        "url": "https://wger.de/exercise/272/view-base",
+        "originalName": "Hammer Curls"
       },
       "translations": [
         {
@@ -1465,7 +1534,8 @@
       "source": {
         "wgerId": 1748,
         "wgerUuid": "b5726562-82ed-451a-89d8-8c8b13c5019a",
-        "url": "https://wger.de/exercise/1748/view-base"
+        "url": "https://wger.de/exercise/1748/view-base",
+        "originalName": "Machine Hip Abduction"
       },
       "translations": [
         {
@@ -1488,7 +1558,8 @@
       "source": {
         "wgerId": 184,
         "wgerUuid": "ee8e8db4-2d82-49e1-ab7f-891e9a354934",
-        "url": "https://wger.de/exercise/184/view-base"
+        "url": "https://wger.de/exercise/184/view-base",
+        "originalName": "Deadlifts"
       },
       "translations": [
         {
@@ -1508,7 +1579,8 @@
       "source": {
         "wgerId": 12,
         "wgerUuid": "53906cd1-61f1-4d56-ac60-e4fcc5824861",
-        "url": "https://wger.de/exercise/12/view-base"
+        "url": "https://wger.de/exercise/12/view-base",
+        "originalName": "Seated Hip Adduction"
       },
       "translations": [
         {
@@ -1528,7 +1600,8 @@
       "source": {
         "wgerId": 590,
         "wgerUuid": "6e46833d-fd83-4c1a-90af-eb3f3a917199",
-        "url": "https://wger.de/exercise/590/view-base"
+        "url": "https://wger.de/exercise/590/view-base",
+        "originalName": "Sitting Calf Raises"
       },
       "translations": [
         {
@@ -1548,7 +1621,8 @@
       "source": {
         "wgerId": 572,
         "wgerUuid": "72a945ec-3a7f-424b-9a05-1616ef7dce91",
-        "url": "https://wger.de/exercise/572/view-base"
+        "url": "https://wger.de/exercise/572/view-base",
+        "originalName": "Shrugs, Dumbbells"
       },
       "translations": [
         {
@@ -1570,7 +1644,8 @@
       "source": {
         "wgerId": 289,
         "wgerUuid": "b526b17b-408d-4da2-8940-ceaf9dae9d93",
-        "url": "https://wger.de/exercise/289/view-base"
+        "url": "https://wger.de/exercise/289/view-base",
+        "originalName": "High Pull"
       },
       "translations": [
         {
@@ -1590,7 +1665,8 @@
       "source": {
         "wgerId": 238,
         "wgerUuid": "95d226ad-3bf7-4cd6-aa64-2f26b526d8b6",
-        "url": "https://wger.de/exercise/238/view-base"
+        "url": "https://wger.de/exercise/238/view-base",
+        "originalName": "Fly With Dumbbells"
       },
       "translations": [
         {
@@ -1610,7 +1686,8 @@
       "source": {
         "wgerId": 1241,
         "wgerUuid": "29a361d5-1300-4fb4-90d6-d6350bec9cb9",
-        "url": "https://wger.de/exercise/1241/view-base"
+        "url": "https://wger.de/exercise/1241/view-base",
+        "originalName": "Exercise Band Dorsiflexion"
       },
       "translations": [
         {
@@ -1630,7 +1707,8 @@
       "source": {
         "wgerId": 584,
         "wgerUuid": "c85e6137-2577-4e28-82c2-427407d534eb",
-        "url": "https://wger.de/exercise/584/view-base"
+        "url": "https://wger.de/exercise/584/view-base",
+        "originalName": "Single-arm Preacher Curl"
       },
       "translations": [
         {
@@ -1650,7 +1728,8 @@
       "source": {
         "wgerId": 571,
         "wgerUuid": "270e108d-3cd2-45a9-807b-c357317eb15c",
-        "url": "https://wger.de/exercise/571/view-base"
+        "url": "https://wger.de/exercise/571/view-base",
+        "originalName": "Shrugs, Barbells"
       },
       "translations": [
         {
@@ -1670,7 +1749,8 @@
       "source": {
         "wgerId": 245,
         "wgerUuid": "893c07ea-2e24-49b6-92e4-d0033eedec62",
-        "url": "https://wger.de/exercise/245/view-base"
+        "url": "https://wger.de/exercise/245/view-base",
+        "originalName": "Skullcrusher Dumbbells"
       },
       "translations": [
         {
@@ -1693,7 +1773,8 @@
       "source": {
         "wgerId": 513,
         "wgerUuid": "32c129f7-cc28-4ebc-8465-e4fa62e220b1",
-        "url": "https://wger.de/exercise/513/view-base"
+        "url": "https://wger.de/exercise/513/view-base",
+        "originalName": "Rowing, T-bar"
       },
       "translations": [
         {
@@ -1713,7 +1794,8 @@
       "source": {
         "wgerId": 919,
         "wgerUuid": "1eeccede-29c5-4f38-9ba7-d77c7c47993d",
-        "url": "https://wger.de/exercise/919/view-base"
+        "url": "https://wger.de/exercise/919/view-base",
+        "originalName": "T-Bar row"
       },
       "translations": [
         {
@@ -1735,7 +1817,8 @@
       "source": {
         "wgerId": 2478,
         "wgerUuid": "537b41a8-870b-4b45-b8a5-e9672c6a359b",
-        "url": "https://wger.de/exercise/2478/view-base"
+        "url": "https://wger.de/exercise/2478/view-base",
+        "originalName": "Glute-Ham Raise"
       },
       "translations": [
         {
@@ -1755,7 +1838,8 @@
       "source": {
         "wgerId": 202,
         "wgerUuid": "46e0f60c-fdc0-489a-82e4-a5b7476a5c21",
-        "url": "https://wger.de/exercise/202/view-base"
+        "url": "https://wger.de/exercise/202/view-base",
+        "originalName": "Dumbbell Concentration Curl"
       },
       "translations": [
         {
@@ -1775,7 +1859,8 @@
       "source": {
         "wgerId": 1089,
         "wgerUuid": "66c7eb38-77b5-4d2f-810f-cddd8d97d5a3",
-        "url": "https://wger.de/exercise/1089/view-base"
+        "url": "https://wger.de/exercise/1089/view-base",
+        "originalName": "Medicine ball twist"
       },
       "translations": [
         {
@@ -1795,7 +1880,8 @@
       "source": {
         "wgerId": 599,
         "wgerUuid": "8161de8b-7802-46c0-9bd4-db60f39b7677",
-        "url": "https://wger.de/exercise/599/view-base"
+        "url": "https://wger.de/exercise/599/view-base",
+        "originalName": "Snatch"
       },
       "translations": [
         {
@@ -1815,7 +1901,8 @@
       "source": {
         "wgerId": 132,
         "wgerUuid": "48ee1385-47c5-4821-8b6a-57fac6130776",
-        "url": "https://wger.de/exercise/132/view-base"
+        "url": "https://wger.de/exercise/132/view-base",
+        "originalName": "Burpees"
       },
       "translations": [
         {
@@ -1838,7 +1925,8 @@
       "source": {
         "wgerId": 20,
         "wgerUuid": "f24cb758-9c0d-42d4-ad9e-6025c527dd13",
-        "url": "https://wger.de/exercise/20/view-base"
+        "url": "https://wger.de/exercise/20/view-base",
+        "originalName": "Arnold Shoulder Press"
       },
       "translations": [
         {
@@ -1858,7 +1946,8 @@
       "source": {
         "wgerId": 505,
         "wgerUuid": "af2f774c-296c-4d14-8e4a-fad77175ae37",
-        "url": "https://wger.de/exercise/505/view-base"
+        "url": "https://wger.de/exercise/505/view-base",
+        "originalName": "Roman Chair Crunch"
       },
       "translations": [
         {
@@ -1878,7 +1967,8 @@
       "source": {
         "wgerId": 2661,
         "wgerUuid": "456f0781-30c6-4f58-a5b4-3da8f4878065",
-        "url": "https://wger.de/exercise/2661/view-base"
+        "url": "https://wger.de/exercise/2661/view-base",
+        "originalName": "Dumbbell Calf Raise"
       },
       "translations": [
         {
@@ -1901,13 +1991,14 @@
       "source": {
         "wgerId": 75,
         "wgerUuid": "28321cf3-70e6-48a4-ade1-d11382180cb3",
-        "url": "https://wger.de/exercise/75/view-base"
+        "url": "https://wger.de/exercise/75/view-base",
+        "originalName": "Benchpress Dumbbells"
       },
       "translations": [
         {
           "locale": "en",
           "name": "Dumbbell Bench Press",
-          "instructions": "1. <p>Setup and Starting Position: Sit at the end of a flat bench with a dumbbell resting vertically against each thigh. Carefully lean back while driving the dumbbells toward your chest with your knees.</p>\n2. <p>The “Leg Drive” and Posture: Plant your feet firmly on the floor. Retract your shoulder blades (press them together against the bench) and maintain a slight natural lumbar curve.</p>\n3. <p>Starting Position: Push the dumbbells toward the ceiling. Your wrists should be aligned with your elbows. Rotate the dumbbells slightly inward (about 45 degrees) so that your elbows do not splay out too far to the sides, thereby protecting your shoulders.</p>\n4. <p>Eccentric Phase (Lowering): Lower the dumbbells in a controlled manner toward the sides of your chest. Your elbows should lower at an angle of about 45–60 degrees relative to your body. Feel the stretch in the lower part of your chest.</p>\n5. <p>Concentric Phase (Lift): Push the weight upward in a slight arc (toward the center), without letting the dumbbells collide at the top or fully locking out your elbows to maintain muscle tension. Exhale as you lift.</p>\n\nTranslated with DeepL.com (free version)"
+          "instructions": "1. Sit at the end of a flat bench with a dumbbell resting vertically on each thigh, then lie back while using your knees to help bring the dumbbells up to chest height.\n2. Plant your feet firmly on the floor, retract your shoulder blades against the bench, and keep a slight natural arch in your lower back.\n3. Press the dumbbells up until your arms are extended, wrists stacked over your elbows, rotating them slightly inward so your elbows don't flare out.\n4. Lower the dumbbells under control toward the sides of your chest, elbows at roughly 45-60 degrees from your torso, until you feel a stretch.\n5. Press the dumbbells back up in a slight arc without locking out your elbows or letting them touch at the top, exhaling as you press."
         }
       ]
     },
@@ -1921,7 +2012,8 @@
       "source": {
         "wgerId": 1683,
         "wgerUuid": "9564ab2d-2534-4b47-bdf7-f2f653aae3de",
-        "url": "https://wger.de/exercise/1683/view-base"
+        "url": "https://wger.de/exercise/1683/view-base",
+        "originalName": "Zottman curl"
       },
       "translations": [
         {
@@ -1941,7 +2033,8 @@
       "source": {
         "wgerId": 92,
         "wgerUuid": "1ae6a28d-10e7-4ecf-af4f-905f8193e2c6",
-        "url": "https://wger.de/exercise/92/view-base"
+        "url": "https://wger.de/exercise/92/view-base",
+        "originalName": "Biceps Curls With Dumbbell"
       },
       "translations": [
         {
@@ -1961,7 +2054,8 @@
       "source": {
         "wgerId": 1185,
         "wgerUuid": "6ebb138e-bb0a-402e-84e5-68fe0896e897",
-        "url": "https://wger.de/exercise/1185/view-base"
+        "url": "https://wger.de/exercise/1185/view-base",
+        "originalName": "Triceps Pushdown"
       },
       "translations": [
         {
@@ -1981,7 +2075,8 @@
       "source": {
         "wgerId": 1743,
         "wgerUuid": "026d2939-9156-408b-bf11-21cfa8278851",
-        "url": "https://wger.de/exercise/1743/view-base"
+        "url": "https://wger.de/exercise/1743/view-base",
+        "originalName": "Windshield Wipers"
       },
       "translations": [
         {
@@ -2003,7 +2098,8 @@
       "source": {
         "wgerId": 386,
         "wgerUuid": "de22963a-5d42-4999-860e-377f64359432",
-        "url": "https://wger.de/exercise/386/view-base"
+        "url": "https://wger.de/exercise/386/view-base",
+        "originalName": "Diamond push ups"
       },
       "translations": [
         {
@@ -2023,7 +2119,8 @@
       "source": {
         "wgerId": 145,
         "wgerUuid": "c867836d-2929-4977-b23c-014bc21ec08d",
-        "url": "https://wger.de/exercise/145/view-base"
+        "url": "https://wger.de/exercise/145/view-base",
+        "originalName": "Cable Woodchoppers"
       },
       "translations": [
         {
@@ -2046,7 +2143,8 @@
       "source": {
         "wgerId": 538,
         "wgerUuid": "275fb49f-975c-4d6e-9d63-2c86ed740f40",
-        "url": "https://wger.de/exercise/538/view-base"
+        "url": "https://wger.de/exercise/538/view-base",
+        "originalName": "Incline Bench Press - Barbell"
       },
       "translations": [
         {
@@ -2068,7 +2166,8 @@
       "source": {
         "wgerId": 484,
         "wgerUuid": "a6c2a970-a621-4e03-be1d-4a29118b1687",
-        "url": "https://wger.de/exercise/484/view-base"
+        "url": "https://wger.de/exercise/484/view-base",
+        "originalName": "Rack Deadlift"
       },
       "translations": [
         {
@@ -2088,7 +2187,8 @@
       "source": {
         "wgerId": 197,
         "wgerUuid": "7c8eb1ac-2d7e-4ca7-919a-1848ba38e0f4",
-        "url": "https://wger.de/exercise/197/view-base"
+        "url": "https://wger.de/exercise/197/view-base",
+        "originalName": "Dips Between Two Benches"
       },
       "translations": [
         {
@@ -2111,7 +2211,8 @@
       "source": {
         "wgerId": 211,
         "wgerUuid": "d8bddb58-91b0-4d7b-8ec1-cd742584b607",
-        "url": "https://wger.de/exercise/211/view-base"
+        "url": "https://wger.de/exercise/211/view-base",
+        "originalName": "Dumbbell Triceps Extension"
       },
       "translations": [
         {
@@ -2134,7 +2235,8 @@
       "source": {
         "wgerId": 76,
         "wgerUuid": "3db63138-a047-4a4d-b616-1a0b7dfca105",
-        "url": "https://wger.de/exercise/76/view-base"
+        "url": "https://wger.de/exercise/76/view-base",
+        "originalName": "Bench Press Narrow Grip"
       },
       "translations": [
         {
@@ -2154,7 +2256,8 @@
       "source": {
         "wgerId": 1510,
         "wgerUuid": "3cad7b92-a16b-45dc-a53e-d6a01a158f8e",
-        "url": "https://wger.de/exercise/1510/view-base"
+        "url": "https://wger.de/exercise/1510/view-base",
+        "originalName": "Neutral Grip Lat Pulldown"
       },
       "translations": [
         {
@@ -2174,7 +2277,8 @@
       "source": {
         "wgerId": 237,
         "wgerUuid": "07c5b9f4-2be5-4a3d-b6d2-16235da1ae3a",
-        "url": "https://wger.de/exercise/237/view-base"
+        "url": "https://wger.de/exercise/237/view-base",
+        "originalName": "Fly With Cable"
       },
       "translations": [
         {
@@ -2196,7 +2300,8 @@
       "source": {
         "wgerId": 257,
         "wgerUuid": "d677de4c-5bd9-412a-91f1-857116a666a2",
-        "url": "https://wger.de/exercise/257/view-base"
+        "url": "https://wger.de/exercise/257/view-base",
+        "originalName": "Front Squats"
       },
       "translations": [
         {
@@ -2219,7 +2324,8 @@
       "source": {
         "wgerId": 84,
         "wgerUuid": "2f0ddf9a-f520-4c55-8883-f0d4a789f481",
-        "url": "https://wger.de/exercise/84/view-base"
+        "url": "https://wger.de/exercise/84/view-base",
+        "originalName": "Bent Over Rowing Reverse"
       },
       "translations": [
         {
@@ -2243,7 +2349,8 @@
       "source": {
         "wgerId": 1414,
         "wgerUuid": "f462df26-3264-48c2-b5aa-2374d0670c24",
-        "url": "https://wger.de/exercise/1414/view-base"
+        "url": "https://wger.de/exercise/1414/view-base",
+        "originalName": "Hack Squats"
       },
       "translations": [
         {
@@ -2263,7 +2370,8 @@
       "source": {
         "wgerId": 993,
         "wgerUuid": "cd51aa2a-52b3-43df-8011-0c8ef4b7ed11",
-        "url": "https://wger.de/exercise/993/view-base"
+        "url": "https://wger.de/exercise/993/view-base",
+        "originalName": "Jump rope: basic jumps"
       },
       "translations": [
         {
@@ -2285,7 +2393,8 @@
       "source": {
         "wgerId": 206,
         "wgerUuid": "dcc6e237-a8bb-4eca-bbc5-7fb852636f6a",
-        "url": "https://wger.de/exercise/206/view-base"
+        "url": "https://wger.de/exercise/206/view-base",
+        "originalName": "Dumbbell Lunges Walking"
       },
       "translations": [
         {
@@ -2305,7 +2414,8 @@
       "source": {
         "wgerId": 146,
         "wgerUuid": "0d79f259-3b28-4258-8a08-cffec062a710",
-        "url": "https://wger.de/exercise/146/view-base"
+        "url": "https://wger.de/exercise/146/view-base",
+        "originalName": "Calf Press Using Leg Press Machine"
       },
       "translations": [
         {
@@ -2327,7 +2437,8 @@
       "source": {
         "wgerId": 684,
         "wgerUuid": "76965848-9776-4be5-b879-e3c97033b80f",
-        "url": "https://wger.de/exercise/684/view-base"
+        "url": "https://wger.de/exercise/684/view-base",
+        "originalName": "Underhand Lat Pull Down"
       },
       "translations": [
         {
@@ -2349,7 +2460,8 @@
       "source": {
         "wgerId": 1273,
         "wgerUuid": "9ccd53e0-8392-4e61-91aa-e4e5f4ea339c",
-        "url": "https://wger.de/exercise/1273/view-base"
+        "url": "https://wger.de/exercise/1273/view-base",
+        "originalName": "Pullover"
       },
       "translations": [
         {
@@ -2369,7 +2481,8 @@
       "source": {
         "wgerId": 978,
         "wgerUuid": "f4991a98-6422-4884-8ad3-43412f91fac1",
-        "url": "https://wger.de/exercise/978/view-base"
+        "url": "https://wger.de/exercise/978/view-base",
+        "originalName": "Knee Raises"
       },
       "translations": [
         {
@@ -2389,7 +2502,8 @@
       "source": {
         "wgerId": 51,
         "wgerUuid": "cfb6a754-57be-431b-b8d0-d9963120bd5a",
-        "url": "https://wger.de/exercise/51/view-base"
+        "url": "https://wger.de/exercise/51/view-base",
+        "originalName": "Barbell Wrist Curl"
       },
       "translations": [
         {
@@ -2409,7 +2523,8 @@
       "source": {
         "wgerId": 308,
         "wgerUuid": "55ff32e6-24ab-4303-9b50-176d60d48796",
-        "url": "https://wger.de/exercise/308/view-base"
+        "url": "https://wger.de/exercise/308/view-base",
+        "originalName": "Incline Dumbbell Fly"
       },
       "translations": [
         {
@@ -2432,7 +2547,8 @@
       "source": {
         "wgerId": 675,
         "wgerUuid": "309bfd2b-1af4-49db-b64b-d7d7c7dd39bb",
-        "url": "https://wger.de/exercise/675/view-base"
+        "url": "https://wger.de/exercise/675/view-base",
+        "originalName": "Turkish Get-Up"
       },
       "translations": [
         {
@@ -2455,7 +2571,8 @@
       "source": {
         "wgerId": 331,
         "wgerUuid": "8b311259-4f67-4dbf-9574-8c38faa92160",
-        "url": "https://wger.de/exercise/331/view-base"
+        "url": "https://wger.de/exercise/331/view-base",
+        "originalName": "Kettlebell Swings"
       },
       "translations": [
         {
@@ -2478,7 +2595,8 @@
       "source": {
         "wgerId": 475,
         "wgerUuid": "8e420408-0682-4ab6-89f5-2681e54c7ce0",
-        "url": "https://wger.de/exercise/475/view-base"
+        "url": "https://wger.de/exercise/475/view-base",
+        "originalName": "Pull-ups"
       },
       "translations": [
         {
@@ -2496,12 +2614,13 @@
         "hamstrings"
       ],
       "equipment": "bodyweight",
-      "license": "CC-BY-SA 3.0",
+      "license": "CC-BY-SA 4.0",
       "author": "wger.de",
       "source": {
         "wgerId": 2557,
         "wgerUuid": "15cfef4a-471f-4a00-a3c3-973b15bd7cda",
-        "url": "https://wger.de/exercise/2557/view-base"
+        "url": "https://wger.de/exercise/2557/view-base",
+        "originalName": "Supported Split Squat"
       },
       "translations": [
         {
@@ -2521,7 +2640,8 @@
       "source": {
         "wgerId": 1205,
         "wgerUuid": "2cc92db8-b245-44b8-b1d6-bf91c78c2ab9",
-        "url": "https://wger.de/exercise/1205/view-base"
+        "url": "https://wger.de/exercise/1205/view-base",
+        "originalName": "Wrist curl, dumbbells"
       },
       "translations": [
         {
@@ -2543,7 +2663,8 @@
       "source": {
         "wgerId": 1573,
         "wgerUuid": "203a6fee-7436-4313-858f-c1e364136793",
-        "url": "https://wger.de/exercise/1573/view-base"
+        "url": "https://wger.de/exercise/1573/view-base",
+        "originalName": "Ab wheel"
       },
       "translations": [
         {
@@ -2566,7 +2687,8 @@
       "source": {
         "wgerId": 418,
         "wgerUuid": "7b1e458f-1857-4c2f-8463-7d67d4b2db93",
-        "url": "https://wger.de/exercise/418/view-base"
+        "url": "https://wger.de/exercise/418/view-base",
+        "originalName": "Military Press mit SZ-Bar"
       },
       "translations": [
         {
@@ -2586,7 +2708,8 @@
       "source": {
         "wgerId": 614,
         "wgerUuid": "5c0824dc-f2fb-4d19-a1e5-7c33219ad51d",
-        "url": "https://wger.de/exercise/614/view-base"
+        "url": "https://wger.de/exercise/614/view-base",
+        "originalName": "Squat Jumps"
       },
       "translations": [
         {
@@ -2608,7 +2731,8 @@
       "source": {
         "wgerId": 323,
         "wgerUuid": "b16e3e5d-8401-4d2b-919c-15b536f9ec5e",
-        "url": "https://wger.de/exercise/323/view-base"
+        "url": "https://wger.de/exercise/323/view-base",
+        "originalName": "Cable Cross-over"
       },
       "translations": [
         {
@@ -2628,7 +2752,8 @@
       "source": {
         "wgerId": 1243,
         "wgerUuid": "58ca3e51-ea64-4771-a74a-a74d29f5c40c",
-        "url": "https://wger.de/exercise/1243/view-base"
+        "url": "https://wger.de/exercise/1243/view-base",
+        "originalName": "Double Leg Calf Raise"
       },
       "translations": [
         {
@@ -2648,7 +2773,8 @@
       "source": {
         "wgerId": 81,
         "wgerUuid": "94a5c406-7bcd-47f3-9687-bdf92a763932",
-        "url": "https://wger.de/exercise/81/view-base"
+        "url": "https://wger.de/exercise/81/view-base",
+        "originalName": "Bent Over Dumbbell Rows (Single Arm)"
       },
       "translations": [
         {
@@ -2672,7 +2798,8 @@
       "source": {
         "wgerId": 1084,
         "wgerUuid": "e4966cb8-9089-4595-9c78-99a27821e6ff",
-        "url": "https://wger.de/exercise/1084/view-base"
+        "url": "https://wger.de/exercise/1084/view-base",
+        "originalName": "Dumbbell Floor Press"
       },
       "translations": [
         {
@@ -2692,7 +2819,8 @@
       "source": {
         "wgerId": 158,
         "wgerUuid": "63fbb8e5-6ebc-4def-8844-3e65e097213b",
-        "url": "https://wger.de/exercise/158/view-base"
+        "url": "https://wger.de/exercise/158/view-base",
+        "originalName": "Close-grip Lat Pull Down"
       },
       "translations": [
         {
@@ -2712,7 +2840,8 @@
       "source": {
         "wgerId": 222,
         "wgerUuid": "d7a418d4-d0cb-4f85-8a7c-1e9d97152cbd",
-        "url": "https://wger.de/exercise/222/view-base"
+        "url": "https://wger.de/exercise/222/view-base",
+        "originalName": "Facepull"
       },
       "translations": [
         {
@@ -2736,7 +2865,8 @@
       "source": {
         "wgerId": 1551,
         "wgerUuid": "f5b84269-18af-4464-a61f-b767cbcd81dc",
-        "url": "https://wger.de/exercise/1551/view-base"
+        "url": "https://wger.de/exercise/1551/view-base",
+        "originalName": "Push-Up"
       },
       "translations": [
         {
@@ -2759,7 +2889,8 @@
       "source": {
         "wgerId": 448,
         "wgerUuid": "748e9635-7958-4a41-b1ed-93de74c7ef72",
-        "url": "https://wger.de/exercise/448/view-base"
+        "url": "https://wger.de/exercise/448/view-base",
+        "originalName": "Pendelay Rows"
       },
       "translations": [
         {
@@ -2779,7 +2910,8 @@
       "source": {
         "wgerId": 1688,
         "wgerUuid": "107ea68a-d976-49ed-be75-3b0cf253c36a",
-        "url": "https://wger.de/exercise/1688/view-base"
+        "url": "https://wger.de/exercise/1688/view-base",
+        "originalName": "Kickstand RDL"
       },
       "translations": [
         {
@@ -2799,7 +2931,8 @@
       "source": {
         "wgerId": 622,
         "wgerUuid": "7ce443b6-eb84-4f65-b05f-461c1cc8bcc0",
-        "url": "https://wger.de/exercise/622/view-base"
+        "url": "https://wger.de/exercise/622/view-base",
+        "originalName": "Standing Calf Raises"
       },
       "translations": [
         {
@@ -2821,7 +2954,8 @@
       "source": {
         "wgerId": 1803,
         "wgerUuid": "d18407c2-75d0-43d8-8bbc-dfbb256b6b2f",
-        "url": "https://wger.de/exercise/1803/view-base"
+        "url": "https://wger.de/exercise/1803/view-base",
+        "originalName": "Trap Bar Squat"
       },
       "translations": [
         {
@@ -2841,7 +2975,8 @@
       "source": {
         "wgerId": 301,
         "wgerUuid": "37f6bd56-815a-4975-99af-05e749fae4b2",
-        "url": "https://wger.de/exercise/301/view-base"
+        "url": "https://wger.de/exercise/301/view-base",
+        "originalName": "Hyperextensions"
       },
       "translations": [
         {
@@ -2864,7 +2999,8 @@
       "source": {
         "wgerId": 1833,
         "wgerUuid": "d6b2ac1d-4363-45e9-8fdb-9fba0a47b27d",
-        "url": "https://wger.de/exercise/1833/view-base"
+        "url": "https://wger.de/exercise/1833/view-base",
+        "originalName": "Floor Glider Hamstring Curls"
       },
       "translations": [
         {
@@ -2886,7 +3022,8 @@
       "source": {
         "wgerId": 910,
         "wgerUuid": "9b0f7101-b78a-4c47-b680-fbef15469a8a",
-        "url": "https://wger.de/exercise/910/view-base"
+        "url": "https://wger.de/exercise/910/view-base",
+        "originalName": "Nordic Curl"
       },
       "translations": [
         {
@@ -2906,7 +3043,8 @@
       "source": {
         "wgerId": 369,
         "wgerUuid": "62170477-90ec-463c-907e-9e523abc0a15",
-        "url": "https://wger.de/exercise/369/view-base"
+        "url": "https://wger.de/exercise/369/view-base",
+        "originalName": "Leg Extension"
       },
       "translations": [
         {
@@ -2926,7 +3064,8 @@
       "source": {
         "wgerId": 95,
         "wgerUuid": "bcb7020c-8678-496d-8f4d-aad0e233a5bd",
-        "url": "https://wger.de/exercise/95/view-base"
+        "url": "https://wger.de/exercise/95/view-base",
+        "originalName": "Biceps Curl With Cable"
       },
       "translations": [
         {
@@ -2948,7 +3087,8 @@
       "source": {
         "wgerId": 454,
         "wgerUuid": "3b96a05b-9705-48da-b43e-6e098234bb35",
-        "url": "https://wger.de/exercise/454/view-base"
+        "url": "https://wger.de/exercise/454/view-base",
+        "originalName": "Pike Push Ups"
       },
       "translations": [
         {
@@ -2968,7 +3108,8 @@
       "source": {
         "wgerId": 996,
         "wgerUuid": "53324f8e-df38-456f-9b7d-8f3a43f45f31",
-        "url": "https://wger.de/exercise/996/view-base"
+        "url": "https://wger.de/exercise/996/view-base",
+        "originalName": "Mountain climbers"
       },
       "translations": [
         {
@@ -2990,7 +3131,8 @@
       "source": {
         "wgerId": 205,
         "wgerUuid": "2f1a2707-e7ff-46ac-9112-3e31e6e961ee",
-        "url": "https://wger.de/exercise/205/view-base"
+        "url": "https://wger.de/exercise/205/view-base",
+        "originalName": "Dumbbell Lunges Standing"
       },
       "translations": [
         {
@@ -3010,7 +3152,8 @@
       "source": {
         "wgerId": 1740,
         "wgerUuid": "68f1efb8-e7d2-4a79-99bb-65f128e10a11",
-        "url": "https://wger.de/exercise/1740/view-base"
+        "url": "https://wger.de/exercise/1740/view-base",
+        "originalName": "Single Leg Glute Bridge"
       },
       "translations": [
         {
@@ -3030,7 +3173,8 @@
       "source": {
         "wgerId": 1093,
         "wgerUuid": "f6d8e157-c233-4a22-9c1a-83cb8f613ea5",
-        "url": "https://wger.de/exercise/1093/view-base"
+        "url": "https://wger.de/exercise/1093/view-base",
+        "originalName": "Rowing Machine"
       },
       "translations": [
         {

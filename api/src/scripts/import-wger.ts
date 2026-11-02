@@ -12,7 +12,7 @@ import { type FetchLike, fetchAllExerciseInfo } from "./wger/wger-client.ts";
 /**
  * `pnpm import:wger`: fetches the live wger catalog (network, run by hand, never in CI), curates
  * it against the committed `curation.json`, and writes the committed `exercises.json` +
- * `ATTRIBUTION.md`. Any problem (§3.7) writes nothing and exits 1, listing every problem found.
+ * `ATTRIBUTION.md`. Any problem writes nothing and exits 1, listing every problem found.
  */
 const WGER_BASE_URL = "https://wger.de/api/v2";
 const SEED_DIR = new URL("../db/seed/", import.meta.url);

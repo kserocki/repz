@@ -49,7 +49,7 @@ export type TemplateAggregate = {
   exercises: TemplateExerciseAggregate[];
 };
 
-/** One exercise's name and instructions in one locale (REP-16). `instructions` is plain text. */
+/** One exercise's name and instructions in one locale. `instructions` is plain text. */
 export type ExerciseTranslation = { locale: string; name: string; instructions: string | null };
 
 /**

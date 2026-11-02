@@ -20,7 +20,12 @@ function snapshot(
         equipment: "barbell",
         license: "CC-BY-SA 3.0",
         author: "sistab2",
-        source: { wgerId: 73, wgerUuid: "uuid-73", url: "https://wger.de/exercise/73/view-base" },
+        source: {
+          wgerId: 73,
+          wgerUuid: "uuid-73",
+          url: "https://wger.de/exercise/73/view-base",
+          originalName: "Benchpress Dumbbells",
+        },
         translations,
       },
     ],

@@ -37,36 +37,35 @@ export function normaliseLicense(shortName: string): string | null {
   }
 }
 
-function familyOf(normalised: string): LicenseFamily | null {
-  if (normalised.startsWith("CC-BY-SA")) {
-    return "CC-BY-SA";
+const PARSED_LICENSE_PATTERN = /^(CC-BY-SA|CC-BY|CC0) (\d+(?:\.\d+)?)$/;
+
+function parseLicense(normalised: string): { family: LicenseFamily; version: number } | null {
+  const match = PARSED_LICENSE_PATTERN.exec(normalised);
+  if (!match?.[1] || !match[2]) {
+    return null;
   }
-  if (normalised.startsWith("CC-BY")) {
-    return "CC-BY";
-  }
-  if (normalised.startsWith("CC0")) {
-    return "CC0";
-  }
-  return null;
+  return { family: match[1] as LicenseFamily, version: Number.parseFloat(match[2]) };
 }
 
 /**
- * The more restrictive of two already-normalised licenses (CC-BY-SA > CC-BY > CC0). The spec
- * only orders families, not versions within one: when both are the same family (e.g.
- * CC-BY-SA 3.0 vs. 4.0 — wger's exercise- and translation-level licenses occasionally differ
- * this way), `a` (the exercise's own license) wins, since CC §4(b) ties the Work's license to
- * the exercise record, and the translation only ever narrows it to a stricter family.
+ * The more restrictive of two already-normalised licenses: CC-BY-SA > CC-BY > CC0 by family, and
+ * within one family, the higher version wins, regardless of argument order — a work published
+ * under version 4.0 can never be relabelled 3.0 (an earlier version can be adapted under a later
+ * one per its own terms, e.g. CC BY-SA 3.0 §4(b), never the reverse).
  */
 export function mostRestrictiveLicense(a: string, b: string): string {
-  const familyA = familyOf(a);
-  const familyB = familyOf(b);
-  if (familyA === null) {
+  const parsedA = parseLicense(a);
+  const parsedB = parseLicense(b);
+  if (!parsedA) {
     return b;
   }
-  if (familyB === null) {
+  if (!parsedB) {
     return a;
   }
-  return FAMILY_RESTRICTIVENESS[familyA] >= FAMILY_RESTRICTIVENESS[familyB] ? a : b;
+  if (parsedA.family !== parsedB.family) {
+    return FAMILY_RESTRICTIVENESS[parsedA.family] >= FAMILY_RESTRICTIVENESS[parsedB.family] ? a : b;
+  }
+  return parsedA.version >= parsedB.version ? a : b;
 }
 
 export type LicenseResolution = { ok: true; license: string } | { ok: false };
@@ -95,8 +94,8 @@ export function resolveLicense(
 /**
  * Combines the exercise's own `license_author`, the EN translation's `license_author` and its
  * `author_history`, dropping empty values and duplicates and joining the rest with `", "`.
- * `"wger.de"` when nothing is left (ADR-0021; Q5c covers the rare e-mail-as-author case, handled
- * during curation by picking a different source exercise, never here).
+ * `"wger.de"` when nothing is left (ADR-0021). The rare e-mail-as-author case is handled during
+ * curation by picking a different source exercise, never here.
  */
 export function collectAuthors(
   exerciseLicenseAuthor: string | null,

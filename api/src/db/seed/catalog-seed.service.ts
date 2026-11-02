@@ -48,7 +48,7 @@ export class CatalogSeedConflictError extends Error {
 }
 
 /**
- * The seeder protocol (§3.8), inside one `CatalogSeedTransactions.write`:
+ * The seeder protocol (ADR-0021), inside one `CatalogSeedTransactions.write`:
  * 1. `lockCatalogSyncWrites` — the first call, always, so it waits for every in-flight push and
  *    blocks new ones (ADR-0020's catalog gate).
  * 2. Load the stored catalog and find which snapshot ids are owned by a user.

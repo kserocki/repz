@@ -62,6 +62,19 @@ describe("the committed exercises.json", () => {
     expect(snapshot.exercises.length).toBeGreaterThanOrEqual(100);
     expect(snapshot.exercises.length).toBeLessThanOrEqual(200);
   });
+
+  it("contains no HTML markup or undecoded entity in any instructions text", () => {
+    const snapshot = loadSnapshot();
+    const tagOrEntityPattern = /<\/?[a-zA-Z]|&[a-zA-Z#][a-zA-Z0-9]*;/;
+
+    for (const exercise of snapshot.exercises) {
+      for (const translation of exercise.translations) {
+        if (translation.instructions) {
+          expect(translation.instructions).not.toMatch(tagOrEntityPattern);
+        }
+      }
+    }
+  });
 });
 
 describe("curation.json and exercises.json agree", () => {
@@ -75,7 +88,7 @@ describe("curation.json and exercises.json agree", () => {
     expect(snapshotIds).toEqual(curationIds);
   });
 
-  it("carries every curation en/pl name override through to the snapshot", () => {
+  it("carries every curation name override through to the snapshot", () => {
     const curation = loadCuration();
     const snapshot = loadSnapshot();
     const snapshotById = new Map(snapshot.exercises.map((exercise) => [exercise.id, exercise]));
@@ -95,12 +108,13 @@ describe("curation.json and exercises.json agree", () => {
 });
 
 describe("the generated ATTRIBUTION.md", () => {
-  it("lists every exercise id's source URL", () => {
+  it("lists every exercise id's source URL and wger's original title", () => {
     const snapshot = loadSnapshot();
     const attribution = readFileSync(ATTRIBUTION_PATH, "utf8");
 
     for (const exercise of snapshot.exercises) {
       expect(attribution).toContain(exercise.source.url);
+      expect(attribution).toContain(exercise.source.originalName);
     }
   });
 
@@ -108,5 +122,12 @@ describe("the generated ATTRIBUTION.md", () => {
     const attribution = readFileSync(ATTRIBUTION_PATH, "utf8");
 
     expect(attribution).toContain("CC BY-SA 4.0");
+  });
+
+  it("says modified but not translated, since the committed catalog ships English-only", () => {
+    const attribution = readFileSync(ATTRIBUTION_PATH, "utf8");
+
+    expect(attribution).toContain("have been modified by Repz");
+    expect(attribution).not.toContain("translated");
   });
 });

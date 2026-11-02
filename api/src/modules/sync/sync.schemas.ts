@@ -265,7 +265,7 @@ export const CustomExercisePayloadSchema = CustomExerciseShapeSchema.superRefine
 export type CustomExercisePayload = z.infer<typeof CustomExercisePayloadSchema>;
 
 /**
- * One locale's name and instructions (REP-16). Mirrors `exercise_translations`: a new language
+ * One locale's name and instructions. Mirrors `exercise_translations`: a new language
  * is just another array entry, never a schema change. `[]` for a custom exercise; a catalog row
  * always includes `"en"`, sorted by `locale`.
  */
