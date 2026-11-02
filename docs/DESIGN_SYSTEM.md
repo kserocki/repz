@@ -21,12 +21,14 @@ Everything is exposed through `core:designsystem`. Features never use raw `Mater
 | `color.*` (M3 roles) | `MaterialTheme.colorScheme.*` (set by `RepzTheme`) |
 | `color.extended.*` | `RepzTheme.colors.*` (e.g. `RepzTheme.colors.recordContainer`) |
 | `type.*` | `MaterialTheme.typography.*` + `RepzTheme.typography.numericHero/Large/Medium/Small` |
-| `shape.*` | `MaterialTheme.shapes.*` + `RepzShapes.*` (MaterialShapes accents, morph pairs) |
+| `shape.*` | `MaterialTheme.shapes.*` (the §5 scale) + `RepzShapes.*` (`none`, `full`, accents) |
 | `spacing.*` | `RepzSpacing.xxs … huge` |
-| `elevation.*` | `RepzElevation.*` (tonal container + optional shadow) |
+| `elevation.*` | `RepzElevation.level0 … level4`, `RepzElevation.fab`: a `RepzElevationLevel(containerColor, shadow)` (§7) |
 | `motion.*` | `RepzMotion.springs.*`, `RepzMotion.durations.*`, `RepzMotion.stagger.*` (see MOTION.md) |
 
-`RepzTheme(darkTheme, dynamicColor)`: dynamic colour (Android 12+, opt-in in Settings) replaces **only** the M3 roles. `brand*`, `record*`, set-type, muscle and chart colours **never** change.
+`RepzTheme(darkTheme = isSystemInDarkTheme(), dynamicColor = false, content)` wraps `MaterialExpressiveTheme`. Dynamic colour (Android 12+, opt-in in Settings; ignored on iOS and older Android) replaces **only** the M3 roles. `RepzTheme.colors` (`brand*`, `record*`, set-type, muscle and chart colours) depends only on `darkTheme` and **never** changes. `RepzTheme.colors` and `RepzTheme.typography` are the only accessors on `RepzTheme`; shapes, spacing and elevation are the standalone objects above.
+
+`RepzShapes`: `none` (`RectangleShape`), `full` (`CircleShape`, 50 %) and the 9 §5 accents as `RoundedPolygon` aliases of `MaterialShapes`: `pill`, `cookie4Sided`, `cookie9Sided`, `sunny`, `softBurst`, `burst`, `gem`, `clover4Leaf`, `flower`. Turn one into a `Shape` with `.toShape()`. Morph pairs (§5) arrive with the motion work (REP-20).
 
 ## 3. Colour
 
@@ -100,13 +102,21 @@ Each semantic colour has `x / onX / xContainer / onXContainer`.
 | `onRecordContainer` | `#261900` | `#FFDEA0` |  |
 | `recordBright` | `#FCBC00` | `#FCBC00` | Glow, particles, Gem, Burst. **Never text on light** |
 | `setWarmup` | `#4359A9` | `#B7C4FF` | W badge (indigo, distinct from brand cyan) |
+| `onSetWarmup` | `#FFFFFF` | `#0B2878` |  |
 | `setWarmupContainer` | `#DCE1FF` | `#294190` |  |
+| `onSetWarmupContainer` | `#001551` | `#DCE1FF` |  |
 | `setNormal` | `#595F61` | `#BBC9CD` | Numbered badge |
+| `onSetNormal` | `#FFFFFF` | `#2B3133` |  |
 | `setNormalContainer` | `#DDE3E6` | `#2F3638` |  |
+| `onSetNormalContainer` | `#161D1E` | `#DDE3E6` |  |
 | `setDrop` | `#8D3F92` | `#FFA9FF` | D badge |
+| `onSetDrop` | `#FFFFFF` | `#57065F` |  |
 | `setDropContainer` | `#FFD6FB` | `#712578` |  |
+| `onSetDropContainer` | `#36003D` | `#FFD6FB` |  |
 | `setFailure` | `#AF2E27` | `#FFB4AB` | F badge |
+| `onSetFailure` | `#FFFFFF` | `#690005` |  |
 | `setFailureContainer` | `#FFDAD6` | `#8E1313` |  |
+| `onSetFailureContainer` | `#410002` | `#FFDAD6` |  |
 | `musclePrimary` | `#F04600` | `#FF7348` | Primary muscles (graphic only in light, 3.57:1) |
 | `muscleSecondary` | `#FFB779` | `#C56E00` | Secondary muscles |
 | `muscleInactive` | `#DEE3E5` | `#404749` | Inactive regions |
@@ -116,6 +126,8 @@ Each semantic colour has `x / onX / xContainer / onXContainer`.
 | `chartGrid` | `#DEE3E5` | `#363C3E` | Gridlines (decor) |
 | `chartAxis` | `#666C6D` | `#A6ACAE` | Axis labels |
 
+The set-type on-colours (`onSetX`, `onSetXContainer`) are taken from board 01 (decided 2026-11-02).
+
 ### 3.3 Contrast (verified by the designer)
 
 All text pairs ≥ 4.5:1: onSurface/surface 16.23 / 14.34; primary/surface 6.12 / 11.61; onPrimaryContainer/primaryContainer 8.66; record/surface 5.08 / 10.91; setWarmup/surface 6.15 / 10.93. Graphics only: musclePrimary/surface (light) 3.57 (never use it for text).
@@ -124,7 +136,19 @@ All text pairs ≥ 4.5:1: onSurface/surface 16.23 / 14.34; primary/surface 6.12 
 
 Fonts (OFL, both cover ą ć ę ł ń ó ś ź ż). Bundle as Compose resources:
 - **Archivo** (variable: wght 100–900, wdth 62–125): display, headlines and **every number**.
-- **Inter** (variable): titles, body, labels.
+- **Inter** (variable: wght 100–900, opsz 14–32): titles, body, labels.
+
+Sources (`core:designsystem` `composeResources`, from `github.com/google/fonts` at pinned commits):
+
+| File | Source @ commit | SHA-256 |
+|---|---|---|
+| `font/archivo_variable.ttf` | `ofl/archivo/Archivo[wdth,wght].ttf` @ `95f4904fc8bcf26d3420fe315560c96417c6dec7` | `0e094a7d3c7c4c25cf1310c4b30014f1dae9332220b1c2c88f4fa996f0b05053` |
+| `font/inter_variable.ttf` | `ofl/inter/Inter[opsz,wght].ttf` @ `0b58fb370093f9a9f4ff785d94405710b79de67c` | `29160a80ff49ddcab2c97711247e08b1fab27a484a329ce8b813d820dc559031` |
+| `files/licenses/archivo_ofl.txt`, `inter_ofl.txt` | `ofl/<family>/OFL.txt`, same commits | |
+
+The OFL texts ship with the app (redistribution condition; shown later in F26 About & licenses). Archivo has no U+202F (narrow no-break space); EN and PL only need U+00A0, but check this before adding a locale that groups digits with U+202F.
+
+Axes per style: Archivo uses `wght` and `wdth` (100 unless stated). Inter uses `wght` and **`opsz` = the font size in sp, clamped to 14–32**. Every distinct axis combination is its own `FontFamily`.
 
 | Style | Font · size/line · weight · tracking |
 |---|---|
@@ -143,11 +167,36 @@ Fonts (OFL, both cover ą ć ę ł ń ó ś ź ż). Bundle as Compose resources:
 | labelLarge | Inter 14/20 · 600 · +0.1 |
 | labelMedium | Inter 12/16 · 600 · +0.4 |
 | labelSmall | Inter 11/16 · 600 · +0.5 |
-| *Emphasized | same size, weight +150 (Archivo 850, wdth 108–112 / Inter 700). E.g. displayLargeEmphasized Archivo 57/64 · 850 · −1.5 · wdth 112 |
+| *Emphasized | see the emphasized table below |
 | **numericHero** | Archivo 96/96 · 800 · wdth 112 · −2 · `tnum` |
-| **numericLarge** | Archivo 32/36 · 700 · −0.5 · `tnum` |
-| **numericMedium** | Archivo 22/28 · 650 · `tnum` |
-| **numericSmall** | Archivo 14/20 · 600 · +0.1 · `tnum` |
+| **numericLarge** | Archivo 32/36 · 700 · wdth 100 · −0.5 · `tnum` |
+| **numericMedium** | Archivo 22/28 · 650 · wdth 100 · 0 · `tnum` |
+| **numericSmall** | Archivo 14/20 · 600 · wdth 100 · +0.1 · `tnum` |
+
+Numeric styles live in `RepzTheme.typography`; the 30 others in `MaterialTheme.typography`. The wdth 100 and the tracking 0 of `numericMedium` are taken from board 02 (decided 2026-11-02).
+
+**Emphasized styles** (rule decided 2026-11-02, from board 02): same size and line height as the baseline style, and
+- display: Archivo 850, wdth 112, tracking = baseline − 0.5;
+- headline: Archivo 850, wdth 108, tracking = baseline − 0.25;
+- title, body, label: Inter 700, baseline tracking.
+
+| Style | Font · size/line · weight · wdth · tracking |
+|---|---|
+| displayLargeEmphasized | Archivo 57/64 · 850 · 112 · −1.5 |
+| displayMediumEmphasized | Archivo 45/52 · 850 · 112 · −1 |
+| displaySmallEmphasized | Archivo 36/44 · 850 · 112 · −0.75 |
+| headlineLargeEmphasized | Archivo 32/40 · 850 · 108 · −0.5 |
+| headlineMediumEmphasized | Archivo 28/36 · 850 · 108 · −0.25 |
+| headlineSmallEmphasized | Archivo 24/32 · 850 · 108 · −0.25 |
+| titleLargeEmphasized | Inter 22/28 · 700 · – · 0 |
+| titleMediumEmphasized | Inter 16/24 · 700 · – · +0.15 |
+| titleSmallEmphasized | Inter 14/20 · 700 · – · +0.1 |
+| bodyLargeEmphasized | Inter 16/24 · 700 · – · +0.15 |
+| bodyMediumEmphasized | Inter 14/20 · 700 · – · +0.2 |
+| bodySmallEmphasized | Inter 12/16 · 700 · – · +0.3 |
+| labelLargeEmphasized | Inter 14/20 · 700 · – · +0.1 |
+| labelMediumEmphasized | Inter 12/16 · 700 · – · +0.4 |
+| labelSmallEmphasized | Inter 11/16 · 700 · – · +0.5 |
 
 Rules:
 - Every number uses a `numeric*` style with `fontFeatureSettings = "tnum"`, so timers never jitter.
@@ -221,8 +270,10 @@ Wide windows (≥ 840 dp): History and Exercises use `ListDetailPaneScaffold` (l
 | level1 | surfaceContainerLow | nav bar, header |
 | level2 | surfaceContainer | cards |
 | level3 | surfaceContainerHigh | set rows, sheets, dialogs |
-| level4 | surfaceContainerHighest + shadow `0 8 20 #0006` | dragged item (+ scale 1.02–1.03) |
-| fab | primaryContainer + shadow (light theme only) | FAB |
+| level4 | surfaceContainerHighest + shadow `0 8 20 #0006` (both themes) | dragged item (+ scale 1.02–1.03) |
+| fab | primaryContainer + shadow `0 4 12 #28145A38` (light theme only; none in dark) | FAB |
+
+Shadows are `x y blur colour`. The fab shadow is taken from board 18 as drawn (decided 2026-11-02); it may be a design-tool default and is flagged to the user. In Kotlin, `RepzElevation.level0 … level4` and `RepzElevation.fab` each give a `RepzElevationLevel(containerColor, shadow: Shadow?)`; components draw the shadow with `Modifier.dropShadow(shape, shadow)`.
 
 Shadows are only for things floating under the finger (FAB, dragged item, rest pill over content). Sheets and dialogs use a scrim of `#000` at 32 %.
 

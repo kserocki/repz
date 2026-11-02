@@ -74,6 +74,7 @@ Run from `mobile/` unless noted. One-time setup: create the git-ignored `mobile/
 | Unit tests (Android host + iOS simulator) | `./gradlew allTests` | works |
 | Android debug APK / install | `./gradlew :app:android:assembleDebug` · `:app:android:installDebug` | launchable (REP-11) |
 | Module list | `./gradlew projects` | works |
+| Design-system catalog (debug builds) | Android: `adb shell am start -n com.repz.app/.MainActivity --es repz.catalog <page> [--ez repz.dynamicColor true]` · iOS: launch argument `-RepzCatalogPage <page>`; pages in `docs/ARCHITECTURE.md` §2 | works (REP-19) |
 | Style, static analysis, architecture tests | `./gradlew check` (ktlint, Detekt + Compose rules, Konsist, Android lint, unit tests) | works |
 | Auto-fix formatting | `./gradlew ktlintFormat` | works |
 | iOS app | open `mobile/iosApp/iosApp.xcodeproj` in Xcode · `xcodebuild -project mobile/iosApp/iosApp.xcodeproj -scheme iosApp -destination 'generic/platform=iOS Simulator' build` | works (REP-11) |
