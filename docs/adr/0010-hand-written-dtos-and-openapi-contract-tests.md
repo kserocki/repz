@@ -23,5 +23,5 @@ Clean code, but discipline is needed: every API change updates the spec, the fix
   - the contract test validates fixtures **strictly**: it adds `additionalProperties: false` to every object schema, so an undocumented field fails;
   - coverage is checked both ways: every documented request and status has a fixture, and every fixture folder matches a documented response.
 - **Contract test:** Ajv in 2020-12 mode plus ajv-formats. The spec itself is validated against the official OAS 3.1 schema.
-- **`/docs`:** Scalar, with the browser bundle pinned and no proxy or telemetry. It is served in every environment, because the API is local-only (ADR-0001) and the spec is public in the repo.
+- **`/docs`:** Scalar, with the browser bundle pinned to an exact version, no proxy, no telemetry, the developer tools and the AI agent turned off (they would send the spec to Scalar's services); default fonts load from Scalar's font CDN. The script loads without SRI, which is acceptable for a local-only API. It is served in every environment, because the API is local-only (ADR-0001) and the spec is public in the repo.
 - **Mobile side:** the `core:network` test that decodes every fixture into the hand-written DTOs arrives with REP-25.
