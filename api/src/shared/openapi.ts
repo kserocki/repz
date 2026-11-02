@@ -25,6 +25,9 @@ export const OPENAPI_DOCUMENT_CONFIG: OpenApiDocumentConfig = {
     version: API_VERSION,
     description: "The Repz backend: auth, the signed-in user's profile and offline-first sync.",
   },
+  // The port matches `env.ts`'s PORT default (3000), not the environment: reading PORT here
+  // would make the committed spec depend on whichever `.env` exported it, breaking the
+  // deterministic, two-runs-identical export.
   servers: [{ url: "http://localhost:3000", description: "Local API (pnpm dev)" }],
   tags: [
     { name: "Health", description: "Liveness." },

@@ -110,6 +110,8 @@ export function createApp(deps: AppDependencies): OpenAPIHono<AppEnv> {
       pageTitle: "Repz API",
       cdn: "https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.76.4",
       telemetry: false,
+      showDeveloperTools: "never",
+      agent: { disabled: true },
     }),
   );
 

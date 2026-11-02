@@ -77,4 +77,30 @@ describe("toStrictSchema", () => {
     expect(validate(null)).toBe(true);
     expect(validate({ not: "any of the known payload shapes" })).toBe(false);
   });
+
+  it("given the pull SyncChange payload anyOf, when a workout payload is checked, then it is valid", () => {
+    const components = componentSchemas();
+    const syncChangeSchema = { $ref: "#/components/schemas/SyncChange" };
+    const validate = compileStrict(syncChangeSchema, components);
+
+    const workoutChange = {
+      type: "workout",
+      id: "b6e6b6a0-2222-4a22-8a33-000000000001",
+      version: 3,
+      deleted: false,
+      updatedAt: "2026-11-01T10:00:00.000Z",
+      payload: {
+        templateId: null,
+        name: "Push day",
+        notes: "",
+        startedAt: "2026-11-01T10:00:00.000Z",
+        finishedAt: "2026-11-01T10:45:00.000Z",
+        exercises: [],
+      },
+    };
+
+    expect(validate(workoutChange)).toBe(true);
+    expect(validate({ ...workoutChange, payload: null })).toBe(true);
+    expect(validate({ ...workoutChange, payload: { not: "a known payload shape" } })).toBe(false);
+  });
 });

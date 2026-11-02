@@ -1,11 +1,12 @@
 import { writeFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
 import { z } from "zod";
 import { loadEnv } from "../env.ts";
 import { createLogger } from "../shared/logger.ts";
 import { buildOpenApiDocument, serializeOpenApiDocument } from "../shared/openapi.ts";
 import { createTestApp } from "../shared/testing/test-app.ts";
 
-const OPENAPI_JSON_PATH = new URL("../../openapi.json", import.meta.url);
+const OPENAPI_JSON_PATH = fileURLToPath(new URL("../../openapi.json", import.meta.url));
 
 const scriptEnvSchema = z.object({
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"]).default("info"),
@@ -22,4 +23,4 @@ const logger = createLogger(env);
 const { app } = createTestApp();
 const document = buildOpenApiDocument(app);
 await writeFile(OPENAPI_JSON_PATH, serializeOpenApiDocument(document));
-logger.info({ path: OPENAPI_JSON_PATH.pathname }, "wrote openapi.json");
+logger.info({ path: OPENAPI_JSON_PATH }, "wrote openapi.json");

@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { Validator } from "@seriousme/openapi-schema-validator";
 import { describe, expect, it } from "vitest";
 import { createContractAjv } from "./ajv-setup.ts";
@@ -9,8 +10,8 @@ import {
 } from "./fixture-catalog.ts";
 import { toStrictSchema } from "./strict-schema.ts";
 
-const OPENAPI_JSON_PATH = new URL("../../openapi.json", import.meta.url);
-const FIXTURES_ROOT = new URL("../../../contract/fixtures/", import.meta.url);
+const OPENAPI_JSON_PATH = fileURLToPath(new URL("../../openapi.json", import.meta.url));
+const FIXTURES_ROOT = fileURLToPath(new URL("../../../contract/fixtures/", import.meta.url));
 
 type Operation = Record<string, unknown>;
 type OperationEntry = { path: string; operation: Operation };
@@ -39,7 +40,7 @@ function hasContent(entry: { content?: Record<string, unknown> } | undefined): b
   return Object.keys(entry?.content ?? {}).length > 0;
 }
 
-/** Content type is implied by the target (§3.3): request/2xx is JSON, 4xx/5xx is Problem Details. */
+/** Content type is implied by the target: request/2xx is JSON, 4xx/5xx is Problem Details. */
 function contentTypeFor(status: number): string {
   return status >= 200 && status < 300 ? "application/json" : "application/problem+json";
 }
@@ -133,9 +134,9 @@ const document = readCommittedDocument();
 const operations = operationsByOperationId(document);
 const components = (document.components as { schemas?: Record<string, unknown> } | undefined)
   ?.schemas;
-const fixtures = loadContractFixtures(FIXTURES_ROOT.pathname);
+const fixtures = loadContractFixtures(FIXTURES_ROOT);
 if (fixtures.length === 0) {
-  throw new Error(`No fixtures found under ${FIXTURES_ROOT.pathname}`);
+  throw new Error(`No fixtures found under ${FIXTURES_ROOT}`);
 }
 
 const ajv = createContractAjv();

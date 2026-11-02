@@ -481,8 +481,8 @@ export const PushResponseSchema = z
 // --- Pull ----------------------------------------------------------------------------------------
 
 export const PullQuerySchema = z.object({
-  // `z.coerce` would otherwise document this as `type: ["integer", "null"]` (REP-70): the override
-  // keeps it a plain non-null integer while `minimum`/`default` still come through unchanged.
+  // `z.coerce` would otherwise document this as `type: ["integer", "null"]`: the override keeps
+  // it a plain non-null integer while `minimum`/`default` still come through unchanged.
   cursor: z.coerce
     .number()
     .int()

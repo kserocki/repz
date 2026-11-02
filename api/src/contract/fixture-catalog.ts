@@ -25,8 +25,8 @@ function listJsonFiles(dir: string): string[] {
 
 /**
  * `<operationId>/request/<case>.json`, `<operationId>/<status>/<case>.json` or
- * `components/<SchemaName>/<case>.json` (§3.3). Only the directory shape is parsed here; whether
- * the target is actually documented is the contract test's job.
+ * `components/<SchemaName>/<case>.json` (see `contract/README.md`). Only the directory shape is
+ * parsed here; whether the target is actually documented is the contract test's job.
  */
 function parseTarget(relativePath: string): FixtureTarget {
   const segments = relativePath.split(sep);

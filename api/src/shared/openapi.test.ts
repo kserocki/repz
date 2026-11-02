@@ -55,7 +55,7 @@ describe("the committed OpenAPI document", () => {
     expect(API_VERSION).toBe(readPackageVersion());
   });
 
-  it("given every operation, when inspected, then operationId is unique and every tag is declared", () => {
+  it("given every operation, when inspected, then operationId is unique, every tag is declared and summary is non-empty", () => {
     const operations = listOperations(readCommittedDocument());
     expect(operations).toHaveLength(9);
 
@@ -72,6 +72,9 @@ describe("the committed OpenAPI document", () => {
       for (const tag of tags ?? []) {
         expect(DECLARED_TAGS).toContain(tag);
       }
+
+      expect(typeof entry.operation.summary).toBe("string");
+      expect(entry.operation.summary).not.toHaveLength(0);
     }
   });
 
@@ -113,5 +116,19 @@ describe("GET /docs", () => {
     expect(res.status).toBe(200);
     expect(res.headers.get("content-type")).toContain("text/html");
     expect(body).toContain("/openapi.json");
+  });
+
+  it("given the running app, when requested, then it pins the CDN bundle and disables telemetry, developer tools and the agent", async () => {
+    const { app } = createTestApp();
+
+    const res = await app.request("/docs");
+    const body = await res.text();
+
+    expect(body).toContain(
+      '<script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.76.4"></script>',
+    );
+    expect(body).toContain('"telemetry": false');
+    expect(body).toContain('"showDeveloperTools": "never"');
+    expect(body).toContain('"disabled": true');
   });
 });
