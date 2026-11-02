@@ -173,7 +173,7 @@ Axes per style: Archivo uses `wght` and `wdth` (100 unless stated). Inter uses `
 | **numericMedium** | Archivo 22/28 · 650 · wdth 100 · 0 · `tnum` |
 | **numericSmall** | Archivo 14/20 · 600 · wdth 100 · +0.1 · `tnum` |
 
-Archivo's digits are already near-tabular in the pinned file (advances 585–587/1000 for 0–9), so `tnum` mostly guarantees alignment rather than changing it visibly. The feature string still reaches the font on both platforms (verified with `zero`).
+Archivo's digits are already near-tabular in the pinned file (advances 585–587/1000 for 0–9), so `tnum` mostly guarantees alignment rather than changing it visibly. The feature string reaches the font on Android (verified with `zero`); iOS has not been checked for font features yet.
 
 Numeric styles live in `RepzTheme.typography`; the 30 others in `MaterialTheme.typography`. The wdth 100 and the tracking 0 of `numericMedium` are taken from board 02 (decided 2026-11-02).
 
