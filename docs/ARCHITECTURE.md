@@ -50,8 +50,8 @@ repz/
     │   └── shared/              # KMP umbrella: RepzRoot(), root navigation, Koin graph, iOS framework export
     ├── iosApp/                  # Xcode project – thin SwiftUI host; BGTaskScheduler registration later (REP-26)
     ├── core/
-    │   ├── common/              # Result/AppError, DispatcherProvider, Clock & Id providers
-    │   ├── domain/              # models, repository interfaces, shared use cases (pure Kotlin)
+    │   ├── common/              # IdGenerator (UuidV7IdGenerator), AppDispatchers (pure Kotlin, Koin-free)
+    │   ├── domain/              # models + value types (Weight, Rpe, ids), DomainResult/DomainError, ValidationLimits, PR calculator; repository interfaces + use cases from REP-27 (pure Kotlin)
     │   ├── data/                # repository implementations (Room + outbox)
     │   ├── database/            # Room KMP: entities, DAOs, migrations
     │   ├── network/             # Ktor client, DTOs, auth plugin, API services
@@ -140,7 +140,7 @@ PersonalRecord(exerciseId, type: EST_1RM|HEAVIEST|BEST_SET_VOLUME|MOST_REPS, wei
 Decisions:
 
 - **IDs are generated on the client** (UUID). This is a hard requirement of offline-first, because entities must exist before the server knows about them.
-- **Weight is stored in grams** (`Long`) inside a `Weight` value class. That gives exact arithmetic with no float drift. kg/lb exists only at the presentation layer.
+- **Weight is stored in grams** (`Long`) inside a `Weight` value class. That gives exact arithmetic with no float drift. Conversion from and to kg/lb lives on `Weight` (half-up to the nearest gram, ADR-0022); which unit to show is a presentation concern (`User.unitSystem`).
 - **Aggregates:** `Workout` (with exercises and sets), `WorkoutTemplate` and custom `Exercise` are aggregate roots. **The aggregate is the unit of sync.**
 - **Personal records are derived data.** They are recomputed locally (`RecalculatePersonalRecordsUseCase`, REP-27) after a workout finishes or after a sync pull, and they are never synced. Est. 1RM uses the Epley formula; the counting rules are in ADR-0022.
 - **Value types** (`Weight`, `Rpe`, typed ids over UUID v7) enforce their own invariants; aggregates don't, so drafts stay representable and use cases validate on save (ADR-0022).

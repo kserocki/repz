@@ -14,14 +14,14 @@
 - **Errors.** `DomainResult<T, E : DomainError>` and `DomainError` live in `core:domain`. An issue adds error types only when it needs them; REP-23 adds only the `ValidationError`s. `ValidationLimits` holds the ADR-0020 limits and their validators.
 - **Invariants.** Value types (`Weight`, `Rpe`, ids) enforce their own invariants. Aggregates don't check anything in their constructors, so drafts and stored data stay representable; use cases validate on save.
 - **No `order` fields.** List order is the order, as on the wire (ADR-0020).
-- **Exercise origin.** `Exercise.origin` is either `Custom` or `Catalog(imageUrl?, ExerciseAttribution(license, author, sourceUrl))`. `isCustom` is derived from it, so a custom exercise with a licence can't be represented. Localised text comes from `translations` (ADR-0021): the exact language tag first, then the same primary language, then `en`, then `name`.
+- **Exercise origin.** `Exercise.origin` is either `Custom` or `Catalog(imageUrl?, ExerciseAttribution(license, author, sourceUrl))`. `isCustom` is derived from it, so a custom exercise with a licence can't be represented. Localised text comes from `translations` (ADR-0021): the exact language tag first, then the same primary language, then `en`, then `name`. Instructions walk the same chain on their own and end in `null`.
 - **Personal records** (user decision via standing approval) are computed by the pure function `calculatePersonalRecords`:
   - **Counted sets:** completed sets in finished workouts, any set type except `WARMUP`, with reps ≥ 1.
   - **EST_1RM:** Epley, `weight × (1 + reps / 30)`, computed in integer grams and rounded half-up. With reps = 1 it is the weight itself, and there is no rep cap.
   - **HEAVIEST:** the heaviest weight in any counted set, at any rep count.
   - **BEST_SET_VOLUME:** weight × reps of one set.
   - **MOST_REPS:** the most reps in one counted set, at any weight.
-  - **Winning:** a record needs a value above 0, and only a strictly greater value beats it. On a tie the earliest set wins.
+  - **Winning:** a record needs a value above 0, and only a strictly greater value beats it. On a tie the earliest set wins, ordered by `completedAt`, then `workoutId`, then `setId`, so the result never depends on input order.
   - **Stored data:** a record keeps its set's weight, reps, `workoutId` and `setId`, because the UI shows "82.5 kg × 8".
 - **Deferred.** Repository interfaces, `RecalculatePersonalRecordsUseCase` and `DomainModule` move to REP-27, which designs the repositories together with their first implementation. Fakes move to REP-29.
 
