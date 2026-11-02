@@ -24,6 +24,15 @@ fun realTextFiles(): List<RepzTextFile> = repzTextFilesUnder(mobileRoot) { dir -
 fun fixtureTextFiles(ruleId: String): List<RepzTextFile> =
     repzTextFilesUnder(File(mobileRoot, "${FIXTURES_ROOT_SEGMENTS.joinToString("/")}/$ruleId"))
 
+/**
+ * The real `mobile/` project root, for rules that must read non-Kotlin files (XML, JSON, …) by
+ * their exact relative path rather than through [realTextFiles] or a Konsist [com.lemonappdev.konsist.api.container.KoScope].
+ */
+fun realProjectRoot(): File = mobileRoot
+
+/** The fixture root directory for one rule, matching [realProjectRoot]'s layout under its own tree. */
+fun fixtureRoot(ruleId: String): File = File(mobileRoot, "${FIXTURES_ROOT_SEGMENTS.joinToString("/")}/$ruleId")
+
 private fun relativeToMobileRoot(file: File): String = file.path.removePrefix(mobileRoot.path)
 
 private fun repzTextFilesUnder(

@@ -8,6 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.repz.app.core.designsystem.RepzBrandColors
+import com.repz.app.core.designsystem.catalog.RepzCatalogPage
+import com.repz.app.core.designsystem.catalog.RepzDesignSystemCatalog
+import com.repz.app.core.designsystem.theme.RepzTheme
 
 /**
  * The app's root composable, hosted by both platform shells right after Koin has started.
@@ -15,11 +18,27 @@ import com.repz.app.core.designsystem.RepzBrandColors
  * Fills the window with the plain brand background (paper by day, ink by night) that the static
  * OS splash already showed, so the hand-off is a flat colour match with no flash and no symbol.
  *
+ * [catalogPageKey] is a debug-only hook into the design-system catalog: when it resolves to a
+ * known [RepzCatalogPage], the catalog renders instead of the placeholder, themed with
+ * [catalogDynamicColor]. The platform shells read this from a debug-only intent extra / launch
+ * argument and pass null in release builds, so the normal path below is unchanged.
+ *
  * TODO(REP-28): replace the placeholder with the NavDisplay app shell.
  */
 @Composable
-fun RepzRoot(modifier: Modifier = Modifier) {
-    LaunchPlaceholder(darkTheme = isSystemInDarkTheme(), modifier = modifier)
+fun RepzRoot(
+    modifier: Modifier = Modifier,
+    catalogPageKey: String? = null,
+    catalogDynamicColor: Boolean = false,
+) {
+    val catalogPage = RepzCatalogPage.fromKey(catalogPageKey)
+    if (catalogPage != null) {
+        RepzTheme(dynamicColor = catalogDynamicColor) {
+            RepzDesignSystemCatalog(page = catalogPage, modifier = modifier)
+        }
+    } else {
+        LaunchPlaceholder(darkTheme = isSystemInDarkTheme(), modifier = modifier)
+    }
 }
 
 @Composable
