@@ -8,7 +8,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.repz.app.core.designsystem.generated.resources.Res
 import com.repz.app.core.designsystem.generated.resources.archivo_variable
 import com.repz.app.core.designsystem.generated.resources.inter_variable
-import org.jetbrains.compose.resources.Font as RepzResourceFont
+import org.jetbrains.compose.resources.Font as ComposeResourceFont
 
 /** The two variable font families bundled as Compose resources (DESIGN_SYSTEM §3.3/§4). */
 internal enum class RepzFontFile {
@@ -47,7 +47,7 @@ internal fun rememberRepzFontFamilies(): RepzFontFamilies {
 
 @Composable
 private fun resolveFont(spec: RepzFontSpec) =
-    RepzResourceFont(
+    ComposeResourceFont(
         resource = fontResourceFor(spec.file),
         weight = FontWeight(spec.weight),
         variationSettings = FontVariation.Settings(*variationSettingsFor(spec).toTypedArray()),
