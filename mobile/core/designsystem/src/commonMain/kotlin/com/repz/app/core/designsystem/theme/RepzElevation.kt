@@ -31,7 +31,7 @@ class RepzElevationScheme(
 
 private val Level4Shadow = Shadow(radius = 20.dp, color = Color(0x66000000), offset = DpOffset(0.dp, 8.dp))
 
-// Q3 (approved default, board 18): a purple tint, light theme only.
+// Board 18's fab shadow colour (DESIGN_SYSTEM §7): a purple tint, light theme only.
 private val FabShadowLight = Shadow(radius = 12.dp, color = Color(0x3828145A), offset = DpOffset(0.dp, 4.dp))
 
 internal fun repzElevationScheme(

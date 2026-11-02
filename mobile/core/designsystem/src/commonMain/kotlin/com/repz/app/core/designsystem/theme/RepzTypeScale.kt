@@ -5,7 +5,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-// Inter's bundled variable instance only supports opsz 14–32 (DESIGN_SYSTEM §4, Q4).
+// Inter's bundled variable instance only supports opsz 14–32 (DESIGN_SYSTEM §4).
 private const val INTER_OPTICAL_SIZE_MIN = 14f
 private const val INTER_OPTICAL_SIZE_MAX = 32f
 
@@ -59,10 +59,10 @@ private fun interStyle(
 /**
  * The 34 styles (15 baseline + 15 emphasized + 4 numeric) from DESIGN_SYSTEM §4.
  *
- * Emphasized rule (approved default, board 02): display = Archivo 850, wdth 112, tracking = base
+ * Emphasized rule (DESIGN_SYSTEM §4, board 02): display = Archivo 850, wdth 112, tracking = base
  * − 0.5; headline = Archivo 850, wdth 108, tracking = base − 0.25; title/body/label = Inter 700,
  * same tracking as the baseline style. Numeric wdth defaults to 100 except numericHero (112);
- * numericMedium tracking is 0 (both approved defaults, board 02).
+ * numericMedium tracking is 0 (both from board 02, recorded in DESIGN_SYSTEM §4).
  */
 internal object RepzTypeScale {
     val displayLarge = archivoStyle(weight = 700, sizeSp = 57f, lineHeightSp = 64f, trackingSp = -1f)

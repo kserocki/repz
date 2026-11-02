@@ -10,9 +10,8 @@ import com.repz.app.core.designsystem.RepzBrandColors
  * [androidx.compose.material3.ColorScheme] roles, these never follow dynamic colour: `RepzTheme`
  * always derives them from `darkTheme` alone.
  *
- * The `onSet*`/`onSet*Container` pairs are not in DESIGN_SYSTEM's §3.2 table (only `setX`/
- * `setXContainer` are); they were adopted from board 01, the design source, and should be added to
- * the doc alongside this change.
+ * The `onSet*`/`onSet*Container` pairs came from board 01, the design source; they're recorded in
+ * DESIGN_SYSTEM §3.2 alongside `setX`/`setXContainer`.
  */
 @Immutable
 class RepzColors(
