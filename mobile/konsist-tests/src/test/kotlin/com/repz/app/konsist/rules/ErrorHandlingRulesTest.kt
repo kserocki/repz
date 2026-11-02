@@ -6,7 +6,7 @@ import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertFails
 
-private const val RUN_CATCHING_MESSAGE = "E1: no runCatching/.runCatching("
+private const val RUN_CATCHING_MESSAGE = "E1: no runCatching/mapCatching/recoverCatching"
 private const val UNSAFE_CATCH_MESSAGE = "E1: a catch of Throwable/Exception/RuntimeException/IllegalStateException/CancellationException"
 
 class ErrorHandlingRulesTest {
@@ -69,6 +69,27 @@ class ErrorHandlingRulesTest {
         val error = assertFails { checkE1CancellationSafety(fixtureTextFiles("e1-catch-rethrows-different-exception")) }
 
         assertContains(error.message.orEmpty(), UNSAFE_CATCH_MESSAGE)
+    }
+
+    @Test
+    fun given_e1CatchThrowsMemberOfCaughtFixture_whenChecked_thenFailsWithE1() {
+        val error = assertFails { checkE1CancellationSafety(fixtureTextFiles("e1-catch-throws-member-of-caught")) }
+
+        assertContains(error.message.orEmpty(), UNSAFE_CATCH_MESSAGE)
+    }
+
+    @Test
+    fun given_e1MapCatchingFixture_whenChecked_thenFailsWithE1() {
+        val error = assertFails { checkE1CancellationSafety(fixtureTextFiles("e1-map-catching")) }
+
+        assertContains(error.message.orEmpty(), RUN_CATCHING_MESSAGE)
+    }
+
+    @Test
+    fun given_e1RecoverCatchingFixture_whenChecked_thenFailsWithE1() {
+        val error = assertFails { checkE1CancellationSafety(fixtureTextFiles("e1-recover-catching")) }
+
+        assertContains(error.message.orEmpty(), RUN_CATCHING_MESSAGE)
     }
 
     @Test

@@ -15,6 +15,6 @@ fun Throwable.rethrowIfCancellation() {
 /**
  * Like [runCatching], but rethrows [CancellationException] instead of wrapping it in a failed
  * [Result]. A plain `runCatching`/`catch (e: Exception)` swallows coroutine cancellation and
- * breaks structured concurrency, so this is the only form allowed in suspending code (konsist E1).
+ * breaks structured concurrency, so this is the only form allowed in production code (konsist E1).
  */
 inline fun <T> suspendRunCatching(block: () -> T): Result<T> = runCatching(block).onFailure { it.rethrowIfCancellation() }
