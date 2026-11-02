@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -61,9 +60,9 @@ internal fun CatalogSectionLabel(
     )
 }
 
-/** A 3-column grid of [ColorSwatchGrid] rows, each showing a small swatch, the token name and its
- * hex. Built from plain [Column]/[Row] (not `LazyVerticalGrid`) because the catalog page itself
- * already scrolls. */
+/** A grid of [ColorEntry] rows arranged across [columns] columns, each row showing a small swatch,
+ * the token name and its hex. Built from plain [Column]/[Row] (not `LazyVerticalGrid`) because the
+ * catalog page itself already scrolls. */
 @Composable
 internal fun ColorSwatchGrid(
     entries: List<ColorEntry>,
@@ -94,7 +93,7 @@ private fun ColorSwatchCell(
             modifier =
                 Modifier
                     .size(SwatchSize)
-                    .background(entry.color, RoundedCornerShape(RepzSpacing.xxs)),
+                    .background(entry.color, MaterialTheme.shapes.extraSmall),
         )
         Column {
             Text(
@@ -126,7 +125,7 @@ internal fun SemanticChip(
     Box(
         modifier =
             modifier
-                .background(containerColor, RoundedCornerShape(RepzSpacing.sm))
+                .background(containerColor, MaterialTheme.shapes.small)
                 .padding(horizontal = RepzSpacing.md, vertical = RepzSpacing.sm),
     ) {
         Text(text = label, style = MaterialTheme.typography.labelLarge, color = contentColor)
