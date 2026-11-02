@@ -8,6 +8,7 @@ import androidx.room3.RoomDatabaseConstructor
 import com.repz.app.core.database.converter.RepzTypeConverters
 import com.repz.app.core.database.exercise.ExerciseDao
 import com.repz.app.core.database.exercise.ExerciseEntity
+import com.repz.app.core.database.exercise.ExerciseRawDao
 import com.repz.app.core.database.exercise.ExerciseTranslationEntity
 import com.repz.app.core.database.record.PersonalRecordDao
 import com.repz.app.core.database.record.PersonalRecordEntity
@@ -68,6 +69,9 @@ abstract class RepzDatabase : RoomDatabase() {
 
     /** Backs [TemplateDao]'s multi-step transactions; not part of this database's public surface. */
     internal abstract fun templateRawDao(): TemplateRawDao
+
+    /** Backs [ExerciseDao]'s multi-step transactions; not part of this database's public surface. */
+    internal abstract fun exerciseRawDao(): ExerciseRawDao
 }
 
 /**

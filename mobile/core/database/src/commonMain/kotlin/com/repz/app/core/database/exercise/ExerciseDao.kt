@@ -1,16 +1,17 @@
 package com.repz.app.core.database.exercise
 
 import androidx.room3.Dao
-import androidx.room3.Insert
 import androidx.room3.Query
 import androidx.room3.Transaction
-import androidx.room3.Upsert
+import com.repz.app.core.database.RepzDatabase
 import kotlinx.coroutines.flow.Flow
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @Dao
-abstract class ExerciseDao {
+abstract class ExerciseDao(
+    private val database: RepzDatabase,
+) {
     /** Not deleted; sorting by localised name happens in `core:data`. */
     @Transaction
     @Query("SELECT * FROM exercises WHERE is_deleted = 0")
@@ -38,25 +39,13 @@ abstract class ExerciseDao {
         updatedAt: Instant,
     )
 
-    @Query("SELECT server_version FROM exercises WHERE id = :id")
-    abstract suspend fun findServerVersion(id: Uuid): Long?
-
-    @Upsert
-    abstract suspend fun upsertExercise(exercise: ExerciseEntity)
-
-    @Query("DELETE FROM exercise_translations WHERE exercise_id = :exerciseId")
-    abstract suspend fun deleteTranslations(exerciseId: Uuid)
-
-    @Insert
-    abstract suspend fun insertTranslations(translations: List<ExerciseTranslationEntity>)
-
     /** Keeps the stored [ExerciseEntity.serverVersion] and forces [ExerciseEntity.isDeleted] to false. */
     @Transaction
     open suspend fun saveLocalExercise(
         exercise: ExerciseEntity,
         translations: List<ExerciseTranslationEntity>,
     ) {
-        val storedServerVersion = findServerVersion(exercise.id)
+        val storedServerVersion = database.exerciseRawDao().findServerVersion(exercise.id)
         saveSyncedExercise(exercise.copy(serverVersion = storedServerVersion, isDeleted = false), translations)
     }
 
@@ -66,8 +55,9 @@ abstract class ExerciseDao {
         exercise: ExerciseEntity,
         translations: List<ExerciseTranslationEntity>,
     ) {
-        upsertExercise(exercise)
-        deleteTranslations(exercise.id)
-        insertTranslations(translations)
+        val raw = database.exerciseRawDao()
+        if (raw.updateExercise(exercise) == 0) raw.insertExercise(exercise)
+        raw.deleteTranslations(exercise.id)
+        raw.insertTranslations(translations)
     }
 }

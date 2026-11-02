@@ -41,9 +41,10 @@ abstract class TemplateDao(
         template: WorkoutTemplateEntity,
         exercises: List<TemplateExerciseEntity>,
     ) {
-        database.templateRawDao().upsertTemplate(template)
+        val raw = database.templateRawDao()
+        if (raw.updateTemplate(template) == 0) raw.insertTemplate(template)
         deleteChildren(template.id)
-        database.templateRawDao().insertExercises(exercises)
+        raw.insertExercises(exercises)
     }
 
     @Query("UPDATE workout_templates SET server_version = :serverVersion WHERE id = :id")

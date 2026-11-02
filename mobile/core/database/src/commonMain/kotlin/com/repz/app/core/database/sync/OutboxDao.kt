@@ -1,16 +1,21 @@
 package com.repz.app.core.database.sync
 
 import androidx.room3.Dao
+import androidx.room3.Insert
 import androidx.room3.Query
 import androidx.room3.Transaction
-import androidx.room3.Upsert
+import androidx.room3.Update
 import kotlinx.coroutines.flow.Flow
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @Dao
 abstract class OutboxDao {
-    /** Finds the pending row (if any), coalesces it with [operation], and upserts the result. */
+    /**
+     * Finds the pending row (if any), coalesces it with [operation], and persists the result:
+     * inserted when nothing was pending, updated otherwise. No `@Upsert`: see
+     * [com.repz.app.core.database.workout.WorkoutRawDao].
+     */
     @Transaction
     open suspend fun enqueue(
         entityType: SyncEntityType,
@@ -20,7 +25,8 @@ abstract class OutboxDao {
         heldUntil: Instant? = null,
     ) {
         val existing = findEntry(entityType, entityId)
-        upsert(coalesceOutboxEntry(existing, entityType, entityId, operation, now, heldUntil))
+        val entry = coalesceOutboxEntry(existing, entityType, entityId, operation, now, heldUntil)
+        if (existing == null) insertEntry(entry) else updateEntry(entry)
     }
 
     @Query(
@@ -71,6 +77,9 @@ abstract class OutboxDao {
         entityId: Uuid,
     ): OutboxEntryEntity?
 
-    @Upsert
-    abstract suspend fun upsert(entry: OutboxEntryEntity)
+    @Insert
+    abstract suspend fun insertEntry(entry: OutboxEntryEntity)
+
+    @Update
+    abstract suspend fun updateEntry(entry: OutboxEntryEntity): Int
 }

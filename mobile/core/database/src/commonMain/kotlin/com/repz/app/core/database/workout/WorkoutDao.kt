@@ -53,9 +53,10 @@ abstract class WorkoutDao(
         exercises: List<WorkoutExerciseEntity>,
         sets: List<WorkoutSetEntity>,
     ) {
-        database.workoutRawDao().upsertWorkout(workout)
+        val raw = database.workoutRawDao()
+        if (raw.updateWorkout(workout) == 0) raw.insertWorkout(workout)
         deleteChildren(workout.id)
-        database.workoutRawDao().insertChildren(exercises, sets)
+        raw.insertChildren(exercises, sets)
     }
 
     @Query("UPDATE workouts SET server_version = :serverVersion WHERE id = :id")
