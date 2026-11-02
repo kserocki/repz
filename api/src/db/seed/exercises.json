@@ -1141,7 +1141,7 @@
         },
         {
           "locale": "pl",
-          "name": "Odwodzenie nogi w klęku (kickback)",
+          "name": "Wyprost nogi w tył w klęku (kickback)",
           "instructions": null
         }
       ]
@@ -1297,7 +1297,7 @@
         },
         {
           "locale": "pl",
-          "name": "Odwodzenie nogi z gumą (kickback)",
+          "name": "Wyprost nogi w tył z gumą (kickback)",
           "instructions": null
         }
       ]
@@ -3017,7 +3017,7 @@
         },
         {
           "locale": "pl",
-          "name": "Turkish get-up (wstawanie turecki)",
+          "name": "Turkish get-up (wstawanie tureckie)",
           "instructions": null
         }
       ]
@@ -3678,7 +3678,7 @@
         },
         {
           "locale": "pl",
-          "name": "Mountain climber (wspinaczka)",
+          "name": "Mountain climber (bieg w podporze)",
           "instructions": null
         }
       ]

@@ -879,7 +879,7 @@
       "wgerId": 990,
       "names": {
         "en": "Kneeling Glute Kickback",
-        "pl": "Odwodzenie nogi w klęku (kickback)"
+        "pl": "Wyprost nogi w tył w klęku (kickback)"
       }
     },
     {
@@ -887,7 +887,7 @@
       "wgerId": 1613,
       "names": {
         "en": "Band Glute Kickback",
-        "pl": "Odwodzenie nogi z gumą (kickback)"
+        "pl": "Wyprost nogi w tył z gumą (kickback)"
       }
     },
     {
@@ -1145,7 +1145,7 @@
         "pl": "Uginanie nóg na ślizgaczach"
       },
       "equipment": "other",
-      "reviewNote": "wger has no equipment on this entry; performed with sliding discs/towels on a smooth floor"
+      "reviewNote": "wger has no equipment on this entry; performed with sliding discs/towels on a smooth floor. PL name uncertain: \"ślizgacze\" (sliders) is niche gym slang, please double-check"
     },
     {
       "id": "f106b558-8c25-4337-a312-8ebdeb91a9af",
@@ -1220,7 +1220,7 @@
       "wgerId": 996,
       "names": {
         "en": "Mountain Climber",
-        "pl": "Mountain climber (wspinaczka)"
+        "pl": "Mountain climber (bieg w podporze)"
       },
       "primaryMuscle": "full_body",
       "secondaryMuscles": [],
@@ -1242,7 +1242,7 @@
       "wgerId": 675,
       "names": {
         "en": "Turkish Get-Up",
-        "pl": "Turkish get-up (wstawanie turecki)"
+        "pl": "Turkish get-up (wstawanie tureckie)"
       },
       "primaryMuscle": "full_body",
       "secondaryMuscles": ["shoulders", "abs"],
