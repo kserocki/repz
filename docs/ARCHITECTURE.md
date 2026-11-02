@@ -123,17 +123,18 @@ graph TD
 ```
 User(id, email, displayName, unitSystem)
 
-Exercise(id, name, primaryMuscle, secondaryMuscles, equipment, isCustom, translations: List<ExerciseTranslation>)
-  ExerciseTranslation(locale, name, instructions?)   // catalog only; name = English / the user's own name
+Exercise(id, name, primaryMuscle: Muscle, secondaryMuscles: Set<Muscle>, equipment, origin, translations: List<ExerciseTranslation>)
+  origin: Custom | Catalog(imageUrl?, ExerciseAttribution(license, author, sourceUrl))   // isCustom is derived
+  ExerciseTranslation(languageTag, name, instructions?)   // catalog only; name = English / the user's own name
 
-WorkoutTemplate(id, name, notes, exercises: List<TemplateExercise>)
-  TemplateExercise(exerciseId, order, targetSets, targetReps: IntRange?, restSeconds)
+WorkoutTemplate(id, name, notes, exercises: List<TemplateExercise>)          // list order = position
+  TemplateExercise(exerciseId, targetSets, targetReps: IntRange?, rest: Duration)
 
 Workout(id, templateId?, name, startedAt, finishedAt?, notes, exercises: List<WorkoutExercise>)
-  WorkoutExercise(id, exerciseId, order, notes, sets: List<WorkoutSet>)
-    WorkoutSet(id, order, weight: Weight, reps, rpe?, type: WARMUP|NORMAL|DROP|FAILURE, completedAt?)
+  WorkoutExercise(id, exerciseId, notes, sets: List<WorkoutSet>)
+    WorkoutSet(id, type: WARMUP|NORMAL|DROP|FAILURE, weight: Weight, reps, rpe: Rpe?, completedAt?)
 
-PersonalRecord(exerciseId, type: EST_1RM|HEAVIEST|BEST_SET_VOLUME|MOST_REPS, value, workoutId, achievedAt)
+PersonalRecord(exerciseId, type: EST_1RM|HEAVIEST|BEST_SET_VOLUME|MOST_REPS, weight, reps, workoutId, setId, achievedAt)
 ```
 
 Decisions:
@@ -141,7 +142,8 @@ Decisions:
 - **IDs are generated on the client** (UUID). This is a hard requirement of offline-first, because entities must exist before the server knows about them.
 - **Weight is stored in grams** (`Long`) inside a `Weight` value class. That gives exact arithmetic with no float drift. kg/lb exists only at the presentation layer.
 - **Aggregates:** `Workout` (with exercises and sets), `WorkoutTemplate` and custom `Exercise` are aggregate roots. **The aggregate is the unit of sync.**
-- **Personal records are derived data.** They are recomputed locally (`RecalculatePersonalRecordsUseCase`) after a workout finishes or after a sync pull, and they are never synced. Est. 1RM uses the Epley formula.
+- **Personal records are derived data.** They are recomputed locally (`RecalculatePersonalRecordsUseCase`, REP-27) after a workout finishes or after a sync pull, and they are never synced. Est. 1RM uses the Epley formula; the counting rules are in ADR-0022.
+- **Value types** (`Weight`, `Rpe`, typed ids over UUID v7) enforce their own invariants; aggregates don't, so drafts stay representable and use cases validate on save (ADR-0022).
 - **Time:** `kotlin.time.Clock` and `Instant` are injected, so tests are deterministic.
 
 ---
@@ -318,7 +320,7 @@ class HistoryViewModel(
 
 - The `repz.koin` convention plugin applies the compiler plugin (`io.insert-koin.compiler.plugin`) and the `koin-core`/`koin-annotations` runtime to every module with Koin definitions: `app:shared`, `core:testing` and the six `feature:*:impl` modules (via `repz.kmp.feature.impl`). `core:domain` and `core:common` never see Koin.
 - Every Gradle module with definitions exposes **one** `@Module` class whose bindings are explicit `@Single`/`@Factory` provider functions declared inside it, e.g. `@Module class HistoryModule { @Factory fun observeWorkoutHistoryUseCase(...) = ObserveWorkoutHistoryUseCase(...) }`. `@KoinViewModel fun` providers follow the same shape, but using one as a cross-module provider on Kotlin/Native is unverified until REP-28 confirms it. No cross-module `@ComponentScan`: on Kotlin 2.4.20+ the Koin compiler plugin's `@ComponentScan` hints are dropped by the Kotlin/Native KLIB serializer across Gradle module boundaries (koin-compiler-plugin#106 / KT-79565, found and verified in REP-7), so a definition scanned in one module is invisible when another module compiles against it. `app:shared` is the exception: its own module and the `@KoinApplication` entry point always compile together, so it may keep a local `@ComponentScan("com.repz.app.shared")`. Re-checked in REP-58 once koin-compiler-plugin 1.2.2 (PR #129) ships the fix.
-- Shared `core:domain` use cases and `core:common` platform primitives (`Clock`, `IdGenerator`, dispatchers) are provided from `app:shared`, not from `core:domain`/`core:common` themselves (which stay Koin-free): a `DomainModule` for the former, a `CommonModule` for the latter (both land with REP-23). Features provide only their own feature-local use cases. **Each definition has exactly one owner** — Koin resolves a duplicate binding last-wins at runtime, and the compiler plugin isn't verified to flag that at compile time (a Konsist rule is a REP-9 candidate).
+- Shared `core:domain` use cases and `core:common` platform primitives (`Clock`, `IdGenerator`, dispatchers) are provided from `app:shared`, not from `core:domain`/`core:common` themselves (which stay Koin-free): a `DomainModule` for the former (lands with REP-27), a `CommonModule` for the latter (REP-23: `Clock`, `IdGenerator` = `UuidV7IdGenerator`, `AppDispatchers`). Features provide only their own feature-local use cases. **Each definition has exactly one owner** — Koin resolves a duplicate binding last-wins at runtime, and the compiler plugin isn't verified to flag that at compile time (a Konsist rule is a REP-9 candidate).
 - Platform-specific bindings (WorkManager, Keychain, Room builder) are provided through `expect`/`actual` classes in the module's platform source sets.
 - `app:shared` is the only entry point: `@KoinApplication(modules = [AppModule::class, ...]) object RepzApp`, started via `startRepzKoin()` (wraps `startKoin<RepzApp>()`). New `@Module` classes are added to `RepzApp`'s explicit `modules` list, never auto-discovered (no `@Configuration`). Android calls `startRepzKoin` from `Application`, iOS from the SwiftUI `App` init (REP-11).
 - **The full graph is verified at compile time** (missing bindings, cycles, qualifier clashes) by `app:shared`'s per-platform main and test compile tasks — not its common-metadata compile — so a broken graph does not compile and no runtime `verify()` test is needed. Leaf modules without an entry point get no compile-time diagnostics. Those per-platform tasks cache normally (UP-TO-DATE on an unchanged rebuild). This also auto-enables `strictSafety`, which keeps `app:shared`'s common-metadata compile task from ever reporting up-to-date; that task itself runs no graph check (verified in REP-7).
@@ -552,6 +554,7 @@ A plain Kotlin/JVM module, not a KMP one: it reads source **text** (via Konsist 
 | N5 | `*Repository` interfaces live in `core:domain`; a `core:data` implementation is named `OfflineFirst<Interface>`; outside `core:data` only `core:testing`/test source sets may implement one | Konsist |
 | N6 | `@Test` functions match `^given.+_when.+_then.+$` | Konsist |
 | N7 | No `io.mockk`/`org.mockito` imports | Konsist |
+| I1 | `Clock.System` and `Uuid.random`/`generateV4`/`generateV7` appear only in `app:shared`'s `CommonModule` and in `UuidV7IdGenerator`, tests included, so time and ids are always injected (ADR-0022) | plain text |
 | C1 | A `REP-<n>` key in a comment only ever appears as `TODO(REP-<n>):`; every `TODO` is written exactly that way; upstream tracker references are unrestricted | plain text, incl. `.kts` (its own comment extractor: skips string/char literals, tracks Kotlin's nestable block comments) |
 
 "Plain text" rules read every `.kt`/`.kts` file directly (`RepzTextFile`) rather than through a Konsist `KoScope`, needed wherever a rule must see `.gradle.kts` content.
@@ -568,7 +571,7 @@ A plain Kotlin/JVM module, not a KMP one: it reads source **text** (via Konsist 
 
 ## 14. Decision log
 
-All decisions live in [`docs/adr/`](adr/) (ADR-0001 … ADR-0021). Add a new ADR for every decision that changes this document.
+All decisions live in [`docs/adr/`](adr/) (ADR-0001 … ADR-0022). Add a new ADR for every decision that changes this document.
 
 ## 15. Risks to verify in the first scaffold spike
 
