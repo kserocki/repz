@@ -1,13 +1,14 @@
 import { and, asc, eq, gt, inArray, isNull, ne, sql } from "drizzle-orm";
 import postgres from "postgres";
 import type { DatabaseExecutor } from "../../../db/client.ts";
-import { exercises } from "../../../db/schema/index.ts";
+import { exercises, exerciseTranslations } from "../../../db/schema/index.ts";
 import { nextSyncVersion } from "../../../db/schema/sync.ts";
 import type { Equipment, Muscle } from "../../../db/schema/vocabularies.ts";
 import { SyncIdConflict } from "../sync.errors.ts";
 import type {
   AggregateSyncRepository,
   ExerciseAggregate,
+  ExerciseTranslation,
   PullScope,
   RootState,
 } from "../sync.types.ts";
@@ -77,6 +78,19 @@ export function createExerciseSyncRepository(
         return new Map();
       }
       const rows = await db.select().from(exercises).where(inArray(exercises.id, ids));
+      const translationRows = await db
+        .select()
+        .from(exerciseTranslations)
+        .where(inArray(exerciseTranslations.exerciseId, ids))
+        .orderBy(asc(exerciseTranslations.exerciseId), asc(exerciseTranslations.locale));
+
+      const translationsByExercise = new Map<string, ExerciseTranslation[]>();
+      for (const row of translationRows) {
+        const list = translationsByExercise.get(row.exerciseId) ?? [];
+        list.push({ locale: row.locale, name: row.name, instructions: row.instructions });
+        translationsByExercise.set(row.exerciseId, list);
+      }
+
       const result = new Map<string, ExerciseAggregate>();
       for (const row of rows) {
         result.set(row.id, {
@@ -86,6 +100,8 @@ export function createExerciseSyncRepository(
           equipment: row.equipment as Equipment,
           license: row.license,
           author: row.author,
+          sourceUrl: row.sourceUrl,
+          translations: translationsByExercise.get(row.id) ?? [],
         });
       }
       return result;

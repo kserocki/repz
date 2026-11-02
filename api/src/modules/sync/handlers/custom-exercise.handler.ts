@@ -13,9 +13,12 @@ function parseCustomExercisePayload(wire: CustomExercisePayload): ExerciseAggreg
     primaryMuscle: wire.primaryMuscle,
     secondaryMuscles: wire.secondaryMuscles,
     equipment: wire.equipment,
-    // A pushed custom exercise never carries attribution; only the catalog seeder sets these.
+    // A pushed custom exercise never carries attribution or translations; only the catalog
+    // seeder sets these.
     license: null,
     author: null,
+    sourceUrl: null,
+    translations: [],
   };
 }
 
@@ -33,6 +36,8 @@ export function toExercisePayload(
     imageUrl: extra.imageUrl,
     license: aggregate.license,
     author: aggregate.author,
+    sourceUrl: aggregate.sourceUrl,
+    translations: aggregate.translations,
   };
 }
 

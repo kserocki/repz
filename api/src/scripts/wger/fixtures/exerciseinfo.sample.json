@@ -1,0 +1,276 @@
+[
+  {
+    "id": 73,
+    "uuid": "3717d144-7815-4a97-9a56-956fb889c996",
+    "muscles": [
+      {
+        "id": 4
+      }
+    ],
+    "muscles_secondary": [
+      {
+        "id": 2
+      },
+      {
+        "id": 5
+      }
+    ],
+    "equipment": [
+      {
+        "id": 1
+      },
+      {
+        "id": 8
+      }
+    ],
+    "license": {
+      "short_name": "CC-BY-SA 3"
+    },
+    "license_author": "sistab2",
+    "translations": [
+      {
+        "language": 2,
+        "name": "Bench Press",
+        "description": "<p>Lay down on a bench, the bar should be directly above your eyes, the knees are somewhat angled and the feet are firmly on the floor. Concentrate, breath deeply and grab the bar more than shoulder wide. Bring it slowly down till it briefly touches your chest at the height of your nipples. Push the bar up.</p>\n<p>If you train with a high weight it is advisable to have a <em>spotter</em> that can help you up if you can't lift the weight on your own.</p>\n<p>With the width of the grip you can also control which part of the chest is trained more:</p>\n<ul>\n<li>wide grip: outer chest muscles</li>\n<li>narrow grip: inner chest muscles and triceps</li>\n</ul>\n",
+        "license": 1,
+        "license_author": "sistab2",
+        "author_history": ["sistab2"]
+      }
+    ]
+  },
+  {
+    "id": 184,
+    "uuid": "ee8e8db4-2d82-49e1-ab7f-891e9a354934",
+    "muscles": [
+      {
+        "id": 12
+      }
+    ],
+    "muscles_secondary": [
+      {
+        "id": 8
+      }
+    ],
+    "equipment": [
+      {
+        "id": 1
+      }
+    ],
+    "license": {
+      "short_name": "CC-BY-SA 3"
+    },
+    "license_author": "wger.de",
+    "translations": [
+      {
+        "language": 2,
+        "name": "Deadlifts",
+        "description": "<p>Stand firmly, with your feet slightly more than shoulder wide apart. Stand directly behind the bar where it should barely touch your shin, your feet pointing a bit out. Bend down with a straight back, the knees also pointing somewhat out. Grab the bar with a shoulder wide grip, one overhand, one underhand (mixed grip).</p>\n<p>Pull the weight up. At the highest point make a slight hollow back and pull the bar back. Hold 1 or 2 seconds that position. Go down, making sure the back is not bent. Once down you can either go back again as soon as the weights touch the floor, or make a pause, depending on the weight.</p>\n",
+        "license": 1,
+        "license_author": "wger.de",
+        "author_history": ["wger.de"]
+      }
+    ]
+  },
+  {
+    "id": 194,
+    "uuid": "09dd3e3c-e53a-4e2c-a2e3-645d334f53e2",
+    "muscles": [
+      {
+        "id": 4
+      },
+      {
+        "id": 5
+      }
+    ],
+    "muscles_secondary": [],
+    "equipment": [
+      {
+        "id": 7
+      }
+    ],
+    "license": {
+      "short_name": "CC0"
+    },
+    "license_author": "BFad07",
+    "translations": [
+      {
+        "language": 2,
+        "name": "Dips",
+        "description": "<p>A dip is an upper-body strength exercise. Narrow, shoulder-width dips primarily train the triceps, with major synergists being the anterior deltoid, the pectoralis muscles (sternal, clavicular, and minor), and the rhomboid muscles of the back (in that order).[1] Wide arm training places additional emphasis on the pectoral muscles, similar in respect to the way a wide grip bench press would focus more on the pectorals and less on the triceps.</p>\n",
+        "license": 3,
+        "license_author": "BFad07",
+        "author_history": ["BFad07"]
+      }
+    ]
+  },
+  {
+    "id": 152,
+    "uuid": "87e6abc5-a701-442a-b4fb-bb2a7598a754",
+    "muscles": [
+      {
+        "id": 1
+      },
+      {
+        "id": 12
+      }
+    ],
+    "muscles_secondary": [
+      {
+        "id": 13
+      },
+      {
+        "id": 9
+      }
+    ],
+    "equipment": [
+      {
+        "id": 6
+      }
+    ],
+    "license": {
+      "short_name": "CC0"
+    },
+    "license_author": "BFad07",
+    "translations": [
+      {
+        "language": 2,
+        "name": "Chin Up",
+        "description": "<p>The chin-up (also known as a chin or chinup) is a strength training exercise. People frequently do this exercise with the intention of strengthening muscles such as the latissimus dorsi and biceps, which extend the shoulder and flex the elbow, respectively. In this maneuver, the palms are faced towards the body. It is a form of pull-up in which the range of motion is established in relation to a person's chin.</p>\n",
+        "license": 3,
+        "license_author": "BFad07",
+        "author_history": ["BFad07"]
+      }
+    ]
+  },
+  {
+    "id": 265,
+    "uuid": "ceb0c2d0-06ac-4a49-89e7-8d7b1c1e5672",
+    "muscles": [
+      {
+        "id": 8
+      }
+    ],
+    "muscles_secondary": [
+      {
+        "id": 11
+      }
+    ],
+    "equipment": [],
+    "license": {
+      "short_name": "CC-BY-SA 4"
+    },
+    "license_author": "tdprice12",
+    "translations": [
+      {
+        "language": 2,
+        "name": "Glute Bridge",
+        "description": "<p>Lie on you back with your hips and knees flexed, feet on the ground. From this position, raise your butt off of the ground to a height where your body makes a straight line from your knees to your shoulders. To make the exercise more intense, you can add weight by letting a barbell rest on your hips as you complete the motion, or you can put your feet on a slightly higher surface such as a step or a bench.</p>\n",
+        "license": 2,
+        "license_author": "tdprice12",
+        "author_history": ["tdprice12"]
+      }
+    ]
+  },
+  {
+    "id": 146,
+    "uuid": "0d79f259-3b28-4258-8a08-cffec062a710",
+    "muscles": [
+      {
+        "id": 7
+      },
+      {
+        "id": 15
+      }
+    ],
+    "muscles_secondary": [],
+    "equipment": [],
+    "license": {
+      "short_name": "CC-BY-SA 4"
+    },
+    "license_author": "nate303303",
+    "translations": [
+      {
+        "language": 2,
+        "name": "Calf Press Using Leg Press Machine",
+        "description": "<p>Put&nbsp; the balls of your feet on an extended leg press pad.&nbsp; Use your calves to press the weight by flexing your feet/toes into a pointed position, and releasing back into a relaxed position.</p>\n<p>This exercise builds mass and strength in the Gastrocnemius and Soleus muscles as well, if not better, than any calf exercise.</p>\n",
+        "license": 2,
+        "license_author": "nate303303",
+        "author_history": ["nate303303"]
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "uuid": "1b020b3a-3732-4c7e-92fd-a0cec90ed69b",
+    "muscles": [
+      {
+        "id": 11
+      },
+      {
+        "id": 8
+      }
+    ],
+    "muscles_secondary": [
+      {
+        "id": 10
+      },
+      {
+        "id": 6
+      }
+    ],
+    "equipment": [
+      {
+        "id": 10
+      }
+    ],
+    "license": {
+      "short_name": "CC-BY-SA 4"
+    },
+    "license_author": "deusinvictus",
+    "translations": [
+      {
+        "language": 2,
+        "name": "2 Handed Kettlebell Swing",
+        "description": "<ol>\n<li>Stand with your feet slightly wider than shoulder-width, the kettlebell on the floor about 20-30 cm in front of your toes.</li>\n<li>Hinge at the hips with a slight bend in the knees and a flat back, and grip the handle with both hands.</li>\n<li>Hike the kettlebell back between your legs, then drive your hips forward explosively so that it swings forward and up to chest or shoulder height (Russian style, not overhead). Your arms stay straight and relaxed, the power comes from the hips.</li>\n<li>Let the kettlebell swing back down, hinge again as it passes between your legs and go straight into the next rep.</li>\n</ol>\n",
+        "license": 2,
+        "license_author": "deusinvictus",
+        "author_history": ["deusinvictus"]
+      }
+    ]
+  },
+  {
+    "id": 161,
+    "uuid": "6e00afb6-272d-44a2-8ae3-e7fa41b50f06",
+    "muscles": [
+      {
+        "id": 12
+      },
+      {
+        "id": 4
+      },
+      {
+        "id": 3
+      }
+    ],
+    "muscles_secondary": [],
+    "equipment": [
+      {
+        "id": 3
+      }
+    ],
+    "license": {
+      "short_name": "CC-BY-SA 3"
+    },
+    "license_author": "powerade69",
+    "translations": [
+      {
+        "language": 2,
+        "name": "Cross-Bench Dumbbell Pullovers",
+        "description": "<p>Grasp a moderately weighted dumbbell so your palms are flat against the underside of the top plates and your thumbs are around the bar. Lie on your back across a flat bench so only your upper back and shoulders are in contact with the bench. Your feet should be set about shoulder-width apart and your head should hang slightly downward. With the dumbbell supported at arm's length directly about your chest, bend your arms about 15 degrees and keep them bent throughout the movement. Slowly lower the dumbbell backward and downward in a semicircle arc to as low a position as is comfortably possible. Raise it slowly back along the same arc to the starting point, and repeat for the required number of repetitions.</p>\n",
+        "license": 1,
+        "license_author": "powerade69",
+        "author_history": ["powerade69"]
+      }
+    ]
+  }
+]

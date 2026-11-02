@@ -7,6 +7,7 @@ import { SYNC_TYPES } from "./sync.types.ts";
 
 export const NAME_MAX = 100;
 export const NOTES_MAX = 2000;
+export const INSTRUCTIONS_MAX = 2000;
 export const WORKOUT_EXERCISES_MAX = 50;
 export const SETS_PER_EXERCISE_MAX = 50;
 export const TEMPLATE_EXERCISES_MAX = 50;
@@ -28,6 +29,17 @@ const nameField = z.string().trim().min(1).max(NAME_MAX);
 const notesField = z.string().max(NOTES_MAX).default("");
 const MuscleSchema = z.enum(MUSCLES);
 const EquipmentSchema = z.enum(EQUIPMENT);
+
+/**
+ * A BCP 47 language tag such as `"en"`, `"de"` or `"pt-BR"`. No fixed enum, and no locale is
+ * special-cased anywhere: a new language is a new row, never a schema change (AGENTS.md).
+ * Exported so `db/seed/curation.schema.ts` validates curation content locale keys against the
+ * exact same pattern.
+ */
+export const LOCALE_PATTERN = /^[a-z]{2,3}(-[A-Z]{2})?$/;
+export const LocaleSchema = z
+  .string()
+  .regex(LOCALE_PATTERN, 'locale must be a BCP 47 language tag, e.g. "en" or "de"');
 
 const rpeField = z
   .number()
@@ -252,11 +264,33 @@ export const CustomExercisePayloadSchema = CustomExerciseShapeSchema.superRefine
 
 export type CustomExercisePayload = z.infer<typeof CustomExercisePayloadSchema>;
 
+/**
+ * One locale's name and instructions. Mirrors `exercise_translations`: a new language
+ * is just another array entry, never a schema change. `[]` for a custom exercise; a catalog row
+ * always includes `"en"`, sorted by `locale`.
+ */
+const ExerciseTranslationSchema = z
+  .strictObject({
+    locale: LocaleSchema,
+    name: nameField,
+    instructions: z.string().max(INSTRUCTIONS_MAX).nullable(),
+  })
+  .openapi("ExerciseTranslation", {
+    example: {
+      locale: "en",
+      name: "Bench press",
+      instructions:
+        "Lie on a flat bench, grip the bar slightly wider than shoulder width, lower it to your chest, then press it back up.",
+    },
+  });
+
 export const ExercisePayloadSchema = CustomExerciseShapeSchema.extend({
   isCustom: z.boolean(),
   imageUrl: z.string().nullable(),
   license: z.string().nullable(),
   author: z.string().nullable(),
+  sourceUrl: z.string().nullable(),
+  translations: z.array(ExerciseTranslationSchema),
 })
   .superRefine(validateMuscles)
   .openapi("ExercisePayload", {
@@ -269,6 +303,15 @@ export const ExercisePayloadSchema = CustomExerciseShapeSchema.extend({
       imageUrl: "/static/exercises/b6e6b6a0-3333-4a22-8a33-000000000001.webp",
       license: "CC-BY-SA 4.0",
       author: "wger.de",
+      sourceUrl: "https://wger.de/exercise/73/view-base",
+      translations: [
+        {
+          locale: "en",
+          name: "Bench press",
+          instructions:
+            "Lie on a flat bench, grip the bar slightly wider than shoulder width, lower it to your chest, then press it back up.",
+        },
+      ],
     },
   });
 
@@ -478,6 +521,15 @@ export const SyncChangeSchema = z
         imageUrl: "/static/exercises/b6e6b6a0-3333-4a22-8a33-000000000001.webp",
         license: "CC-BY-SA 4.0",
         author: "wger.de",
+        sourceUrl: "https://wger.de/exercise/73/view-base",
+        translations: [
+          {
+            locale: "en",
+            name: "Bench press",
+            instructions:
+              "Lie on a flat bench, grip the bar slightly wider than shoulder width, lower it to your chest, then press it back up.",
+          },
+        ],
       },
     },
   });

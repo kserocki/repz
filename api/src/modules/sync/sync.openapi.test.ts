@@ -15,6 +15,7 @@ describe("OpenAPI document: /sync/*", () => {
       TemplatePayload: expect.any(Object),
       CustomExercisePayload: expect.any(Object),
       ExercisePayload: expect.any(Object),
+      ExerciseTranslation: expect.any(Object),
     });
   });
 
