@@ -1,6 +1,7 @@
 package com.repz.app.core.network.dto.sync
 
 import com.repz.app.core.network.dto.SetTypeDto
+import com.repz.app.core.network.serialization.WireDoubleSerializer
 import com.repz.app.core.network.serialization.WireInstantSerializer
 import kotlinx.serialization.Serializable
 import kotlin.time.Instant
@@ -12,7 +13,7 @@ data class WorkoutSetPayloadDto(
     val type: SetTypeDto,
     val weightGrams: Long,
     val reps: Int,
-    val rpe: Double?,
+    @Serializable(with = WireDoubleSerializer::class) val rpe: Double?,
     @Serializable(with = WireInstantSerializer::class) val completedAt: Instant?,
 )
 

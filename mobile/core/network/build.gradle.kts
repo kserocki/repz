@@ -1,3 +1,5 @@
+import com.repz.buildlogic.contract.registerGenerateContractFixtures
+
 plugins {
     id("repz.kmp.library")
     id("repz.koin")
@@ -26,6 +28,9 @@ kotlin {
             implementation(libs.ktor.client.mock)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)
+        }
+        commonTest {
+            kotlin.srcDir(registerGenerateContractFixtures())
         }
     }
 }
