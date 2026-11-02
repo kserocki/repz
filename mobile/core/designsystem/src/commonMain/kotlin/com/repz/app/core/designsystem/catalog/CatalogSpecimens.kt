@@ -10,6 +10,7 @@ internal object CatalogSpecimens {
     val TIMER_STACK = listOf("1:09", "1:10", "1:11")
     const val WEIGHT_SAMPLE = "82.5 kg"
 
-    // U+00A0 (non-breaking space) as the thousands separator, per DESIGN_SYSTEM §4's grouping rule.
-    const val VOLUME_SAMPLE = "12 340 kg"
+    // U+00A0 (non-breaking space) as both the thousands separator and the number-unit
+    // separator before "kg", per DESIGN_SYSTEM §4.
+    const val VOLUME_SAMPLE = "12 340 kg"
 }

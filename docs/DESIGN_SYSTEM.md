@@ -204,6 +204,7 @@ Rules:
 - Every number uses a `numeric*` style with `fontFeatureSettings = "tnum"`, so timers never jitter.
 - Headlines may compress to **wdth 88** (never below) before wrapping. **Buttons always wrap, never truncate.**
 - Number formatting is locale-aware: EN `82.5 kg`, `12,340 kg`; PL `82,5 kg`, `12 340 kg` (comma decimal, non-breaking-space thousands).
+- The separator between a number and its unit is U+00A0 (no-break space), e.g. `82,5 kg`, so the unit never wraps onto its own line.
 
 ## 5. Shape
 
@@ -273,9 +274,9 @@ Wide windows (≥ 840 dp): History and Exercises use `ListDetailPaneScaffold` (l
 | level2 | surfaceContainer | cards |
 | level3 | surfaceContainerHigh | set rows, sheets, dialogs |
 | level4 | surfaceContainerHighest + shadow `0 8 20 #0006` (both themes) | dragged item (+ scale 1.02–1.03) |
-| fab | primaryContainer + shadow `0 4 12 #28145A38` (light theme only; none in dark) | FAB |
+| fab | primaryContainer + shadow `0 4 12 #0E141638` (light theme only; none in dark) | FAB |
 
-Shadows are `x y blur colour`. The fab shadow is taken from board 18 as drawn (decided 2026-11-02); it may be a design-tool default and is flagged to the user. In Kotlin, `RepzElevation.level0 … level4` and `RepzElevation.fab` each give a `RepzElevationLevel(containerColor, shadow: Shadow?)`; components draw the shadow with `Modifier.dropShadow(shape, shadow)`.
+Shadows are `x y blur colour`. The fab shadow keeps board 18's geometry with a neutral ink colour (decided 2026-11-02). In Kotlin, `RepzElevation.level0 … level4` and `RepzElevation.fab` each give a `RepzElevationLevel(containerColor, shadow: Shadow?)`; components draw the shadow with `Modifier.dropShadow(shape, shadow)`.
 
 Shadows are only for things floating under the finger (FAB, dragged item, rest pill over content). Sheets and dialogs use a scrim of `#000` at 32 %.
 

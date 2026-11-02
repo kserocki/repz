@@ -60,7 +60,7 @@ class RepzElevationTest {
         val fabShadow = scheme.fab.shadow
         assertNotNull(fabShadow)
         assertEquals(12.dp, fabShadow.radius)
-        assertEquals(Color(0x3828145A), fabShadow.color)
+        assertEquals(Color(0x380E1416), fabShadow.color)
         assertEquals(DpOffset(0.dp, 4.dp), fabShadow.offset)
     }
 
