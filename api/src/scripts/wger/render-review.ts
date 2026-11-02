@@ -33,6 +33,20 @@ function overridesOf(entry: CurationEntry | undefined): string {
   return entry.reviewNote ? `${overrides.join(", ")} (${entry.reviewNote})` : overrides.join(", ");
 }
 
+/**
+ * Whether `entry` overrides a *derived* field (muscle or equipment) rather than just the routine
+ * EN Title Case rename every entry gets (Q3) — the summary line counts these separately, since a
+ * 100% "has an override" count would say nothing useful about how much the wger data needed
+ * correcting.
+ */
+function hasDataOverride(entry: CurationEntry): boolean {
+  return (
+    entry.primaryMuscle !== undefined ||
+    entry.secondaryMuscles !== undefined ||
+    entry.equipment !== undefined
+  );
+}
+
 function wgerPlNameOf(wger: WgerExerciseInfo | undefined): string {
   if (!wger) {
     return "—";
@@ -71,7 +85,7 @@ export function renderReviewTable(
   const groupCounts = countBy(snapshot.exercises.map((exercise) => exercise.primaryMuscle));
   const equipmentCounts = countBy(snapshot.exercises.map((exercise) => exercise.equipment));
   const licenceCounts = countBy(snapshot.exercises.map((exercise) => exercise.license));
-  const overrideCount = curation.exercises.filter((entry) => overridesOf(entry) !== "—").length;
+  const dataOverrideCount = curation.exercises.filter(hasDataOverride).length;
   const rewrittenCount = curation.exercises.filter(
     (entry) => entry.instructions?.en !== undefined,
   ).length;
@@ -82,7 +96,9 @@ export function renderReviewTable(
     `**${total} exercises.** Per primary group: ${renderCounts(groupCounts)}.`,
     `Per equipment: ${renderCounts(equipmentCounts)}.`,
     `Per licence: ${renderCounts(licenceCounts)}.`,
-    `${overrideCount} entries have a manual override. ${rewrittenCount} EN instructions were rewritten.`,
+    `Every EN name was Title-Cased from wger's original. ${dataOverrideCount} entries override a ` +
+      `derived muscle or equipment value (see the Overrides column for the reason). ` +
+      `${rewrittenCount} EN instructions were rewritten.`,
     "",
   ];
 
