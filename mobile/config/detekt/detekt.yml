@@ -49,8 +49,8 @@ Compose:
     active: true
   CompositionLocalAllowlist:
     active: true
-    # core:designsystem's theme locals (DESIGN_SYSTEM §3, ARCH §12.2 Q8): the rule's own allowlist
-    # mechanism, not a suppression.
+    # core:designsystem's theme locals (ARCHITECTURE §12.1): the rule's own allowlist mechanism,
+    # not a suppression.
     allowedCompositionLocals:
       - LocalRepzColors
       - LocalRepzTypography
