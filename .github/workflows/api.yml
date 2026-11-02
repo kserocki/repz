@@ -88,6 +88,15 @@ jobs:
       - name: Re-apply migrations (must be a no-op)
         run: pnpm db:migrate
 
+      - name: Seed the exercise catalog
+        run: pnpm db:seed
+
+      - name: Re-seed the exercise catalog (must be a no-op)
+        run: pnpm db:seed
+
+      - name: Seed check must converge (no pending changes)
+        run: pnpm db:seed -- --check
+
       - name: Workspace is clean after install, build and db:generate
         run: |
           git status --short
