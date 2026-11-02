@@ -18,6 +18,9 @@ const UNAUTHORIZED_RESPONSE = {
 const getMeRoute = createRoute({
   method: "get",
   path: "/me",
+  operationId: "getMe",
+  tags: ["Users"],
+  summary: "Get the signed-in user's profile",
   security: [{ bearerAuth: [] }],
   responses: {
     200: {
@@ -31,6 +34,9 @@ const getMeRoute = createRoute({
 const patchMeRoute = createRoute({
   method: "patch",
   path: "/me",
+  operationId: "updateMe",
+  tags: ["Users"],
+  summary: "Update the signed-in user's profile",
   security: [{ bearerAuth: [] }],
   request: { body: { content: { "application/json": { schema: UpdateProfileRequestSchema } } } },
   responses: {

@@ -286,10 +286,11 @@ const ExerciseTranslationSchema = z
 
 export const ExercisePayloadSchema = CustomExerciseShapeSchema.extend({
   isCustom: z.boolean(),
+  // A relative `/static/...` path, never an absolute URL.
   imageUrl: z.string().nullable(),
   license: z.string().nullable(),
   author: z.string().nullable(),
-  sourceUrl: z.string().nullable(),
+  sourceUrl: z.url({ protocol: /^https?$/ }).nullable(),
   translations: z.array(ExerciseTranslationSchema),
 })
   .superRefine(validateMuscles)
@@ -480,7 +481,14 @@ export const PushResponseSchema = z
 // --- Pull ----------------------------------------------------------------------------------------
 
 export const PullQuerySchema = z.object({
-  cursor: z.coerce.number().int().min(0).default(0).openapi({ example: 0 }),
+  // `z.coerce` would otherwise document this as `type: ["integer", "null"]` (REP-70): the override
+  // keeps it a plain non-null integer while `minimum`/`default` still come through unchanged.
+  cursor: z.coerce
+    .number()
+    .int()
+    .min(0)
+    .default(0)
+    .openapi({ type: "integer", minimum: 0, default: 0, example: 0 }),
   limit: z.coerce
     .number()
     .int()

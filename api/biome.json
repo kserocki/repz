@@ -14,7 +14,8 @@
       "!coverage",
       "!src/db/migrations",
       "!src/db/seed/exercises.json",
-      "!src/db/seed/ATTRIBUTION.md"
+      "!src/db/seed/ATTRIBUTION.md",
+      "!openapi.json"
     ]
   },
   "formatter": {

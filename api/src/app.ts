@@ -1,4 +1,5 @@
 import type { OpenAPIHono } from "@hono/zod-openapi";
+import { Scalar } from "@scalar/hono-api-reference";
 import type pino from "pino";
 import { createAccessTokens } from "./modules/auth/access-tokens.ts";
 import type { AuthTransactions } from "./modules/auth/auth.repository.ts";
@@ -20,6 +21,7 @@ import { createUsersService } from "./modules/users/users.service.ts";
 import type { AppEnv } from "./shared/app-env.ts";
 import type { Clock } from "./shared/clock.ts";
 import { errorHandler, notFoundHandler } from "./shared/errors.ts";
+import { OPENAPI_DOCUMENT_CONFIG } from "./shared/openapi.ts";
 import { requestIdMiddleware } from "./shared/request-id.ts";
 import { requestLoggerMiddleware } from "./shared/request-logger.ts";
 import { createRouter } from "./shared/router.ts";
@@ -97,6 +99,19 @@ export function createApp(deps: AppDependencies): OpenAPIHono<AppEnv> {
   app.route("/", createAuthRoutes(authService));
   app.route("/", createUsersRoutes(usersService, accessTokens.verify));
   app.route("/", createSyncRoutes(syncService, accessTokens.verify));
+
+  // `doc31`/`Scalar` add plain `GET` handlers directly (never through `.openapi(...)`), so neither
+  // route is registered on `openAPIRegistry` and neither appears in the document it serves.
+  app.doc31("/openapi.json", OPENAPI_DOCUMENT_CONFIG);
+  app.get(
+    "/docs",
+    Scalar({
+      url: "/openapi.json",
+      pageTitle: "Repz API",
+      cdn: "https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.76.4",
+      telemetry: false,
+    }),
+  );
 
   app.notFound(notFoundHandler);
   app.onError(errorHandler);
