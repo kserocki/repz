@@ -1,0 +1,7 @@
+{
+  "type": "about:blank",
+  "title": "Content Too Large",
+  "status": 413,
+  "instance": "/sync/push",
+  "requestId": "b6e6b6a0-9999-4a22-8a33-000000000000"
+}

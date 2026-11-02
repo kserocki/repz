@@ -24,6 +24,7 @@ Repz is an **offline-first workout logger** (Compose Multiplatform, Android + iO
 
 ```
 api/        TypeScript API (Hono, Zod/OpenAPI, Drizzle, Postgres), pnpm
+contract/   shared API fixtures (validated against api/openapi.json)
 mobile/     KMP Gradle root: app/{android,shared}, core/*, feature/*/{api,impl}, build-logic, iosApp
 brand/      logo generators (src/) + exported logo and app-icon files. Never hand-edit exports
 docs/       architecture, ADRs, design system, motion, Claude Design prompts
@@ -80,6 +81,7 @@ Run from `mobile/` unless noted. One-time setup: create the git-ignored `mobile/
 | Postgres for the API | `docker compose up -d` (from the repo root; needs Docker/OrbStack running) | works |
 | API setup / dev | `cd api && pnpm install` · `pnpm dev` (Node 26, `.env` from `.env.example`) | works |
 | API gates (from `api/`) | `pnpm lint` · `pnpm typecheck` · `pnpm test` · `pnpm build` | works |
+| OpenAPI export (from `api/`) | `pnpm openapi:export` (commit `api/openapi.json`); browse at `http://localhost:<port>/docs` | works |
 | DB schema and migrations (from `api/`) | `pnpm db:generate` (after a schema change) · `pnpm db:migrate` (needs Postgres) · `pnpm db:check`; reset with `docker compose down -v` | works |
 | Brand assets reproducible (from the repo root) | `python3 brand/logo/src/android_vectors.py && mobile/iosApp/scripts/sync-brand-assets.sh && git status --porcelain` (must print nothing) | works |
 

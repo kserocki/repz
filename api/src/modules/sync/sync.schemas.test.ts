@@ -425,6 +425,24 @@ describe("ExercisePayloadSchema (pull) translations", () => {
     );
     expect(result.success).toBe(false);
   });
+
+  it.each(["https://wger.de/exercise/73/view-base", "http://wger.de/exercise/73/view-base", null])(
+    "given sourceUrl %s, when parsed, then it is accepted",
+    (sourceUrl) => {
+      expect(ExercisePayloadSchema.safeParse(baseExercisePayload({ sourceUrl })).success).toBe(
+        true,
+      );
+    },
+  );
+
+  it.each(["not a url", "javascript:alert(1)", "ftp://wger.de/x"])(
+    "given sourceUrl %s, when parsed, then it is rejected",
+    (sourceUrl) => {
+      expect(ExercisePayloadSchema.safeParse(baseExercisePayload({ sourceUrl })).success).toBe(
+        false,
+      );
+    },
+  );
 });
 
 describe("PushRequestSchema envelope rules", () => {

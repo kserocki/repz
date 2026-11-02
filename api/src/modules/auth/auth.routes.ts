@@ -20,6 +20,9 @@ const PROBLEM_DETAILS_CONTENT = {
 const registerRoute = createRoute({
   method: "post",
   path: "/auth/register",
+  operationId: "register",
+  tags: ["Auth"],
+  summary: "Create an account",
   request: { body: { content: { "application/json": { schema: RegisterRequestSchema } } } },
   responses: {
     201: {
@@ -34,6 +37,9 @@ const registerRoute = createRoute({
 const loginRoute = createRoute({
   method: "post",
   path: "/auth/login",
+  operationId: "login",
+  tags: ["Auth"],
+  summary: "Sign in",
   request: { body: { content: { "application/json": { schema: LoginRequestSchema } } } },
   responses: {
     200: {
@@ -48,6 +54,9 @@ const loginRoute = createRoute({
 const refreshRoute = createRoute({
   method: "post",
   path: "/auth/refresh",
+  operationId: "refreshTokens",
+  tags: ["Auth"],
+  summary: "Rotate an access/refresh token pair",
   request: { body: { content: { "application/json": { schema: RefreshRequestSchema } } } },
   responses: {
     200: {
@@ -65,6 +74,9 @@ const refreshRoute = createRoute({
 const logoutRoute = createRoute({
   method: "post",
   path: "/auth/logout",
+  operationId: "logout",
+  tags: ["Auth"],
+  summary: "Revoke a refresh token family",
   request: { body: { content: { "application/json": { schema: LogoutRequestSchema } } } },
   responses: {
     204: { description: "The token's family was revoked, or there was nothing to revoke." },

@@ -39,6 +39,9 @@ function contentTooLarge(c: Context): Response {
 const pushRoute = createRoute({
   method: "post",
   path: "/sync/push",
+  operationId: "syncPush",
+  tags: ["Sync"],
+  summary: "Push offline changes",
   security: [{ bearerAuth: [] }],
   middleware: [bodyLimit({ maxSize: PUSH_BODY_MAX_BYTES, onError: contentTooLarge })] as const,
   request: {
@@ -64,6 +67,9 @@ const pushRoute = createRoute({
 const pullRoute = createRoute({
   method: "get",
   path: "/sync/pull",
+  operationId: "syncPull",
+  tags: ["Sync"],
+  summary: "Pull changes since a cursor",
   security: [{ bearerAuth: [] }],
   request: { query: PullQuerySchema },
   responses: {

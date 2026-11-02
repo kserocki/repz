@@ -9,6 +9,7 @@ import type {
   TemplateAggregate,
   WorkoutAggregate,
 } from "../../modules/sync/sync.types.ts";
+import { type Clock, systemClock } from "../clock.ts";
 
 type FakeRoot<A> = {
   id: string;
@@ -35,6 +36,7 @@ function createFakeAggregateRepository<A>(
   table: Map<string, FakeRoot<A>>,
   nextVersion: () => number,
   pkeyConstraintName: string,
+  clock: Clock,
 ): AggregateSyncRepository<A> {
   return {
     async findStatesForUpdate(ids) {
@@ -64,7 +66,7 @@ function createFakeAggregateRepository<A>(
         ownerId,
         version: nextVersion(),
         deletedAt: null,
-        updatedAt: new Date(),
+        updatedAt: clock.now(),
         aggregate,
       };
       table.set(id, row);
@@ -82,7 +84,7 @@ function createFakeAggregateRepository<A>(
         ...row,
         aggregate,
         version: nextVersion(),
-        updatedAt: new Date(),
+        updatedAt: clock.now(),
       };
       table.set(id, updated);
       return toRootState(updated);
@@ -95,9 +97,9 @@ function createFakeAggregateRepository<A>(
       }
       const updated: FakeRoot<A> = {
         ...row,
-        deletedAt: new Date(),
+        deletedAt: clock.now(),
         version: nextVersion(),
-        updatedAt: new Date(),
+        updatedAt: clock.now(),
         aggregate: undefined,
       };
       table.set(id, updated);
@@ -197,8 +199,9 @@ function checkWorkoutChildIdCollisions(
 function createFakeWorkoutRepository(
   table: Map<string, FakeRoot<WorkoutAggregate>>,
   nextVersion: () => number,
+  clock: Clock,
 ): AggregateSyncRepository<WorkoutAggregate> {
-  const base = createFakeAggregateRepository(table, nextVersion, "workouts_pkey");
+  const base = createFakeAggregateRepository(table, nextVersion, "workouts_pkey", clock);
 
   return {
     ...base,
@@ -282,7 +285,7 @@ export type InMemorySyncStore = {
  * This fake proves the protocol, not the database race — Spotter proves the races on real
  * Postgres.
  */
-export function createInMemorySyncStore(): InMemorySyncStore {
+export function createInMemorySyncStore(clock: Clock = systemClock): InMemorySyncStore {
   let versionCounter = 0;
   const nextVersion = () => ++versionCounter;
 
@@ -297,17 +300,17 @@ export function createInMemorySyncStore(): InMemorySyncStore {
     return {
       workouts: withRecording(
         "workouts",
-        createFakeWorkoutRepository(workoutsTable, nextVersion),
+        createFakeWorkoutRepository(workoutsTable, nextVersion, clock),
         recordedCalls,
       ),
       templates: withRecording(
         "templates",
-        createFakeAggregateRepository(templatesTable, nextVersion, "workout_templates_pkey"),
+        createFakeAggregateRepository(templatesTable, nextVersion, "workout_templates_pkey", clock),
         recordedCalls,
       ),
       exercises: withRecording(
         "exercises",
-        createFakeAggregateRepository(exercisesTable, nextVersion, "exercises_pkey"),
+        createFakeAggregateRepository(exercisesTable, nextVersion, "exercises_pkey", clock),
         recordedCalls,
       ),
     };
@@ -396,7 +399,7 @@ export function createInMemorySyncStore(): InMemorySyncStore {
         ownerId: null,
         version: nextVersion(),
         deletedAt: null,
-        updatedAt: new Date(),
+        updatedAt: clock.now(),
         aggregate,
       };
       exercisesTable.set(id, row);

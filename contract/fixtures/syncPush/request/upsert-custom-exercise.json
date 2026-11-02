@@ -1,0 +1,17 @@
+{
+  "changes": [
+    {
+      "type": "exercise",
+      "id": "b6e6b6a0-3333-4a22-8a33-000000000002",
+      "deleted": false,
+      "payload": {
+        "name": "Zottman curl",
+        "primaryMuscle": "biceps",
+        "secondaryMuscles": [
+          "forearms"
+        ],
+        "equipment": "dumbbell"
+      }
+    }
+  ]
+}

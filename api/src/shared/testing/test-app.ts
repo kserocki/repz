@@ -37,7 +37,7 @@ export function createTestApp(overrides: TestAppOverrides = {}): TestApp {
   const generateId = overrides.generateId ?? (() => crypto.randomUUID());
   const clock = overrides.clock ?? createFixedClock(new Date("2026-01-01T00:00:00.000Z"));
   const store = overrides.store ?? createInMemoryAuthStore(generateId);
-  const syncStore = overrides.syncStore ?? createInMemorySyncStore();
+  const syncStore = overrides.syncStore ?? createInMemorySyncStore(clock);
 
   const app = createApp({
     logger: overrides.logger ?? pino({ level: "silent" }),

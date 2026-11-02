@@ -204,6 +204,17 @@ describe("GET /sync/pull", () => {
     expect(body).toMatchObject({ changes: [], hasMore: false, nextCursor: 0 });
   });
 
+  it("given an empty cursor value, when pulled, then it behaves as cursor 0", async () => {
+    const { app } = createTestApp();
+    const token = await registerAndGetAccessToken(app);
+
+    const res = await pull(app, token, "?cursor=");
+
+    expect(res.status).toBe(200);
+    const body = await readJson(res);
+    expect(body).toMatchObject({ changes: [], hasMore: false, nextCursor: 0 });
+  });
+
   it("given a push followed by a pull, when pulled, then the pushed change comes back", async () => {
     const { app } = createTestApp();
     const token = await registerAndGetAccessToken(app);

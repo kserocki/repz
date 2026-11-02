@@ -6,6 +6,9 @@ import { HealthResponseSchema } from "./health.schemas.ts";
 const healthRoute = createRoute({
   method: "get",
   path: "/health",
+  operationId: "getHealth",
+  tags: ["Health"],
+  summary: "Liveness check",
   responses: {
     200: {
       description: "The process is alive.",

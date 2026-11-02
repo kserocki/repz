@@ -1,0 +1,13 @@
+{
+  "type": "urn:repz:problem:validation-error",
+  "title": "Validation Error",
+  "status": 400,
+  "instance": "/auth/refresh",
+  "errors": [
+    {
+      "path": "json.refreshToken",
+      "message": "Too big: expected string to have <=256 characters"
+    }
+  ],
+  "requestId": "b6e6b6a0-9999-4a22-8a33-000000000000"
+}
