@@ -379,8 +379,11 @@
       "names": {
         "en": "Barbell Upright Row"
       },
-      "equipment": "machine",
-      "reviewNote": "wger has no equipment on this entry"
+      "equipment": "barbell",
+      "reviewNote": "wger lists no equipment on this entry, but its own description names a barbell; its description also depicted an explosive, hip-driven high pull rather than a strict upright row, so the instructions were rewritten to match this entry's name",
+      "instructions": {
+        "en": "1. Stand holding a barbell with an overhand grip, hands about shoulder-width apart, arms extended in front of your thighs.\n2. Keeping the bar close to your body, pull it straight up toward your chin by lifting your elbows out and up.\n3. Pause briefly when your elbows reach shoulder height, then lower the bar back down under control.\n4. Keep your torso upright throughout; the lift comes from your shoulders and arms, not from swinging your hips."
+      }
     },
     {
       "id": "097496de-b2ad-48fe-a69c-a10145cc860b",
@@ -451,7 +454,11 @@
       "wgerId": 202,
       "names": {
         "en": "Dumbbell Concentration Curl"
-      }
+      },
+      "instructions": {
+        "en": "1. Sit on the end of a bench with your feet wide apart, holding a dumbbell in one hand.\n2. Lean forward and brace the back of your working upper arm against the inside of your thigh, letting the arm hang straight down.\n3. Curl the dumbbell up toward your shoulder by bending your elbow, keeping your upper arm pinned against your thigh throughout.\n4. Squeeze at the top, then lower the dumbbell under control back to a full stretch.\n5. Complete all repetitions, then switch arms."
+      },
+      "reviewNote": "EN instructions rewritten from scratch (not a close paraphrase): wger's author is a URL (exrx.net), so the original text may have been copied from that site"
     },
     {
       "id": "0f155d90-3e9f-4f53-a9b0-dc48cd0fab6a",
@@ -541,7 +548,11 @@
       "wgerId": 655,
       "names": {
         "en": "Dumbbell Triceps Kickback"
-      }
+      },
+      "instructions": {
+        "en": "1. Hold a dumbbell in each hand and hinge forward at the hips until your torso is close to parallel with the floor, keeping your back flat.\n2. Raise your upper arms so they're parallel to the floor and tucked close to your sides, with your elbows bent roughly 90 degrees and forearms hanging down. This is the starting position.\n3. Without moving your upper arms, extend your elbows to straighten your arms, squeezing your triceps at the top.\n4. Pause briefly, then bend your elbows to lower the dumbbells back to the starting position under control."
+      },
+      "reviewNote": "EN instructions rewritten from scratch (not a close paraphrase): wger's author is a URL (bodybuilding.com), so the original text may have been copied from that site"
     },
     {
       "id": "c3a78d29-5c72-4925-89b0-cee1b41f5c75",
@@ -628,7 +639,11 @@
       "wgerId": 580,
       "names": {
         "en": "Side Plank"
-      }
+      },
+      "instructions": {
+        "en": "1. Lie on your side with your legs stacked and extended, then prop yourself up on your forearm, with your elbow positioned directly under your shoulder.\n2. Lift your hips off the floor so your body forms a straight line from your ankles to your shoulders, supporting your weight on your forearm and the side of your lower foot.\n3. Keep your hips lifted and your core braced, holding the position without letting your hips sag.\n4. Lower back down under control, then repeat on the other side."
+      },
+      "reviewNote": "EN instructions rewritten from scratch (not a close paraphrase): wger's author is a URL (bodybuilding.com), so the original text may have been copied from that site"
     },
     {
       "id": "60caed1f-ed4a-4856-bd8a-4c588a1b07e7",
@@ -777,16 +792,9 @@
       "wgerId": 1672,
       "names": {
         "en": "Seated Hip Abduction"
-      }
-    },
-    {
-      "id": "8b95fb5e-8eef-40b2-a951-8106fbeba623",
-      "wgerId": 1748,
-      "names": {
-        "en": "Machine Hip Abduction"
       },
       "equipment": "machine",
-      "reviewNote": "wger has no equipment on this entry"
+      "reviewNote": "wger derives bodyweight/no equipment for this entry, but its own description clearly depicts a seated hip-abduction machine (padded levers, weight stack); kept as the catalog's one machine hip-abduction exercise, removing the duplicate wger 1748 \"Machine Hip Abduction\" (whose own text inconsistently mixed abduction and adduction setup)"
     },
     {
       "id": "51383da2-16a6-4dd6-ac0c-aeaf826eebf0",
@@ -823,7 +831,13 @@
       "wgerId": 257,
       "names": {
         "en": "Barbell Front Squat"
-      }
+      },
+      "primaryMuscle": "quadriceps",
+      "secondaryMuscles": ["glutes", "abs"],
+      "instructions": {
+        "en": "1. Rest a barbell across the front of your shoulders, gripping it with a clean grip (fingertips under the bar, elbows high) or with crossed arms, keeping your elbows up throughout.\n2. Stand with your feet shoulder-width apart, brace your core, and keep your torso upright.\n3. Squat down by bending your hips and knees together, keeping your elbows high and chest up so the bar stays balanced on your shoulders.\n4. Lower until your hip crease drops below your knees, then drive back up through your feet to standing.\n\nThe upright torso this position demands shifts more of the work onto the quadriceps than a back squat."
+      },
+      "reviewNote": "wger lists Gluteus maximus as the sole primary muscle and its description claims the exercise \"trains the hamstrings and gluteus maximus\"; a front squat's upright torso makes it quadriceps-dominant (unlike the back squat), so both the muscle mapping and the instructions were corrected"
     },
     {
       "id": "29124af9-a4bc-478d-b1b3-24da397cfa71",
@@ -951,7 +965,11 @@
       "wgerId": 2557,
       "names": {
         "en": "Bulgarian Split Squat"
-      }
+      },
+      "instructions": {
+        "en": "1. Stand a couple of feet in front of a bench, facing away from it, and rest the top of one foot on the bench behind you.\n2. Adjust your front foot forward or back until your stance feels balanced, keeping most of your weight on the front leg.\n3. Lower your hips straight down by bending the front knee until your front thigh is roughly parallel to the floor, letting the back knee bend naturally.\n4. Keep your torso upright and your front knee tracking over your front foot.\n5. Drive through your front heel to return to the starting position. Complete all repetitions, then switch legs."
+      },
+      "reviewNote": "wger's original description is a supported split squat (both feet on the floor, holding a rack, wall or chair for balance), not a true Bulgarian split squat; rewritten to describe the rear-foot-elevated version this entry is named for"
     },
     {
       "id": "0db28cae-9003-464a-81d4-d6f9cde72fb0",
@@ -1021,7 +1039,11 @@
       "wgerId": 2478,
       "names": {
         "en": "Glute-Ham Raise"
-      }
+      },
+      "instructions": {
+        "en": "1. Kneel on a glute-ham developer (or have a partner brace your ankles) with your hips just in front of the pad and your body upright.\n2. Keeping your hips extended and your body in a straight line, slowly lower your torso toward the floor by letting your knees bend.\n3. Once you feel a strong stretch through your hamstrings, reverse the movement by contracting your hamstrings and glutes to pull yourself back up to the starting position.\n4. Keep the motion slow and controlled in both directions rather than letting gravity do the work."
+      },
+      "reviewNote": "EN instructions rewritten from scratch (not a close paraphrase): wger's author is listed as \"personal use\", so the original text may have been drawn from a non-wger source"
     },
     {
       "id": "f560f415-a384-4b1e-aa7e-916c39dda601",

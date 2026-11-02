@@ -1148,7 +1148,7 @@
       "id": "5e07be82-4071-4fd1-b1cf-8c50671c8276",
       "primaryMuscle": "glutes",
       "secondaryMuscles": [],
-      "equipment": "bodyweight",
+      "equipment": "machine",
       "license": "CC-BY-SA 4.0",
       "author": "Iko",
       "source": {
@@ -1224,7 +1224,7 @@
         {
           "locale": "en",
           "name": "Dumbbell Triceps Kickback",
-          "instructions": "1. Start with a dumbbell in each hand and your palms facing your torso. Keep your back straight with a slight bend in the knees and bend forward at the waist. Your torso should be almost parallel to the floor. Make sure to keep your head up. Your upper arms should be close to your torso and parallel to the floor. Your forearms should be pointed towards the floor as you hold the weights. There should be a 90-degree angle formed between your forearm and upper arm. This is your starting position.\n2. Now, while keeping your upper arms stationary, exhale and use your triceps to lift the weights until the arm is fully extended. Focus on moving the forearm.\n3. After a brief pause at the top contraction, inhale and slowly lower the dumbbells back down to the starting position.\n4. Repeat the movement for the prescribed amount of repetitions.\n\nVariations: This exercise can be executed also one arm at a time much like the one arm rows are performed.\n\nAlso, if you like the one arm variety, you can use a low pulley handle instead of a dumbbell for better peak contraction. In this case, the palms should be facing up (supinated grip) as opposed to the torso (neutral grip)."
+          "instructions": "1. Hold a dumbbell in each hand and hinge forward at the hips until your torso is close to parallel with the floor, keeping your back flat.\n2. Raise your upper arms so they're parallel to the floor and tucked close to your sides, with your elbows bent roughly 90 degrees and forearms hanging down. This is the starting position.\n3. Without moving your upper arms, extend your elbows to straighten your arms, squeezing your triceps at the top.\n4. Pause briefly, then bend your elbows to lower the dumbbells back to the starting position under control."
         }
       ]
     },
@@ -1245,7 +1245,7 @@
         {
           "locale": "en",
           "name": "Side Plank",
-          "instructions": "Works your obliques and helps stabilize your spine. Lie on your side and support your body between your forearm and knee to your feet."
+          "instructions": "1. Lie on your side with your legs stacked and extended, then prop yourself up on your forearm, with your elbow positioned directly under your shoulder.\n2. Lift your hips off the floor so your body forms a straight line from your ankles to your shoulders, supporting your weight on your forearm and the side of your lower foot.\n3. Keep your hips lifted and your core braced, holding the position without letting your hips sag.\n4. Lower back down under control, then repeat on the other side."
         }
       ]
     },
@@ -1525,27 +1525,6 @@
       ]
     },
     {
-      "id": "8b95fb5e-8eef-40b2-a951-8106fbeba623",
-      "primaryMuscle": "glutes",
-      "secondaryMuscles": [],
-      "equipment": "machine",
-      "license": "CC-BY-SA 4.0",
-      "author": "Tierrasverdes",
-      "source": {
-        "wgerId": 1748,
-        "wgerUuid": "b5726562-82ed-451a-89d8-8c8b13c5019a",
-        "url": "https://wger.de/exercise/1748/view-base",
-        "originalName": "Machine Hip Abduction"
-      },
-      "translations": [
-        {
-          "locale": "en",
-          "name": "Machine Hip Abduction",
-          "instructions": "Technique and Execution\n\nStarting Position\n\nSeated Positioning: Sit in the machine with back against the pad\n\nLeg Placement: Inner thighs against the machine's padded resistance points\n\nAdjust Machine: Set seat position to align your hip joint with the machine's pivot point\n\nMovement Technique\n\nStart with legs together or slightly pressed against the inner pads\n\nSlowly push legs outward, spreading them apart\n\nMove until maximum comfortable lateral range is reached\n\nPause briefly at the outer point of the movement\n\nSlowly return to the starting position with controlled movement\n\nBiomechanical Breakdown\n\nMuscle Engagement\n\nPrimary Activation: Gluteus Medius (side hip muscle)\n\nStabilization: Engages core and lower back muscles\n\nFunctional Movement: Mimics lateral leg movement used in walking, sports, and daily activities\n\nBenefits\n\nStrength and Stability\n\nImproves Hip Stability\n\nReduces Risk of Knee Injuries\n\nEnhances Lateral Movement Capabilities\n\nTargets Often-Neglected Muscle Groups"
-        }
-      ]
-    },
-    {
       "id": "967bbd48-d699-48c5-a2cb-d87fc5494be3",
       "primaryMuscle": "hamstrings",
       "secondaryMuscles": [
@@ -1638,7 +1617,7 @@
       "secondaryMuscles": [
         "glutes"
       ],
-      "equipment": "machine",
+      "equipment": "barbell",
       "license": "CC-BY-SA 3.0",
       "author": "Mahoney",
       "source": {
@@ -1651,7 +1630,7 @@
         {
           "locale": "en",
           "name": "Barbell Upright Row",
-          "instructions": "Use a light barbell, perform explosive lift up starting from underneath knee cap level. Lift/raise explosively using hips, at shoulder level. Tempo: 2111"
+          "instructions": "1. Stand holding a barbell with an overhand grip, hands about shoulder-width apart, arms extended in front of your thighs.\n2. Keeping the bar close to your body, pull it straight up toward your chin by lifting your elbows out and up.\n3. Pause briefly when your elbows reach shoulder height, then lower the bar back down under control.\n4. Keep your torso upright throughout; the lift comes from your shoulders and arms, not from swinging your hips."
         }
       ]
     },
@@ -1824,7 +1803,7 @@
         {
           "locale": "en",
           "name": "Glute-Ham Raise",
-          "instructions": "Kneel on a glute-ham developer or have a partner hold your ankles. Keeping hips straight, lower your torso toward the floor under control, then curl back up by contracting the hamstrings and glutes."
+          "instructions": "1. Kneel on a glute-ham developer (or have a partner brace your ankles) with your hips just in front of the pad and your body upright.\n2. Keeping your hips extended and your body in a straight line, slowly lower your torso toward the floor by letting your knees bend.\n3. Once you feel a strong stretch through your hamstrings, reverse the movement by contracting your hamstrings and glutes to pull yourself back up to the starting position.\n4. Keep the motion slow and controlled in both directions rather than letting gravity do the work."
         }
       ]
     },
@@ -1845,7 +1824,7 @@
         {
           "locale": "en",
           "name": "Dumbbell Concentration Curl",
-          "instructions": "Sit on bench. Grasp dumbbell between feet. Place back of upper arm to inner thigh. Lean into leg to raise elbow slightly."
+          "instructions": "1. Sit on the end of a bench with your feet wide apart, holding a dumbbell in one hand.\n2. Lean forward and brace the back of your working upper arm against the inside of your thigh, letting the arm hang straight down.\n3. Curl the dumbbell up toward your shoulder by bending your elbow, keeping your upper arm pinned against your thigh throughout.\n4. Squeeze at the top, then lower the dumbbell under control back to a full stretch.\n5. Complete all repetitions, then switch arms."
         }
       ]
     },
@@ -2290,8 +2269,9 @@
     },
     {
       "id": "c8fa162b-6568-48e7-ad5e-493a0ca5a7e0",
-      "primaryMuscle": "glutes",
+      "primaryMuscle": "quadriceps",
       "secondaryMuscles": [
+        "glutes",
         "abs"
       ],
       "equipment": "barbell",
@@ -2307,7 +2287,7 @@
         {
           "locale": "en",
           "name": "Barbell Front Squat",
-          "instructions": "This variation of the squat trains the hamstrings and gluteus maximus. It also works the back extensors and abductors."
+          "instructions": "1. Rest a barbell across the front of your shoulders, gripping it with a clean grip (fingertips under the bar, elbows high) or with crossed arms, keeping your elbows up throughout.\n2. Stand with your feet shoulder-width apart, brace your core, and keep your torso upright.\n3. Squat down by bending your hips and knees together, keeping your elbows high and chest up so the bar stays balanced on your shoulders.\n4. Lower until your hip crease drops below your knees, then drive back up through your feet to standing.\n\nThe upright torso this position demands shifts more of the work onto the quadriceps than a back squat."
         }
       ]
     },
@@ -2626,7 +2606,7 @@
         {
           "locale": "en",
           "name": "Bulgarian Split Squat",
-          "instructions": "Stand in a split stance with one foot about a stride in front of the other, and hold on to a stable support such as a rack, a wall or the back of a chair.\n\nLower your hips straight down by bending both knees until the back knee almost touches the floor. Keep your upper body upright and the front heel on the floor, then push through the front foot back up. Use the support only for balance, not to pull yourself up. Complete all repetitions, then switch sides."
+          "instructions": "1. Stand a couple of feet in front of a bench, facing away from it, and rest the top of one foot on the bench behind you.\n2. Adjust your front foot forward or back until your stance feels balanced, keeping most of your weight on the front leg.\n3. Lower your hips straight down by bending the front knee until your front thigh is roughly parallel to the floor, letting the back knee bend naturally.\n4. Keep your torso upright and your front knee tracking over your front foot.\n5. Drive through your front heel to return to the starting position. Complete all repetitions, then switch legs."
         }
       ]
     },

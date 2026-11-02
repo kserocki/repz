@@ -73,7 +73,6 @@ Exercise names, muscle groups, equipment and instructions in this catalog were s
 | Reverse Crunch | Reverse crunch | eufvksruh | [CC-BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | [wger.de](https://wger.de/exercise/1772/view-base) | modified |
 | Barbell Thruster | Thruster | BeLikeWater | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | [wger.de](https://wger.de/exercise/650/view-base) | modified |
 | Hammer Curl | Hammer Curls | wger.de | [CC-BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) | [wger.de](https://wger.de/exercise/272/view-base) | modified |
-| Machine Hip Abduction | Machine Hip Abduction | Tierrasverdes | [CC-BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | [wger.de](https://wger.de/exercise/1748/view-base) | modified |
 | Barbell Deadlift | Deadlifts | wger.de | [CC-BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) | [wger.de](https://wger.de/exercise/184/view-base) | modified |
 | Seated Hip Adduction | Seated Hip Adduction | flori, Araaosf | [CC-BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) | [wger.de](https://wger.de/exercise/12/view-base) | modified |
 | Seated Calf Raise | Sitting Calf Raises | wger.de | [CC-BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) | [wger.de](https://wger.de/exercise/590/view-base) | modified |

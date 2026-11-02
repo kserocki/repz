@@ -7,6 +7,17 @@ function nameOf(exercise: SnapshotExercise, locale: string): string {
   return exercise.translations.find((translation) => translation.locale === locale)?.name ?? "—";
 }
 
+/** The EN instructions, flattened to one table cell: newlines collapsed to spaces, `|` escaped. */
+function enInstructionsOf(exercise: SnapshotExercise): string {
+  const instructions = exercise.translations.find(
+    (translation) => translation.locale === "en",
+  )?.instructions;
+  if (!instructions) {
+    return "—";
+  }
+  return instructions.replaceAll("|", "\\|").replace(/\s+/g, " ").trim();
+}
+
 /** Every locale besides `en` present anywhere in the snapshot, sorted. `[]` while the catalog ships English-only. */
 function extraLocalesIn(snapshot: SnapshotFile): string[] {
   const locales = new Set<string>();
@@ -118,6 +129,7 @@ export function renderReviewTable(snapshot: SnapshotFile, curation: CurationFile
     "Author",
     "wger",
     "Overrides",
+    "EN instructions",
   ];
   const headerRow = `| ${headerCells.join(" | ")} |`;
   const separatorRow = `|${headerCells.map(() => "---").join("|")}|`;
@@ -137,6 +149,7 @@ export function renderReviewTable(snapshot: SnapshotFile, curation: CurationFile
         exercise.author,
         wgerLink,
         overridesOf(entry),
+        enInstructionsOf(exercise),
       ];
       return `| ${cells.join(" | ")} |`;
     });

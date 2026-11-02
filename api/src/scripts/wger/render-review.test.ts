@@ -78,10 +78,36 @@ describe("renderReviewTable", () => {
     expect(markdown).toContain("wger lists this incorrectly");
   });
 
-  it("given an entry with no overrides, when rendered, then the overrides column (the last one) is a dash", () => {
+  it("given an entry with no overrides, when rendered, then the overrides column (third from the end) is a dash", () => {
     const curation: CurationFile = { exercises: [curationEntry()] };
 
     const markdown = renderReviewTable(snapshot(), curation);
+    const row = markdown.split("\n").find((line) => line.includes("Bench Press"));
+    const cells = row?.split("|").map((cell) => cell.trim()) ?? [];
+
+    expect(cells.at(-3)).toBe("—");
+  });
+
+  it("given an exercise with EN instructions, when rendered, then the last column shows the flattened text", () => {
+    const curation: CurationFile = { exercises: [curationEntry()] };
+    const withMultilineInstructions = snapshot([
+      { locale: "en", name: "Bench Press", instructions: "Step one.\nStep two." },
+    ]);
+
+    const markdown = renderReviewTable(withMultilineInstructions, curation);
+    const row = markdown.split("\n").find((line) => line.includes("Bench Press"));
+    const cells = row?.split("|").map((cell) => cell.trim()) ?? [];
+
+    expect(cells.at(-2)).toBe("Step one. Step two.");
+  });
+
+  it("given an exercise with no EN instructions, when rendered, then the last column is a dash", () => {
+    const curation: CurationFile = { exercises: [curationEntry()] };
+    const withoutInstructions = snapshot([
+      { locale: "en", name: "Bench Press", instructions: null },
+    ]);
+
+    const markdown = renderReviewTable(withoutInstructions, curation);
     const row = markdown.split("\n").find((line) => line.includes("Bench Press"));
     const cells = row?.split("|").map((cell) => cell.trim()) ?? [];
 
