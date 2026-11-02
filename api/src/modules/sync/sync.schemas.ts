@@ -30,10 +30,15 @@ const notesField = z.string().max(NOTES_MAX).default("");
 const MuscleSchema = z.enum(MUSCLES);
 const EquipmentSchema = z.enum(EQUIPMENT);
 
-/** A BCP 47 language tag such as `"en"`, `"pl"` or `"pt-BR"`. No fixed enum: a new language is a new row, never a schema change (AGENTS.md). */
+/**
+ * A BCP 47 language tag such as `"en"`, `"pl"` or `"pt-BR"`. No fixed enum: a new language is a
+ * new row, never a schema change (AGENTS.md). Exported so `db/seed/curation.schema.ts` validates
+ * curation content locale keys against the exact same pattern.
+ */
+export const LOCALE_PATTERN = /^[a-z]{2,3}(-[A-Z]{2})?$/;
 export const LocaleSchema = z
   .string()
-  .regex(/^[a-z]{2,3}(-[A-Z]{2})?$/, 'locale must be a BCP 47 language tag, e.g. "en" or "pl"');
+  .regex(LOCALE_PATTERN, 'locale must be a BCP 47 language tag, e.g. "en" or "pl"');
 
 const rpeField = z
   .number()

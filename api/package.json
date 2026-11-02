@@ -19,7 +19,8 @@
     "lint:fix": "biome check --write .",
     "db:generate": "drizzle-kit generate",
     "db:check": "drizzle-kit check",
-    "db:migrate": "node --env-file-if-exists=.env src/db/migrate.ts"
+    "db:migrate": "node --env-file-if-exists=.env src/db/migrate.ts",
+    "import:wger": "node --env-file-if-exists=.env src/scripts/import-wger.ts"
   },
   "dependencies": {
     "@hono/node-server": "2.1.5",
