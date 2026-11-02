@@ -12,6 +12,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
+import io.ktor.serialization.ContentConvertException
 import kotlinx.serialization.SerializationException
 
 private val PROBLEM_JSON_CONTENT_TYPE = ContentType.parse("application/problem+json")
@@ -45,6 +46,10 @@ internal suspend fun <T> apiCall(
             NetworkResult.Failure(response.toNetworkError(sessionManager))
         }
     } catch (e: SerializationException) {
+        NetworkResult.Failure(NetworkError.MalformedResponse(e.message ?: "the response body did not match the expected shape"))
+    } catch (e: ContentConvertException) {
+        // Ktor wraps a SerializationException thrown by the content negotiation converter in its
+        // own exception type, which is not itself a SerializationException.
         NetworkResult.Failure(NetworkError.MalformedResponse(e.message ?: "the response body did not match the expected shape"))
     } catch (e: Throwable) {
         e.rethrowIfCancellation()
