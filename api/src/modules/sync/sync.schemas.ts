@@ -31,14 +31,15 @@ const MuscleSchema = z.enum(MUSCLES);
 const EquipmentSchema = z.enum(EQUIPMENT);
 
 /**
- * A BCP 47 language tag such as `"en"`, `"pl"` or `"pt-BR"`. No fixed enum: a new language is a
- * new row, never a schema change (AGENTS.md). Exported so `db/seed/curation.schema.ts` validates
- * curation content locale keys against the exact same pattern.
+ * A BCP 47 language tag such as `"en"`, `"de"` or `"pt-BR"`. No fixed enum, and no locale is
+ * special-cased anywhere: a new language is a new row, never a schema change (AGENTS.md).
+ * Exported so `db/seed/curation.schema.ts` validates curation content locale keys against the
+ * exact same pattern.
  */
 export const LOCALE_PATTERN = /^[a-z]{2,3}(-[A-Z]{2})?$/;
 export const LocaleSchema = z
   .string()
-  .regex(LOCALE_PATTERN, 'locale must be a BCP 47 language tag, e.g. "en" or "pl"');
+  .regex(LOCALE_PATTERN, 'locale must be a BCP 47 language tag, e.g. "en" or "de"');
 
 const rpeField = z
   .number()
@@ -310,7 +311,6 @@ export const ExercisePayloadSchema = CustomExerciseShapeSchema.extend({
           instructions:
             "Lie on a flat bench, grip the bar slightly wider than shoulder width, lower it to your chest, then press it back up.",
         },
-        { locale: "pl", name: "Wyciskanie sztangi leżąc", instructions: null },
       ],
     },
   });
@@ -529,7 +529,6 @@ export const SyncChangeSchema = z
             instructions:
               "Lie on a flat bench, grip the bar slightly wider than shoulder width, lower it to your chest, then press it back up.",
           },
-          { locale: "pl", name: "Wyciskanie sztangi leżąc", instructions: null },
         ],
       },
     },

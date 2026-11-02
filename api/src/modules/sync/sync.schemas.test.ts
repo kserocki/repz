@@ -354,13 +354,13 @@ describe("ExercisePayloadSchema (pull) translations", () => {
       sourceUrl: "https://wger.de/exercise/73/view-base",
       translations: [
         { locale: "en", name: "Bench press", instructions: "Lie on a flat bench." },
-        { locale: "pl", name: "Wyciskanie sztangi leżąc", instructions: null },
+        { locale: "de", name: "Bankdrücken", instructions: null },
       ],
       ...overrides,
     };
   }
 
-  it("given a catalog payload with en and pl translations, when parsed, then it is accepted", () => {
+  it("given a catalog payload with en and an extra, arbitrary locale, when parsed, then it is accepted (no locale is special-cased)", () => {
     expect(ExercisePayloadSchema.safeParse(baseExercisePayload()).success).toBe(true);
   });
 
@@ -383,7 +383,7 @@ describe("ExercisePayloadSchema (pull) translations", () => {
     },
   );
 
-  it.each(["en", "pl", "pt-BR"])(
+  it.each(["en", "de", "pt-BR"])(
     "given a translation with locale %s, when parsed, then it is accepted",
     (locale) => {
       const result = ExercisePayloadSchema.safeParse(

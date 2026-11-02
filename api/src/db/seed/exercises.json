@@ -22,11 +22,6 @@
           "locale": "en",
           "name": "Bodyweight Squat",
           "instructions": "Squat is a type of bodyweight exercise. It is one of the most popular exercises for strength and muscle growth. Squat is particularly effective for focusing on the muscles of the leg and hips. Squat are an easy exercise for beginners to do. It can help strengthen leg muscles, tighten hip muscles and burn calories to lose weight. It tightens the butt and legs. Squats are very effective for firming and strengthening your legs by acting on the gluteus,hip flexors, quadriceps, hamstrings and inner thigh muscles. Also, bodyweight squats can help shape your glutes and butt."
-        },
-        {
-          "locale": "pl",
-          "name": "Przysiad własnym ciężarem",
-          "instructions": null
         }
       ]
     },
@@ -47,11 +42,6 @@
           "locale": "en",
           "name": "Sled Push",
           "instructions": "1. Load the sled with 25% of your maximum load. If you don’t know this, choose a weight you can push for 10 minutes with short breaks. Beginners may choose to push the sled with no weight.\n2. Stand behind the sled and grab the poles with a high-grip hand position.\n3. Engage your core muscles and start pushing the sled forward as fast as you can, powering through your entire leg. Extend your hips and knees as you move the sled forward. Your foot stance should resemble your natural running position."
-        },
-        {
-          "locale": "pl",
-          "name": "Pchanie sanek (sled push)",
-          "instructions": null
         }
       ]
     },
@@ -72,11 +62,6 @@
           "locale": "en",
           "name": "Smith Machine Shoulder Press",
           "instructions": "1. Sit on a bench inside a Smith machine with the bar at shoulder height, back nearly upright.\n2. Press the bar straight up until your arms are fully extended.\n3. Lower it back down to shoulder height with control."
-        },
-        {
-          "locale": "pl",
-          "name": "Wyciskanie nad głowę na suwnicy Smitha",
-          "instructions": null
         }
       ]
     },
@@ -97,11 +82,6 @@
           "locale": "en",
           "name": "Close-Grip Supinated Lat Pulldown",
           "instructions": "Downward movement:\n\n• Pull the bar down so that it passes close to your chin and touches the upper part of your chest.\n• Keep the rest of your body still."
-        },
-        {
-          "locale": "pl",
-          "name": "Ściąganie drążka wąskim chwytem podchwytem",
-          "instructions": null
         }
       ]
     },
@@ -124,11 +104,6 @@
           "locale": "en",
           "name": "Leg Press (Wide Stance)",
           "instructions": "Sit on the machine and put your feet on the platform, a bit more than shoulder wide. The feet are turned outwards by a few degrees.\n\nLower the weight so much, that the knees form a right angle. Push immediately the platform up again, without any pause. When in the lower position, the knees point a bit outwards and the movement should be always fluid."
-        },
-        {
-          "locale": "pl",
-          "name": "Wyciskanie nóg na suwnicy (szeroko)",
-          "instructions": null
         }
       ]
     },
@@ -151,11 +126,6 @@
           "locale": "en",
           "name": "Stiff-Legged Deadlift",
           "instructions": "1. Stand holding a barbell in front of your thighs, feet hip-width apart.\n2. Keeping your legs almost straight and your back flat, hinge at the hips and lower the bar along your legs until you feel a stretch in your hamstrings.\n3. Drive your hips forward to return to standing."
-        },
-        {
-          "locale": "pl",
-          "name": "Martwy ciąg na prostych nogach",
-          "instructions": null
         }
       ]
     },
@@ -176,11 +146,6 @@
           "locale": "en",
           "name": "Preacher Curl",
           "instructions": "Place the EZ curl bar on the rest handles in front of the preacher bench. Lean over the bench and grab the EZ curl bar with palms up. Sit down on the preacher bench seat so your upper arms rest on top of the pad and your chest is pressed against the pad. Lower the weight until your elbows are extended and arms are straight. Bring the weights back up to the starting point by contracting biceps. Repeat"
-        },
-        {
-          "locale": "pl",
-          "name": "Uginanie ramion na modlitewniku",
-          "instructions": null
         }
       ]
     },
@@ -203,11 +168,6 @@
           "locale": "en",
           "name": "Cable Trunk Rotation",
           "instructions": "1. Sit on a bench side-on to a cable machine set at chest height, holding the handle with both hands.\n2. Keeping your hips facing forward, rotate your torso away from the machine.\n3. Return under control to the starting position, then repeat for all reps before switching sides."
-        },
-        {
-          "locale": "pl",
-          "name": "Rotacja tułowia na wyciągu",
-          "instructions": null
         }
       ]
     },
@@ -228,11 +188,6 @@
           "locale": "en",
           "name": "Barbell Ab Rollout",
           "instructions": "Place a barbell on the floor at your feet.\n\nBending at the waist, grip the barbell with a shoulder with overhand grip.\n\nWith a slow controlled motion, roll the bar out so that your back is straight.\n\nRoll back up raising your hips and butt as you return to the starting position."
-        },
-        {
-          "locale": "pl",
-          "name": "Wyciąganie ze sztangą (ab rollout)",
-          "instructions": null
         }
       ]
     },
@@ -253,11 +208,6 @@
           "locale": "en",
           "name": "Ring Dip",
           "instructions": "1. Support yourself above two gymnastic rings with arms straight, rings at your sides.\n2. Lower your body by bending your elbows until your upper arms are roughly parallel to the floor, keeping the rings close to your body.\n3. Press back up to full arm extension."
-        },
-        {
-          "locale": "pl",
-          "name": "Dipy na kółkach",
-          "instructions": null
         }
       ]
     },
@@ -278,11 +228,6 @@
           "locale": "en",
           "name": "Lat Pulldown (Leaning Back)",
           "instructions": "1. Sit at the lat pulldown machine and grip the bar wider than shoulder width.\n2. Lean your torso back slightly and pull the bar down to your upper chest, squeezing your shoulder blades together.\n3. Slowly let the bar rise back to the starting position with control."
-        },
-        {
-          "locale": "pl",
-          "name": "Ściąganie drążka z odchyleniem tułowia",
-          "instructions": null
         }
       ]
     },
@@ -303,11 +248,6 @@
           "locale": "en",
           "name": "Skull Crusher (EZ-Bar)",
           "instructions": "Hold the SZ-bar and lay down on a flat bench in such a way that around 1/4 of your head is over the edge. Stretch your arms with the bar and bend them so that the bar is lowered. Just before it touches your forehead, push it up.\n\nPay attention to your elbows and arms: only the triceps are doing the work, the rest of the arms should not move."
-        },
-        {
-          "locale": "pl",
-          "name": "Francuskie wyciskanie sztangą łamaną",
-          "instructions": null
         }
       ]
     },
@@ -328,11 +268,6 @@
           "locale": "en",
           "name": "Lying Leg Curl",
           "instructions": "Lay on a bench and put your calves behind the leg holder (better if they are hold on around the lower calves). Hold a grip on the bars to make sure the body is firmly in place. Bend your legs bringing the weight up, go slowly back. During the exercise the body should not move, all work is done by the legs."
-        },
-        {
-          "locale": "pl",
-          "name": "Uginanie nóg na maszynie leżąc",
-          "instructions": null
         }
       ]
     },
@@ -357,11 +292,6 @@
           "locale": "en",
           "name": "Cable Pull-Through",
           "instructions": "The Cable Pull Through is a lower-body exercise that targets the glutes and hamstrings using a \"hip hinge\" motion. To perform it, attach a rope to the lowest pulley setting, face away from the machine with the rope between your legs, and step forward to create tension. Keeping your back flat and knees slightly soft, push your hips backward as if trying to close a door behind you until you feel a deep stretch in your hamstrings.\n\nTo finish the rep, explosively drive your hips forward to return to a standing position, squeezing your glutes hard at the top. It is vital to remember that this is not a squat; your knees should not bend deeply, and your arms should remain straight and relaxed, acting only as hooks for the rope. This movement provides constant tension on the glutes while placing less stress on the lower back than a traditional deadlift."
-        },
-        {
-          "locale": "pl",
-          "name": "Pull-through na wyciągu",
-          "instructions": null
         }
       ]
     },
@@ -382,11 +312,6 @@
           "locale": "en",
           "name": "Machine Chest Press",
           "instructions": "1. Adjust the seat height so that the grips are parallel to your chest.\n2. Use your legs to push the foot forward pedal.\n3. Bring the handles to the start position.\n4. Keep your back in contact with the back pad, press outwards.\n5. Press the handles away from your chest and exhale.\n6. Allow the handles to come in gently until they reach your chest.\n7. Allow the handles to return to your chest as you inhale."
-        },
-        {
-          "locale": "pl",
-          "name": "Wyciskanie na maszynie",
-          "instructions": null
         }
       ]
     },
@@ -407,11 +332,6 @@
           "locale": "en",
           "name": "Jumping Jack",
           "instructions": "A jumping jack or star jump, also called side-straddle hop in the US military, is a physical jumping exercise performed by jumping to a position with the legs spread wide and the hands going overhead, sometimes in a clap, and then returning to a position with the feet together and the arms at the sides"
-        },
-        {
-          "locale": "pl",
-          "name": "Pajacyki",
-          "instructions": null
         }
       ]
     },
@@ -434,11 +354,6 @@
           "locale": "en",
           "name": "Glute Bridge",
           "instructions": "Lie on you back with your hips and knees flexed, feet on the ground. From this position, raise your butt off of the ground to a height where your body makes a straight line from your knees to your shoulders. To make the exercise more intense, you can add weight by letting a barbell rest on your hips as you complete the motion, or you can put your feet on a slightly higher surface such as a step or a bench."
-        },
-        {
-          "locale": "pl",
-          "name": "Mostek biodrowy (glute bridge)",
-          "instructions": null
         }
       ]
     },
@@ -461,11 +376,6 @@
           "locale": "en",
           "name": "Straight-Arm Pulldown",
           "instructions": "Use the straight bar attachment on a high pulley. Grasp the two ends of the bar with your palms facing downward and your arms straight out in front of you. Pull your hands down towards your hips, while keeping your arms straight, then raise them back up to the starting position."
-        },
-        {
-          "locale": "pl",
-          "name": "Ściąganie drążka na prostych ramionach",
-          "instructions": null
         }
       ]
     },
@@ -486,11 +396,6 @@
           "locale": "en",
           "name": "Sit-Up",
           "instructions": "Sit on a mat, your calves are resting on a bench, the knees make a right angle. Hold your hands behind your neck. Go now up with a rolling movement of your back, you should feel how the individual vertebrae lose contact with the mat. At the highest point, contract your abs as much as you can and hold there for 2 sec. Go now down, unrolling your back."
-        },
-        {
-          "locale": "pl",
-          "name": "Spięcia brzucha (sit-up)",
-          "instructions": null
         }
       ]
     },
@@ -511,11 +416,6 @@
           "locale": "en",
           "name": "Rope Triceps Pushdown",
           "instructions": "The cable rope push-down is a popular exercise targeting the triceps muscles. It's easy to learn and perform, making it a favorite for everyone from beginners to advanced lifters. It is usually performed for moderate to high reps, such as 8-12 reps or more per set, as part of an upper-body or arm-focused workout."
-        },
-        {
-          "locale": "pl",
-          "name": "Prostowanie ramion na wyciągu z liną",
-          "instructions": null
         }
       ]
     },
@@ -536,11 +436,6 @@
           "locale": "en",
           "name": "Barbell Shoulder Press",
           "instructions": "Sit on a bench, the back rest should be almost vertical. Take a barbell with a shoulder wide grip and bring it up to chest height. Press the weight up, but don't stretch the arms completely. Go slowly down and repeat."
-        },
-        {
-          "locale": "pl",
-          "name": "Wyciskanie sztangi nad głowę",
-          "instructions": null
         }
       ]
     },
@@ -561,11 +456,6 @@
           "locale": "en",
           "name": "Barbell Bicep Curl",
           "instructions": "Hold the Barbell shoulder-wide, the back is straight, the shoulders slightly back, the arms are streched. Bend the arms, bringing the weight up, with a fast movement. Without pausing, let down the bar with a slow and controlled movement.\n\nDon't allow your body to swing during the exercise, all work is done by the biceps, which are the only mucles that should move (pay attention to the elbows)."
-        },
-        {
-          "locale": "pl",
-          "name": "Uginanie ramion ze sztangą",
-          "instructions": null
         }
       ]
     },
@@ -586,11 +476,6 @@
           "locale": "en",
           "name": "Dumbbell Goblet Squat",
           "instructions": "Grasp dumbbell with both hands at the sides of the upper plates. Hold dumbbell in front of chest, close to torso. Place feet about shoulderwide apart, keep knees slightly bent.\n\nSquat down until thighs are parallel to floor. Keep back straight, bend and move hips backward to keep knees above feet. Return, keep knees slightly flexed. Repeat.\n\nKeep bodyweight on heels and look ahead or slightly above to keep back straight."
-        },
-        {
-          "locale": "pl",
-          "name": "Przysiad goblet z hantlą",
-          "instructions": null
         }
       ]
     },
@@ -611,11 +496,6 @@
           "locale": "en",
           "name": "Dumbbell Farmer's Carry",
           "instructions": "Grab half your body weight in each hand and walk."
-        },
-        {
-          "locale": "pl",
-          "name": "Marsz farmera z hantlami",
-          "instructions": null
         }
       ]
     },
@@ -636,11 +516,6 @@
           "locale": "en",
           "name": "Leg Raise",
           "instructions": "The leg raise is a strength training exercise which targets the iliopsoas (the anterior hip flexors). Because the abdominal muscles are used isometrically to stabilize the body during the motion, leg raises are also often used to strengthen the rectus abdominis muscle and the internal and external oblique muscles."
-        },
-        {
-          "locale": "pl",
-          "name": "Unoszenie nóg leżąc",
-          "instructions": null
         }
       ]
     },
@@ -663,11 +538,6 @@
           "locale": "en",
           "name": "Leg Press (Narrow Stance)",
           "instructions": "The exercise is very similar to the wide leg press:\n\nSit on the machine and put your feet on the platform so far apart that you could just put another foot in between them. The feet are parallel and point up.\n\nLower the weight so much, that the knees form a right angle. Push immediately the platform up again, without any pause. When in the lower position, the knees point a bit outwards and the movement should be always fluid."
-        },
-        {
-          "locale": "pl",
-          "name": "Wyciskanie nóg na suwnicy (wąsko)",
-          "instructions": null
         }
       ]
     },
@@ -688,11 +558,6 @@
           "locale": "en",
           "name": "Dumbbell Shoulder Press",
           "instructions": "Sit on a bench, the back rest should be almost vertical. Take two dumbbells and bring them up to shoulder height, the palms and the elbows point during the whole exercise to the front. Press the weights up, at the highest point they come very near but don't touch. Go slowly down and repeat."
-        },
-        {
-          "locale": "pl",
-          "name": "Wyciskanie hantli nad głowę",
-          "instructions": null
         }
       ]
     },
@@ -716,11 +581,6 @@
           "locale": "en",
           "name": "Barbell Bench Press",
           "instructions": "Lay down on a bench, the bar should be directly above your eyes, the knees are somewhat angled and the feet are firmly on the floor. Concentrate, breath deeply and grab the bar more than shoulder wide. Bring it slowly down till it briefly touches your chest at the height of your nipples. Push the bar up.\n\nIf you train with a high weight it is advisable to have a spotter that can help you up if you can't lift the weight on your own.\n\nWith the width of the grip you can also control which part of the chest is trained more:\n\n• wide grip: outer chest muscles\n• narrow grip: inner chest muscles and triceps"
-        },
-        {
-          "locale": "pl",
-          "name": "Wyciskanie sztangi leżąc",
-          "instructions": null
         }
       ]
     },
@@ -745,11 +605,6 @@
           "locale": "en",
           "name": "Plank",
           "instructions": "Get into a position on the floor supporting your weight on your forearms and toes. Arms are bent and directly below the shoulder.\n\nKeep your body straight at all times and hold this position as long as possible. To increase difficulty an arm or leg can be raised while performing this exercise."
-        },
-        {
-          "locale": "pl",
-          "name": "Deska (plank)",
-          "instructions": null
         }
       ]
     },
@@ -770,11 +625,6 @@
           "locale": "en",
           "name": "Cable External Rotation",
           "instructions": "Steps:\n\n1. Start off placing an extension band around a post or in a secure position where it will not release and is at elbow level.\n2. Position yourself to the side of the band and with your hand that is opposite of the band, reach out and grab the handle.\n3. Bring the band to your chest keeping your elbow bent in a 90 degree angle then slowly rotate your arm in a backhand motion so that the band externally rotates out\n4. Continue out as far as possible so that you feel a stretch in your shoulders, hold for a count and then return back to the starting position.\n5. Repeat for as many reps and sets as desired."
-        },
-        {
-          "locale": "pl",
-          "name": "Rotacja zewnętrzna barku na wyciągu",
-          "instructions": null
         }
       ]
     },
@@ -797,11 +647,6 @@
           "locale": "en",
           "name": "Cable Reverse Fly",
           "instructions": "Attach D-Handles to two cable pulleys in the upper position. Grab the left on with your right hand and vice-versa."
-        },
-        {
-          "locale": "pl",
-          "name": "Odwrotne rozpiętki na wyciągu",
-          "instructions": null
         }
       ]
     },
@@ -822,11 +667,6 @@
           "locale": "en",
           "name": "Bicycle Crunch",
           "instructions": "Bicycle crunches are a core exercise performed on the floor. Lie on your back with your hands behind your head and legs extended. Lift your shoulders off the ground, bring one knee toward your chest, and twist your torso so your opposite elbow meets the knee. Alternate sides in a pedaling motion, ensuring controlled movements and engaging your core throughout the exercise."
-        },
-        {
-          "locale": "pl",
-          "name": "Brzuszki rowerek",
-          "instructions": null
         }
       ]
     },
@@ -847,11 +687,6 @@
           "locale": "en",
           "name": "EZ-Bar Bicep Curl",
           "instructions": "Hold the SZ-bar shoulder-wide, the back is straight, the shoulders slightly back, the arms are streched. Bend the arms, bringing the weight up, with a fast movement. Without pausing, let down the bar with a slow and controlled movement.\n\nDon't allow your body to swing during the exercise, all work is done by the biceps, which are the only mucles that should move (pay attention to the elbows)."
-        },
-        {
-          "locale": "pl",
-          "name": "Uginanie ramion sztangą łamaną",
-          "instructions": null
         }
       ]
     },
@@ -874,11 +709,6 @@
           "locale": "en",
           "name": "Clean and Press",
           "instructions": "• The First Pull: Lift the bar from the floor to knee-height by driving with the legs, keeping the angle of your back constant.\n• The \"Power\" Position: As the bar reaches mid-thigh, explosively shrug and extend your hips to create vertical momentum.\n• The Quick Elbow Turnover: In the catch phase, rotate your elbows rapidly under the bar to create a \"shelf\" on your front deltoids.\n• The Vertical Press: Press the bar in a straight line; your head should shift slightly forward once the bar clears your forehead to reach full lockout."
-        },
-        {
-          "locale": "pl",
-          "name": "Zarzut i wyciskanie (clean and press)",
-          "instructions": null
         }
       ]
     },
@@ -899,11 +729,6 @@
           "locale": "en",
           "name": "Barbell Reverse Wrist Curl",
           "instructions": "Sitting on a bench, grab a barbell with your palms facing down and your hands shoulder-width apart. Rest your forearms on your thighs and allow your wrists to hang over your knees.\n\nCurl your knuckles towards your face, lifting the barbell. Pause for a moment in the top position, then slowly return the barbell to the starting position."
-        },
-        {
-          "locale": "pl",
-          "name": "Prostowanie nadgarstków ze sztangą",
-          "instructions": null
         }
       ]
     },
@@ -927,11 +752,6 @@
           "locale": "en",
           "name": "Barbell Bent-Over Row",
           "instructions": "1. Holding a barbell with a pronated grip (palms facing down), bend your knees slightly and bring your torso forward, by bending at the waist, while keeping the back straight until it is almost parallel to the floor. Tip: Make sure that you keep the head up. The barbell should hang directly in front of you as your arms hang perpendicular to the floor and your torso. This is your starting position.\n2. Now, while keeping the torso stationary, breathe out and lift the barbell to you. Keep the elbows close to the body and only use the forearms to hold the weight. At the top contracted position, squeeze the back muscles and hold for a brief pause.\n3. Then inhale and slowly lower the barbell back to the starting position.\n4. Repeat for the recommended amount of repetitions."
-        },
-        {
-          "locale": "pl",
-          "name": "Wiosłowanie sztangą w opadzie tułowia",
-          "instructions": null
         }
       ]
     },
@@ -952,11 +772,6 @@
           "locale": "en",
           "name": "Standing Bicep Curl",
           "instructions": "Stand holding dumbbells at shoulder width apart. Face forearm upward and keep upper arm still while raising each dumbbell up to your shoulder."
-        },
-        {
-          "locale": "pl",
-          "name": "Uginanie ramion stojąc",
-          "instructions": null
         }
       ]
     },
@@ -979,11 +794,6 @@
           "locale": "en",
           "name": "Low Cable Fly",
           "instructions": "Adjust the cable machine: Set the pulley to the lowest setting possible. Choose your handles: You can use neutral grip handles (palms facing each other) or straight handles depending on your preference. Neutral grip might be easier on your wrists. Stand with proper form: Stand with your feet shoulder-width apart, knees slightly bent, and core engaged. Maintain a slight arch in your lower back throughout the exercise. Grip the handles: Grab the handles with your chosen grip and step back a small step or two until there's slight tension on the cables. Initiate the movement: Keep your elbows slightly bent throughout the exercise. Imagine you're giving someone a big hug. Squeeze your chest muscles as you bring your hands together in front of your chest. Control the movement: Focus on squeezing your chest muscles rather than using your arms to pull the handles. Peak contraction: Briefly hold the squeeze at the top of the movement with your hands together at chest level. Return slowly: Slowly release the tension and return the handles back down to the starting position with your arms slightly extended but not locked out."
-        },
-        {
-          "locale": "pl",
-          "name": "Rozpiętki na wyciągu dolnym",
-          "instructions": null
         }
       ]
     },
@@ -1006,11 +816,6 @@
           "locale": "en",
           "name": "Hindu Squat",
           "instructions": "Start with your feet shoulder width apart and arms slightly behind your back.\n\nAs you descend towards the floor, raise your heels off the ground, while keeping your back as vertical as possible.\n\nUpon attaining the bottom position, touch the hands to the heels.\n\nThen stand up ending with the heels on the ground, arms extended in front of the chest then rowing into the start position."
-        },
-        {
-          "locale": "pl",
-          "name": "Przysiad hinduski",
-          "instructions": null
         }
       ]
     },
@@ -1031,11 +836,6 @@
           "locale": "en",
           "name": "Seated Dumbbell Lateral Raise",
           "instructions": "seated slightly leaned forward at beginning of exercise"
-        },
-        {
-          "locale": "pl",
-          "name": "Unoszenie hantli bokiem siedząc",
-          "instructions": null
         }
       ]
     },
@@ -1058,11 +858,6 @@
           "locale": "en",
           "name": "Barbell Back Squat",
           "instructions": "Place a barbell in a rack just below shoulder-height. Dip under the bar to put it behind the neck across the top of the back, and grip the bar with the hands wider than shoulder-width apart. Lift the chest up and squeeze the shoulder blades together to keep the straight back throughout the entire movement. Stand up to bring the bar off the rack and step backwards, then place the feet so that they are a little wider than shoulder-width apart. Sit back into hips and keep the back straight and the chest up, squatting down so the hips are below the knees. From the bottom of the squat, press feet into the ground and push hips forward to return to the top of the standing position."
-        },
-        {
-          "locale": "pl",
-          "name": "Przysiad ze sztangą na plecach",
-          "instructions": null
         }
       ]
     },
@@ -1086,11 +881,6 @@
           "locale": "en",
           "name": "Barbell Triceps Extension",
           "instructions": "Position barbell overhead with narrow overhand grip.\n\nLower forearm behind upper arm with elbows remaining overhead. Extend forearm overhead. Lower and repeat."
-        },
-        {
-          "locale": "pl",
-          "name": "Prostowanie ramion ze sztangą zza głowy",
-          "instructions": null
         }
       ]
     },
@@ -1111,11 +901,6 @@
           "locale": "en",
           "name": "Barbell Hip Thrust",
           "instructions": "The bar should go directly on your upper thigh, directly below your crotch. Your feet should be directly under your knees. Push your hips up so that you form a straight line from your knees to your shoulders. Use a pad for comfort."
-        },
-        {
-          "locale": "pl",
-          "name": "Hip thrust ze sztangą",
-          "instructions": null
         }
       ]
     },
@@ -1138,11 +923,6 @@
           "locale": "en",
           "name": "Kneeling Glute Kickback",
           "instructions": "Starting position:\n\nGet down on all fours.\n\nSteps:\n\n1. Push one foot back until fully extended, concentrating on the gluteus muscles.\n2. Stay for one second, then return to the initial position.\n3. Repeat, alternating feet."
-        },
-        {
-          "locale": "pl",
-          "name": "Wyprost nogi w tył w klęku (kickback)",
-          "instructions": null
         }
       ]
     },
@@ -1165,11 +945,6 @@
           "locale": "en",
           "name": "Single-Leg Romanian Deadlift",
           "instructions": "1. Stand upright and hold weights in both hands if using loads.\n2. Brace your core and lift one leg off the ground.\n3. Keep your back straight, hinge at the hips while lowering your torso forward, ensuring you don’t rotate your hips.\n4. Lower until you feel a stretch in your standing leg's hamstring, then return to standing position. Repeat on both sides."
-        },
-        {
-          "locale": "pl",
-          "name": "Martwy ciąg rumuński jednonóż",
-          "instructions": null
         }
       ]
     },
@@ -1190,11 +965,6 @@
           "locale": "en",
           "name": "Good Morning",
           "instructions": "Stand with your feet more than shoulder-width apart (wider stance) and place your hands on your hips. Hinge at your hips and lower your upper body towards the ground while keeping your back straight then come back up."
-        },
-        {
-          "locale": "pl",
-          "name": "Good morning ze sztangą",
-          "instructions": null
         }
       ]
     },
@@ -1215,11 +985,6 @@
           "locale": "en",
           "name": "Standing Barbell Overhead Press",
           "instructions": "• Setup: Stand with feet together and grip the bar slightly wider than shoulders.\n• Position: Rest the bar on your upper chest.\n• Press: Brace your core and push the bar straight up until your arms lock out.\n• Finish: Control the bar back down to your chest.\n• https://youtu.be/ZXpdJOLNoWw?si=u27cGyODoblXHBu1"
-        },
-        {
-          "locale": "pl",
-          "name": "Wyciskanie sztangi nad głowę stojąc",
-          "instructions": null
         }
       ]
     },
@@ -1242,11 +1007,6 @@
           "locale": "en",
           "name": "Standing Barbell Lunge",
           "instructions": "Put barbell on the back of your shoulders. Stand upright, then take the first step forward. Step should bring you forward so that your supporting legs knee can touch the floor. Then stand back up and repeat with the other leg.\n\nRemember to keep good posture."
-        },
-        {
-          "locale": "pl",
-          "name": "Wykrok ze sztangą stojąc",
-          "instructions": null
         }
       ]
     },
@@ -1269,11 +1029,6 @@
           "locale": "en",
           "name": "Crunch",
           "instructions": "Lay down on your back a soft surface, the feet are on the floor. Ask a partner or use some other help (barbell, etc.) to keep them fixed, your hands are behind your head. From this position move your upper body up till your head or elbows touch your knees. Do this movement by rolling up your back."
-        },
-        {
-          "locale": "pl",
-          "name": "Brzuszki (crunch)",
-          "instructions": null
         }
       ]
     },
@@ -1294,11 +1049,6 @@
           "locale": "en",
           "name": "Band Glute Kickback",
           "instructions": "A rubber band glute kickback is an exercise performed on hands and knees, where you anchor a resistance band to your foot and kick your heel back and up, squeezing your glute at the top of the movement, while maintaining a stable core and flat back to target and strengthen the gluteal muscles."
-        },
-        {
-          "locale": "pl",
-          "name": "Wyprost nogi w tył z gumą (kickback)",
-          "instructions": null
         }
       ]
     },
@@ -1319,11 +1069,6 @@
           "locale": "en",
           "name": "Decline Barbell Bench Press",
           "instructions": "Lay down on a decline bench, the bar should be directly above your eyes, the knees are somewhat angled and the feet are firmly on the floor. Concentrate, breath deeply and grab the bar more than shoulder wide. Bring it slowly down till it briefly touches your chest at the height of your nipples. Push the bar up."
-        },
-        {
-          "locale": "pl",
-          "name": "Wyciskanie sztangi na ławce zniżkowej",
-          "instructions": null
         }
       ]
     },
@@ -1344,11 +1089,6 @@
           "locale": "en",
           "name": "Pec Deck Fly",
           "instructions": "Pectoral issolation exercise - full range of motion is best with full contraction and slow negative"
-        },
-        {
-          "locale": "pl",
-          "name": "Rozpiętki na maszynie (pec deck)",
-          "instructions": null
         }
       ]
     },
@@ -1369,11 +1109,6 @@
           "locale": "en",
           "name": "Seated Hip Abduction",
           "instructions": "Starting Position:\n\n• Adjust the seat height so that your knees are aligned with the pivot point of the machine.\n• Sit with your back flat against the backrest, maintaining good posture.\n• Place the outside of your thighs against the machine's padded levers.\n• Position your feet flat on the footrests or platform of the machine.\n• Grasp the handles or sides of the seat for stability.\n• Ensure your spine is neutral and your core is slightly engaged.\n\nMovement:\n\n• Exhale as you slowly push your legs outward against the resistance pads.\n• Focus on initiating the movement from your hips, not your knees.\n• Continue opening your legs until you feel a strong contraction in your outer hips and thighs.\n• Hold the fully abducted position briefly (1-2 seconds) to maximize muscle engagement.\n• Inhale as you slowly control the return of your legs to the starting position, resisting the weight throughout the movement.\n• Avoid allowing the weight stack to touch down between repetitions to maintain constant tension on the muscles.\n• Repeat for the desired number of repetitions, maintaining control throughout the set."
-        },
-        {
-          "locale": "pl",
-          "name": "Odwodzenie bioder siedząc",
-          "instructions": null
         }
       ]
     },
@@ -1394,11 +1129,6 @@
           "locale": "en",
           "name": "Dumbbell Lateral Raise",
           "instructions": "This exercise works the deltoid muscle of the shoulder. The movement starts with the arms straight, and the hands holding weights at the sides or in front of the body. Body is in a slight forward-leaning position with hips and knees bent a little. Arms are kept straight or slightly bent, and raised through an arc of movement in the coronal plane that terminates when the hands are at approximately shoulder height. Weights are lowered to the starting position, completing one rep. When using a cable machine the individual stands with the coronal plane in line with the pulley, which is at or near the ground.[9] The exercise can be completed one shoulder at a time (with the other hand used to stabilize the body against the weight moved), or with both hands simultaneously if two parallel pulleys are available."
-        },
-        {
-          "locale": "pl",
-          "name": "Unoszenie hantli bokiem",
-          "instructions": null
         }
       ]
     },
@@ -1419,11 +1149,6 @@
           "locale": "en",
           "name": "Hanging Leg Raise",
           "instructions": "Hanging from bar or straps, bring legs up with knees extended or flexed"
-        },
-        {
-          "locale": "pl",
-          "name": "Unoszenie nóg w zwisie",
-          "instructions": null
         }
       ]
     },
@@ -1444,11 +1169,6 @@
           "locale": "en",
           "name": "Dumbbell Triceps Kickback",
           "instructions": "1. Start with a dumbbell in each hand and your palms facing your torso. Keep your back straight with a slight bend in the knees and bend forward at the waist. Your torso should be almost parallel to the floor. Make sure to keep your head up. Your upper arms should be close to your torso and parallel to the floor. Your forearms should be pointed towards the floor as you hold the weights. There should be a 90-degree angle formed between your forearm and upper arm. This is your starting position.\n2. Now, while keeping your upper arms stationary, exhale and use your triceps to lift the weights until the arm is fully extended. Focus on moving the forearm.\n3. After a brief pause at the top contraction, inhale and slowly lower the dumbbells back down to the starting position.\n4. Repeat the movement for the prescribed amount of repetitions.\n\nVariations: This exercise can be executed also one arm at a time much like the one arm rows are performed.\n\nAlso, if you like the one arm variety, you can use a low pulley handle instead of a dumbbell for better peak contraction. In this case, the palms should be facing up (supinated grip) as opposed to the torso (neutral grip)."
-        },
-        {
-          "locale": "pl",
-          "name": "Prostowanie ramienia z hantlą w opadzie",
-          "instructions": null
         }
       ]
     },
@@ -1469,11 +1189,6 @@
           "locale": "en",
           "name": "Side Plank",
           "instructions": "Works your obliques and helps stabilize your spine. Lie on your side and support your body between your forearm and knee to your feet."
-        },
-        {
-          "locale": "pl",
-          "name": "Deska boczna",
-          "instructions": null
         }
       ]
     },
@@ -1496,11 +1211,6 @@
           "locale": "en",
           "name": "Seated Cable Row",
           "instructions": "1. Take a seat on the machine with your feet planted, a little wider than shoulder width. Drive the heels, and squeeze the glutes. Grab onto the cable handle.\n2. Sit up tall with a slight bend through the knees. Tighten up the abs and low back to maintain a perpendicular angle to the floor with your torso.\n3. Roll the shoulders back and down. Squeeze them together as you row, thinking about pinching a pencil in between them. As you do this, pull the handle back towards you, landing right above your belly button.\n4. Pause here for a moment before returning the handle, still squeezing the shoulder blades. Once you've returned the weight to the stack, then allow the shoulder blades to relax, without pulling the torso forward.\n5. Repeat the movement."
-        },
-        {
-          "locale": "pl",
-          "name": "Wiosłowanie na wyciągu dolnym siedząc",
-          "instructions": null
         }
       ]
     },
@@ -1525,11 +1235,6 @@
           "locale": "en",
           "name": "Wide-Grip Lat Pulldown",
           "instructions": "1. <p>Starting position:</p> <ul> <li>Arms extended overhead, feeling a stretch in your lats.\n2. Keep your shoulders depressed (don’t shrug upward).\n3. <p>Pulling phase (concentric):</p> <ul> <li>Pull the bar down to your upper chest or collarbone area by driving your elbows down and back.\n4. Keep your chest lifted and squeeze your shoulder blades together at the bottom."
-        },
-        {
-          "locale": "pl",
-          "name": "Ściąganie drążka szerokim chwytem",
-          "instructions": null
         }
       ]
     },
@@ -1550,11 +1255,6 @@
           "locale": "en",
           "name": "Battle Ropes",
           "instructions": "1. Hold the ends of the rope at arm's length in front of your hips with your hands shoulder-width apart.\n2. Brace your core and begin alternately raising and lowering each arm explosively.\n3. Keep alternating arms for three to four sets of 1 to 2 minutes."
-        },
-        {
-          "locale": "pl",
-          "name": "Fale na linach (battle ropes)",
-          "instructions": null
         }
       ]
     },
@@ -1577,11 +1277,6 @@
           "locale": "en",
           "name": "Single-Leg Hamstring Curl",
           "instructions": "Specifically, the muscles involved are: biceps femoris, semimembranosus and semitendinosus."
-        },
-        {
-          "locale": "pl",
-          "name": "Uginanie nogi na maszynie jednonóż",
-          "instructions": null
         }
       ]
     },
@@ -1605,11 +1300,6 @@
           "locale": "en",
           "name": "Incline Dumbbell Bench Press",
           "instructions": "This is a variation of the flat bench press designed to emphasize the clavicular head of the pectoralis major (the upper portion). By tilting the torso, the angle of the push changes, shifting more tension to the upper chest and shoulders, which helps achieve a more aesthetic, balanced, and three-dimensional development of the torso.\n\n1. <p>Bench Adjustment and Preparation: Set the bench to an incline of between 30 and 45 degrees (an incline greater than 45° will place too much strain on the shoulders and reduce the stimulus to the chest). Sit down with a dumbbell on each thigh.</p>\n2. <p>Starting position: Lean back, resting your back against the bench, while using your knees one after the other to push the dumbbells upward to shoulder height.</p>\n3. <p>Anatomical Stabilization: Plant your feet firmly on the floor. Retract your scapulas (bring your shoulder blades together and press them into the bench) to protect your shoulders and stabilize the load.</p>\n4. <p>Eccentric Phase (Lowering): Lower the dumbbells slowly and in a controlled manner toward the upper part of your chest. Your elbows should not splay out to the sides (90°); maintain a safe angle of about 45 to 60 degrees relative to your torso.</p>\n5. <p>Concentric Phase (Lift): Push the dumbbells vertically upward as you exhale. Follow a slightly converging path (without letting them touch at the top). Stop the movement just before locking out your elbows to maintain muscle tension in the upper pectoral.</p>"
-        },
-        {
-          "locale": "pl",
-          "name": "Wyciskanie hantli na ławce skośnej",
-          "instructions": null
         }
       ]
     },
@@ -1630,11 +1320,6 @@
           "locale": "en",
           "name": "Barbell Front Raise",
           "instructions": "To execute the exercise, the lifter stands with their feet shoulder width apart and weights or resistance handles held by their side with a pronated (overhand) grip.\n\nThe movement is to bring the arms up in front of the body to eye level and with only a slight bend in the elbow. This isolates the anterior deltoid muscle (front of the shoulder) and uses the anterior deltoid to lift the weight.\n\nWhen lifting it is important to keep the body still so the anterior deltoid is fully utilised; if the weight cannot be lifted by standing still then it is too heavy and a lower weight is needed. It is important to keep a slight bend in the elbow when lifting as keeping the elbow locked will add stress to the elbow joint and could cause injury.\n\nA neutral grip, similar to that used in the hammer curl, can also be used. With this variation the weight is again raised to eye level, but out to a 45 degree angle from the front of the body. This may be beneficial for those with shoulder injuries, particularly those related to the rotator cuff."
-        },
-        {
-          "locale": "pl",
-          "name": "Unoszenie sztangi przodem",
-          "instructions": null
         }
       ]
     },
@@ -1658,11 +1343,6 @@
           "locale": "en",
           "name": "Barbell Hack Squat",
           "instructions": "Place a barbell on the floor just behind your heels. Stand with your feet about hip-width apart or closer, keep your chest up and your back straight, and squat down to grip the bar behind you with straight arms.\n\nStand up by extending your knees and hips, sliding the bar up along the back of your legs. Lower it under control to complete the rep."
-        },
-        {
-          "locale": "pl",
-          "name": "Przysiad hakowy ze sztangą",
-          "instructions": null
         }
       ]
     },
@@ -1687,11 +1367,6 @@
           "locale": "en",
           "name": "Barbell Clean",
           "instructions": "Regular olympic lift clean. Pull bar from ground, catch on shoulders performing a front squat."
-        },
-        {
-          "locale": "pl",
-          "name": "Zarzut sztangi (clean)",
-          "instructions": null
         }
       ]
     },
@@ -1714,11 +1389,6 @@
           "locale": "en",
           "name": "V-Bar Lat Pulldown",
           "instructions": "1. Attach a V-bar to the lat pulldown cable and sit with your thighs secured under the pads.\n2. Grip the V-bar with palms facing each other and pull it down to your upper chest.\n3. Slowly let the bar rise back to the starting position with control."
-        },
-        {
-          "locale": "pl",
-          "name": "Ściąganie drążka uchwytem V",
-          "instructions": null
         }
       ]
     },
@@ -1739,11 +1409,6 @@
           "locale": "en",
           "name": "Reverse Crunch",
           "instructions": "1. Lay down\n2. Place your hands near your butt (often slightly in front or under or both)\n3. Raise your legs, but about 70% of the way you should be able to also raise your pelvis\n4. (optional/variable) Hold 1/2 seconds at the top\n5. Go back to starting position"
-        },
-        {
-          "locale": "pl",
-          "name": "Brzuszki odwrotne",
-          "instructions": null
         }
       ]
     },
@@ -1767,11 +1432,6 @@
           "locale": "en",
           "name": "Barbell Thruster",
           "instructions": "1. Start by doing a front squat\n2. At the top position, push the bar above your head (similar to a press)\n3. Lower the bar to the shoulders"
-        },
-        {
-          "locale": "pl",
-          "name": "Thruster ze sztangą",
-          "instructions": null
         }
       ]
     },
@@ -1792,11 +1452,6 @@
           "locale": "en",
           "name": "Hammer Curl",
           "instructions": "• Start: Hold dumbbells at your sides with palms facing your torso.\n• Curl: Lift the weights toward your shoulders while maintaining the neutral grip (like holding a hammer).\n• Squeeze: Contract the biceps at the top without moving your elbows forward.\n• Lower: Slowly return to the starting position with full control."
-        },
-        {
-          "locale": "pl",
-          "name": "Uginanie ramion młotkowe",
-          "instructions": null
         }
       ]
     },
@@ -1817,11 +1472,6 @@
           "locale": "en",
           "name": "Machine Hip Abduction",
           "instructions": "Technique and Execution\n\nStarting Position\n\nSeated Positioning: Sit in the machine with back against the pad\n\nLeg Placement: Inner thighs against the machine's padded resistance points\n\nAdjust Machine: Set seat position to align your hip joint with the machine's pivot point\n\nMovement Technique\n\nStart with legs together or slightly pressed against the inner pads\n\nSlowly push legs outward, spreading them apart\n\nMove until maximum comfortable lateral range is reached\n\nPause briefly at the outer point of the movement\n\nSlowly return to the starting position with controlled movement\n\nBiomechanical Breakdown\n\nMuscle Engagement\n\nPrimary Activation: Gluteus Medius (side hip muscle)\n\nStabilization: Engages core and lower back muscles\n\nFunctional Movement: Mimics lateral leg movement used in walking, sports, and daily activities\n\nBenefits\n\nStrength and Stability\n\nImproves Hip Stability\n\nReduces Risk of Knee Injuries\n\nEnhances Lateral Movement Capabilities\n\nTargets Often-Neglected Muscle Groups"
-        },
-        {
-          "locale": "pl",
-          "name": "Odwodzenie bioder na maszynie",
-          "instructions": null
         }
       ]
     },
@@ -1845,11 +1495,6 @@
           "locale": "en",
           "name": "Barbell Deadlift",
           "instructions": "Stand firmly, with your feet slightly more than shoulder wide apart. Stand directly behind the bar where it should barely touch your shin, your feet pointing a bit out. Bend down with a straight back, the knees also pointing somewhat out. Grab the bar with a shoulder wide grip, one overhand, one underhand (mixed grip).\n\nPull the weight up. At the highest point make a slight hollow back and pull the bar back. Hold 1 or 2 seconds that position. Go down, making sure the back is not bent. Once down you can either go back again as soon as the weights touch the floor, or make a pause, depending on the weight."
-        },
-        {
-          "locale": "pl",
-          "name": "Martwy ciąg ze sztangą",
-          "instructions": null
         }
       ]
     },
@@ -1870,11 +1515,6 @@
           "locale": "en",
           "name": "Seated Hip Adduction",
           "instructions": "Starting Position: Sit on the machine with your knees inward and against the pads. Pull the pin to release the pads. Grab the handles on the sides.b"
-        },
-        {
-          "locale": "pl",
-          "name": "Przywodzenie bioder siedząc",
-          "instructions": null
         }
       ]
     },
@@ -1895,11 +1535,6 @@
           "locale": "en",
           "name": "Seated Calf Raise",
           "instructions": "Sit on a bench for calf raises and check that the feet are half free and that you can completely stretch the calf muscles down. Pull your calves up, going as far (up) as you can. Make at the highest point a short pause of 1 or 2 seconds and go down."
-        },
-        {
-          "locale": "pl",
-          "name": "Wspięcia na palce siedząc",
-          "instructions": null
         }
       ]
     },
@@ -1920,11 +1555,6 @@
           "locale": "en",
           "name": "Dumbbell Shrug",
           "instructions": "Stand with straight body, the hands are hanging freely on the side and hold each a dumbbell. Lift from this position the shoulders as high as you can, but don't bend the arms during the movement. On the highest point, make a short pause of 1 or 2 seconds before returning slowly to the initial position.\n\nWhen training with a higher weight, make sure that you still do the whole movement!"
-        },
-        {
-          "locale": "pl",
-          "name": "Wznosy barków z hantlami",
-          "instructions": null
         }
       ]
     },
@@ -1947,11 +1577,6 @@
           "locale": "en",
           "name": "Barbell Upright Row",
           "instructions": "Use a light barbell, perform explosive lift up starting from underneath knee cap level. Lift/raise explosively using hips, at shoulder level. Tempo: 2111"
-        },
-        {
-          "locale": "pl",
-          "name": "Wiosłowanie sztangą w pionie",
-          "instructions": null
         }
       ]
     },
@@ -1972,11 +1597,6 @@
           "locale": "en",
           "name": "Dumbbell Fly",
           "instructions": "Take two dumbbells and lay on a bench, make sure the feet are firmly on the ground and your back is not arched, but has good contact with the bench. The arms are stretched in front of you, about shoulder wide. Bend now the arms a bit and let them down with a half-circle movement to the side. Without changing the angle of the elbow bring them in a fluid movement back up."
-        },
-        {
-          "locale": "pl",
-          "name": "Rozpiętki z hantlami",
-          "instructions": null
         }
       ]
     },
@@ -1997,11 +1617,6 @@
           "locale": "en",
           "name": "Band Dorsiflexion",
           "instructions": "This exercise uses an exercise band. It targets the Soleus and Tibialis anterior."
-        },
-        {
-          "locale": "pl",
-          "name": "Zginanie grzbietowe stopy z gumą",
-          "instructions": null
         }
       ]
     },
@@ -2022,11 +1637,6 @@
           "locale": "en",
           "name": "Single-Arm Preacher Curl",
           "instructions": "Sit on the preacher curl bench and perform a bicep curl with a dumbbell in one hand. Your other hand can be at rest, or beneath your curling arm's elbow."
-        },
-        {
-          "locale": "pl",
-          "name": "Uginanie ramienia na modlitewniku jednorącz",
-          "instructions": null
         }
       ]
     },
@@ -2047,11 +1657,6 @@
           "locale": "en",
           "name": "Barbell Shrug",
           "instructions": "Take a barbell and stand with a straight body, the arms are hanging freely in front of you. Lift from this position the shoulders as high as you can, but don't bend the arms during the movement. On the highest point, make a short pause of 1 or 2 seconds before returning slowly to the initial position.\n\nWhen training with a higher weight, make sure that you still do the whole movement!"
-        },
-        {
-          "locale": "pl",
-          "name": "Wznosy barków ze sztangą",
-          "instructions": null
         }
       ]
     },
@@ -2072,11 +1677,6 @@
           "locale": "en",
           "name": "Dumbbell Skull Crusher",
           "instructions": "Hold the dumbbells and lay down on a flat bench in such a way that around 1/4 of your head is over the edge. Stretch arms straight up and then lean dumbbells away from your toes to a 10-20 degree angle. Keep upper arm at this angle throughout exercise. Dumbbell shall not be amed at your head, but away over your head. This will maximise gain from exercise with load on triceps all the time.\n\nPay attention to your elbows and arms: only the triceps are doing the work, the rest of the arms should not move."
-        },
-        {
-          "locale": "pl",
-          "name": "Francuskie wyciskanie z hantlami",
-          "instructions": null
         }
       ]
     },
@@ -2100,11 +1700,6 @@
           "locale": "en",
           "name": "T-Bar Row (Narrow Grip)",
           "instructions": "The execution of this exercise is very similar to the regular bent over rowing, only that the bar is fixed here.\n\nGrab the barbell with a wide grip (slightly more than shoulder wide) and lean forward. Your upper body is not quite parallel to the floor, but forms a slight angle. The chest's out during the whole exercise. Pull now the barbell with a fast movement towards your belly button, not further up. Go slowly down to the initial position. Don't swing with your body and keep your arms next to your body."
-        },
-        {
-          "locale": "pl",
-          "name": "Wiosłowanie sztangą T wąskim chwytem",
-          "instructions": null
         }
       ]
     },
@@ -2125,11 +1720,6 @@
           "locale": "en",
           "name": "T-Bar Row",
           "instructions": "bent over with triangle grip, slightly bent knees"
-        },
-        {
-          "locale": "pl",
-          "name": "Wiosłowanie sztangą T",
-          "instructions": null
         }
       ]
     },
@@ -2152,11 +1742,6 @@
           "locale": "en",
           "name": "Glute-Ham Raise",
           "instructions": "Kneel on a glute-ham developer or have a partner hold your ankles. Keeping hips straight, lower your torso toward the floor under control, then curl back up by contracting the hamstrings and glutes."
-        },
-        {
-          "locale": "pl",
-          "name": "Wyprost tułowia na GHD (glute-ham raise)",
-          "instructions": null
         }
       ]
     },
@@ -2177,11 +1762,6 @@
           "locale": "en",
           "name": "Dumbbell Concentration Curl",
           "instructions": "Sit on bench. Grasp dumbbell between feet. Place back of upper arm to inner thigh. Lean into leg to raise elbow slightly."
-        },
-        {
-          "locale": "pl",
-          "name": "Uginanie ramienia ze skupieniem (koncentryczne)",
-          "instructions": null
         }
       ]
     },
@@ -2202,11 +1782,6 @@
           "locale": "en",
           "name": "Medicine Ball Twist",
           "instructions": "In a seated position, the torso is rotated from side to side without forcing, approaching the knees and making the ball touch the ground from time to time"
-        },
-        {
-          "locale": "pl",
-          "name": "Skręty tułowia z piłką lekarską",
-          "instructions": null
         }
       ]
     },
@@ -2227,11 +1802,6 @@
           "locale": "en",
           "name": "Barbell Snatch",
           "instructions": "Stand with your feet at hip width and your shins against the bar. Grasp the bar at double shoulder width and, keeping your lower back flat, drive your heels into the floor to begin lifting the bar. When it's above your knees, explosively extend your hips and shrug your shoulders. Let the momentum carry the weight overhead."
-        },
-        {
-          "locale": "pl",
-          "name": "Rwanie sztangi",
-          "instructions": null
         }
       ]
     },
@@ -2252,11 +1822,6 @@
           "locale": "en",
           "name": "Burpee",
           "instructions": "Jump, lay down on your chest, do a pushup then jump, repeat"
-        },
-        {
-          "locale": "pl",
-          "name": "Burpee",
-          "instructions": null
         }
       ]
     },
@@ -2280,11 +1845,6 @@
           "locale": "en",
           "name": "Arnold Press",
           "instructions": "Sit on a bench with your back supported. Hold a pair of dumbbells in front of your shoulders, palms facing you and elbows in front of your body.\n\nPress the dumbbells overhead while rotating your hands, so that your palms face forward at the top. Stop just before your elbows lock out.\n\nReverse the movement under control: lower the dumbbells and turn your palms back towards you until you are in the starting position again.\n\nAs shown here: https://www.youtube.com/watch?v=vj2w851ZHRM"
-        },
-        {
-          "locale": "pl",
-          "name": "Wyciskanie Arnolda",
-          "instructions": null
         }
       ]
     },
@@ -2305,11 +1865,6 @@
           "locale": "en",
           "name": "Roman Chair Crunch",
           "instructions": "Crunches on roman chair. Keep your torso straight, abs tight, and don't come up all the way vertical or lie flat to keep constant tension on your abs."
-        },
-        {
-          "locale": "pl",
-          "name": "Brzuszki na ławce rzymskiej",
-          "instructions": null
         }
       ]
     },
@@ -2330,11 +1885,6 @@
           "locale": "en",
           "name": "Dumbbell Calf Raise",
           "instructions": "Stand upright with a dumbbell in each hand, arms hanging at your sides and feet hip-width apart. For a larger range of motion, stand with the balls of your feet on a step or a weight plate.\n\nRise up onto your toes as high as you can and pause briefly at the top. Then lower your heels slowly until you feel a stretch in your calves. Keep your knees straight but not locked and your upper body upright."
-        },
-        {
-          "locale": "pl",
-          "name": "Wspięcia na palce z hantlami",
-          "instructions": null
         }
       ]
     },
@@ -2358,11 +1908,6 @@
           "locale": "en",
           "name": "Dumbbell Bench Press",
           "instructions": "1. <p>Setup and Starting Position: Sit at the end of a flat bench with a dumbbell resting vertically against each thigh. Carefully lean back while driving the dumbbells toward your chest with your knees.</p>\n2. <p>The “Leg Drive” and Posture: Plant your feet firmly on the floor. Retract your shoulder blades (press them together against the bench) and maintain a slight natural lumbar curve.</p>\n3. <p>Starting Position: Push the dumbbells toward the ceiling. Your wrists should be aligned with your elbows. Rotate the dumbbells slightly inward (about 45 degrees) so that your elbows do not splay out too far to the sides, thereby protecting your shoulders.</p>\n4. <p>Eccentric Phase (Lowering): Lower the dumbbells in a controlled manner toward the sides of your chest. Your elbows should lower at an angle of about 45–60 degrees relative to your body. Feel the stretch in the lower part of your chest.</p>\n5. <p>Concentric Phase (Lift): Push the weight upward in a slight arc (toward the center), without letting the dumbbells collide at the top or fully locking out your elbows to maintain muscle tension. Exhale as you lift.</p>\n\nTranslated with DeepL.com (free version)"
-        },
-        {
-          "locale": "pl",
-          "name": "Wyciskanie hantli leżąc",
-          "instructions": null
         }
       ]
     },
@@ -2383,11 +1928,6 @@
           "locale": "en",
           "name": "Zottman Curl",
           "instructions": "With your palms facing forward, curl the weights up to your shoulders. Turn your hands so that that your palms downwards and slowly return the weights back down. Finally face your palms back forward."
-        },
-        {
-          "locale": "pl",
-          "name": "Uginanie ramion Zottmana",
-          "instructions": null
         }
       ]
     },
@@ -2408,11 +1948,6 @@
           "locale": "en",
           "name": "Dumbbell Bicep Curl",
           "instructions": "Hold two dumbbells, the arms are streched, the hands are on your side, the palms face inwards. Bend the arms and bring the weight with a fast movement up. At the same time, rotate your arms by 90 degrees at the very beginning of the movement. At the highest point, rotate a little the weights further outwards. Without a pause, bring them down, slowly.\n\nDon't allow your body to swing during the exercise, all work is done by the biceps, which are the only mucles that should move (pay attention to the elbows)."
-        },
-        {
-          "locale": "pl",
-          "name": "Uginanie ramion z hantlami",
-          "instructions": null
         }
       ]
     },
@@ -2433,11 +1968,6 @@
           "locale": "en",
           "name": "Cable Triceps Pushdown",
           "instructions": "1. Attach a straight or lat bar to a high cable pulley and grip it with both hands, elbows tucked at your sides.\n2. Push the bar down until your arms are fully extended, keeping your upper arms still.\n3. Slowly let the bar rise back to the starting position with control."
-        },
-        {
-          "locale": "pl",
-          "name": "Prostowanie ramion na wyciągu górnym",
-          "instructions": null
         }
       ]
     },
@@ -2458,11 +1988,6 @@
           "locale": "en",
           "name": "Windshield Wipers",
           "instructions": "Hang from a pull-up bar, raise your legs to the ceiling. Move lower body from left to right with straight legs like a windshield wiper"
-        },
-        {
-          "locale": "pl",
-          "name": "Skręty nóg w zwisie (wycieraczki)",
-          "instructions": null
         }
       ]
     },
@@ -2485,11 +2010,6 @@
           "locale": "en",
           "name": "Diamond Push-Up",
           "instructions": "Start: Get into a plank. Place hands close together under your chest so thumbs and index fingers form a diamond shape.\n\nLower: Bend your elbows to lower your chest toward your hands. Keep your body straight.\n\nPush: Push back up until arms are fully extended.\n\nNew note Keep elbows close to your body and core tight."
-        },
-        {
-          "locale": "pl",
-          "name": "Pompka w wąskim podparciu (diamentowa)",
-          "instructions": null
         }
       ]
     },
@@ -2510,11 +2030,6 @@
           "locale": "en",
           "name": "Cable Woodchopper",
           "instructions": "Set cable pulley slightly lower than chest height. Keep body facing forward with hips stable. Grab the pulley handle, fully extend your arms and bring your arms forward and across your body. Hold for 1 second at the end of the movement and slowly return to starting position."
-        },
-        {
-          "locale": "pl",
-          "name": "Woodchopper na wyciągu",
-          "instructions": null
         }
       ]
     },
@@ -2538,11 +2053,6 @@
           "locale": "en",
           "name": "Incline Barbell Bench Press",
           "instructions": "1. Lie back on an incline bench and grip the bar slightly wider than shoulder width.\n2. Lower the bar slowly and under control to your upper chest.\n3. Press the bar back up to full arm extension.\n\nA slow, controlled tempo (for example, a 4-second lowering phase) emphasises time under tension."
-        },
-        {
-          "locale": "pl",
-          "name": "Wyciskanie sztangi na ławce skośnej",
-          "instructions": null
         }
       ]
     },
@@ -2565,11 +2075,6 @@
           "locale": "en",
           "name": "Rack Pull",
           "instructions": "Deadlift to be done using a Smith machine or a free rack. Bar or barbell hould be just right under the knee cap level. Lift using the glutes and through the heels, then come back to starting postion with a control movement of 2 seconds.\n\nThis exercise targets mainly the lower back and glutes."
-        },
-        {
-          "locale": "pl",
-          "name": "Martwy ciąg z podestu (rack pull)",
-          "instructions": null
         }
       ]
     },
@@ -2590,11 +2095,6 @@
           "locale": "en",
           "name": "Bench Dip",
           "instructions": "Put two benches so far appart, that you can hold onto one with your hands and are just able to reach the other with your feet. The legs stay during the exercise completely stretched. With your elbows facing back, bend them as much as you can. Push yourself up, but don't stretch out the arms."
-        },
-        {
-          "locale": "pl",
-          "name": "Pompki na ławce (triceps dips)",
-          "instructions": null
         }
       ]
     },
@@ -2618,11 +2118,6 @@
           "locale": "en",
           "name": "Dumbbell Triceps Extension",
           "instructions": "Position one dumbbell over head with both hands under inner plate (heart shaped grip).\n\nWith elbows over head, lower forearm behind upper arm by flexing elbows. Flex wrists at bottom to avoid hitting dumbbell on back of neck. Raise dumbbell over head by extending elbows while hyperextending wrists. Return and repeat."
-        },
-        {
-          "locale": "pl",
-          "name": "Prostowanie ramienia z hantlą zza głowy",
-          "instructions": null
         }
       ]
     },
@@ -2646,11 +2141,6 @@
           "locale": "en",
           "name": "Close-Grip Bench Press",
           "instructions": "• Setup: Lie flat on the bench and grip the bar at shoulder-width (closer than a standard bench press).\n• Descent: Lower the bar with control to your lower chest.\n• Form: Keep your elbows tucked in tight against your torso—do not let them flare out.\n• Ascent: Press the bar straight back up, squeezing your triceps at the top."
-        },
-        {
-          "locale": "pl",
-          "name": "Wyciskanie sztangi wąskim chwytem",
-          "instructions": null
         }
       ]
     },
@@ -2671,11 +2161,6 @@
           "locale": "en",
           "name": "Neutral-Grip Lat Pulldown",
           "instructions": "1. Sit at the lat pulldown machine and grip the neutral-grip (parallel) handles.\n2. Pull the handles down to your upper chest, squeezing your shoulder blades together.\n3. Slowly let the handles rise back to the starting position with control."
-        },
-        {
-          "locale": "pl",
-          "name": "Ściąganie drążka chwytem neutralnym",
-          "instructions": null
         }
       ]
     },
@@ -2696,11 +2181,6 @@
           "locale": "en",
           "name": "Cable Fly",
           "instructions": "cable machine, two steps forward, straight back"
-        },
-        {
-          "locale": "pl",
-          "name": "Rozpiętki na wyciągu",
-          "instructions": null
         }
       ]
     },
@@ -2723,11 +2203,6 @@
           "locale": "en",
           "name": "Barbell Front Squat",
           "instructions": "This variation of the squat trains the hamstrings and gluteus maximus. It also works the back extensors and abductors."
-        },
-        {
-          "locale": "pl",
-          "name": "Przysiad przedni ze sztangą",
-          "instructions": null
         }
       ]
     },
@@ -2751,11 +2226,6 @@
           "locale": "en",
           "name": "Barbell Reverse-Grip Row",
           "instructions": "The same as regular rowing, but holding a reversed grip (your palms pointing forwards):\n\nGrab the barbell with a wide grIp (slightly more than shoulder wide) and lean forward. Your upper body is not quite parallel to the floor, but forms a slight angle. The chest's out during the whole exercise.\n\nPull now the barbell with a fast movement towards your belly button, not further up. Go slowly down to the initial position. Don't swing with your body and keep your arms next to your body."
-        },
-        {
-          "locale": "pl",
-          "name": "Wiosłowanie sztangą chwytem podchwytem",
-          "instructions": null
         }
       ]
     },
@@ -2780,11 +2250,6 @@
           "locale": "en",
           "name": "Hack Squat Machine",
           "instructions": "Hack squats target the lower body and are performed on a hack squat machine or with a barbell. For the machine variation, position yourself on the platform with your shoulders under the pads and feet slightly forward. Push through your heels to lift the weight, then bend your knees to lower the platform in a controlled motion until your thighs are parallel to the ground. Push back up to the starting position. For the barbell variation, hold the bar behind your legs with your arms extended and perform a squat-like motion."
-        },
-        {
-          "locale": "pl",
-          "name": "Przysiad na maszynie hakowej",
-          "instructions": null
         }
       ]
     },
@@ -2805,11 +2270,6 @@
           "locale": "en",
           "name": "Jump Rope",
           "instructions": "Starting position:\n\nPut your feet close together, bend the knees a bit, keep your head and body straight, keep elbows in, open your arms.\n\nSteps:\n\n1. Spin only your wrists with enough force to make the rope spin.\n2. Jump just high enough to pass the rope below your feet.\n3. Repeat.\n\nNotes:\n\nThis exercise requires a jump rope. Make sure the rope length is adjusted to your height. One way to check is to grab both handles with one hand and stand on the middle of the rope hanging on the ground with one foot. If the rope (excluding the handles) reaches just below your chest, its length is right. A shorter rope would be hazardous, as you might hit yourself, and a longer rope would make for bad form."
-        },
-        {
-          "locale": "pl",
-          "name": "Skakanka",
-          "instructions": null
         }
       ]
     },
@@ -2832,11 +2292,6 @@
           "locale": "en",
           "name": "Walking Dumbbell Lunge",
           "instructions": "• Starting Position: Stand with feet hip-width apart and hands either on your hips or holding dumbbells at your sides.\n• The Stride: Take a wide step forward with your right leg.\n• The Descent: Lower your hips until both knees are bent at approximately 90-degree angles.\n• The Transition: Drive through your front heel to stand up, bringing your back foot forward to step directly into the next lunge."
-        },
-        {
-          "locale": "pl",
-          "name": "Wykrok chodzony z hantlami",
-          "instructions": null
         }
       ]
     },
@@ -2857,11 +2312,6 @@
           "locale": "en",
           "name": "Calf Press (Leg Press Machine)",
           "instructions": "Put the balls of your feet on an extended leg press pad. Use your calves to press the weight by flexing your feet/toes into a pointed position, and releasing back into a relaxed position.\n\nThis exercise builds mass and strength in the Gastrocnemius and Soleus muscles as well, if not better, than any calf exercise."
-        },
-        {
-          "locale": "pl",
-          "name": "Wspięcia na palce na suwnicy",
-          "instructions": null
         }
       ]
     },
@@ -2884,11 +2334,6 @@
           "locale": "en",
           "name": "Underhand Lat Pulldown",
           "instructions": "Grip the pull-down bar with your palms facing you and your hands closer than shoulder-width apart. Lean back slightly and keep your back straight. Pull the bar down towards your chest, pulling your shoulders back slightly at the end of the motion."
-        },
-        {
-          "locale": "pl",
-          "name": "Ściąganie drążka podchwytem",
-          "instructions": null
         }
       ]
     },
@@ -2911,11 +2356,6 @@
           "locale": "en",
           "name": "Dumbbell Pullover",
           "instructions": "Doubling as a back and chest exercise, the Dumbbell Pullover can train both your pecs and lats."
-        },
-        {
-          "locale": "pl",
-          "name": "Pullover z hantlą",
-          "instructions": null
         }
       ]
     },
@@ -2936,11 +2376,6 @@
           "locale": "en",
           "name": "Knee Raise",
           "instructions": "The 90° leg raise on the bar is a very intense exercise that involves all the abdominal muscles."
-        },
-        {
-          "locale": "pl",
-          "name": "Unoszenie kolan w zwisie",
-          "instructions": null
         }
       ]
     },
@@ -2961,11 +2396,6 @@
           "locale": "en",
           "name": "Barbell Wrist Curl",
           "instructions": "Sitting on a bench, grab a barbell with your palms facing up and your hands shoulder-width apart. Rest your forearms on your thighs and allow your wrists to hang over your knees. Perform the movement by curling your palms and wrists towards your face.\n\nPause for a moment in the top position, then slowly return the barbell to the starting position."
-        },
-        {
-          "locale": "pl",
-          "name": "Uginanie nadgarstków ze sztangą",
-          "instructions": null
         }
       ]
     },
@@ -2986,11 +2416,6 @@
           "locale": "en",
           "name": "Incline Dumbbell Fly",
           "instructions": "Use inclined bench. Hold dumbbells straight out to your sides, elbows slightly bent. Bring arms together above you, keeping angle of elbows fixed."
-        },
-        {
-          "locale": "pl",
-          "name": "Rozpiętki z hantlami na ławce skośnej",
-          "instructions": null
         }
       ]
     },
@@ -3014,11 +2439,6 @@
           "locale": "en",
           "name": "Turkish Get-Up",
           "instructions": "Starting on back, move to the standing position with dumbbell in one hand. Switch hands between reps."
-        },
-        {
-          "locale": "pl",
-          "name": "Turkish get-up (wstawanie tureckie)",
-          "instructions": null
         }
       ]
     },
@@ -3042,11 +2462,6 @@
           "locale": "en",
           "name": "Kettlebell Swing",
           "instructions": "Hold the kettlebell securely in both hands. Keep your back flat throughout the move, avoiding any rounding of the spine.Keeping your knees \"soft\", hinge your hips backwards, letting the kettlebell swing between your knees.\n\nYou want to bend from the hips as far as you can without letting your back round forwards. Then, snap your hips forwards quickly and standing up straight, locking your body in an upright posture.\n\nThe speed you do this will cause your arms and the kettlebell to swing up in front of you. Don't try to lift the kettlebell with your arms. The snapping forwards of your hips will cause the kettlebell to swing forwards through momentum. Depending on the weight of the kettlebell and the speed of your hip movement, your arms will swing up to about shoulder height. At the top of this swing, let your hips hinge backwards again as the kettlebell swings back down to between your legs and the start of the next repetition."
-        },
-        {
-          "locale": "pl",
-          "name": "Wymach kettlebell (swing)",
-          "instructions": null
         }
       ]
     },
@@ -3070,11 +2485,6 @@
           "locale": "en",
           "name": "Pull-Up",
           "instructions": "Grab the pull up bar with a wide grip, the body is hanging freely. Keep your chest out and pull yourself up till your chin reaches the bar or it touches your neck, if you want to pull behind you. Go with a slow and controlled movement down, always keeping the chest out."
-        },
-        {
-          "locale": "pl",
-          "name": "Podciąganie na drążku",
-          "instructions": null
         }
       ]
     },
@@ -3098,11 +2508,6 @@
           "locale": "en",
           "name": "Bulgarian Split Squat",
           "instructions": "Stand in a split stance with one foot about a stride in front of the other, and hold on to a stable support such as a rack, a wall or the back of a chair.\n\nLower your hips straight down by bending both knees until the back knee almost touches the floor. Keep your upper body upright and the front heel on the floor, then push through the front foot back up. Use the support only for balance, not to pull yourself up. Complete all repetitions, then switch sides."
-        },
-        {
-          "locale": "pl",
-          "name": "Przysiad bułgarski",
-          "instructions": null
         }
       ]
     },
@@ -3123,11 +2528,6 @@
           "locale": "en",
           "name": "Dumbbell Wrist Curl",
           "instructions": "1. Sitting on a bench, grab the dumbbell with your palms facing up and your hands shoulder-width apart. Rest your forearms on your thighs and allow your wrists to hang over your knees.\n2. Perform the movement by curling your palms and wrists towards your face.\n3. (optional/variable) Pause at the top.\n4. Slowly return to the starting position."
-        },
-        {
-          "locale": "pl",
-          "name": "Uginanie nadgarstków z hantlami",
-          "instructions": null
         }
       ]
     },
@@ -3150,11 +2550,6 @@
           "locale": "en",
           "name": "Ab Wheel Rollout",
           "instructions": "1. Starting Position: Kneel on the floor with the ab wheel in front of you.\n2. Grip the Wheel: Hold the handles firmly.\n3. Roll Out: Slowly roll the wheel forward, extending your body while keeping your core tight.\n4. Return: Pull the wheel back towards your knees, maintaining tension in your core."
-        },
-        {
-          "locale": "pl",
-          "name": "Wyciąganie na kółku (ab wheel)",
-          "instructions": null
         }
       ]
     },
@@ -3178,11 +2573,6 @@
           "locale": "en",
           "name": "Military Press (SZ-Bar)",
           "instructions": "On an SZ-bar grip your hands on the outside of each bend and stand with your arms straight down, palms facing your legs. Pull the bar (bending your arms at the elbow) to your chest, and the push the bar above your head (arms as straight as possible). Return the bar to your chest by dropping your arms at the elbows. Return the bar to it's origional position (stand with your arms straight down, palms facing your legs.)"
-        },
-        {
-          "locale": "pl",
-          "name": "Wyciskanie wojskowe sztangą łamaną",
-          "instructions": null
         }
       ]
     },
@@ -3203,11 +2593,6 @@
           "locale": "en",
           "name": "Squat Jump",
           "instructions": "1. Stand with your feet shoulder-width apart.\n2. Lower into a squat, then explosively jump straight up, swinging your arms up for momentum.\n3. Land softly with bent knees and immediately lower back into the next squat."
-        },
-        {
-          "locale": "pl",
-          "name": "Wyskok z przysiadu",
-          "instructions": null
         }
       ]
     },
@@ -3230,11 +2615,6 @@
           "locale": "en",
           "name": "Cable Crossover",
           "instructions": "Begin with cables at about shoulder height, one in each hand. Take a step forward so that one foot is in front of the other, for stability, and so that there is tension on the cables. Bring hands together in front of you. Try to make your hands overlap (so that the cables cross) a few inches."
-        },
-        {
-          "locale": "pl",
-          "name": "Krzyżowanie wyciągów górnych",
-          "instructions": null
         }
       ]
     },
@@ -3255,11 +2635,6 @@
           "locale": "en",
           "name": "Double-Leg Calf Raise",
           "instructions": "The double leg heel raise is important to strengthen and create control and stability around the ankle and knee, and provide balance and control for the hip and pelvis."
-        },
-        {
-          "locale": "pl",
-          "name": "Wspięcia na palce obunóż",
-          "instructions": null
         }
       ]
     },
@@ -3280,11 +2655,6 @@
           "locale": "en",
           "name": "Single-Arm Dumbbell Row",
           "instructions": "With dumbbells in hand, bend at the hip until hands hang just below the knees (similar to straight-legged-deadlift starting position). Keep upper body angle constant while contracting your lats to pull you ellbows back pinching the shoulder blades at the top. Try not to stand up with every rep, check hands go below knees on every rep."
-        },
-        {
-          "locale": "pl",
-          "name": "Wiosłowanie hantlą jednorącz",
-          "instructions": null
         }
       ]
     },
@@ -3309,11 +2679,6 @@
           "locale": "en",
           "name": "Dumbbell Floor Press",
           "instructions": "Grab your dumbbells and lay flat on your back with your knees bent and your feet flat on the ground (use a bench if you have one). Press the weights up, locking out your elbows (A). Lower them slowly until your upper arms are resting on the floor (B) close to your body. Pause here before explosively pressing back up. Squeeze your chest hard and repeat."
-        },
-        {
-          "locale": "pl",
-          "name": "Wyciskanie hantli leżąc na podłodze",
-          "instructions": null
         }
       ]
     },
@@ -3334,11 +2699,6 @@
           "locale": "en",
           "name": "Close-Grip Lat Pulldown",
           "instructions": "Grip the pull-down bar with your hands closer than shoulder width apart, with your palms facing away from you. Lean back slightly. Pull the bar down towards your chest, keeping your elbows close to your sides as you come down. Pull your shoulders back at the end of the motion."
-        },
-        {
-          "locale": "pl",
-          "name": "Ściąganie drążka wąskim chwytem",
-          "instructions": null
         }
       ]
     },
@@ -3359,11 +2719,6 @@
           "locale": "en",
           "name": "Face Pull",
           "instructions": "Attach a rope to a pulley station set at about chest level.\n\nStep back so you're supporting the weight with arms completely outstretched and assume a staggered (one foot forward) stance. Bend the knees slightly for a stable base.\n\nRetract the scapulae (squeeze your partner's finger with your shoulder blades) and pull the center of the rope slightly up towards the face. A good cue is to think about pulling the ends of the rope apart, not just pulling back.\n\nAs you near your face, externally rotate so your knuckles are facing the ceiling.\n\nHold for one second at the top position and slowly lower."
-        },
-        {
-          "locale": "pl",
-          "name": "Face pull na wyciągu",
-          "instructions": null
         }
       ]
     },
@@ -3388,11 +2743,6 @@
           "locale": "en",
           "name": "Push-Up",
           "instructions": "The push-up is a fundamental bodyweight exercise that targets the chest, arms, and shoulders while engaging the core for stability. It requires no equipment and is excellent for building upper body strength.\n\nInstructions:\n\n1. Start in a plank position with hands placed slightly wider than shoulder-width, feet together, and body in a straight line from head to heels.\n2. Engage your core and lower your body by bending your elbows, keeping them close to your body or flared slightly outward.\n3. Lower until your chest nearly touches the ground while maintaining a neutral spine.\n4. Push through your palms to return to the starting position, fully extending your arms."
-        },
-        {
-          "locale": "pl",
-          "name": "Pompka",
-          "instructions": null
         }
       ]
     },
@@ -3416,11 +2766,6 @@
           "locale": "en",
           "name": "Pendlay Row",
           "instructions": "Back excercise with a barbell with a starting position which is in a bent over position with the back paralell to the ground. The barbell is on the ground at chest level.For the movement grab the barbell at shoulder width grip and pull towards your chest without losing the bent over position and without moving anything but your arms"
-        },
-        {
-          "locale": "pl",
-          "name": "Wiosłowanie Pendlay",
-          "instructions": null
         }
       ]
     },
@@ -3441,11 +2786,6 @@
           "locale": "en",
           "name": "Kickstand Romanian Deadlift",
           "instructions": "use non-working leg's toes to help with balance and perform an RDL."
-        },
-        {
-          "locale": "pl",
-          "name": "Martwy ciąg rumuński z podparciem (kickstand)",
-          "instructions": null
         }
       ]
     },
@@ -3466,11 +2806,6 @@
           "locale": "en",
           "name": "Standing Calf Raise",
           "instructions": "Get onto the calf raises machine, you should able to completely push your calves down. Stand straight, don't make a hollow back and don't bend your legs. Pull yourself up as high as you can. Make a small pause of 1 - 2 seconds and go slowly down."
-        },
-        {
-          "locale": "pl",
-          "name": "Wspięcia na palce stojąc",
-          "instructions": null
         }
       ]
     },
@@ -3493,11 +2828,6 @@
           "locale": "en",
           "name": "Trap Bar Squat",
           "instructions": "A combination of squat and deadlift principles with the use of a hex/trap bar, easing stress on the lower back by better centering the weight."
-        },
-        {
-          "locale": "pl",
-          "name": "Przysiad ze sztangą trapezową",
-          "instructions": null
         }
       ]
     },
@@ -3518,11 +2848,6 @@
           "locale": "en",
           "name": "Hyperextension",
           "instructions": "Lie on the hyperextension pillow with your navel at the front edge, allowing your upper body to hang freely. Tighten all your back muscles and raise your torso until you're horizontal, but no higher. Lower yourself slowly, maintaining a steady flow of muscles."
-        },
-        {
-          "locale": "pl",
-          "name": "Hiperekstensja",
-          "instructions": null
         }
       ]
     },
@@ -3546,11 +2871,6 @@
           "locale": "en",
           "name": "Sliding Leg Curl",
           "instructions": "Lie on back with heels on floor gliders or towels. Lift hips into a bridge, then slide heels toward glutes while keeping hips elevated. Slowly return to the starting position while maintaining the hip bridge."
-        },
-        {
-          "locale": "pl",
-          "name": "Uginanie nóg na ślizgaczach",
-          "instructions": null
         }
       ]
     },
@@ -3573,11 +2893,6 @@
           "locale": "en",
           "name": "Nordic Curl",
           "instructions": "The Nordic hamstring curl is one of the best lower-body exercises to build posterior leg strength, improve knee health, and prevent injury."
-        },
-        {
-          "locale": "pl",
-          "name": "Uginanie nóg nordyckie",
-          "instructions": null
         }
       ]
     },
@@ -3598,11 +2913,6 @@
           "locale": "en",
           "name": "Leg Extension",
           "instructions": "The leg extension is a resistance weight training exercise that targets the quadriceps muscle in the legs. The exercise is done using a machine called the Leg Extension Machine. There are various manufacturers of these machines and each one is slightly different. Most gym and weight rooms will have the machine in their facility. The leg extension is an isolated exercise targeting one specific muscle group, the quadriceps. It should not be considered as a total leg workout, such as the squat or deadlift. The exercise consists of bending the leg at the knee and extending the legs, then lowering them back to the original position."
-        },
-        {
-          "locale": "pl",
-          "name": "Prostowanie nóg na maszynie",
-          "instructions": null
         }
       ]
     },
@@ -3623,11 +2933,6 @@
           "locale": "en",
           "name": "Cable Bicep Curl",
           "instructions": "Stand around 30 - 40cm away from the cable, the feet are firmly on the floor. Take the bar and lift the weight with a fast movements. Lower the weight as with the dumbbell curls slowly and controlled."
-        },
-        {
-          "locale": "pl",
-          "name": "Uginanie ramion na wyciągu",
-          "instructions": null
         }
       ]
     },
@@ -3650,11 +2955,6 @@
           "locale": "en",
           "name": "Pike Push-Up",
           "instructions": "Push Up performed from a pike position (optional to have feet elevated)."
-        },
-        {
-          "locale": "pl",
-          "name": "Pompka w podporze pike",
-          "instructions": null
         }
       ]
     },
@@ -3675,11 +2975,6 @@
           "locale": "en",
           "name": "Mountain Climber",
           "instructions": "Starting position:\n\nStart in the upright push-up position, aka. the high plank position.Hands should be directly under your shoulders.Keep your head in line with your back, facing the floor.Feet should be about hip-width apart.\n\nSteps:\n\n1. Move one knee toward the center of your body, towards your elbows, keeping the other leg extended.\n2. In a quick jumping movement, straighten the bent leg out and pull the other knee toward your body.\n3. Keep repeating step 2, alternating legs.\n\nNotes:\n\nThroughout the exercise, your back should remain as straight as possible – avoid a hump or a sagging back."
-        },
-        {
-          "locale": "pl",
-          "name": "Mountain climber (bieg w podporze)",
-          "instructions": null
         }
       ]
     },
@@ -3702,11 +2997,6 @@
           "locale": "en",
           "name": "Standing Dumbbell Lunge",
           "instructions": "1. Stand upright holding a dumbbell in each hand, arms at your sides.\n2. Step forward with one leg and lower your hips until both knees are bent at about 90 degrees, with the back knee hovering just above the floor.\n3. Push through the front heel to return to the starting position.\n4. Repeat, alternating legs."
-        },
-        {
-          "locale": "pl",
-          "name": "Wykrok z hantlami stojąc",
-          "instructions": null
         }
       ]
     },
@@ -3727,11 +3017,6 @@
           "locale": "en",
           "name": "Single-Leg Glute Bridge",
           "instructions": "A glute bridge, where you use just one leg at a time."
-        },
-        {
-          "locale": "pl",
-          "name": "Mostek biodrowy jednonóż",
-          "instructions": null
         }
       ]
     },
@@ -3752,11 +3037,6 @@
           "locale": "en",
           "name": "Rowing Machine",
           "instructions": "Sit on a rowing machine with your back straight."
-        },
-        {
-          "locale": "pl",
-          "name": "Wiosłowanie na ergometrze",
-          "instructions": null
         }
       ]
     }

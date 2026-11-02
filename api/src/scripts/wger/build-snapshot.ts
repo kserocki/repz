@@ -21,7 +21,7 @@ export type BuildSnapshotResult =
 /**
  * A curation entry's locales besides `"en"`, sorted. Used to enforce the completeness rule:
  * every entry must offer the exact same set of non-English locales (language-agnostic — no
- * hard-coded `"pl"`), so a language is never half-added to the catalog.
+ * locale is hard-coded or special-cased here), so a language is never half-added to the catalog.
  */
 function extraLocalesOf(entry: CurationFile["exercises"][number]): string[] {
   return Object.keys(entry.names)

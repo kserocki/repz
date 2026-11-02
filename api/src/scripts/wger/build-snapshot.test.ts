@@ -38,7 +38,7 @@ function curationEntry(overrides: Record<string, unknown> = {}): CurationEntry {
   return CurationEntrySchema.parse({
     id: BENCH_PRESS_ID,
     wgerId: 73,
-    names: { pl: "Wyciskanie sztangi leżąc" },
+    names: {},
     ...overrides,
   });
 }
@@ -48,7 +48,7 @@ function curationFile(exercises: CurationEntry[]): CurationFile {
 }
 
 describe("buildSnapshot happy path", () => {
-  it("given one clean curation entry, when built, then the snapshot has the derived fields in a fixed key order", () => {
+  it("given a curation entry with no name override, when built, then the snapshot falls back to the wger EN name and carries exactly one (en) translation", () => {
     const result = buildSnapshot([wgerExercise()], curationFile([curationEntry()]));
 
     expect(result.ok).toBe(true);
@@ -72,7 +72,6 @@ describe("buildSnapshot happy path", () => {
           },
           translations: [
             { locale: "en", name: "Bench Press", instructions: "Lay down on a bench." },
-            { locale: "pl", name: "Wyciskanie sztangi leżąc", instructions: null },
           ],
         },
       ],
@@ -92,6 +91,34 @@ describe("buildSnapshot happy path", () => {
   });
 });
 
+describe("buildSnapshot locale genericity (no locale is special-cased)", () => {
+  it("given a curation entry with an extra, arbitrary locale (de) beside en, when built, then the snapshot carries both translations, proving a new language needs no code change", () => {
+    const entry = curationEntry({ names: { en: "Bench Press", de: "Bankdrücken" } });
+
+    const result = buildSnapshot([wgerExercise()], curationFile([entry]));
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) {
+      return;
+    }
+    expect(result.snapshot.exercises[0]?.translations).toEqual([
+      { locale: "de", name: "Bankdrücken", instructions: null },
+      { locale: "en", name: "Bench Press", instructions: "Lay down on a bench." },
+    ]);
+  });
+
+  it("given locales in non-alphabetical input order, when built, then translations are sorted by locale", () => {
+    const entry = curationEntry({ names: { fr: "Développé couché", en: "Bench Press" } });
+
+    const result = buildSnapshot([wgerExercise()], curationFile([entry]));
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.snapshot.exercises[0]?.translations.map((t) => t.locale)).toEqual(["en", "fr"]);
+    }
+  });
+});
+
 describe("buildSnapshot overrides win", () => {
   it("given primaryMuscle, secondaryMuscles, equipment, EN name and EN instructions overrides, when built, then every override is used verbatim, not the derived value", () => {
     // Without overrides this wger record would be ambiguous (chest + triceps primaries).
@@ -100,7 +127,7 @@ describe("buildSnapshot overrides win", () => {
       primaryMuscle: "triceps",
       secondaryMuscles: ["chest"],
       equipment: "dumbbell",
-      names: { en: "Custom Bench Variant", pl: "Nazwa PL" },
+      names: { en: "Custom Bench Variant" },
       instructions: { en: "Custom rewritten instructions." },
     });
 
@@ -120,7 +147,6 @@ describe("buildSnapshot overrides win", () => {
         name: "Custom Bench Variant",
         instructions: "Custom rewritten instructions.",
       },
-      { locale: "pl", name: "Nazwa PL", instructions: null },
     ]);
   });
 });
@@ -142,9 +168,9 @@ describe("buildSnapshot problems", () => {
     const wger = wgerExercise({
       translations: [
         {
-          language: 14,
-          name: "Jakieś ćwiczenie",
-          description: "<p>Opis.</p>",
+          language: 99,
+          name: "Some other language",
+          description: "<p>Description.</p>",
           license: 1,
           license_author: "x",
           author_history: [],
@@ -251,7 +277,7 @@ describe("buildSnapshot problems", () => {
   it("given every problem kind at once, when built, then every problem is reported and nothing is written", () => {
     const wgerA = wgerExercise({ id: 73, muscles: [{ id: 999 }] });
     const entryA = curationEntry({ id: BENCH_PRESS_ID, wgerId: 73 });
-    const entryB = curationEntry({ id: DEADLIFTS_ID, wgerId: 404, names: { pl: "Martwy ciąg" } });
+    const entryB = curationEntry({ id: DEADLIFTS_ID, wgerId: 404 });
 
     const result = buildSnapshot([wgerA], curationFile([entryA, entryB]));
 
@@ -266,11 +292,11 @@ describe("buildSnapshot locale completeness", () => {
   it("given one entry with an extra locale the others lack, when built, then it is a problem naming that entry", () => {
     const wgerA = wgerExercise({ id: 73 });
     const wgerB = wgerExercise({ id: 184, uuid: "ee8e8db4-2d82-49e1-ab7f-891e9a354934" });
-    const entryA = curationEntry({ id: BENCH_PRESS_ID, wgerId: 73, names: { pl: "A" } });
+    const entryA = curationEntry({ id: BENCH_PRESS_ID, wgerId: 73, names: { de: "A" } });
     const entryB = curationEntry({
       id: DEADLIFTS_ID,
       wgerId: 184,
-      names: { pl: "B", fr: "C" },
+      names: { de: "B", fr: "C" },
     });
 
     const result = buildSnapshot([wgerA, wgerB], curationFile([entryA, entryB]));
@@ -286,8 +312,8 @@ describe("buildSnapshot locale completeness", () => {
   it("given every entry with the same extra locales, when built, then there is no completeness problem", () => {
     const wgerA = wgerExercise({ id: 73 });
     const wgerB = wgerExercise({ id: 184, uuid: "ee8e8db4-2d82-49e1-ab7f-891e9a354934" });
-    const entryA = curationEntry({ id: BENCH_PRESS_ID, wgerId: 73, names: { pl: "A" } });
-    const entryB = curationEntry({ id: DEADLIFTS_ID, wgerId: 184, names: { pl: "B" } });
+    const entryA = curationEntry({ id: BENCH_PRESS_ID, wgerId: 73, names: { de: "A" } });
+    const entryB = curationEntry({ id: DEADLIFTS_ID, wgerId: 184, names: { de: "B" } });
 
     const result = buildSnapshot([wgerA, wgerB], curationFile([entryA, entryB]));
 
@@ -302,12 +328,8 @@ describe("buildSnapshot determinism", () => {
     const wgerC = wgerExercise({ id: 9, uuid: "1b020b3a-3732-4c7e-92fd-a0cec90ed69b" });
     const entries = curationFile([
       curationEntry({ id: BENCH_PRESS_ID, wgerId: 73 }),
-      curationEntry({ id: DEADLIFTS_ID, wgerId: 184, names: { pl: "Martwy ciąg" } }),
-      curationEntry({
-        id: "b6e6b6a0-0000-4000-8000-000000000003",
-        wgerId: 9,
-        names: { pl: "Wymach kettlebell" },
-      }),
+      curationEntry({ id: DEADLIFTS_ID, wgerId: 184 }),
+      curationEntry({ id: "b6e6b6a0-0000-4000-8000-000000000003", wgerId: 9 }),
     ]);
 
     const inOrder = buildSnapshot([wgerA, wgerB, wgerC], entries);

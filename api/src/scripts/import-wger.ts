@@ -74,12 +74,7 @@ async function main(): Promise<number> {
   logger.info({ exercises: result.snapshot.exercises.length }, "snapshot and attribution written");
 
   if (reviewPath) {
-    const wgerById = new Map(wgerExercises.map((exercise) => [exercise.id, exercise]));
-    await writeFile(
-      reviewPath,
-      renderReviewTable(result.snapshot, curationResult.data, wgerById),
-      "utf8",
-    );
+    await writeFile(reviewPath, renderReviewTable(result.snapshot, curationResult.data), "utf8");
     logger.info({ reviewPath }, "review table written");
   }
 

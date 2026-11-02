@@ -1,10 +1,22 @@
 import { MUSCLES } from "../../db/schema/vocabularies.ts";
 import type { CurationEntry, CurationFile } from "../../db/seed/curation.schema.ts";
 import type { SnapshotExercise, SnapshotFile } from "../../db/seed/snapshot.schema.ts";
-import { findTranslation, WGER_LANGUAGE_PL, type WgerExerciseInfo } from "./wger.schemas.ts";
 
 function nameOf(exercise: SnapshotExercise, locale: string): string {
   return exercise.translations.find((translation) => translation.locale === locale)?.name ?? "—";
+}
+
+/** Every locale besides `en` present anywhere in the snapshot, sorted. `[]` while the catalog ships English-only. */
+function extraLocalesIn(snapshot: SnapshotFile): string[] {
+  const locales = new Set<string>();
+  for (const exercise of snapshot.exercises) {
+    for (const translation of exercise.translations) {
+      if (translation.locale !== "en") {
+        locales.add(translation.locale);
+      }
+    }
+  }
+  return [...locales].sort();
 }
 
 function overridesOf(entry: CurationEntry | undefined): string {
@@ -47,13 +59,6 @@ function hasDataOverride(entry: CurationEntry): boolean {
   );
 }
 
-function wgerPlNameOf(wger: WgerExerciseInfo | undefined): string {
-  if (!wger) {
-    return "—";
-  }
-  return findTranslation(wger, WGER_LANGUAGE_PL)?.name ?? "—";
-}
-
 function countBy<T extends string>(values: readonly T[]): Map<T, number> {
   const counts = new Map<T, number>();
   for (const value of values) {
@@ -70,16 +75,15 @@ function renderCounts<T extends string>(counts: Map<T, number>): string {
 }
 
 /**
- * The markdown table for the WP-4 user gate (Q3): entries grouped by primary muscle, with every
- * manual override and wger's own (rare) Polish name shown for cross-checking the drafted
- * translation. Never read by any other code; purely for the person approving the catalog.
+ * The markdown table for the WP-4 user gate: entries grouped by primary muscle, with every
+ * manual override shown for cross-checking. No locale is special-cased: the catalog ships
+ * English-only today, so every row shows just the EN name; if a later import adds another
+ * locale's names, this table grows one "<locale> name" column per locale automatically, with no
+ * code change. Never read by any other code; purely for the person approving the catalog.
  */
-export function renderReviewTable(
-  snapshot: SnapshotFile,
-  curation: CurationFile,
-  wgerById: ReadonlyMap<number, WgerExerciseInfo>,
-): string {
+export function renderReviewTable(snapshot: SnapshotFile, curation: CurationFile): string {
   const curationById = new Map(curation.exercises.map((entry) => [entry.id, entry]));
+  const extraLocales = extraLocalesIn(snapshot);
 
   const total = snapshot.exercises.length;
   const groupCounts = countBy(snapshot.exercises.map((exercise) => exercise.primaryMuscle));
@@ -102,45 +106,41 @@ export function renderReviewTable(
     "",
   ];
 
+  const localeHeaders = extraLocales.map((locale) => `${locale} name`);
+  const headerCells = [
+    "EN name",
+    ...localeHeaders,
+    "Primary",
+    "Secondary",
+    "Equipment",
+    "Licence",
+    "Author",
+    "wger",
+    "Overrides",
+  ];
+  const headerRow = `| ${headerCells.join(" | ")} |`;
+  const separatorRow = `|${headerCells.map(() => "---").join("|")}|`;
+
   const sections = MUSCLES.filter((muscle) => groupCounts.has(muscle)).flatMap((muscle) => {
     const exercises = snapshot.exercises.filter((exercise) => exercise.primaryMuscle === muscle);
     const rows = exercises.map((exercise) => {
       const entry = curationById.get(exercise.id);
-      const wger = entry ? wgerById.get(entry.wgerId) : undefined;
       const wgerLink = `[${entry?.wgerId}](${exercise.source.url})`;
-      return [
-        "|",
+      const cells = [
         nameOf(exercise, "en"),
-        "|",
-        nameOf(exercise, "pl"),
-        "|",
+        ...extraLocales.map((locale) => nameOf(exercise, locale)),
         exercise.primaryMuscle,
-        "|",
         exercise.secondaryMuscles.join(", ") || "—",
-        "|",
         exercise.equipment,
-        "|",
         exercise.license,
-        "|",
         exercise.author,
-        "|",
         wgerLink,
-        "|",
         overridesOf(entry),
-        "|",
-        wgerPlNameOf(wger),
-        "|",
-      ].join(" ");
+      ];
+      return `| ${cells.join(" | ")} |`;
     });
 
-    return [
-      `## ${muscle} (${exercises.length})`,
-      "",
-      "| EN name | PL name | Primary | Secondary | Equipment | Licence | Author | wger | Overrides | wger PL name |",
-      "|---|---|---|---|---|---|---|---|---|---|",
-      ...rows,
-      "",
-    ];
+    return [`## ${muscle} (${exercises.length})`, "", headerRow, separatorRow, ...rows, ""];
   });
 
   return [...summary, ...sections].join("\n");

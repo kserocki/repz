@@ -470,7 +470,7 @@ describe("sync.service pull", () => {
     const { store, service } = harness();
     const sortedTranslations = [
       { locale: "en", name: "Bench press", instructions: "Lie on a flat bench." },
-      { locale: "pl", name: "Wyciskanie sztangi leżąc", instructions: null },
+      { locale: "fr", name: "Développé couché", instructions: null },
     ];
     store.seedCatalogExercise(
       "catalog-1",

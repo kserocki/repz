@@ -13,7 +13,7 @@ function exercise(overrides: Partial<CatalogExercise> = {}): CatalogExercise {
     sourceUrl: "https://wger.de/exercise/73/view-base",
     translations: [
       { locale: "en", name: "Bench Press", instructions: "Lay down on a bench." },
-      { locale: "pl", name: "Wyciskanie sztangi leżąc", instructions: null },
+      { locale: "de", name: "Bankdrücken", instructions: null },
     ],
     ...overrides,
   };
@@ -90,7 +90,7 @@ describe("planCatalogSeed content equality", () => {
   it("given translations in a different order, when planned, then it is still unchanged", () => {
     const reordered = exercise({
       translations: [
-        { locale: "pl", name: "Wyciskanie sztangi leżąc", instructions: null },
+        { locale: "de", name: "Bankdrücken", instructions: null },
         { locale: "en", name: "Bench Press", instructions: "Lay down on a bench." },
       ],
     });
@@ -107,7 +107,7 @@ describe("planCatalogSeed content equality", () => {
     const withText = exercise({
       translations: [
         { locale: "en", name: "Bench Press", instructions: "Lay down on a bench." },
-        { locale: "pl", name: "Wyciskanie sztangi leżąc", instructions: "Połóż się na ławce." },
+        { locale: "de", name: "Bankdrücken", instructions: "Lege dich auf eine Bank." },
       ],
     });
 

@@ -42,9 +42,12 @@ export type WgerExerciseInfo = z.infer<typeof WgerExerciseInfoSchema>;
 export type WgerTranslation = z.infer<typeof WgerTranslationSchema>;
 export type WgerExerciseInfoPage = z.infer<typeof WgerExerciseInfoPageSchema>;
 
-/** wger's language ids for the two locales REP-16 cares about (verified live, 2026-11-02). */
+/**
+ * wger's language id for English (verified live, 2026-11-02). It is the one wger-side language
+ * the importer ever reads: the catalog ships English-only, and every other locale in
+ * `curation.json` is ours to draft, never sourced from wger's own (sparse) translations.
+ */
 export const WGER_LANGUAGE_EN = 2;
-export const WGER_LANGUAGE_PL = 14;
 
 export function findTranslation(
   exercise: WgerExerciseInfo,

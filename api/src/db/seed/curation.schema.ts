@@ -5,9 +5,10 @@ import { EQUIPMENT, MUSCLES } from "../schema/vocabularies.ts";
 const nameField = z.string().trim().min(1).max(NAME_MAX);
 
 /**
- * `{ en?: string, pl: string, ... }`: `en` overrides wger's own EN name, `pl` is required (the
- * one locale REP-16 curates), and any further locale key is accepted and validated the same way —
- * adding a language to the catalog is adding keys here, never a schema change.
+ * `{ en?: string, ... }`: every key is optional and locale-keyed, validated only against the
+ * BCP 47 pattern — no locale is required or special-cased. `en` overrides wger's own EN name when
+ * present; the catalog ships English-only today, but adding a language later is adding more keys
+ * here (plus a re-import and re-seed), never a schema change.
  */
 const CurationNamesSchema = z.record(z.string(), nameField).superRefine((names, ctx) => {
   for (const locale of Object.keys(names)) {
@@ -18,9 +19,6 @@ const CurationNamesSchema = z.record(z.string(), nameField).superRefine((names, 
         message: `"${locale}" is not a valid locale`,
       });
     }
-  }
-  if (!("pl" in names)) {
-    ctx.addIssue({ code: "custom", path: ["pl"], message: "names.pl is required" });
   }
 });
 
