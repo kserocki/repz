@@ -19,6 +19,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.core.common)
             implementation(projects.feature.auth.impl)
             implementation(projects.feature.workout.impl)
             implementation(projects.feature.exercises.impl)
