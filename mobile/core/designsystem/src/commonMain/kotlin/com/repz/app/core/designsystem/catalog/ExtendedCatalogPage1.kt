@@ -2,29 +2,22 @@ package com.repz.app.core.designsystem.catalog
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.runtime.Composable
 import com.repz.app.core.designsystem.theme.RepzColors
 import com.repz.app.core.designsystem.theme.RepzSpacing
 import com.repz.app.core.designsystem.theme.RepzTheme
 
-/** Every `RepzTheme.colors` token (DESIGN_SYSTEM §3.2): plain swatches for the tokens with no
- * on-colour pair, and a chip per semantic group (its container colour as the background, its
- * on-container colour as the text) for the x/onX/xContainer/onXContainer groups. */
+/** Part 1 of 3 of every `RepzTheme.colors` token (DESIGN_SYSTEM §3.2): the tokens with no
+ * on-colour pair (brand and graphics). Split out so the page fits the smallest test viewport,
+ * including the Android 200% font-scale check: at that scale, this group alone already fills most
+ * of the screen. Part 2 is [ExtendedCatalogPage2], part 3 is [ExtendedCatalogPage3]. */
 @Composable
-internal fun ExtendedCatalogPage() {
+internal fun ExtendedCatalogPage1() {
     val colors = RepzTheme.colors
 
     Column(verticalArrangement = Arrangement.spacedBy(RepzSpacing.lg)) {
         CatalogSectionLabel("brand / graphics")
         ColorSwatchGrid(entries = plainEntries(colors), columns = 3)
-
-        CatalogSectionLabel("semantic groups (x on xContainer)")
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(RepzSpacing.sm)) {
-            semanticGroups(colors).forEach { (label, container, onContainer) ->
-                SemanticChip(label = label, containerColor = container, contentColor = onContainer)
-            }
-        }
     }
 }
 
@@ -44,15 +37,4 @@ private fun plainEntries(colors: RepzColors) =
         ColorEntry("chartSeries3", colors.chartSeries3),
         ColorEntry("chartGrid", colors.chartGrid),
         ColorEntry("chartAxis", colors.chartAxis),
-    )
-
-private fun semanticGroups(colors: RepzColors) =
-    listOf(
-        Triple("success", colors.successContainer, colors.onSuccessContainer),
-        Triple("warning", colors.warningContainer, colors.onWarningContainer),
-        Triple("record", colors.recordContainer, colors.onRecordContainer),
-        Triple("setWarmup", colors.setWarmupContainer, colors.onSetWarmupContainer),
-        Triple("setNormal", colors.setNormalContainer, colors.onSetNormalContainer),
-        Triple("setDrop", colors.setDropContainer, colors.onSetDropContainer),
-        Triple("setFailure", colors.setFailureContainer, colors.onSetFailureContainer),
     )

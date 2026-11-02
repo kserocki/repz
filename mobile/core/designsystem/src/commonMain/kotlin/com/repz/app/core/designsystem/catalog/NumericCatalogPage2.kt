@@ -9,29 +9,16 @@ import com.repz.app.core.designsystem.theme.RepzSpacing
 import com.repz.app.core.designsystem.theme.RepzTheme
 
 /**
- * The 4 numeric styles (DESIGN_SYSTEM §4): [CatalogSpecimens] prove tabular-figure alignment and
- * locale-shaped samples. The PL diacritic line is checked here too, in `titleLarge` and
- * `bodyLarge`, to prove both fonts cover Polish glyphs.
+ * Part 2 of 2 of the 4 numeric styles (DESIGN_SYSTEM §4): `numericSmall`, plus the PL diacritic
+ * line in `titleLarge` and `bodyLarge` to prove both fonts cover Polish glyphs. Part 1
+ * ([NumericCatalogPage1]) has `numericHero`/`numericLarge`/`numericMedium`.
  */
 @Composable
-internal fun NumericCatalogPage() {
+internal fun NumericCatalogPage2() {
     val numeric = RepzTheme.typography
     val onSurface = MaterialTheme.colorScheme.onSurface
 
     Column(verticalArrangement = Arrangement.spacedBy(RepzSpacing.md)) {
-        CatalogSectionLabel("numericHero")
-        Text(CatalogSpecimens.TIMER_HERO, style = numeric.numericHero, color = onSurface)
-
-        CatalogSectionLabel("numericLarge")
-        Text(CatalogSpecimens.WEIGHT_SAMPLE, style = numeric.numericLarge, color = onSurface)
-
-        CatalogSectionLabel("numericMedium (tabular-figure alignment)")
-        Column {
-            CatalogSpecimens.TIMER_STACK.forEach { value ->
-                Text(value, style = numeric.numericMedium, color = onSurface)
-            }
-        }
-
         CatalogSectionLabel("numericSmall")
         Text(CatalogSpecimens.VOLUME_SAMPLE, style = numeric.numericSmall, color = onSurface)
 

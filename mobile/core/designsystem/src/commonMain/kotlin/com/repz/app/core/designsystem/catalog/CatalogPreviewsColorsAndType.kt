@@ -18,14 +18,38 @@ private fun RepzDesignSystemCatalogColorsDarkPreview() {
 
 @Preview
 @Composable
-private fun RepzDesignSystemCatalogExtendedLightPreview() {
-    RepzTheme(darkTheme = false) { RepzDesignSystemCatalog(RepzCatalogPage.Extended) }
+private fun RepzDesignSystemCatalogExtended1LightPreview() {
+    RepzTheme(darkTheme = false) { RepzDesignSystemCatalog(RepzCatalogPage.Extended1) }
 }
 
 @Preview
 @Composable
-private fun RepzDesignSystemCatalogExtendedDarkPreview() {
-    RepzTheme(darkTheme = true) { RepzDesignSystemCatalog(RepzCatalogPage.Extended) }
+private fun RepzDesignSystemCatalogExtended1DarkPreview() {
+    RepzTheme(darkTheme = true) { RepzDesignSystemCatalog(RepzCatalogPage.Extended1) }
+}
+
+@Preview
+@Composable
+private fun RepzDesignSystemCatalogExtended2LightPreview() {
+    RepzTheme(darkTheme = false) { RepzDesignSystemCatalog(RepzCatalogPage.Extended2) }
+}
+
+@Preview
+@Composable
+private fun RepzDesignSystemCatalogExtended2DarkPreview() {
+    RepzTheme(darkTheme = true) { RepzDesignSystemCatalog(RepzCatalogPage.Extended2) }
+}
+
+@Preview
+@Composable
+private fun RepzDesignSystemCatalogExtended3LightPreview() {
+    RepzTheme(darkTheme = false) { RepzDesignSystemCatalog(RepzCatalogPage.Extended3) }
+}
+
+@Preview
+@Composable
+private fun RepzDesignSystemCatalogExtended3DarkPreview() {
+    RepzTheme(darkTheme = true) { RepzDesignSystemCatalog(RepzCatalogPage.Extended3) }
 }
 
 @Preview
@@ -38,16 +62,4 @@ private fun RepzDesignSystemCatalogTypeLightPreview() {
 @Composable
 private fun RepzDesignSystemCatalogTypeDarkPreview() {
     RepzTheme(darkTheme = true) { RepzDesignSystemCatalog(RepzCatalogPage.Type) }
-}
-
-@Preview
-@Composable
-private fun RepzDesignSystemCatalogTypeEmphasizedLightPreview() {
-    RepzTheme(darkTheme = false) { RepzDesignSystemCatalog(RepzCatalogPage.TypeEmphasized) }
-}
-
-@Preview
-@Composable
-private fun RepzDesignSystemCatalogTypeEmphasizedDarkPreview() {
-    RepzTheme(darkTheme = true) { RepzDesignSystemCatalog(RepzCatalogPage.TypeEmphasized) }
 }
