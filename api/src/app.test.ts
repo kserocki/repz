@@ -80,4 +80,23 @@ describe("route mounting", () => {
 
     expect(res.headers.get("Cache-Control")).toBe("no-store");
   });
+
+  it("given an unknown path under /sync with no token, when requested, then it is still 401, scoped to /sync/*", async () => {
+    const { app } = createTestApp();
+
+    const res = await app.request("/sync/nope");
+
+    expect(res.status).toBe(401);
+    expect(res.headers.get("WWW-Authenticate")).toBe("Bearer");
+    expect(res.headers.get("Cache-Control")).toBe("no-store");
+  });
+
+  it("given GET /health, when requested, then it is still unaffected by the /sync/* middleware", async () => {
+    const { app } = createTestApp();
+
+    const res = await app.request("/health");
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get("Cache-Control")).not.toBe("no-store");
+  });
 });

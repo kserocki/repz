@@ -4,6 +4,7 @@ import { createDatabase } from "./db/client.ts";
 import { loadEnv } from "./env.ts";
 import { createAuthTransactions } from "./modules/auth/auth.repository.ts";
 import { createArgon2PasswordHasher } from "./modules/auth/password-hasher.ts";
+import { createSyncTransactions } from "./modules/sync/sync.repository.ts";
 import { createUsersRepository } from "./modules/users/users.repository.ts";
 import { systemClock } from "./shared/clock.ts";
 import { createLogger } from "./shared/logger.ts";
@@ -37,6 +38,7 @@ const app = createApp({
   repositories: {
     users: createUsersRepository(database.db),
     authTransactions: createAuthTransactions(database.db),
+    syncTransactions: createSyncTransactions(database.db),
   },
 });
 

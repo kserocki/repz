@@ -19,8 +19,16 @@ Read `docs/ARCHITECTURE.md` §5 and ADR-0002/0003 first. **The aggregate is the 
 5. **DTO:** the payload DTO in `core:network` plus a fixture.
 
 ## Server (api)
-6. Drizzle tables (root + children) with the sync columns. A `SyncHandler` in `src/modules/sync/handlers/`: upsert replaces children in one transaction and assigns `nextval('sync_version_seq')`; **delete wins** (ignore upserts for tombstoned ids); the pull query returns rows with `version > cursor`.
-7. Update the OpenAPI schemas for push/pull (`new-endpoint` skill steps 1, 6).
+6. **Server side (`api/`)** — follow ADR-0019 and ADR-0020. For a new sync type, touch every one of these:
+   - Drizzle tables (root + children) with `syncColumns()` and a `(user_id, version)` index; `pnpm db:generate`.
+   - `SYNC_TYPES` (the wire `type`; `totalEstimate` buckets are derived from it) and the payload schema in `sync.schemas.ts` (`.openapi("Name")`, strict keys, child-id uniqueness in `superRefine`).
+   - Push `payload` `oneOf` in `sync.schemas.ts` plus `router.openAPIRegistry.register(...)` in `sync.routes.ts`.
+   - `handlers/<entity>.repository.ts` (replace children on every write, tombstone deletes children, map 23505 by constraint name from `.cause` to `SyncIdConflict`) and `handlers/<entity>.handler.ts`; extend the `SyncHandler.name` union.
+   - A `SyncStores` field, wired in `storesFor` (`sync.repository.ts`) and in the in-memory fake (`shared/testing/in-memory-sync-store.ts`, including global child-id keys and immutable row swaps for savepoint rollback).
+   - Register the handler in `app.ts`.
+   - Every version write goes through `SyncTransactions.write` after `lockUserSyncWrites`; `decideChange` decides (delete wins, idempotent retries); pull returns `version > cursor` with tombstones as `payload: null`.
+   - Tests: schema tests (limits, strict keys, duplicate child ids), handler mapping, service cases for every `decideChange` row that applies, the OpenAPI test (`sync.openapi.test.ts`), and a Spotter scenario on real Postgres.
+7. Export the OpenAPI contract and update the shared fixtures (`new-endpoint` skill step 6).
 
 ## Tests (must have)
 - Repository: write → entity + one coalesced outbox row; ten edits → still one row.
