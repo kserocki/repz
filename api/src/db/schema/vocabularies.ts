@@ -26,9 +26,10 @@ export const UNIT_SYSTEMS = ["kg", "lb"] as const;
 export type UnitSystem = (typeof UNIT_SYSTEMS)[number];
 
 /**
- * The 12 muscle groups used for custom-exercise illustration fallbacks (design board 16).
- * Validated in Zod only for now; the DB `CHECK` and the wger-to-this-list mapping for catalog
- * exercises arrive with the catalog seeder, which also extends this tuple if needed.
+ * The 12 muscle groups used for custom-exercise illustration fallbacks (design board 16) and,
+ * since REP-16, for every catalog exercise (wger's own 15 muscles are mapped down to this list
+ * by the importer). Enforced by `exercises_primary_muscle_check` and
+ * `exercises_secondary_muscles_check`, which this tuple drives.
  */
 export const MUSCLES = [
   "chest",
@@ -54,4 +55,13 @@ function sqlLiteral(value: string): SQL {
 /** Builds `column in ('a', 'b', ...)` from one of the tuples above, for a table's `CHECK`. */
 export function inVocabulary(column: PgColumn, values: readonly string[]): SQL {
   return sql`${column} in (${sql.join(values.map(sqlLiteral), sql.raw(", "))})`;
+}
+
+/**
+ * Builds `column <@ array['a', 'b', ...]::text[]` for a `text[]` column's `CHECK`: every element
+ * of the column must be one of `values`. `<@` (is contained by) also accepts an empty array,
+ * which `secondary_muscles` allows.
+ */
+export function allInVocabulary(column: PgColumn, values: readonly string[]): SQL {
+  return sql`${column} <@ array[${sql.join(values.map(sqlLiteral), sql.raw(", "))}]::text[]`;
 }
