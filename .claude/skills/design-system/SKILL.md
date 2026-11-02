@@ -16,6 +16,9 @@ Sources, in this order: `docs/DESIGN_SYSTEM.md` (committed truth) → `design/bo
 - Text on cyan (`primaryContainer` / `brandCyan`) is always `onPrimaryContainer` (ink). Never white.
 - Every number uses `RepzTheme.typography.numeric*` (tabular figures). Format numbers per locale.
 - Spacing `RepzSpacing.*`, shapes `MaterialTheme.shapes.*` / `RepzShapes.*`, elevation `RepzElevation.*`. No literal dp for spacing or radii in features.
+- Shadows: `Modifier.dropShadow(shape, RepzElevation.<level>.shadow)`. Corner radii always come from shapes, never from spacing tokens.
+- A new theme `CompositionLocal` must be added to detekt's `CompositionLocalAllowlist` (`mobile/config/detekt/detekt.yml`, ARCHITECTURE §12.1).
+- Preview the result in the debug catalog (ARCHITECTURE §2); a new catalog page must fit one screen on the iPhone Duo simulator.
 - Icons: Material Symbols Rounded via the designsystem icon set. FILL 1 only for selected, active or completed states.
 
 ## Adding a component to `core:designsystem`
