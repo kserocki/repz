@@ -21,6 +21,7 @@ import com.repz.app.core.network.dto.sync.PushRequestDto
 import com.repz.app.core.network.dto.sync.WorkoutExercisePayloadDto
 import com.repz.app.core.network.dto.sync.WorkoutPayloadDto
 import com.repz.app.core.network.dto.sync.WorkoutSetPayloadDto
+import com.repz.app.core.network.result.NetworkError
 import com.repz.app.core.network.result.NetworkResult
 import com.repz.app.core.network.session.AuthTokens
 import com.repz.app.core.network.session.PersistentTokenStore
@@ -119,7 +120,7 @@ class LiveApiSmokeTest {
     // L1
     @Test
     fun givenANewlyRegisteredUser_whenGetMeIsCalled_thenTheEmailMatches() =
-        runBlocking {
+        runBlocking<Unit> {
             requireLiveApi()
             val session = LiveApiSession(liveApiUrl, logWriter)
             val email = randomSmokeEmail()
@@ -136,7 +137,7 @@ class LiveApiSmokeTest {
     // L2
     @Test
     fun givenAnExpiredAccessToken_whenFiveConcurrentGetMeCallsRun_thenAllFiveSucceed() =
-        runBlocking {
+        runBlocking<Unit> {
             requireLiveApi()
             val session = LiveApiSession(liveApiUrl, logWriter)
             val email = randomSmokeEmail()
@@ -153,7 +154,7 @@ class LiveApiSmokeTest {
     // L3
     @Test
     fun givenAPushedWorkout_whenPulledBackFromCursorZero_thenTheSamePayloadComesBack() =
-        runBlocking {
+        runBlocking<Unit> {
             requireLiveApi()
             val session = LiveApiSession(liveApiUrl, logWriter)
             val email = randomSmokeEmail()
@@ -203,10 +204,30 @@ class LiveApiSmokeTest {
             assertEquals(payload, pulledWorkout.payload)
         }
 
+    // L4
+    @Test
+    fun givenARefreshToken_whenItIsUsedTwiceWithinTheGraceWindow_thenBothCallsSucceed() =
+        runBlocking<Unit> {
+            requireLiveApi()
+            val session = LiveApiSession(liveApiUrl, logWriter)
+            val email = randomSmokeEmail()
+            val authSession = (session.authApi.register(RegisterRequestDto(email, SMOKE_PASSWORD, "Smoke")) as NetworkResult.Success).value
+            session.sessionManager.start(authSession.toAuthTokens())
+            val refreshToken = session.sessionManager.currentRefreshToken()!!
+
+            // The second call replays the same (already rotated) token well inside the 30 s grace
+            // window (ADR-0011): the server issues a new pair instead of revoking the family.
+            val firstRefresh = session.refreshTokensCall(refreshToken)
+            val secondRefresh = session.refreshTokensCall(refreshToken)
+
+            assertTrue(firstRefresh is NetworkResult.Success, "first refresh failed: $firstRefresh")
+            assertTrue(secondRefresh is NetworkResult.Success, "second refresh failed: $secondRefresh")
+        }
+
     // L5
     @Test
     fun givenALoggedOutSession_whenACallIsMadeAfterTheTokenExpires_thenItIsSessionExpired() =
-        runBlocking {
+        runBlocking<Unit> {
             requireLiveApi()
             val session = LiveApiSession(liveApiUrl, logWriter)
             val email = randomSmokeEmail()
@@ -222,6 +243,21 @@ class LiveApiSmokeTest {
             val refreshed = session.refreshTokensCall(refreshToken)
 
             assertIs<NetworkResult.Failure>(refreshed)
+        }
+
+    // L6 - opt-in like the rest of the class, but meant to be run on its own
+    // (`--tests '*givenStoppedApi*'`) after Spotter has stopped the live API: every other test in
+    // this class needs the API up, so a full-class run would otherwise fail this one too.
+    @Test
+    fun givenStoppedApi_whenACallIsMade_thenTheResultIsOffline() =
+        runBlocking<Unit> {
+            requireLiveApi()
+            val session = LiveApiSession(liveApiUrl, logWriter)
+
+            val result = session.authApi.register(RegisterRequestDto(randomSmokeEmail(), SMOKE_PASSWORD, "Smoke"))
+
+            val failure = assertIs<NetworkResult.Failure>(result)
+            assertEquals(NetworkError.Offline, failure.error)
         }
 
     private fun assertNoSecretsLogged(vararg secrets: String) {
