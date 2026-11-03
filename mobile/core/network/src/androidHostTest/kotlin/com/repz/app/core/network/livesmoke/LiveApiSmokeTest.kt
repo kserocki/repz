@@ -43,6 +43,7 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
 private const val SMOKE_PASSWORD = "correct horse battery staple smoke test"
+private const val HEX_RADIX = 16
 
 private class InMemorySecureStringStorage : SecureStringStorage {
     private var stored: String? = null
@@ -72,12 +73,12 @@ private class CapturingLogWriter : LogWriter() {
     }
 }
 
-private fun randomSmokeEmail(): String = "smoke-${Random.nextLong().toString(16).removePrefix("-")}@example.com"
+private fun randomSmokeEmail(): String = "smoke-${Random.nextLong().toString(HEX_RADIX).removePrefix("-")}@example.com"
 
 /**
- * A random-looking id without calling the id generator's own `Uuid.generateV7()`/`Uuid.random()`
- * (Konsist I1 restricts those to `UuidV7IdGenerator`, tests included): bytes come from
- * [kotlin.random.Random], then are only reformatted into the standard UUID string shape.
+ * A random-looking id without calling the id generator's own UUID-minting functions (Konsist I1
+ * restricts those to `UuidV7IdGenerator`, tests included): bytes come from [kotlin.random.Random],
+ * then are only reformatted into the standard UUID string shape.
  */
 private fun randomSmokeUuid(): kotlin.uuid.Uuid {
     val hex = Random.nextBytes(16).joinToString("") { byte -> ((byte.toInt() and 0xFF) or 0x100).toString(16).substring(1) }
@@ -216,8 +217,8 @@ class LiveApiSmokeTest {
             session.authApi.logout(refreshToken)
             session.sessionManager.end()
             delay((accessTtlSeconds + 1).seconds)
-            // A logged-out refresh token is rejected the same way an expired one is (REP-25 only
-            // distinguishes "signed out" from "expired" client-side; the server returns the same 401).
+            // A logged-out refresh token is rejected the same way an expired one is: the client-side
+            // "signed out" vs "expired" distinction is local only, the server returns the same 401.
             val refreshed = session.refreshTokensCall(refreshToken)
 
             assertIs<NetworkResult.Failure>(refreshed)

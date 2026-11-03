@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
+val generateContractFixturesTask = registerGenerateContractFixtures()
+
 kotlin {
     sourceSets {
         commonMain.dependencies {
@@ -30,9 +32,16 @@ kotlin {
             implementation(libs.turbine)
         }
         commonTest {
-            kotlin.srcDir(registerGenerateContractFixtures())
+            kotlin.srcDir(generateContractFixturesTask)
         }
     }
+}
+
+// AGP's Android Lint tasks discover commonTest's generated source directory without going through
+// the same provider-based wiring Kotlin's own compile tasks use, so Gradle's task-dependency
+// validation flags it as an "implicit dependency" unless declared here explicitly.
+tasks.matching { it.name.contains("Lint") }.configureEach {
+    dependsOn(generateContractFixturesTask)
 }
 
 // The live API smoke test (androidHostTest's LiveApiSmokeTest) needs a running API and is never
