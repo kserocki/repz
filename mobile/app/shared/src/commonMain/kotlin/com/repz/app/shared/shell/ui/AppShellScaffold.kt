@@ -26,7 +26,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun AppShellScaffold(
     selectedDestination: TopLevelDestination?,
-    onDestinationSelected: (TopLevelDestination) -> Unit,
+    onDestinationClick: (TopLevelDestination) -> Unit,
     modifier: Modifier = Modifier,
     miniBar: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
@@ -43,7 +43,7 @@ internal fun AppShellScaffold(
                         TopLevelDestination.entries.forEach { destination ->
                             RepzNavigationBarItem(
                                 selected = destination == selectedDestination,
-                                onClick = { onDestinationSelected(destination) },
+                                onClick = { onDestinationClick(destination) },
                                 icon = painterResource(destination.icon),
                                 selectedIcon = painterResource(destination.selectedIcon),
                                 label = stringResource(destination.label),
@@ -113,7 +113,7 @@ private fun AppShellScaffoldPolishPreview() {
 private fun AppShellScaffoldPreviewSample(selectedDestination: TopLevelDestination?) {
     AppShellScaffold(
         selectedDestination = selectedDestination,
-        onDestinationSelected = {},
+        onDestinationClick = {},
     ) { paddingValues ->
         val contentModifier = Modifier.padding(paddingValues)
         if (selectedDestination != null) {
