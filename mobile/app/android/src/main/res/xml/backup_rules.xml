@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- API 29-30 (android:fullBackupContent); see data_extraction_rules.xml for the API 31+ rule
+     and the reasoning (the Keystore key never leaves this device). -->
+<full-backup-content>
+    <exclude domain="sharedpref" path="repz_secure_session.xml" />
+</full-backup-content>
