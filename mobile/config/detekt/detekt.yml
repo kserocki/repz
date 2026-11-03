@@ -44,6 +44,9 @@ naming:
     # ignoreAnnotated is a generic key on every rule (dev.detekt.api.Config.Companion); Composables
     # are PascalCase and are separately checked by compose-rules' ComposableNaming.
     ignoreAnnotated: ['Composable']
+    # Detekt's default test excludes plus AGP 9's KMP test source sets (androidHostTest, androidDeviceTest),
+    # so given_when_then test names pass there as they do in commonTest.
+    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**', '**/androidHostTest/**', '**/androidDeviceTest/**']
 
 Compose:
   ComposableAnnotationNaming:
