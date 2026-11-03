@@ -9,6 +9,7 @@ import com.repz.app.core.common.coroutines.AppDispatchers
 import kotlinx.coroutines.withContext
 import java.security.GeneralSecurityException
 import java.security.KeyStore
+import java.security.ProviderException
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
@@ -45,6 +46,8 @@ class KeystoreSecureStringStorage(
     // A corrupted or key-less entry (AEADBadTagException, KeyPermanentlyInvalidatedException, or a
     // restored entry whose Keystore key never migrates to this device) signs the session out
     // cleanly instead of crashing: delete both the entry and the key, so a later write starts clean.
+    // A `ProviderException` (an unchecked RuntimeException the Keystore provider throws for an
+    // internal keystore2/HAL failure, e.g. from `Cipher.init`/`doFinal`) is handled the same way.
     @Suppress("SwallowedException")
     override suspend fun read(): String? =
         withContext(dispatchers.io) {
@@ -54,11 +57,15 @@ class KeystoreSecureStringStorage(
             } catch (e: GeneralSecurityException) {
                 deleteEntryAndKey()
                 null
+            } catch (e: ProviderException) {
+                deleteEntryAndKey()
+                null
             }
         }
 
-    // A key-generation or encryption failure (e.g. the Keystore is temporarily unavailable) just
-    // fails this write; `SessionManager` keeps the tokens in memory for the rest of the process.
+    // A key-generation or encryption failure (e.g. the Keystore is temporarily unavailable, or a
+    // ProviderException from an internal keystore2/HAL failure) just fails this write;
+    // `SessionManager` keeps the tokens in memory for the rest of the process.
     @Suppress("SwallowedException")
     override suspend fun write(value: String): Boolean =
         withContext(dispatchers.io) {
@@ -66,6 +73,8 @@ class KeystoreSecureStringStorage(
                 val encrypted = encrypt(value)
                 preferences.edit().putString(PREFERENCES_KEY, encrypted).commit()
             } catch (e: GeneralSecurityException) {
+                false
+            } catch (e: ProviderException) {
                 false
             }
         }
