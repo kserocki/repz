@@ -316,4 +316,259 @@ class NavigatorTest {
             navigator.saveState().topLevelBackStacks.getValue(TopLevelDestination.Exercises),
         )
     }
+
+    @Test
+    fun given_signedOutNavigator_whenSyncAuthenticationTrue_thenTrainSelectedAllTabsAtRootAndAuthenticated() {
+        val navigator = navigator(isAuthenticated = false)
+
+        navigator.syncAuthentication(isSignedIn = true)
+
+        assertTrue(navigator.isAuthenticated)
+        assertEquals(TopLevelDestination.Train, navigator.selectedDestination)
+        val savedState = navigator.saveState()
+        TopLevelDestination.entries.forEach { destination ->
+            assertEquals(listOf(topLevelRoots.getValue(destination)), savedState.topLevelBackStacks.getValue(destination))
+        }
+    }
+
+    @Test
+    fun given_signedInNavigatorWithDeepStacks_whenSyncAuthenticationFalse_thenTabsResetAndAuthStackRestarted() {
+        val navigator = navigator(isAuthenticated = true)
+        navigator.navigate(FixtureWorkoutDetailsRoute(workoutId = "w1", setIndex = null))
+        navigator.selectTopLevel(TopLevelDestination.History)
+        navigator.navigate(FixtureHistoryEntryRoute(workoutId = "w1"))
+
+        navigator.syncAuthentication(isSignedIn = false)
+
+        assertFalse(navigator.isAuthenticated)
+        val savedState = navigator.saveState()
+        TopLevelDestination.entries.forEach { destination ->
+            assertEquals(listOf(topLevelRoots.getValue(destination)), savedState.topLevelBackStacks.getValue(destination))
+        }
+        assertEquals(listOf(FixtureAuthWelcomeRoute), savedState.authBackStack)
+    }
+
+    @Test
+    fun given_restoredDeepStacksMatchingTheRequestedValue_whenSyncAuthentication_thenStacksAreUntouched() {
+        val deepSignedInState =
+            NavigatorState(
+                isAuthenticated = true,
+                selectedDestination = TopLevelDestination.History,
+                topLevelBackStacks =
+                    mapOf(
+                        TopLevelDestination.Train to listOf(FixtureTrainRoot, FixtureWorkoutDetailsRoute("w1", null)),
+                        TopLevelDestination.History to listOf(FixtureHistoryRoot, FixtureHistoryEntryRoute("w1")),
+                        TopLevelDestination.Exercises to listOf(FixtureExercisesRoot),
+                        TopLevelDestination.Profile to listOf(FixtureProfileRoot),
+                    ),
+                authBackStack = listOf(FixtureAuthWelcomeRoute),
+            )
+        val navigator = navigator(isAuthenticated = true, restoredState = deepSignedInState)
+
+        navigator.syncAuthentication(isSignedIn = true)
+
+        assertEquals(deepSignedInState, navigator.saveState())
+    }
+
+    @Test
+    fun given_signedOutNavigator_whenSelectTopLevel_thenIgnored() {
+        val navigator = navigator(isAuthenticated = false)
+
+        navigator.selectTopLevel(TopLevelDestination.History)
+
+        assertEquals(TopLevelDestination.Train, navigator.selectedDestination)
+        assertEquals(listOf(FixtureAuthWelcomeRoute), navigator.visibleBackStack)
+    }
+
+    @Test
+    fun given_sameKeyInTrainAndHistoryStacks_whenVisibleEntriesRead_thenContentKeysAreDistinct() {
+        val navigator = navigator(isAuthenticated = true)
+        val sharedKey = FixtureWorkoutDetailsRoute(workoutId = "w1", setIndex = null)
+        navigator.navigate(sharedKey)
+        navigator.selectTopLevel(TopLevelDestination.History)
+        navigator.navigate(sharedKey)
+
+        val matchingSharedKey = navigator.visibleEntries.filter { it.key == sharedKey }
+
+        assertEquals(2, matchingSharedKey.size)
+        assertEquals(matchingSharedKey.size, matchingSharedKey.map { it.contentKey }.distinct().size)
+    }
+
+    @Test
+    fun given_sameKeyTwiceInOneStack_whenVisibleEntriesRead_thenContentKeysAreDistinct() {
+        val navigator = navigator(isAuthenticated = true)
+        val detailsRoute = FixtureWorkoutDetailsRoute(workoutId = "w1", setIndex = null)
+        navigator.navigate(detailsRoute)
+        navigator.navigate(FixtureWorkoutDetailsRoute(workoutId = "w2", setIndex = null))
+        navigator.navigate(detailsRoute)
+
+        val matchingDetailsRoute = navigator.visibleEntries.filter { it.key == detailsRoute }
+
+        assertEquals(2, matchingDetailsRoute.size)
+        assertEquals(listOf(1, 3), matchingDetailsRoute.map { it.depth })
+        assertEquals(matchingDetailsRoute.size, matchingDetailsRoute.map { it.contentKey }.distinct().size)
+    }
+
+    @Test
+    fun given_signedInNavigatorWithEntriesAcrossTabs_whenVisibleEntriesRead_thenEachEntryIsTaggedWithItsOwningStackAndDepth() {
+        val navigator = navigator(isAuthenticated = true)
+        val detailsRoute = FixtureWorkoutDetailsRoute(workoutId = "w1", setIndex = null)
+        navigator.navigate(detailsRoute)
+        navigator.selectTopLevel(TopLevelDestination.Exercises)
+
+        assertEquals(
+            listOf(
+                VisibleNavKey(FixtureTrainRoot, BackStackId.Tab(TopLevelDestination.Train), depth = 0),
+                VisibleNavKey(detailsRoute, BackStackId.Tab(TopLevelDestination.Train), depth = 1),
+                VisibleNavKey(FixtureExercisesRoot, BackStackId.Tab(TopLevelDestination.Exercises), depth = 0),
+            ),
+            navigator.visibleEntries,
+        )
+        assertEquals(navigator.visibleBackStack, navigator.visibleEntries.map { it.key })
+    }
+
+    @Test
+    fun given_signedOutNavigator_whenVisibleEntriesRead_thenEachEntryIsTaggedWithTheAuthStack() {
+        val navigator = navigator(isAuthenticated = false)
+        navigator.navigate(FixtureAuthLoginRoute())
+
+        assertEquals(
+            listOf(
+                VisibleNavKey(FixtureAuthWelcomeRoute, BackStackId.Auth, depth = 0),
+                VisibleNavKey(FixtureAuthLoginRoute(), BackStackId.Auth, depth = 1),
+            ),
+            navigator.visibleEntries,
+        )
+    }
+
+    // RepzNavDisplay decorates every one of these stacks unconditionally (a tab's saveable state
+    // and ViewModelStore must survive while another tab is selected), picking only visibleStacks'
+    // entries to actually display. These tests cover that plumbing directly.
+
+    @Test
+    fun given_entryPushedOnANonSelectedTab_whenItsBackStackIsRead_thenTheEntryIsStillThere() {
+        val navigator = navigator(isAuthenticated = true)
+        navigator.selectTopLevel(TopLevelDestination.History)
+        navigator.navigate(FixtureHistoryEntryRoute(workoutId = "w1"))
+
+        navigator.selectTopLevel(TopLevelDestination.Exercises)
+
+        assertEquals(
+            listOf(FixtureHistoryRoot, FixtureHistoryEntryRoute(workoutId = "w1")),
+            navigator.backStacks.getValue(TopLevelDestination.History),
+        )
+    }
+
+    @Test
+    fun given_signedInNavigator_whenAuthBackStackIsRead_thenItStillHoldsTheAuthRoot() {
+        val navigator = navigator(isAuthenticated = true)
+
+        assertEquals(listOf(FixtureAuthWelcomeRoute), navigator.authBackStack)
+    }
+
+    @Test
+    fun given_signedOutNavigatorWithPushedAuthEntry_whenAuthBackStackIsRead_thenItHoldsBothEntries() {
+        val navigator = navigator(isAuthenticated = false)
+        navigator.navigate(FixtureAuthLoginRoute())
+
+        assertEquals(listOf(FixtureAuthWelcomeRoute, FixtureAuthLoginRoute()), navigator.authBackStack)
+    }
+
+    @Test
+    fun given_signedOutNavigator_whenVisibleStacksRead_thenOnlyAuthIsListed() {
+        val navigator = navigator(isAuthenticated = false)
+
+        assertEquals(listOf(BackStackId.Auth), navigator.visibleStacks)
+    }
+
+    @Test
+    fun given_trainSelected_whenVisibleStacksRead_thenOnlyTrainIsListed() {
+        val navigator = navigator(isAuthenticated = true)
+
+        assertEquals(listOf(BackStackId.Tab(TopLevelDestination.Train)), navigator.visibleStacks)
+    }
+
+    @Test
+    fun given_nonTrainTabSelected_whenVisibleStacksRead_thenTrainAndTheSelectedTabAreListed() {
+        val navigator = navigator(isAuthenticated = true)
+        navigator.selectTopLevel(TopLevelDestination.Profile)
+
+        assertEquals(
+            listOf(BackStackId.Tab(TopLevelDestination.Train), BackStackId.Tab(TopLevelDestination.Profile)),
+            navigator.visibleStacks,
+        )
+    }
+
+    // sessionEpoch is part of VisibleNavKey.contentKey (core/navigation/RepzNavDisplay.kt's own
+    // per-stack VisibleNavKeys read it the same way): a session change must bump it so every
+    // stack's root leaves its decorator's list and its saveable state/ViewModelStore are
+    // discarded, but ordinary tab switching within one session must leave it untouched.
+
+    @Test
+    fun given_signedInNavigator_whenSignedOut_thenEveryStackRootContentKeyDiffersFromBefore() {
+        val navigator = navigator(isAuthenticated = true)
+        val before = navigator.rootContentKeys()
+
+        navigator.onSignedOut()
+
+        val after = navigator.rootContentKeys()
+        before.forEach { (stackId, keyBefore) ->
+            assertTrue(keyBefore != after.getValue(stackId), "content key for $stackId did not change")
+        }
+    }
+
+    @Test
+    fun given_signedOutNavigator_whenSignedIn_thenEveryStackRootContentKeyDiffersFromBefore() {
+        val navigator = navigator(isAuthenticated = false)
+        val before = navigator.rootContentKeys()
+
+        navigator.onSignedIn()
+
+        val after = navigator.rootContentKeys()
+        before.forEach { (stackId, keyBefore) ->
+            assertTrue(keyBefore != after.getValue(stackId), "content key for $stackId did not change")
+        }
+    }
+
+    @Test
+    fun given_signedInNavigator_whenSwitchingTabsWithinASession_thenSessionEpochAndContentKeysAreUnchanged() {
+        val navigator = navigator(isAuthenticated = true)
+        val epochBefore = navigator.sessionEpoch
+        val rootContentKeysBefore = navigator.rootContentKeys()
+
+        navigator.selectTopLevel(TopLevelDestination.History)
+        navigator.navigate(FixtureHistoryEntryRoute(workoutId = "w1"))
+        navigator.selectTopLevel(TopLevelDestination.Train)
+        navigator.selectTopLevel(TopLevelDestination.Exercises)
+
+        assertEquals(epochBefore, navigator.sessionEpoch)
+        assertEquals(rootContentKeysBefore, navigator.rootContentKeys())
+    }
+
+    @Test
+    fun given_navigatorWithABumpedSessionEpoch_whenSavedAndRestored_thenSessionEpochAndContentKeysAreStable() {
+        val navigator = navigator(isAuthenticated = true)
+        navigator.onSignedOut()
+        navigator.onSignedIn()
+        val epochBeforeRestore = navigator.sessionEpoch
+        val rootContentKeysBeforeRestore = navigator.rootContentKeys()
+
+        val restored = navigator(isAuthenticated = false, restoredState = navigator.saveState())
+
+        assertEquals(epochBeforeRestore, restored.sessionEpoch)
+        assertEquals(rootContentKeysBeforeRestore, restored.rootContentKeys())
+    }
 }
+
+/**
+ * Every stack's root key, tagged exactly as [Navigator.visibleEntries] and `RepzNavDisplay` tag
+ * it, for stacks that aren't necessarily visible right now.
+ */
+private fun Navigator.rootContentKeys(): Map<BackStackId, String> =
+    buildMap {
+        put(BackStackId.Auth, VisibleNavKey(authBackStack.first(), BackStackId.Auth, depth = 0, sessionEpoch).contentKey)
+        TopLevelDestination.entries.forEach { destination ->
+            val stackId = BackStackId.Tab(destination)
+            put(stackId, VisibleNavKey(backStacks.getValue(destination).first(), stackId, depth = 0, sessionEpoch).contentKey)
+        }
+    }

@@ -10,4 +10,5 @@ data class NavigatorState(
     val selectedDestination: TopLevelDestination,
     val topLevelBackStacks: Map<TopLevelDestination, List<NavKey>>,
     val authBackStack: List<NavKey>,
+    val sessionEpoch: Int = 0,
 )

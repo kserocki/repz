@@ -18,7 +18,6 @@ class KmpFeatureImplConventionPlugin : Plugin<Project> {
             pluginManager.apply("repz.compose")
             pluginManager.apply("repz.koin")
 
-            // TODO(REP-28): add lifecycle and kotlinx-collections-immutable.
             check(path.endsWith(":impl")) {
                 "repz.kmp.feature.impl expects a module path ending in `:impl`, got `$path`."
             }
@@ -33,6 +32,11 @@ class KmpFeatureImplConventionPlugin : Plugin<Project> {
                     implementation(project(":core:designsystem"))
                     implementation(project(":core:ui"))
                     implementation(project(":core:navigation"))
+                    implementation(libs.findLibrary("koin-core-viewmodel").get())
+                    implementation(libs.findLibrary("koin-compose-viewmodel").get())
+                    implementation(libs.findLibrary("androidx-lifecycle-viewmodel-compose").get())
+                    implementation(libs.findLibrary("androidx-lifecycle-runtime-compose").get())
+                    implementation(libs.findLibrary("kotlinx-collections-immutable").get())
                 }
             }
 

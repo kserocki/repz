@@ -3,6 +3,12 @@ plugins {
     id("repz.compose")
 }
 
+// The generated Res class defaults to internal visibility; app:shared reads the nav bar's
+// drawable resources from here, so it must be public.
+compose.resources {
+    publicResClass = true
+}
+
 kotlin {
     sourceSets {
         commonMain.dependencies {
