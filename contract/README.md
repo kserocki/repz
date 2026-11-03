@@ -2,8 +2,8 @@
 
 Shared JSON fixtures validated against `api/openapi.json` by the API's contract test
 (`api/src/contract/contract-fixtures.test.ts`, run in `pnpm test`). Mobile's `core:network`
-decodes the same fixtures into Kotlin DTOs (arriving in REP-25), so a change here must stay
-accurate on both sides.
+decodes the same fixtures into Kotlin DTOs (see "Mobile consumer" below), so a change here must
+stay accurate on both sides.
 
 ## Layout
 
@@ -22,6 +22,19 @@ file name.
 Content type is implied, never stated in the path: `request` and every 2xx response are
 `application/json`; every 4xx/5xx response is `application/problem+json`. 204 responses (logout)
 carry no body and have no fixture.
+
+## Mobile consumer
+
+`core:network`'s `ContractFixturesTest` (`mobile/core/network/src/commonTest/kotlin/com/repz/app/core/network/contract/ContractFixturesTest.kt`)
+decodes every fixture here with the module's strict Kotlin DTOs, on both the Android host and the
+iOS simulator, and checks coverage both ways against its own catalog of operations. Kotlin/Native
+has no resource bundle to read these files from at test time, so the `generateContractFixtures`
+Gradle task (`mobile/build-logic/convention/src/main/kotlin/com/repz/buildlogic/contract/GenerateContractFixturesTask.kt`,
+wired into `core:network`'s `build.gradle.kts`) walks `contract/fixtures` and bakes every file into
+a generated Kotlin source as string literals, added to `commonTest`. Decoding is strict there too
+(unknown fields and enum values fail, matching the fixtures' own `additionalProperties: false`),
+and every request fixture is decoded and re-encoded to confirm it round-trips to the exact same
+wire JSON. A fixture added or changed here must keep decoding clean on both platforms.
 
 ## Rules
 
