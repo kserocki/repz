@@ -6,6 +6,7 @@ import com.repz.app.core.network.dto.sync.PullResponseDto
 import com.repz.app.core.network.dto.sync.PushResponseDto
 import com.repz.app.core.network.dto.sync.SyncChangeDto
 import com.repz.app.core.network.dto.user.UserDto
+import com.repz.app.core.network.serialization.PushChangeDtoSerializer
 import com.repz.app.core.network.serialization.SyncChangeDtoSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
@@ -147,6 +148,28 @@ class ContractFixturesTest {
         val json = """{"status":"ok","somethingTheSpecDoesNotDocument":"nope"}"""
 
         assertFailsWith<SerializationException> { StrictContractJson.decodeFromString(HealthResponseDto.serializer(), json) }
+    }
+
+    @Test
+    fun givenASyncChangeWithAnUnknownTopLevelKey_whenDecodedWithStrictContractJson_thenItFailsToDecode() {
+        val json =
+            """
+            {"type":"workout","id":"b6e6b6a0-0000-4a22-8a33-000000000001","version":1,"deleted":true,
+            "updatedAt":"2026-11-01T10:00:00.000Z","payload":null,"somethingTheSpecDoesNotDocument":"nope"}
+            """.trimIndent()
+
+        assertFailsWith<SerializationException> { StrictContractJson.decodeFromString(SyncChangeDtoSerializer, json) }
+    }
+
+    @Test
+    fun givenAPushChangeWithAnUnknownTopLevelKey_whenDecodedWithStrictContractJson_thenItFailsToDecode() {
+        val json =
+            """
+            {"type":"workout","id":"b6e6b6a0-0000-4a22-8a33-000000000001","deleted":true,"payload":null,
+            "somethingTheSpecDoesNotDocument":"nope"}
+            """.trimIndent()
+
+        assertFailsWith<SerializationException> { StrictContractJson.decodeFromString(PushChangeDtoSerializer, json) }
     }
 
     @Test
