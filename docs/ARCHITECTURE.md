@@ -167,6 +167,8 @@ Decisions:
 
 ### 5.2 Local schema additions
 
+`core:database` holds 11 tables (schema v1, ADR-0023): the synced roots `workouts`, `workout_templates` and `exercises`; their children `workout_exercises`, `workout_sets`, `template_exercises` and `exercise_translations`; and the local-only `personal_records`, `outbox`, `sync_rejections` and `sync_meta`. Ids are `TEXT`, timestamps are epoch milliseconds, and vocabularies hold the server's strings. Children cascade from their root; there are no foreign keys between aggregates.
+
 Every syncable root table has:
 
 | Column | Meaning |
@@ -176,9 +178,11 @@ Every syncable root table has:
 | `is_deleted` | tombstone (soft delete) |
 | `updated_at` | local timestamp (for UI/sorting only, **never** for conflict resolution) |
 
-`outbox` table: `entity_type`, `entity_id`, `operation (UPSERT|DELETE)`, `created_at`, `attempts`.
+`outbox` table: `entity_type`, `entity_id`, `operation (UPSERT|DELETE)`, `created_at`, `updated_at`, `revision`, `attempts`, `held_until`. No payload: the engine reads the current entity at push time.
 At most **one pending entry per entity** (coalescing): ten edits to one workout produce one push.
-`sync_meta` table: `pull_cursor`, `last_successful_sync_at`.
+`sync_rejections` table: `entity_type`, `entity_id`, `problem_type`, `rejected_at` (the "couldn't sync" marks).
+`sync_meta` table (one row): `pull_cursor`, `last_successful_sync_at`, `initial_pull_completed_at`, `restore_total_changes`, `restore_total_workouts`.
+`personal_records` table: derived records, one row per `(exercise_id, type)`, never synced.
 
 ### 5.3 Algorithm
 
@@ -212,7 +216,8 @@ sequenceDiagram
 - **"Last write" means last write *to reach the server*.** We never trust client clocks, so clock skew cannot corrupt data.
 - When pulling, the client **skips** incoming changes for entities that still have a pending outbox entry. The local edit is pushed next and wins, which is consistent with arrival-order LWW.
 - **Delete wins:** once a tombstone exists on the server, a later upsert of that ID is ignored and the tombstone is returned on the next pull. This prevents "zombie" records. The push response also returns `deleted: true` for such an upsert, and the client **must apply it locally**: the pull may have skipped that tombstone while the edit was pending.
-- **Rejections are permanent** (`read-only`, `id-conflict`, `invalid-reference`, `validation-error`). The client keeps the local data, marks it "couldn't sync" and drops the outbox entry. A delete stays in the outbox until its undo snackbar is dismissed (user decision, ADR-0020).
+- **Rejections are permanent** (`read-only`, `id-conflict`, `invalid-reference`, `validation-error`). The client keeps the local data, marks it "couldn't sync" (a `sync_rejections` row) and drops the outbox entry. The mark clears only when a later push of that record is accepted (ADR-0023). A delete stays in the outbox until its undo snackbar is dismissed (user decision, ADR-0020): it is held with `held_until` and isn't pushed before then.
+- **Outbox rules** (ADR-0023): coalescing keeps the first `created_at` and bumps `revision`; an UPSERT after a DELETE (undo) turns the row back into an UPSERT, but a DELETE is never dropped, even after an insert that was never pushed. After a push the engine removes a row only if its `revision` is unchanged, so an edit made during the push is pushed next.
 - **Active (unfinished) workout is local-only.** It enters the outbox when it is finished. This removes most of the realistic conflicts and avoids sync traffic during a session.
 
 ### 5.5 Initial sync (new device / reinstall)
@@ -221,7 +226,7 @@ The device keeps a **full local replica** of the user's data. Personal workout d
 
 - After login, `pull_cursor = 0`. The engine loops `GET /sync/pull?cursor=…&limit=500` until `hasMore == false`, applying **each page in its own transaction**. If the app is killed, the next run resumes from the saved cursor.
 - PRs are recalculated **once** at the end of the initial sync rather than per page.
-- The UI shows a dedicated **"Restoring your history" screen** with progress: a percentage plus "N / M workouts", counted against the per-type `totalEstimate` the server returns on every page (ADR-0020).
+- The UI shows a dedicated **"Restoring your history" screen** with progress: a percentage plus "N / M workouts", counted against the per-type `totalEstimate` the server returns on every page (ADR-0020). `totalEstimate` counts only what is left, so the first page's totals are stored in `sync_meta` (`restore_total_changes`, `restore_total_workouts`) and the baseline survives an app kill. `initial_pull_completed_at` marks the restore as finished (ADR-0023).
 - History screens read from Room. Lightweight summary projections are enough for v1. Paging 3 (Room `PagingSource`) is the upgrade path if lists grow.
 
 ### 5.6 Scheduling

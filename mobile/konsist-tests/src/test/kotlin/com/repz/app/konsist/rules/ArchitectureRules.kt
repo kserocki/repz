@@ -143,7 +143,7 @@ private val ENTITY_ANNOTATION = Regex("""@Entity\b""")
 private val DTO_CLASS_NAME = Regex("""class\s+(\w*Dto)\b""")
 
 // Allows any number of subpackage segments before the class name, e.g.
-// `com.repz.app.core.database.probe.ProbeEntity` or `com.repz.app.core.network.dto.WorkoutDto`.
+// `com.repz.app.core.database.workout.WorkoutEntity` or `com.repz.app.core.network.dto.WorkoutDto`.
 private val RESTRICTED_ENTITY_OR_DTO_IMPORT = Regex("""com\.repz\.app\.core\.(?:database|network)(?:\.\w+)*\.\w*(?:Entity|Dto)""")
 private val ALLOWED_ENTITY_DTO_MODULES = setOf(":core:database", ":core:network", ":core:data", ":core:sync")
 
