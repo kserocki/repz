@@ -33,6 +33,7 @@ jobs:
           filters: |
             mobile:
               - 'mobile/**'
+              - 'contract/**'
               - '.github/workflows/mobile.yml'
             brand:
               - 'brand/**'
