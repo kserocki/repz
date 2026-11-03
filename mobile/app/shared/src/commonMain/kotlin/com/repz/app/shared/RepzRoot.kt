@@ -23,6 +23,10 @@ import com.repz.app.core.designsystem.theme.RepzTheme
  * [catalogDynamicColor]. The platform shells read this from a debug-only intent extra / launch
  * argument and pass null in release builds, so the normal path below is unchanged.
  *
+ * [catalogReducedMotion] is a second debug-only hook, forwarded as [RepzTheme]'s `reducedMotion`:
+ * `null` (the default) follows the live platform setting, `true`/`false` forces it. It only ever
+ * reaches [RepzTheme] when the catalog is showing, so the normal launch path is unaffected.
+ *
  * TODO(REP-28): replace the placeholder with the NavDisplay app shell.
  */
 @Composable
@@ -30,10 +34,11 @@ fun RepzRoot(
     modifier: Modifier = Modifier,
     catalogPageKey: String? = null,
     catalogDynamicColor: Boolean = false,
+    catalogReducedMotion: Boolean? = null,
 ) {
     val catalogPage = RepzCatalogPage.fromKey(catalogPageKey)
     if (catalogPage != null) {
-        RepzTheme(dynamicColor = catalogDynamicColor) {
+        RepzTheme(dynamicColor = catalogDynamicColor, reducedMotion = catalogReducedMotion) {
             RepzDesignSystemCatalog(page = catalogPage, modifier = modifier)
         }
     } else {

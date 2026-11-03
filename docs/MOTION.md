@@ -21,7 +21,9 @@
 
 ## 2. Tokens: `RepzMotion`
 
-### Springs (`RepzMotion.springs.*`, use `spring(dampingRatio, stiffness)`)
+### Springs (`spring(dampingRatio, stiffness)`)
+
+Spatial tokens come from `RepzMotion.springs.*()`, effects tokens (colour/alpha) from `RepzMotion.effectsSprings.*()`. Each is a `FiniteAnimationSpec<T>` factory, e.g. `animateDpAsState(target, animationSpec = RepzMotion.springs.spatialDefault())`. `RepzTheme` also feeds the six `spatial*`/`effects*` tokens into the M3 `MotionScheme` (ADR-0024).
 
 | Token | dampingRatio | stiffness | Use |
 |---|---|---|---|
@@ -39,7 +41,9 @@
 | logoImpact | 0.5 | 800 | landing squash |
 | logoWordmark | 1.0 | 380 | wordmark rise |
 
-### Durations & easing (`RepzMotion.durations.*`)
+### Durations & easing (`RepzMotion.durations.*`, `RepzMotion.easing.*`)
+
+As ready specs: `RepzMotion.tweens.short()`, `medium()`, `pathDraw()`, `chartDraw()`.
 
 | Token | Value |
 |---|---|
@@ -47,16 +51,17 @@
 | medium | 200 ms (crossfade, fade-through) |
 | pathDraw | 280 ms · EmphasizedDecelerate (check, sync ✓) |
 | chartDraw | 600 ms · EmphasizedDecelerate |
-| restRing | linear, updates once per second of rest |
+| restRingStep | 1 s, linear, updates once per second of rest |
 | particleLifeInline / Summary | 600 ms / 1200 ms |
 | celebrationMax | 1500 ms |
 | shimmer | 1200 ms linear |
+| reducedMotionFade | 150 ms (reduced-motion crossfade / fade-through) |
 | easing.emphasized | cubic(0.2, 0, 0, 1) |
 | easing.emphasizedDecelerate | cubic(0.05, 0.7, 0.1, 1) |
 
 ### Stagger (`RepzMotion.stagger.*`)
 
-logoPlates 110 ms/pair · list 30 ms/item (max 8) · summary 70 ms/block · heatmap 12 ms/diagonal · digits 20 ms/digit, right → left.
+logoPlates 110 ms/pair · list 30 ms/item (max 8, `LIST_MAX_ITEMS`) · summary 70 ms/block · heatmap 12 ms/diagonal · digits 20 ms/digit, right → left.
 
 ### Reduced motion (system animator scale 0 / iOS Reduce Motion)
 
@@ -65,21 +70,24 @@ logoPlates 110 ms/pair · list 30 ms/item (max 8) · summary 70 ms/block · heat
 - Particles, confetti and idle loops are off. PR still shows the gold container and a static badge.
 - Number roll becomes a plain swap. Container transforms become a 150 ms fade-through.
 - Haptics stay on (they have their own setting).
+- Android "Remove animations" (animator scale 0) also makes the 150 ms crossfades instant, so everything is instant there. Accepted: stricter, never more motion.
 
-Implementation: a single `LocalReducedMotion` (expect/actual reading the platform setting) consumed by `RepzMotion` helpers. Features never check it themselves.
+Implementation: `LocalReducedMotion` is `internal` to `core:designsystem` and follows the live platform setting (or `RepzTheme(reducedMotion = …)`). `RepzMotion.springs`/`effectsSprings`/`tweens` return reduced-aware specs: spatial springs and `pathDraw`/`chartDraw` become `snap()`, effects springs `tween(150)`, `tweens.medium` `tween(150)`. Features never check it themselves (ADR-0024).
 
 ## 3. Haptics: `RepzHaptics`
+
+`val haptics = RepzHaptics.current`, then `haptics.tick()`, `confirm()`, `restEnd()`, `success()`, `reject()`, `dragStart()`, `dragEnd()`.
 
 | Event | Android | iOS | Used for |
 |---|---|---|---|
 | Tick | CLOCK_TICK | UISelectionFeedback | keypad key, stepper, chart snap, slider detent, last 5 s of rest |
 | Confirm | CONFIRM | UIImpact .light | set completed, chip toggle, nav |
-| RestEnd | LONG_PRESS × 2 | UINotification .warning | rest timer 0 |
+| RestEnd | LONG_PRESS × 2, 120 ms apart | UINotification .warning | rest timer 0 |
 | Success | CONFIRM + heavy click 120 ms later | UINotification .success | PR, workout finished |
 | Reject | REJECT | UINotification .error | invalid value, delete |
-| Drag | GESTURE_START / END | UIImpact .medium | reorder lift/drop |
+| DragStart / DragEnd | GESTURE_START / GESTURE_END | UIImpact .medium | reorder lift/drop |
 
-Haptics respect the in-app "Haptics" setting (F23).
+Haptics respect the in-app "Haptics" setting (F23) through `RepzTheme(hapticsEnabled)`. Android uses the androidx.core `HapticFeedbackConstantsCompat` constants; the Success heavy click is a `Vibrator` `EFFECT_HEAVY_CLICK`, which needs the `VIBRATE` permission.
 
 ## 4. Catalog
 
@@ -115,7 +123,7 @@ Haptics respect the in-app "Haptics" setting (F23).
 
 ### MOT-05 · Set completion ★
 - **Trigger:** Tap checkbox
-- **Animates:** Circle → RoundedSquare(11) (pressMorph), check path draws 280 ms, successContainer floods from checkbox outward (radial clip, spatialFast), numbers scale 1→1.06→1 (celebrate, tiny)
+- **Animates:** Circle → RoundedSquare(10) (pressMorph, `RepzMorphs.circleToRoundedSquare`), check path draws 280 ms, successContainer floods from checkbox outward (radial clip, spatialFast), numbers scale 1→1.06→1 (celebrate, tiny)
 - **Choreography:** Morph 0–120 → check 60–280 → flood 80–300 → numbers settle 150–320; rest timer starts at 0
 - **Haptic:** Confirm (light)
 - **Reduced motion:** Instant fill + check, no scale
