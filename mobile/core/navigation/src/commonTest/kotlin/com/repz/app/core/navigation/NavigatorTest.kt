@@ -440,4 +440,62 @@ class NavigatorTest {
             navigator.visibleEntries,
         )
     }
+
+    // RepzNavDisplay decorates every one of these stacks unconditionally (a tab's saveable state
+    // and ViewModelStore must survive while another tab is selected), picking only visibleStacks'
+    // entries to actually display. These tests cover that plumbing directly.
+
+    @Test
+    fun given_entryPushedOnANonSelectedTab_whenItsBackStackIsRead_thenTheEntryIsStillThere() {
+        val navigator = navigator(isAuthenticated = true)
+        navigator.selectTopLevel(TopLevelDestination.History)
+        navigator.navigate(FixtureHistoryEntryRoute(workoutId = "w1"))
+
+        navigator.selectTopLevel(TopLevelDestination.Exercises)
+
+        assertEquals(
+            listOf(FixtureHistoryRoot, FixtureHistoryEntryRoute(workoutId = "w1")),
+            navigator.backStacks.getValue(TopLevelDestination.History),
+        )
+    }
+
+    @Test
+    fun given_signedInNavigator_whenAuthBackStackIsRead_thenItStillHoldsTheAuthRoot() {
+        val navigator = navigator(isAuthenticated = true)
+
+        assertEquals(listOf(FixtureAuthWelcomeRoute), navigator.authBackStack)
+    }
+
+    @Test
+    fun given_signedOutNavigatorWithPushedAuthEntry_whenAuthBackStackIsRead_thenItHoldsBothEntries() {
+        val navigator = navigator(isAuthenticated = false)
+        navigator.navigate(FixtureAuthLoginRoute())
+
+        assertEquals(listOf(FixtureAuthWelcomeRoute, FixtureAuthLoginRoute()), navigator.authBackStack)
+    }
+
+    @Test
+    fun given_signedOutNavigator_whenVisibleStacksRead_thenOnlyAuthIsListed() {
+        val navigator = navigator(isAuthenticated = false)
+
+        assertEquals(listOf(BackStackId.Auth), navigator.visibleStacks)
+    }
+
+    @Test
+    fun given_trainSelected_whenVisibleStacksRead_thenOnlyTrainIsListed() {
+        val navigator = navigator(isAuthenticated = true)
+
+        assertEquals(listOf(BackStackId.Tab(TopLevelDestination.Train)), navigator.visibleStacks)
+    }
+
+    @Test
+    fun given_nonTrainTabSelected_whenVisibleStacksRead_thenTrainAndTheSelectedTabAreListed() {
+        val navigator = navigator(isAuthenticated = true)
+        navigator.selectTopLevel(TopLevelDestination.Profile)
+
+        assertEquals(
+            listOf(BackStackId.Tab(TopLevelDestination.Train), BackStackId.Tab(TopLevelDestination.Profile)),
+            navigator.visibleStacks,
+        )
+    }
 }

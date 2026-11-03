@@ -27,13 +27,13 @@ class Navigator(
         }
     }
 
-    private val backStacks: Map<TopLevelDestination, NavBackStack<NavKey>> =
+    private val tabBackStacks: Map<TopLevelDestination, NavBackStack<NavKey>> =
         TopLevelDestination.entries.associateWith { destination ->
             val restoredEntries = restoredState?.topLevelBackStacks?.get(destination)
             NavBackStack<NavKey>().apply { addAll(entriesOrRoot(restoredEntries, topLevelRoots.getValue(destination))) }
         }
 
-    private val authBackStack: NavBackStack<NavKey> =
+    private val authNavBackStack: NavBackStack<NavKey> =
         NavBackStack<NavKey>().apply { addAll(entriesOrRoot(restoredState?.authBackStack, authRoot)) }
 
     var isAuthenticated: Boolean by mutableStateOf(restoredState?.isAuthenticated ?: isAuthenticated)
@@ -42,30 +42,44 @@ class Navigator(
     var selectedDestination: TopLevelDestination by mutableStateOf(restoredState?.selectedDestination ?: TopLevelDestination.Train)
         private set
 
+    /** Every [TopLevelDestination]'s own back stack keys, tracked for recomposition whether or not it is the selected tab. */
+    val backStacks: Map<TopLevelDestination, List<NavKey>> get() = tabBackStacks
+
+    /** The signed-out flow's back stack keys, tracked for recomposition whether or not [isAuthenticated]. */
+    val authBackStack: List<NavKey> get() = authNavBackStack
+
+    /**
+     * The stacks currently on screen, in display order: just the auth stack signed out; Train
+     * alone, or Train plus the selected tab, signed in. A host decorates every stack's entries
+     * unconditionally (so each keeps its saved state and ViewModels while off screen) and uses
+     * this to pick which decorated entries to actually display.
+     */
+    val visibleStacks: List<BackStackId>
+        get() =
+            when {
+                !isAuthenticated -> listOf(BackStackId.Auth)
+                selectedDestination == TopLevelDestination.Train -> listOf(BackStackId.Tab(TopLevelDestination.Train))
+                else -> listOf(BackStackId.Tab(TopLevelDestination.Train), BackStackId.Tab(selectedDestination))
+            }
+
     val visibleBackStack: List<NavKey>
         get() = visibleEntries.map { it.key }
 
     /** [visibleBackStack], with each key tagged by the stack that owns it and its depth there. */
     val visibleEntries: List<VisibleNavKey>
         get() =
-            when {
-                !isAuthenticated -> {
-                    taggedEntries(authBackStack, BackStackId.Auth)
-                }
-
-                selectedDestination == TopLevelDestination.Train -> {
-                    taggedEntries(backStacks.getValue(TopLevelDestination.Train), BackStackId.Tab(TopLevelDestination.Train))
-                }
-
-                else -> {
-                    taggedEntries(backStacks.getValue(TopLevelDestination.Train), BackStackId.Tab(TopLevelDestination.Train)) +
-                        taggedEntries(backStacks.getValue(selectedDestination), BackStackId.Tab(selectedDestination))
-                }
+            visibleStacks.flatMap { stackId ->
+                val stack =
+                    when (stackId) {
+                        BackStackId.Auth -> authNavBackStack
+                        is BackStackId.Tab -> tabBackStacks.getValue(stackId.destination)
+                    }
+                taggedEntries(stack, stackId)
             }
 
     /** Pushes [key] on the active stack (auth stack signed out, selected tab signed in); ignored if [key] is already on top. */
     fun navigate(key: NavKey) {
-        val activeStack = if (isAuthenticated) backStacks.getValue(selectedDestination) else authBackStack
+        val activeStack = if (isAuthenticated) tabBackStacks.getValue(selectedDestination) else authNavBackStack
         if (activeStack.lastOrNull() != key) {
             activeStack.add(key)
         }
@@ -88,11 +102,11 @@ class Navigator(
     fun goBack(): Boolean =
         when {
             !isAuthenticated -> {
-                popOrFalse(authBackStack)
+                popOrFalse(authNavBackStack)
             }
 
             selectedDestination != TopLevelDestination.Train -> {
-                val selectedStack = backStacks.getValue(selectedDestination)
+                val selectedStack = tabBackStacks.getValue(selectedDestination)
                 if (selectedStack.size > 1) {
                     selectedStack.removeAt(selectedStack.lastIndex)
                 } else {
@@ -102,7 +116,7 @@ class Navigator(
             }
 
             else -> {
-                popOrFalse(backStacks.getValue(TopLevelDestination.Train))
+                popOrFalse(tabBackStacks.getValue(TopLevelDestination.Train))
             }
         }
 
@@ -122,8 +136,8 @@ class Navigator(
     /** Resets every tab to its root and restarts the auth stack at its root. */
     fun onSignedOut() {
         TopLevelDestination.entries.forEach(::resetToRoot)
-        authBackStack.clear()
-        authBackStack.add(authRoot)
+        authNavBackStack.clear()
+        authNavBackStack.add(authRoot)
         isAuthenticated = false
     }
 
@@ -131,12 +145,12 @@ class Navigator(
         NavigatorState(
             isAuthenticated = isAuthenticated,
             selectedDestination = selectedDestination,
-            topLevelBackStacks = backStacks.mapValues { (_, stack) -> stack.toList() },
-            authBackStack = authBackStack.toList(),
+            topLevelBackStacks = tabBackStacks.mapValues { (_, stack) -> stack.toList() },
+            authBackStack = authNavBackStack.toList(),
         )
 
     private fun resetToRoot(destination: TopLevelDestination) {
-        val stack = backStacks.getValue(destination)
+        val stack = tabBackStacks.getValue(destination)
         stack.clear()
         stack.add(topLevelRoots.getValue(destination))
     }
