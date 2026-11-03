@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- API 31+: the Keystore key behind repz_secure_session.xml never leaves this device, so a
+     restored or transferred copy of the file would be undecryptable ciphertext anyway
+     (core:network's KeystoreSecureStringStorage treats that the same as no session). -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="sharedpref" path="repz_secure_session.xml" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="sharedpref" path="repz_secure_session.xml" />
+    </device-transfer>
+</data-extraction-rules>

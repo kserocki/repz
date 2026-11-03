@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- core:network's own requirement: merges into the app APK and into every device-test APK
+         that pulls this module in, so Bolt's device tests get it without any app-level edit. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application android:networkSecurityConfig="@xml/repz_network_security_config" />
+
+</manifest>

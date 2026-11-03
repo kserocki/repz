@@ -11,7 +11,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Repz.Starting">
+        android:theme="@style/Theme.Repz.Starting"
+        android:fullBackupContent="@xml/backup_rules"
+        android:dataExtractionRules="@xml/data_extraction_rules">
 
         <!-- Portrait-locked by product decision (ADR-0017); lint's orientation warnings are expected. -->
         <activity

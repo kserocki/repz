@@ -30,6 +30,7 @@ kotlin {
             implementation(projects.core.sync)
             implementation(projects.core.navigation)
             implementation(projects.core.designsystem)
+            implementation(projects.core.network)
         }
         commonTest.dependencies {
             implementation(projects.core.testing)

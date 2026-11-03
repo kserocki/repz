@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Cleartext is permitted only for the local dev API this build targets: the Android emulator's
+  host-loopback alias (10.0.2.2) and a physical device's own loopback (for on-device local-API
+  tests). Every other destination keeps the platform default: HTTPS only, no cleartext.
+-->
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">10.0.2.2</domain>
+        <domain includeSubdomains="false">localhost</domain>
+    </domain-config>
+</network-security-config>

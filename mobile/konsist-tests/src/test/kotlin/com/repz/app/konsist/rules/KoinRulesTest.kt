@@ -78,4 +78,16 @@ class KoinRulesTest {
     fun given_d5AllowedNamedQualifiersFixture_whenChecked_thenNoViolations() {
         checkD5OneOwnerPerDefinition(fixtureScope("d5-allowed-named-qualifiers"))
     }
+
+    @Test
+    fun given_d5AllowedPlatformActualFixture_whenChecked_thenNoViolations() {
+        checkD5OneOwnerPerDefinition(fixtureScope("d5-allowed-platform-actual"))
+    }
+
+    @Test
+    fun given_d5PlatformActualSameSourceSetFixture_whenChecked_thenFailsWithD5() {
+        val error = assertFails { checkD5OneOwnerPerDefinition(fixtureScope("d5-platform-actual-same-source-set")) }
+
+        assertContains(error.message.orEmpty(), "D5")
+    }
 }
