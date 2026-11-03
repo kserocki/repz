@@ -80,7 +80,13 @@ private class RotatingAuthServer {
                 }
             }
 
-            "/auth/login" -> scope.respond("""{"type":"urn:repz:problem:invalid-credentials","title":"x","status":401,"instance":"/auth/login","requestId":"r"}""", HttpStatusCode.Unauthorized, problemJsonHeaders())
+            "/auth/login" -> {
+                scope.respond(
+                    """{"type":"urn:repz:problem:invalid-credentials","title":"x","status":401,"instance":"/auth/login","requestId":"r"}""",
+                    HttpStatusCode.Unauthorized,
+                    problemJsonHeaders(),
+                )
+            }
 
             else -> {
                 val header = request.headers[HttpHeaders.Authorization]
@@ -176,7 +182,14 @@ class AuthenticatedClientTest {
         runTest {
             val server =
                 RotatingAuthServer().apply {
-                    refreshBehavior = { _ -> respond("""{"type":"urn:repz:problem:validation-error","title":"x","status":400,"instance":"/auth/refresh","requestId":"r"}""", HttpStatusCode.BadRequest, problemJsonHeaders()) }
+                    refreshBehavior =
+                        { _ ->
+                            respond(
+                                """{"type":"urn:repz:problem:validation-error","title":"x","status":400,"instance":"/auth/refresh","requestId":"r"}""",
+                                HttpStatusCode.BadRequest,
+                                problemJsonHeaders(),
+                            )
+                        }
                 }
             val sessionManager = testSessionManager()
             sessionManager.start(AuthTokens(AccessToken(STALE_ACCESS_TOKEN), RefreshToken(INITIAL_REFRESH_TOKEN)))
@@ -272,7 +285,11 @@ class AuthenticatedClientTest {
                     refreshBehavior = { _ ->
                         refreshStarted.complete(Unit)
                         proceedWithRefresh.await()
-                        respond("""{"accessToken":"access-1","refreshToken":"refresh-1","expiresIn":900}""", HttpStatusCode.OK, jsonHeaders())
+                        respond(
+                            """{"accessToken":"access-1","refreshToken":"refresh-1","expiresIn":900}""",
+                            HttpStatusCode.OK,
+                            jsonHeaders(),
+                        )
                     }
                 }
             val clients = testClients(sessionManager = sessionManager) { request -> server.handle(this, request) }

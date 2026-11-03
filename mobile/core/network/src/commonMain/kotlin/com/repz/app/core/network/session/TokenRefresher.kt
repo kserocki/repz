@@ -35,7 +35,9 @@ internal class TokenRefresher(
                     if (replaced) result.value.toBearerTokens() else null
                 }
 
-                is NetworkResult.Failure -> handleRefreshFailure(result.error)
+                is NetworkResult.Failure -> {
+                    handleRefreshFailure(result.error)
+                }
             }
         }
 
@@ -47,7 +49,9 @@ internal class TokenRefresher(
                 null
             }
 
-            else -> throw RefreshUnavailableException(error)
+            else -> {
+                throw RefreshUnavailableException(error)
+            }
         }
 
     private companion object {

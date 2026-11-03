@@ -48,18 +48,39 @@ class GenerateContractFixturesTaskTest {
                 continue
             }
             when (val next = escaped[index + 1]) {
-                '\\' -> result.append('\\')
-                '"' -> result.append('"')
-                '$' -> result.append('$')
-                'n' -> result.append('\n')
-                'r' -> result.append('\r')
-                't' -> result.append('\t')
+                '\\' -> {
+                    result.append('\\')
+                }
+
+                '"' -> {
+                    result.append('"')
+                }
+
+                '$' -> {
+                    result.append('$')
+                }
+
+                'n' -> {
+                    result.append('\n')
+                }
+
+                'r' -> {
+                    result.append('\r')
+                }
+
+                't' -> {
+                    result.append('\t')
+                }
+
                 'u' -> {
                     val hex = escaped.substring(index + 2, index + 6)
                     result.append(hex.toInt(16).toChar())
                     index += 4
                 }
-                else -> error("Unexpected escape: \\$next")
+
+                else -> {
+                    error("Unexpected escape: \\$next")
+                }
             }
             index += 2
         }

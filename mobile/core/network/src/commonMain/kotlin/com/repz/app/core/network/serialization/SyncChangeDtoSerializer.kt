@@ -101,14 +101,32 @@ internal object SyncChangeDtoSerializer : KSerializer<SyncChangeDto> {
         } else {
             if (payloadElement == JsonNull) throw SerializationException("A non-deleted SyncChangeDto must have a payload")
             when (type) {
-                SyncTypeDto.WORKOUT ->
-                    SyncChangeDto.Workout(id, version, updatedAt, json.decodeFromJsonElement(WorkoutPayloadDto.serializer(), payloadElement))
+                SyncTypeDto.WORKOUT -> {
+                    SyncChangeDto.Workout(
+                        id,
+                        version,
+                        updatedAt,
+                        json.decodeFromJsonElement(WorkoutPayloadDto.serializer(), payloadElement),
+                    )
+                }
 
-                SyncTypeDto.TEMPLATE ->
-                    SyncChangeDto.Template(id, version, updatedAt, json.decodeFromJsonElement(TemplatePayloadDto.serializer(), payloadElement))
+                SyncTypeDto.TEMPLATE -> {
+                    SyncChangeDto.Template(
+                        id,
+                        version,
+                        updatedAt,
+                        json.decodeFromJsonElement(TemplatePayloadDto.serializer(), payloadElement),
+                    )
+                }
 
-                SyncTypeDto.EXERCISE ->
-                    SyncChangeDto.Exercise(id, version, updatedAt, json.decodeFromJsonElement(ExercisePayloadDto.serializer(), payloadElement))
+                SyncTypeDto.EXERCISE -> {
+                    SyncChangeDto.Exercise(
+                        id,
+                        version,
+                        updatedAt,
+                        json.decodeFromJsonElement(ExercisePayloadDto.serializer(), payloadElement),
+                    )
+                }
             }
         }
     }

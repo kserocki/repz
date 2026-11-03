@@ -1,8 +1,8 @@
 package com.repz.app.core.network.session
 
 import com.repz.app.core.network.client.NetworkJson
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
 
 private const val PERSISTED_TOKENS_VERSION = 1
 

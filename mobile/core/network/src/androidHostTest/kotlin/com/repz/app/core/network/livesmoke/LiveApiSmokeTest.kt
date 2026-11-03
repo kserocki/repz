@@ -232,4 +232,3 @@ class LiveApiSmokeTest {
         const val DEFAULT_ACCESS_TTL_SECONDS = 900L
     }
 }
-

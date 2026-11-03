@@ -97,7 +97,14 @@ class ContractFixturesTest {
 
         val decoded = StrictContractJson.decodeFromString(PushResponseDto.serializer(), fixture.json)
 
-        assertEquals("payload.name", decoded.rejected.single().problem.errors?.single()?.path)
+        assertEquals(
+            "payload.name",
+            decoded.rejected
+                .single()
+                .problem.errors
+                ?.single()
+                ?.path,
+        )
     }
 
     @Test
@@ -116,7 +123,8 @@ class ContractFixturesTest {
     @Test
     fun givenDeletedFalseWithANullPayload_whenDecoded_thenItFailsToDecode() {
         val json =
-            """{"type":"workout","id":"b6e6b6a0-0000-4a22-8a33-000000000001","version":1,"deleted":false,
+            """
+            {"type":"workout","id":"b6e6b6a0-0000-4a22-8a33-000000000001","version":1,"deleted":false,
             "updatedAt":"2026-11-01T10:00:00.000Z","payload":null}
             """.trimIndent()
 
@@ -126,7 +134,8 @@ class ContractFixturesTest {
     @Test
     fun givenDeletedTrueWithAnObjectPayload_whenDecoded_thenItFailsToDecode() {
         val json =
-            """{"type":"workout","id":"b6e6b6a0-0000-4a22-8a33-000000000001","version":1,"deleted":true,
+            """
+            {"type":"workout","id":"b6e6b6a0-0000-4a22-8a33-000000000001","version":1,"deleted":true,
             "updatedAt":"2026-11-01T10:00:00.000Z","payload":{"name":"x"}}
             """.trimIndent()
 

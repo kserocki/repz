@@ -1,12 +1,12 @@
 package com.repz.app.core.network.api
 
 import com.repz.app.core.network.dto.SyncTypeDto
+import com.repz.app.core.network.dto.UnitSystemDto
 import com.repz.app.core.network.dto.auth.LoginRequestDto
 import com.repz.app.core.network.dto.auth.RegisterRequestDto
 import com.repz.app.core.network.dto.exercise.CustomExercisePayloadDto
 import com.repz.app.core.network.dto.sync.PushChangeDto
 import com.repz.app.core.network.dto.sync.PushRequestDto
-import com.repz.app.core.network.dto.UnitSystemDto
 import com.repz.app.core.network.dto.user.UpdateProfileRequestDto
 import com.repz.app.core.network.session.AccessToken
 import com.repz.app.core.network.session.AuthTokens
@@ -37,7 +37,15 @@ class ApiServicesTest {
     fun givenRegister_whenCalled_thenItPostsToAuthRegisterOverThePublicClientWithTheBody() =
         runTest {
             var captured: HttpRequestData? = null
-            val clients = testClients { request -> captured = request; respond("""{"user":{"id":"b6e6b6a0-0000-4a22-8a33-000000000001","email":"a@b.com","displayName":"A","unitSystem":"kg"},"accessToken":"a","refreshToken":"r","expiresIn":900}""", HttpStatusCode.Created, jsonHeaders()) }
+            val clients =
+                testClients { request ->
+                    captured = request
+                    respond(
+                        """{"user":{"id":"b6e6b6a0-0000-4a22-8a33-000000000001","email":"a@b.com","displayName":"A","unitSystem":"kg"},"accessToken":"a","refreshToken":"r","expiresIn":900}""",
+                        HttpStatusCode.Created,
+                        jsonHeaders(),
+                    )
+                }
             val authApi = KtorAuthApi(clients.public)
 
             authApi.register(RegisterRequestDto("a@b.com", "pw", "Alex"))
@@ -54,7 +62,15 @@ class ApiServicesTest {
     fun givenLogin_whenCalled_thenItPostsToAuthLoginOverThePublicClientWithTheBody() =
         runTest {
             var captured: HttpRequestData? = null
-            val clients = testClients { request -> captured = request; respond("""{"user":{"id":"b6e6b6a0-0000-4a22-8a33-000000000001","email":"a@b.com","displayName":"A","unitSystem":"kg"},"accessToken":"a","refreshToken":"r","expiresIn":900}""", HttpStatusCode.OK, jsonHeaders()) }
+            val clients =
+                testClients { request ->
+                    captured = request
+                    respond(
+                        """{"user":{"id":"b6e6b6a0-0000-4a22-8a33-000000000001","email":"a@b.com","displayName":"A","unitSystem":"kg"},"accessToken":"a","refreshToken":"r","expiresIn":900}""",
+                        HttpStatusCode.OK,
+                        jsonHeaders(),
+                    )
+                }
             val authApi = KtorAuthApi(clients.public)
 
             authApi.login(LoginRequestDto("a@b.com", "pw"))
@@ -69,7 +85,11 @@ class ApiServicesTest {
     fun givenLogout_whenCalled_thenItPostsToAuthLogoutWithTheRefreshTokenInTheBody() =
         runTest {
             var captured: HttpRequestData? = null
-            val clients = testClients { request -> captured = request; respond("", HttpStatusCode.NoContent) }
+            val clients =
+                testClients { request ->
+                    captured = request
+                    respond("", HttpStatusCode.NoContent)
+                }
             val authApi = KtorAuthApi(clients.public)
 
             authApi.logout(RefreshToken("the-refresh-token"))
@@ -84,7 +104,11 @@ class ApiServicesTest {
     fun givenHealthCheck_whenCalled_thenItGetsHealthOverThePublicClient() =
         runTest {
             var captured: HttpRequestData? = null
-            val clients = testClients { request -> captured = request; respond("""{"status":"ok"}""", HttpStatusCode.OK, jsonHeaders()) }
+            val clients =
+                testClients { request ->
+                    captured = request
+                    respond("""{"status":"ok"}""", HttpStatusCode.OK, jsonHeaders())
+                }
             val healthApi = KtorHealthApi(clients.public)
 
             healthApi.check()
@@ -101,7 +125,15 @@ class ApiServicesTest {
             var captured: HttpRequestData? = null
             val sessionManager = testSessionManager()
             sessionManager.start(AuthTokens(AccessToken("acc"), RefreshToken("ref")))
-            val clients = testClients(sessionManager = sessionManager) { request -> captured = request; respond("""{"id":"b6e6b6a0-0000-4a22-8a33-000000000001","email":"a@b.com","displayName":"A","unitSystem":"kg"}""", HttpStatusCode.OK, jsonHeaders()) }
+            val clients =
+                testClients(sessionManager = sessionManager) { request ->
+                    captured = request
+                    respond(
+                        """{"id":"b6e6b6a0-0000-4a22-8a33-000000000001","email":"a@b.com","displayName":"A","unitSystem":"kg"}""",
+                        HttpStatusCode.OK,
+                        jsonHeaders(),
+                    )
+                }
             val userApi = KtorUserApi(clients)
 
             userApi.getMe()
@@ -118,7 +150,15 @@ class ApiServicesTest {
             var captured: HttpRequestData? = null
             val sessionManager = testSessionManager()
             sessionManager.start(AuthTokens(AccessToken("acc"), RefreshToken("ref")))
-            val clients = testClients(sessionManager = sessionManager) { request -> captured = request; respond("""{"id":"b6e6b6a0-0000-4a22-8a33-000000000001","email":"a@b.com","displayName":"New Name","unitSystem":"kg"}""", HttpStatusCode.OK, jsonHeaders()) }
+            val clients =
+                testClients(sessionManager = sessionManager) { request ->
+                    captured = request
+                    respond(
+                        """{"id":"b6e6b6a0-0000-4a22-8a33-000000000001","email":"a@b.com","displayName":"New Name","unitSystem":"kg"}""",
+                        HttpStatusCode.OK,
+                        jsonHeaders(),
+                    )
+                }
             val userApi = KtorUserApi(clients)
 
             userApi.updateMe(UpdateProfileRequestDto(displayName = "New Name"))
@@ -137,7 +177,11 @@ class ApiServicesTest {
             var captured: HttpRequestData? = null
             val sessionManager = testSessionManager()
             sessionManager.start(AuthTokens(AccessToken("acc"), RefreshToken("ref")))
-            val clients = testClients(sessionManager = sessionManager) { request -> captured = request; respond("""{"accepted":[],"rejected":[]}""", HttpStatusCode.OK, jsonHeaders()) }
+            val clients =
+                testClients(sessionManager = sessionManager) { request ->
+                    captured = request
+                    respond("""{"accepted":[],"rejected":[]}""", HttpStatusCode.OK, jsonHeaders())
+                }
             val syncApi = KtorSyncApi(clients)
             val changeId = Uuid.parse("b6e6b6a0-0000-4a22-8a33-000000000002")
 
@@ -146,7 +190,12 @@ class ApiServicesTest {
                     listOf(
                         PushChangeDto.UpsertCustomExercise(
                             changeId,
-                            CustomExercisePayloadDto("Zottman curl", com.repz.app.core.network.dto.MuscleDto.BICEPS, emptyList(), com.repz.app.core.network.dto.EquipmentDto.DUMBBELL),
+                            CustomExercisePayloadDto(
+                                "Zottman curl",
+                                com.repz.app.core.network.dto.MuscleDto.BICEPS,
+                                emptyList(),
+                                com.repz.app.core.network.dto.EquipmentDto.DUMBBELL,
+                            ),
                         ),
                     ),
                 ),

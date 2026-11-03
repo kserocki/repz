@@ -16,8 +16,8 @@ import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonEncoder
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonPrimitive
@@ -94,10 +94,20 @@ internal object PushChangeDtoSerializer : KSerializer<PushChangeDto> {
             PushChangeDto.Delete(type, id)
         } else {
             when (type) {
-                SyncTypeDto.WORKOUT -> PushChangeDto.UpsertWorkout(id, json.decodeFromJsonElement(WorkoutPayloadDto.serializer(), payloadElement))
-                SyncTypeDto.TEMPLATE -> PushChangeDto.UpsertTemplate(id, json.decodeFromJsonElement(TemplatePayloadDto.serializer(), payloadElement))
-                SyncTypeDto.EXERCISE ->
-                    PushChangeDto.UpsertCustomExercise(id, json.decodeFromJsonElement(CustomExercisePayloadDto.serializer(), payloadElement))
+                SyncTypeDto.WORKOUT -> {
+                    PushChangeDto.UpsertWorkout(id, json.decodeFromJsonElement(WorkoutPayloadDto.serializer(), payloadElement))
+                }
+
+                SyncTypeDto.TEMPLATE -> {
+                    PushChangeDto.UpsertTemplate(id, json.decodeFromJsonElement(TemplatePayloadDto.serializer(), payloadElement))
+                }
+
+                SyncTypeDto.EXERCISE -> {
+                    PushChangeDto.UpsertCustomExercise(
+                        id,
+                        json.decodeFromJsonElement(CustomExercisePayloadDto.serializer(), payloadElement),
+                    )
+                }
             }
         }
     }

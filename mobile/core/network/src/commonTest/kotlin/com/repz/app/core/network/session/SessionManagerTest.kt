@@ -149,4 +149,3 @@ class SessionManagerTest {
             assertEquals(null, manager.currentTokens())
         }
 }
-

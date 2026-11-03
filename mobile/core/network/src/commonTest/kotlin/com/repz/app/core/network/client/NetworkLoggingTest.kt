@@ -42,20 +42,23 @@ class NetworkLoggingTest {
             val clients =
                 testClients(sessionManager = sessionManager, logger = testLogger(writer)) { request ->
                     when {
-                        request.url.encodedPath == "/auth/login" ->
+                        request.url.encodedPath == "/auth/login" -> {
                             respond(
-                                """{"user":{"id":"b6e6b6a0-0000-4a22-8a33-000000000001","email":"a@b.com","displayName":"A","unitSystem":"kg"},""" +
+                                """{"user":{"id":"b6e6b6a0-0000-4a22-8a33-000000000001","email":"a@b.com",""" +
+                                    """"displayName":"A","unitSystem":"kg"},""" +
                                     """"accessToken":"$ACCESS_TOKEN","refreshToken":"$REFRESH_TOKEN","expiresIn":900}""",
                                 HttpStatusCode.OK,
                                 jsonHeaders(),
                             )
+                        }
 
-                        request.url.encodedPath == "/auth/refresh" ->
+                        request.url.encodedPath == "/auth/refresh" -> {
                             respond(
                                 """{"accessToken":"$ACCESS_TOKEN-2","refreshToken":"$REFRESH_TOKEN-2","expiresIn":900}""",
                                 HttpStatusCode.OK,
                                 jsonHeaders(),
                             )
+                        }
 
                         request.url.encodedPath == "/sync/push" -> {
                             authenticatedCallCount++
@@ -66,7 +69,9 @@ class NetworkLoggingTest {
                             }
                         }
 
-                        else -> respond("not found", HttpStatusCode.NotFound)
+                        else -> {
+                            respond("not found", HttpStatusCode.NotFound)
+                        }
                     }
                 }
 
@@ -79,7 +84,12 @@ class NetworkLoggingTest {
                 contentType(ContentType.Application.Json)
                 setBody(
                     PushRequestDto(
-                        listOf(PushChangeDto.Delete(com.repz.app.core.network.dto.SyncTypeDto.WORKOUT, Uuid.parse("b6e6b6a0-0000-4a22-8a33-000000000099"))),
+                        listOf(
+                            PushChangeDto.Delete(
+                                com.repz.app.core.network.dto.SyncTypeDto.WORKOUT,
+                                Uuid.parse("b6e6b6a0-0000-4a22-8a33-000000000099"),
+                            ),
+                        ),
                     ),
                 )
             }
