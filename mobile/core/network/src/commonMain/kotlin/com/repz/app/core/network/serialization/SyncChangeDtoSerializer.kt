@@ -24,6 +24,8 @@ import kotlinx.serialization.json.put
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
+private val SYNC_CHANGE_DTO_KEYS = setOf("type", "id", "version", "deleted", "updatedAt", "payload")
+
 /**
  * Writes/reads `{type, id, version, deleted, updatedAt, payload}`. `payload` is decoded with the
  * serializer that `type` selects, so a payload shaped for a different `type` (e.g. an exercise
@@ -78,6 +80,7 @@ internal object SyncChangeDtoSerializer : KSerializer<SyncChangeDto> {
         val jsonDecoder = requireJsonDecoder(decoder, "SyncChangeDto")
         val json = jsonDecoder.json
         val jsonObject = requireJsonObject(jsonDecoder.decodeJsonElement(), "SyncChangeDto")
+        requireNoUnknownKeys(json, jsonObject, SYNC_CHANGE_DTO_KEYS, "SyncChangeDto")
 
         val type = json.decodeFromJsonElement(SyncTypeDto.serializer(), requireField(jsonObject, "type", "SyncChangeDto"))
         val id = json.decodeFromJsonElement(Uuid.serializer(), requireField(jsonObject, "id", "SyncChangeDto"))

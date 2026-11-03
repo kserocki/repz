@@ -22,6 +22,8 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import kotlin.uuid.Uuid
 
+private val PUSH_CHANGE_DTO_KEYS = setOf("type", "id", "deleted", "payload")
+
 /**
  * Writes/reads `{type, id, deleted, payload}`. A `Delete` always writes `payload: null`; an upsert's
  * `type` is implied by its payload variant, not stored separately on the sealed class.
@@ -76,6 +78,7 @@ internal object PushChangeDtoSerializer : KSerializer<PushChangeDto> {
         val jsonDecoder = requireJsonDecoder(decoder, "PushChangeDto")
         val json = jsonDecoder.json
         val jsonObject = requireJsonObject(jsonDecoder.decodeJsonElement(), "PushChangeDto")
+        requireNoUnknownKeys(json, jsonObject, PUSH_CHANGE_DTO_KEYS, "PushChangeDto")
 
         val type = json.decodeFromJsonElement(SyncTypeDto.serializer(), requireField(jsonObject, "type", "PushChangeDto"))
         val id = json.decodeFromJsonElement(Uuid.serializer(), requireField(jsonObject, "id", "PushChangeDto"))

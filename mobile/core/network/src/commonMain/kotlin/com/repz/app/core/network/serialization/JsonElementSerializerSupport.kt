@@ -3,6 +3,7 @@ package com.repz.app.core.network.serialization
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonEncoder
@@ -30,6 +31,26 @@ internal fun requireField(
     name: String,
     typeName: String,
 ): JsonElement = jsonObject[name] ?: throw SerializationException("$typeName is missing \"$name\"")
+
+/**
+ * Hand-written decoders don't get kotlinx.serialization's built-in unknown-key rejection for free,
+ * so this mirrors the standard `ignoreUnknownKeys` behaviour of a generated decoder: a no-op in
+ * production (the network `Json` config tolerates an additive server field), but strict under the
+ * contract test's `Json` config, so a fixture that grows an undocumented key fails to decode
+ * instead of silently succeeding.
+ */
+internal fun requireNoUnknownKeys(
+    json: Json,
+    jsonObject: JsonObject,
+    allowedKeys: Set<String>,
+    typeName: String,
+) {
+    if (json.configuration.ignoreUnknownKeys) return
+    val unknownKeys = jsonObject.keys - allowedKeys
+    if (unknownKeys.isNotEmpty()) {
+        throw SerializationException("$typeName has unknown key(s): ${unknownKeys.sorted()}")
+    }
+}
 
 internal fun requireNullPayload(
     payloadElement: JsonElement,
