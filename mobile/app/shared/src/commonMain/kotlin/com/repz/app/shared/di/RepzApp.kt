@@ -1,5 +1,6 @@
 package com.repz.app.shared.di
 
+import com.repz.app.core.network.NetworkModule
 import org.koin.core.KoinApplication
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.plugin.module.dsl.startKoin
@@ -9,7 +10,7 @@ import org.koin.plugin.module.dsl.startKoin
  * time wherever this annotation's generated `startKoin<RepzApp>()` call is compiled: here, in
  * `app:shared`'s main sources and its `commonTest` sources.
  */
-@org.koin.core.annotation.KoinApplication(modules = [AppModule::class, CommonModule::class])
+@org.koin.core.annotation.KoinApplication(modules = [AppModule::class, CommonModule::class, NetworkModule::class, PlatformModule::class])
 object RepzApp
 
 /**
