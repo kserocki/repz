@@ -9,6 +9,18 @@ plugins {
 val generateContractFixturesTask = registerGenerateContractFixtures()
 
 kotlin {
+    // Device tests (instrumented, run on an emulator/device): KeystoreSecureStringStorageTest
+    // against the real Android Keystore, and the gated LocalApiReachabilityTest. No commonTest
+    // sharing here (AGP's device test source set tree is `null`), unlike `withHostTest`. Registered
+    // before `sourceSets` below so the `androidDeviceTest` source set accessor exists there.
+    androidLibrary {
+        withDeviceTestBuilder {
+            // Default name/source set ("deviceTest" / "androidDeviceTest"); only the runner differs.
+        }.configure {
+            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        }
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.common)
@@ -33,6 +45,13 @@ kotlin {
         }
         commonTest {
             kotlin.srcDir(generateContractFixturesTask)
+        }
+        // `androidDeviceTest` has no pre-generated `by KotlinSourceSetConvention` accessor (unlike
+        // `androidMain`/`commonTest`): it's AGP's own KMP device test source set, not one of Kotlin
+        // Gradle Plugin's own conventions, so it's looked up by name instead.
+        getByName("androidDeviceTest").dependencies {
+            implementation(libs.androidx.test.runner)
+            implementation(libs.androidx.test.ext.junit)
         }
     }
 }
