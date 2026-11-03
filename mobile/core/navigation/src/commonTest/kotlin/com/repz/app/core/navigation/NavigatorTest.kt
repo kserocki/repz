@@ -316,4 +316,128 @@ class NavigatorTest {
             navigator.saveState().topLevelBackStacks.getValue(TopLevelDestination.Exercises),
         )
     }
+
+    @Test
+    fun given_signedOutNavigator_whenSyncAuthenticationTrue_thenTrainSelectedAllTabsAtRootAndAuthenticated() {
+        val navigator = navigator(isAuthenticated = false)
+
+        navigator.syncAuthentication(isSignedIn = true)
+
+        assertTrue(navigator.isAuthenticated)
+        assertEquals(TopLevelDestination.Train, navigator.selectedDestination)
+        val savedState = navigator.saveState()
+        TopLevelDestination.entries.forEach { destination ->
+            assertEquals(listOf(topLevelRoots.getValue(destination)), savedState.topLevelBackStacks.getValue(destination))
+        }
+    }
+
+    @Test
+    fun given_signedInNavigatorWithDeepStacks_whenSyncAuthenticationFalse_thenTabsResetAndAuthStackRestarted() {
+        val navigator = navigator(isAuthenticated = true)
+        navigator.navigate(FixtureWorkoutDetailsRoute(workoutId = "w1", setIndex = null))
+        navigator.selectTopLevel(TopLevelDestination.History)
+        navigator.navigate(FixtureHistoryEntryRoute(workoutId = "w1"))
+
+        navigator.syncAuthentication(isSignedIn = false)
+
+        assertFalse(navigator.isAuthenticated)
+        val savedState = navigator.saveState()
+        TopLevelDestination.entries.forEach { destination ->
+            assertEquals(listOf(topLevelRoots.getValue(destination)), savedState.topLevelBackStacks.getValue(destination))
+        }
+        assertEquals(listOf(FixtureAuthWelcomeRoute), savedState.authBackStack)
+    }
+
+    @Test
+    fun given_restoredDeepStacksMatchingTheRequestedValue_whenSyncAuthentication_thenStacksAreUntouched() {
+        val deepSignedInState =
+            NavigatorState(
+                isAuthenticated = true,
+                selectedDestination = TopLevelDestination.History,
+                topLevelBackStacks =
+                    mapOf(
+                        TopLevelDestination.Train to listOf(FixtureTrainRoot, FixtureWorkoutDetailsRoute("w1", null)),
+                        TopLevelDestination.History to listOf(FixtureHistoryRoot, FixtureHistoryEntryRoute("w1")),
+                        TopLevelDestination.Exercises to listOf(FixtureExercisesRoot),
+                        TopLevelDestination.Profile to listOf(FixtureProfileRoot),
+                    ),
+                authBackStack = listOf(FixtureAuthWelcomeRoute),
+            )
+        val navigator = navigator(isAuthenticated = true, restoredState = deepSignedInState)
+
+        navigator.syncAuthentication(isSignedIn = true)
+
+        assertEquals(deepSignedInState, navigator.saveState())
+    }
+
+    @Test
+    fun given_signedOutNavigator_whenSelectTopLevel_thenIgnored() {
+        val navigator = navigator(isAuthenticated = false)
+
+        navigator.selectTopLevel(TopLevelDestination.History)
+
+        assertEquals(TopLevelDestination.Train, navigator.selectedDestination)
+        assertEquals(listOf(FixtureAuthWelcomeRoute), navigator.visibleBackStack)
+    }
+
+    @Test
+    fun given_sameKeyInTrainAndHistoryStacks_whenVisibleEntriesRead_thenContentKeysAreDistinct() {
+        val navigator = navigator(isAuthenticated = true)
+        val sharedKey = FixtureWorkoutDetailsRoute(workoutId = "w1", setIndex = null)
+        navigator.navigate(sharedKey)
+        navigator.selectTopLevel(TopLevelDestination.History)
+        navigator.navigate(sharedKey)
+
+        val matchingSharedKey = navigator.visibleEntries.filter { it.key == sharedKey }
+
+        assertEquals(2, matchingSharedKey.size)
+        assertEquals(matchingSharedKey.size, matchingSharedKey.map { it.contentKey }.distinct().size)
+    }
+
+    @Test
+    fun given_sameKeyTwiceInOneStack_whenVisibleEntriesRead_thenContentKeysAreDistinct() {
+        val navigator = navigator(isAuthenticated = true)
+        val detailsRoute = FixtureWorkoutDetailsRoute(workoutId = "w1", setIndex = null)
+        navigator.navigate(detailsRoute)
+        navigator.navigate(FixtureWorkoutDetailsRoute(workoutId = "w2", setIndex = null))
+        navigator.navigate(detailsRoute)
+
+        val matchingDetailsRoute = navigator.visibleEntries.filter { it.key == detailsRoute }
+
+        assertEquals(2, matchingDetailsRoute.size)
+        assertEquals(listOf(1, 3), matchingDetailsRoute.map { it.depth })
+        assertEquals(matchingDetailsRoute.size, matchingDetailsRoute.map { it.contentKey }.distinct().size)
+    }
+
+    @Test
+    fun given_signedInNavigatorWithEntriesAcrossTabs_whenVisibleEntriesRead_thenEachEntryIsTaggedWithItsOwningStackAndDepth() {
+        val navigator = navigator(isAuthenticated = true)
+        val detailsRoute = FixtureWorkoutDetailsRoute(workoutId = "w1", setIndex = null)
+        navigator.navigate(detailsRoute)
+        navigator.selectTopLevel(TopLevelDestination.Exercises)
+
+        assertEquals(
+            listOf(
+                VisibleNavKey(FixtureTrainRoot, BackStackId.Tab(TopLevelDestination.Train), depth = 0),
+                VisibleNavKey(detailsRoute, BackStackId.Tab(TopLevelDestination.Train), depth = 1),
+                VisibleNavKey(FixtureExercisesRoot, BackStackId.Tab(TopLevelDestination.Exercises), depth = 0),
+            ),
+            navigator.visibleEntries,
+        )
+        assertEquals(navigator.visibleBackStack, navigator.visibleEntries.map { it.key })
+    }
+
+    @Test
+    fun given_signedOutNavigator_whenVisibleEntriesRead_thenEachEntryIsTaggedWithTheAuthStack() {
+        val navigator = navigator(isAuthenticated = false)
+        navigator.navigate(FixtureAuthLoginRoute())
+
+        assertEquals(
+            listOf(
+                VisibleNavKey(FixtureAuthWelcomeRoute, BackStackId.Auth, depth = 0),
+                VisibleNavKey(FixtureAuthLoginRoute(), BackStackId.Auth, depth = 1),
+            ),
+            navigator.visibleEntries,
+        )
+    }
 }
