@@ -76,10 +76,10 @@ Identifiers: package / applicationId / bundle id **`com.repz.app`**. Minimum OS:
 Why two separate app modules? With the current Android Gradle Plugin, the Android application module can no longer be the KMP module itself, so `app/android` is a thin shell and all shared code lives in `app/shared`.
 
 **Debug-only design-system catalog.** The shells (ADR-0017) can open `core:designsystem`'s `RepzDesignSystemCatalog` instead of the normal root, for manual checks and screenshots. It is a developer tool: not localized and never reachable in release builds.
-- `RepzRoot(modifier, catalogPageKey: String? = null, catalogDynamicColor: Boolean = false)`: when `RepzCatalogPage.fromKey(catalogPageKey)` finds a page, it renders `RepzTheme(dynamicColor = catalogDynamicColor) { RepzDesignSystemCatalog(page) }`. A null or unknown key takes the normal path, which is unchanged.
-- Page keys (`RepzCatalogPage`): `colors`, `extended-1`, `extended-2`, `extended-3`, `type`, `type-emphasized-1`, `type-emphasized-2`, `numeric-1`, `numeric-2`, `shapes`, `spacing-elevation-1`, `spacing-elevation-2`. Every page fits one screen on the smallest test device (iPhone Duo simulator), because `simctl` screenshots can't scroll; at 200 % font scale on Android every page except `colors` fits, and `colors` scrolls.
-- Android: `adb shell am start -n com.repz.app/.MainActivity --es repz.catalog <page> [--ez repz.dynamicColor true]`. `MainActivity` reads both extras only when `ApplicationInfo.FLAG_DEBUGGABLE` is set.
-- iOS: launch argument `-RepzCatalogPage <page>` (e.g. `xcrun simctl launch booted com.repz.app -RepzCatalogPage colors`). `ComposeView.swift` reads the `RepzCatalogPage` user default only under `#if DEBUG` and passes it to `mainViewController(catalogPageKey:)`. Dynamic colour does not exist on iOS, so there is no second argument.
+- `RepzRoot(modifier, catalogPageKey: String? = null, catalogDynamicColor: Boolean = false, catalogReducedMotion: Boolean? = null)`: when `RepzCatalogPage.fromKey(catalogPageKey)` finds a page, it renders `RepzTheme(dynamicColor = catalogDynamicColor, reducedMotion = catalogReducedMotion) { RepzDesignSystemCatalog(page) }`. A null or unknown key takes the normal path, which is unchanged.
+- Page keys (`RepzCatalogPage`): `colors`, `extended-1`, `extended-2`, `extended-3`, `type`, `type-emphasized-1`, `type-emphasized-2`, `numeric-1`, `numeric-2`, `shapes`, `spacing-elevation-1`, `spacing-elevation-2`, `motion-springs-1`, `motion-springs-2`, `motion-tweens`, `motion-morphs`, `haptics`. The motion and haptics pages auto-play, so recordings need no taps. Every page fits one screen on the smallest test device (iPhone Duo simulator), because `simctl` screenshots can't scroll; at 200 % font scale on Android every page except `colors` fits, and `colors` scrolls.
+- Android: `adb shell am start -n com.repz.app/.MainActivity --es repz.catalog <page> [--ez repz.dynamicColor true] [--ez repz.reducedMotion true]`. `MainActivity` reads the extras only when `ApplicationInfo.FLAG_DEBUGGABLE` is set; without `repz.reducedMotion` the theme follows the system setting.
+- iOS: launch argument `-RepzCatalogPage <page>` (e.g. `xcrun simctl launch booted com.repz.app -RepzCatalogPage colors`). `ComposeView.swift` reads the `RepzCatalogPage` user default only under `#if DEBUG` and passes it to `mainViewController(catalogPageKey:catalogReducedMotion:)`. Dynamic colour does not exist on iOS. `-RepzReducedMotion YES` forces reduced motion (read under `#if DEBUG`, passed as `catalogReducedMotion`); without it the theme follows the system setting.
 - The Xcode Debug configuration sets `SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG`. It was missing before, so Swift's `#if DEBUG` never fired (`GCC_PREPROCESSOR_DEFINITIONS = DEBUG=1` affects only C and Objective-C).
 
 ---
@@ -588,7 +588,7 @@ A plain Kotlin/JVM module, not a KMP one: it reads source **text** (via Konsist 
 
 ## 14. Decision log
 
-All decisions live in [`docs/adr/`](adr/) (ADR-0001 … ADR-0022). Add a new ADR for every decision that changes this document.
+All decisions live in [`docs/adr/`](adr/) (ADR-0001 … ADR-0024). Add a new ADR for every decision that changes this document.
 
 ## 15. Risks to verify in the first scaffold spike
 
