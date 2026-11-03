@@ -4,6 +4,7 @@ import co.touchlab.kermit.LogWriter
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
 import co.touchlab.kermit.StaticConfig
+import com.repz.app.core.common.id.UuidV7IdGenerator
 import com.repz.app.core.network.api.AuthApi
 import com.repz.app.core.network.api.KtorAuthApi
 import com.repz.app.core.network.api.KtorSyncApi
@@ -76,17 +77,9 @@ private class CapturingLogWriter : LogWriter() {
 
 private fun randomSmokeEmail(): String = "smoke-${Random.nextLong().toString(HEX_RADIX).removePrefix("-")}@example.com"
 
-/**
- * A random-looking id without calling the id generator's own UUID-minting functions (Konsist I1
- * restricts those to `UuidV7IdGenerator`, tests included): bytes come from [kotlin.random.Random],
- * then are only reformatted into the standard UUID string shape.
- */
-private fun randomSmokeUuid(): kotlin.uuid.Uuid {
-    val hex = Random.nextBytes(16).joinToString("") { byte -> ((byte.toInt() and 0xFF) or 0x100).toString(16).substring(1) }
-    val formatted =
-        "${hex.substring(0, 8)}-${hex.substring(8, 12)}-${hex.substring(12, 16)}-${hex.substring(16, 20)}-${hex.substring(20, 32)}"
-    return kotlin.uuid.Uuid.parse(formatted)
-}
+private val smokeIdGenerator = UuidV7IdGenerator()
+
+private fun randomSmokeUuid(): kotlin.uuid.Uuid = smokeIdGenerator.newId()
 
 /** One throwaway session against the real API: its own [SessionManager], real engine, real clients. */
 private class LiveApiSession(
