@@ -46,7 +46,7 @@ fun createRepzHttpClients(
     logger: Logger,
 ): RepzHttpClients {
     val publicClient = HttpClient(engine) { configureCommon(config, logger) }
-    val tokenRefresher = TokenRefresher(sessionManager, RefreshTokensCall(publicClient))
+    val tokenRefresher = TokenRefresher(sessionManager, RefreshTokensCall(publicClient), logger.withTag(SESSION_LOG_TAG))
 
     val authenticatedClient =
         publicClient.config {

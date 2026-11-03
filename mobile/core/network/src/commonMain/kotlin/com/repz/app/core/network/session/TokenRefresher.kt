@@ -1,5 +1,6 @@
 package com.repz.app.core.network.session
 
+import co.touchlab.kermit.Logger
 import com.repz.app.core.network.api.RefreshTokensCall
 import com.repz.app.core.network.result.NetworkError
 import com.repz.app.core.network.result.NetworkResult
@@ -17,6 +18,7 @@ internal fun AuthTokens.toBearerTokens(): BearerTokens = BearerTokens(accessToke
 internal class TokenRefresher(
     private val session: SessionManager,
     private val refreshTokensCall: RefreshTokensCall,
+    private val logger: Logger,
 ) {
     private val mutex = Mutex()
 
@@ -32,7 +34,12 @@ internal class TokenRefresher(
             when (val result = refreshTokensCall(current.refreshToken)) {
                 is NetworkResult.Success -> {
                     val replaced = session.replace(current, result.value)
-                    if (replaced) result.value.toBearerTokens() else null
+                    if (replaced) {
+                        logger.i { "token refresh succeeded" }
+                        result.value.toBearerTokens()
+                    } else {
+                        null
+                    }
                 }
 
                 is NetworkResult.Failure -> {
@@ -45,11 +52,13 @@ internal class TokenRefresher(
         when {
             error is NetworkError.Api && (error.status == INVALID_REFRESH_TOKEN_STATUS || error.status == MALFORMED_REFRESH_STATUS) -> {
                 // Any 401 on refresh - reuse included, the server doesn't distinguish - signs the session out.
+                logger.w { "session expired: refresh token rejected" }
                 session.expire()
                 null
             }
 
             else -> {
+                logger.w { "token refresh unavailable: ${error::class.simpleName}" }
                 throw RefreshUnavailableException(error)
             }
         }

@@ -68,7 +68,10 @@ class SessionManager(
         mutex.withLock {
             if (tokens != expected) return@withLock false
             tokens = refreshed
-            tokenStore.save(refreshed)
+            val saveResult = tokenStore.save(refreshed)
+            if (saveResult == TokenSaveResult.Failed) {
+                logger.w { "token refresh save failed, keeping the rotated session in memory for this process" }
+            }
             true
         }
 
