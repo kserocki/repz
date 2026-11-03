@@ -1,18 +1,23 @@
 package com.repz.app.core.network.client
 
+import com.repz.app.core.network.api.KtorUserApi
+import com.repz.app.core.network.api.UserApi
 import com.repz.app.core.network.result.NetworkError
 import com.repz.app.core.network.result.NetworkResult
 import com.repz.app.core.network.result.apiCall
 import com.repz.app.core.network.session.AccessToken
 import com.repz.app.core.network.session.AuthTokens
+import com.repz.app.core.network.session.PersistentTokenStore
 import com.repz.app.core.network.session.RefreshToken
 import com.repz.app.core.network.session.SessionStatus
 import com.repz.app.core.network.session.SignOutReason
+import com.repz.app.core.network.testing.InMemorySecureStringStorage
 import com.repz.app.core.network.testing.testClients
 import com.repz.app.core.network.testing.testSessionManager
 import io.ktor.client.call.body
 import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
+import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.request.HttpRequestData
 import io.ktor.client.request.HttpResponseData
 import io.ktor.client.request.get
@@ -26,6 +31,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.yield
+import kotlinx.io.IOException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -133,7 +139,8 @@ class AuthenticatedClientTest {
     fun givenAn401_whenTheAuthenticatedClientCallsMe_thenItRefreshesOnceAndRetriesSuccessfully() =
         runTest {
             val server = RotatingAuthServer()
-            val sessionManager = testSessionManager()
+            val storage = InMemorySecureStringStorage()
+            val sessionManager = testSessionManager(storage)
             sessionManager.start(AuthTokens(AccessToken(STALE_ACCESS_TOKEN), RefreshToken(INITIAL_REFRESH_TOKEN)))
             val clients = testClients(sessionManager = sessionManager) { request -> server.handle(this, request) }
 
@@ -142,6 +149,8 @@ class AuthenticatedClientTest {
             assertEquals(HttpStatusCode.OK, response.status)
             assertEquals(1, server.refreshCallCount)
             assertEquals(server.currentTokens(), sessionManager.currentTokens())
+            // The new tokens are persisted, not just cached in memory for this process.
+            assertEquals(server.currentTokens(), PersistentTokenStore(storage).load())
         }
 
     @Test
@@ -209,6 +218,39 @@ class AuthenticatedClientTest {
         }
 
     /**
+     * The contract [NetworkError.SessionExpired] (`result/ApiCall.kt`'s `hasJustExpired`) depends on,
+     * exercised through a real [UserApi] call rather than a bare Ktor response, the same way a
+     * real caller higher up the stack would see it.
+     */
+    @Test
+    fun givenRefreshReturns401_whenGetMeIsCalled_thenTheResultIsSessionExpired() =
+        runTest {
+            val server =
+                RotatingAuthServer().apply {
+                    refreshBehavior = { _ ->
+                        respond(
+                            problemBody("invalid-refresh-token", "x", 401),
+                            HttpStatusCode.Unauthorized,
+                            problemJsonHeaders(),
+                        )
+                    }
+                }
+            val storage = InMemorySecureStringStorage()
+            val sessionManager = testSessionManager(storage)
+            sessionManager.start(AuthTokens(AccessToken(STALE_ACCESS_TOKEN), RefreshToken(INITIAL_REFRESH_TOKEN)))
+            val clients = testClients(sessionManager = sessionManager) { request -> server.handle(this, request) }
+            val userApi: UserApi = KtorUserApi(clients)
+
+            val result = userApi.getMe()
+
+            assertEquals(NetworkResult.Failure(NetworkError.SessionExpired), result)
+            val status = sessionManager.status.value
+            assertIs<SessionStatus.SignedOut>(status)
+            assertEquals(SignOutReason.Expired, status.reason)
+            assertNull(storage.read())
+        }
+
+    /**
      * A network/5xx refresh failure throws [com.repz.app.core.network.session.RefreshUnavailableException]
      * out of the whole bearer + refresh pipeline (Ktor's own code has no catch around it), so this
      * goes through [apiCall] like every real caller, not a bare Ktor client call: that's the one
@@ -234,6 +276,54 @@ class AuthenticatedClientTest {
                 )
 
             assertEquals(NetworkResult.Failure(NetworkError.Api(503, null)), result)
+            assertEquals(originalTokens, sessionManager.currentTokens())
+            assertEquals(SessionStatus.SignedIn, sessionManager.status.value)
+        }
+
+    @Test
+    fun givenRefreshFailsOffline_whenTheAuthenticatedClientCallsMe_thenTheRefreshFailureSurfacesAndTokensStayUnchanged() =
+        runTest {
+            val originalTokens = AuthTokens(AccessToken(STALE_ACCESS_TOKEN), RefreshToken(INITIAL_REFRESH_TOKEN))
+            val server =
+                RotatingAuthServer().apply {
+                    refreshBehavior = { _ -> throw IOException("no route to the server") }
+                }
+            val sessionManager = testSessionManager()
+            sessionManager.start(originalTokens)
+            val clients = testClients(sessionManager = sessionManager) { request -> server.handle(this, request) }
+
+            val result =
+                apiCall(
+                    sessionManager = sessionManager,
+                    decode = { it.body<String>() },
+                    request = { clients.authenticated.get("/me") },
+                )
+
+            assertEquals(NetworkResult.Failure(NetworkError.Offline), result)
+            assertEquals(originalTokens, sessionManager.currentTokens())
+            assertEquals(SessionStatus.SignedIn, sessionManager.status.value)
+        }
+
+    @Test
+    fun givenRefreshTimesOut_whenTheAuthenticatedClientCallsMe_thenTheRefreshFailureSurfacesAndTokensStayUnchanged() =
+        runTest {
+            val originalTokens = AuthTokens(AccessToken(STALE_ACCESS_TOKEN), RefreshToken(INITIAL_REFRESH_TOKEN))
+            val server =
+                RotatingAuthServer().apply {
+                    refreshBehavior = { request -> throw HttpRequestTimeoutException(url = request.url.toString(), timeoutMillis = 1000) }
+                }
+            val sessionManager = testSessionManager()
+            sessionManager.start(originalTokens)
+            val clients = testClients(sessionManager = sessionManager) { request -> server.handle(this, request) }
+
+            val result =
+                apiCall(
+                    sessionManager = sessionManager,
+                    decode = { it.body<String>() },
+                    request = { clients.authenticated.get("/me") },
+                )
+
+            assertEquals(NetworkResult.Failure(NetworkError.Timeout), result)
             assertEquals(originalTokens, sessionManager.currentTokens())
             assertEquals(SessionStatus.SignedIn, sessionManager.status.value)
         }
@@ -311,5 +401,44 @@ class AuthenticatedClientTest {
             assertIs<SessionStatus.SignedOut>(status)
             assertEquals(SignOutReason.LoggedOut, status.reason)
             assertNull(sessionManager.currentTokens())
+        }
+
+    /**
+     * Proves `nonCancellableRefresh = true` (ADR-0011): cancelling the caller mid-refresh must not
+     * roll back a refresh that goes on to succeed, in memory or in storage, unlike the logout race
+     * above where the compare-and-set itself is what discards the rotated pair.
+     */
+    @Test
+    fun givenTheCallingJobIsCancelledDuringARefresh_whenTheRefreshCompletes_thenTheRotatedTokensAreKept() =
+        runTest {
+            val refreshStarted = CompletableDeferred<Unit>()
+            val proceedWithRefresh = CompletableDeferred<Unit>()
+            val storage = InMemorySecureStringStorage()
+            val sessionManager = testSessionManager(storage)
+            sessionManager.start(AuthTokens(AccessToken(STALE_ACCESS_TOKEN), RefreshToken(INITIAL_REFRESH_TOKEN)))
+            val server =
+                RotatingAuthServer().apply {
+                    refreshBehavior = { _ ->
+                        refreshStarted.complete(Unit)
+                        proceedWithRefresh.await()
+                        respond(
+                            """{"accessToken":"access-1","refreshToken":"refresh-1","expiresIn":900}""",
+                            HttpStatusCode.OK,
+                            jsonHeaders(),
+                        )
+                    }
+                }
+            val clients = testClients(sessionManager = sessionManager) { request -> server.handle(this, request) }
+
+            val callJob = launch { clients.authenticated.get("/me") }
+            refreshStarted.await()
+            callJob.cancel()
+            proceedWithRefresh.complete(Unit)
+            callJob.join()
+            yield()
+
+            val rotatedTokens = AuthTokens(AccessToken("access-1"), RefreshToken("refresh-1"))
+            assertEquals(rotatedTokens, sessionManager.currentTokens())
+            assertEquals(rotatedTokens, PersistentTokenStore(storage).load())
         }
 }

@@ -148,4 +148,19 @@ class SessionManagerTest {
             assertEquals(false, replaced)
             assertEquals(null, manager.currentTokens())
         }
+
+    @Test
+    fun givenTheStoreFailsToSave_whenReplaceIsCalled_thenTheRotatedTokensAreStillKeptInMemory() =
+        runTest {
+            val failingStore = FailingTokenStore()
+            val manager = SessionManager(failingStore, testLogger())
+            val original = sampleTokens("1")
+            manager.start(original)
+
+            val replaced = manager.replace(original, sampleTokens("2"))
+
+            assertEquals(true, replaced)
+            assertEquals(sampleTokens("2"), manager.currentTokens())
+            assertEquals(sampleTokens("2"), failingStore.lastSaved)
+        }
 }

@@ -15,6 +15,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.test.runTest
+import kotlinx.io.IOException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -149,6 +150,21 @@ class ApiCallTest {
             val result = apiCall(decode = { it.body<String>() }, request = { clients.public.get("/x") })
 
             assertEquals(NetworkError.Timeout, (result as NetworkResult.Failure).error)
+        }
+
+    /**
+     * `kotlinx.io.IOException` is the common-code "no route to the server" transport failure: a
+     * `typealias` for `java.io.IOException` on the JVM, and matched directly by the Darwin `actual`
+     * (`TransportFailure.ios.kt`), so this one test exercises both platforms' mappings.
+     */
+    @Test
+    fun givenATransportIoException_whenApiCallRuns_thenItMapsToOffline() =
+        runTest {
+            val clients = testClients { throw IOException("no route to the server") }
+
+            val result = apiCall(decode = { it.body<String>() }, request = { clients.public.get("/x") })
+
+            assertEquals(NetworkError.Offline, (result as NetworkResult.Failure).error)
         }
 
     @Test
