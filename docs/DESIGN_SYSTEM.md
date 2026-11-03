@@ -24,11 +24,12 @@ Everything is exposed through `core:designsystem`. Features never use raw `Mater
 | `shape.*` | `MaterialTheme.shapes.*` (the §5 scale) + `RepzShapes.*` (`none`, `full`, accents) |
 | `spacing.*` | `RepzSpacing.xxs … huge` |
 | `elevation.*` | `RepzElevation.level0 … level4`, `RepzElevation.fab`: a `RepzElevationLevel(containerColor, shadow)` (§7) |
-| `motion.*` | `RepzMotion.springs.*`, `RepzMotion.durations.*`, `RepzMotion.stagger.*` (see MOTION.md) |
+| `motion.*` | `RepzMotion.springs.*()`, `RepzMotion.effectsSprings.*()`, `RepzMotion.tweens.*()`, `RepzMotion.durations.*`, `RepzMotion.easing.*`, `RepzMotion.stagger.*` (see MOTION.md) |
+| haptics | `RepzHaptics.current` (MOTION §3) |
 
-`RepzTheme(darkTheme = isSystemInDarkTheme(), dynamicColor = false, content)` wraps `MaterialExpressiveTheme`. Dynamic colour (Android 12+, opt-in in Settings; ignored on iOS and older Android) replaces **only** the M3 roles. `RepzTheme.colors` (`brand*`, `record*`, set-type, muscle and chart colours) depends only on `darkTheme` and **never** changes. `RepzTheme.colors` and `RepzTheme.typography` are the only accessors on `RepzTheme`; shapes, spacing and elevation are the standalone objects above.
+`RepzTheme(darkTheme = isSystemInDarkTheme(), dynamicColor = false, reducedMotion: Boolean? = null, hapticsEnabled = true, content)` wraps `MaterialExpressiveTheme` and passes it the Repz `MotionScheme`. `reducedMotion = null` follows the platform setting (ADR-0024). Dynamic colour (Android 12+, opt-in in Settings; ignored on iOS and older Android) replaces **only** the M3 roles. `RepzTheme.colors` (`brand*`, `record*`, set-type, muscle and chart colours) depends only on `darkTheme` and **never** changes. `RepzTheme.colors` and `RepzTheme.typography` are the only accessors on `RepzTheme`; shapes, spacing and elevation are the standalone objects above.
 
-`RepzShapes`: `none` (`RectangleShape`), `full` (`CircleShape`, 50 %) and the 9 §5 accents as `RoundedPolygon` aliases of `MaterialShapes`: `pill`, `cookie4Sided`, `cookie9Sided`, `sunny`, `softBurst`, `burst`, `gem`, `clover4Leaf`, `flower`. Turn one into a `Shape` with `.toShape()`. Morph pairs (§5) arrive with the motion work (REP-20).
+`RepzShapes`: `none` (`RectangleShape`), `full` (`CircleShape`, 50 %) and the 9 §5 accents as `RoundedPolygon` aliases of `MaterialShapes`: `pill`, `cookie4Sided`, `cookie9Sided`, `sunny`, `softBurst`, `burst`, `gem`, `clover4Leaf`, `flower`. Turn one into a `Shape` with `.toShape()`. Morph pairs (§5) live in `RepzMorphs`; `RepzMorphShape(morph, progress)` turns one into a `Shape`.
 
 ## 3. Colour
 

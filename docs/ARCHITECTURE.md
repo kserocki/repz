@@ -76,10 +76,10 @@ Identifiers: package / applicationId / bundle id **`com.repz.app`**. Minimum OS:
 Why two separate app modules? With the current Android Gradle Plugin, the Android application module can no longer be the KMP module itself, so `app/android` is a thin shell and all shared code lives in `app/shared`.
 
 **Debug-only design-system catalog.** The shells (ADR-0017) can open `core:designsystem`'s `RepzDesignSystemCatalog` instead of the normal root, for manual checks and screenshots. It is a developer tool: not localized and never reachable in release builds.
-- `RepzRoot(modifier, catalogPageKey: String? = null, catalogDynamicColor: Boolean = false)`: when `RepzCatalogPage.fromKey(catalogPageKey)` finds a page, it renders `RepzTheme(dynamicColor = catalogDynamicColor) { RepzDesignSystemCatalog(page) }`. A null or unknown key takes the normal path, which is unchanged.
-- Page keys (`RepzCatalogPage`): `colors`, `extended-1`, `extended-2`, `extended-3`, `type`, `type-emphasized-1`, `type-emphasized-2`, `numeric-1`, `numeric-2`, `shapes`, `spacing-elevation-1`, `spacing-elevation-2`. Every page fits one screen on the smallest test device (iPhone Duo simulator), because `simctl` screenshots can't scroll; at 200 % font scale on Android every page except `colors` fits, and `colors` scrolls.
-- Android: `adb shell am start -n com.repz.app/.MainActivity --es repz.catalog <page> [--ez repz.dynamicColor true]`. `MainActivity` reads both extras only when `ApplicationInfo.FLAG_DEBUGGABLE` is set.
-- iOS: launch argument `-RepzCatalogPage <page>` (e.g. `xcrun simctl launch booted com.repz.app -RepzCatalogPage colors`). `ComposeView.swift` reads the `RepzCatalogPage` user default only under `#if DEBUG` and passes it to `mainViewController(catalogPageKey:)`. Dynamic colour does not exist on iOS, so there is no second argument.
+- `RepzRoot(modifier, catalogPageKey: String? = null, catalogDynamicColor: Boolean = false, catalogReducedMotion: Boolean? = null)`: when `RepzCatalogPage.fromKey(catalogPageKey)` finds a page, it renders `RepzTheme(dynamicColor = catalogDynamicColor, reducedMotion = catalogReducedMotion) { RepzDesignSystemCatalog(page) }`. A null or unknown key takes the normal path, which is unchanged.
+- Page keys (`RepzCatalogPage`): `colors`, `extended-1`, `extended-2`, `extended-3`, `type`, `type-emphasized-1`, `type-emphasized-2`, `numeric-1`, `numeric-2`, `shapes`, `spacing-elevation-1`, `spacing-elevation-2`, `motion-springs-1`, `motion-springs-2`, `motion-tweens`, `motion-morphs`, `haptics`. The motion and haptics pages auto-play, so recordings need no taps. Every page fits one screen on the smallest test device (iPhone Duo simulator), because `simctl` screenshots can't scroll; at 200 % font scale on Android every page except `colors` fits, and `colors` scrolls.
+- Android: `adb shell am start -n com.repz.app/.MainActivity --es repz.catalog <page> [--ez repz.dynamicColor true] [--ez repz.reducedMotion true]`. `MainActivity` reads the extras only when `ApplicationInfo.FLAG_DEBUGGABLE` is set; without `repz.reducedMotion` the theme follows the system setting.
+- iOS: launch argument `-RepzCatalogPage <page>` (e.g. `xcrun simctl launch booted com.repz.app -RepzCatalogPage colors`). `ComposeView.swift` reads the `RepzCatalogPage` user default only under `#if DEBUG` and passes it to `mainViewController(catalogPageKey:catalogReducedMotion:)`. Dynamic colour does not exist on iOS. `-RepzReducedMotion YES` forces reduced motion (read under `#if DEBUG`, passed as `catalogReducedMotion`); without it the theme follows the system setting.
 - The Xcode Debug configuration sets `SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG`. It was missing before, so Swift's `#if DEBUG` never fired (`GCC_PREPROCESSOR_DEFINITIONS = DEBUG=1` affects only C and Objective-C).
 
 ---
@@ -167,6 +167,8 @@ Decisions:
 
 ### 5.2 Local schema additions
 
+`core:database` holds 11 tables (schema v1, ADR-0023): the synced roots `workouts`, `workout_templates` and `exercises`; their children `workout_exercises`, `workout_sets`, `template_exercises` and `exercise_translations`; and the local-only `personal_records`, `outbox`, `sync_rejections` and `sync_meta`. Ids are `TEXT`, timestamps are epoch milliseconds, and vocabularies hold the server's strings. Children cascade from their root; there are no foreign keys between aggregates.
+
 Every syncable root table has:
 
 | Column | Meaning |
@@ -176,9 +178,11 @@ Every syncable root table has:
 | `is_deleted` | tombstone (soft delete) |
 | `updated_at` | local timestamp (for UI/sorting only, **never** for conflict resolution) |
 
-`outbox` table: `entity_type`, `entity_id`, `operation (UPSERT|DELETE)`, `created_at`, `attempts`.
+`outbox` table: `entity_type`, `entity_id`, `operation (UPSERT|DELETE)`, `created_at`, `updated_at`, `revision`, `attempts`, `held_until`. No payload: the engine reads the current entity at push time.
 At most **one pending entry per entity** (coalescing): ten edits to one workout produce one push.
-`sync_meta` table: `pull_cursor`, `last_successful_sync_at`.
+`sync_rejections` table: `entity_type`, `entity_id`, `problem_type`, `rejected_at` (the "couldn't sync" marks).
+`sync_meta` table (one row): `pull_cursor`, `last_successful_sync_at`, `initial_pull_completed_at`, `restore_total_changes`, `restore_total_workouts`.
+`personal_records` table: derived records, one row per `(exercise_id, type)`, never synced.
 
 ### 5.3 Algorithm
 
@@ -212,7 +216,8 @@ sequenceDiagram
 - **"Last write" means last write *to reach the server*.** We never trust client clocks, so clock skew cannot corrupt data.
 - When pulling, the client **skips** incoming changes for entities that still have a pending outbox entry. The local edit is pushed next and wins, which is consistent with arrival-order LWW.
 - **Delete wins:** once a tombstone exists on the server, a later upsert of that ID is ignored and the tombstone is returned on the next pull. This prevents "zombie" records. The push response also returns `deleted: true` for such an upsert, and the client **must apply it locally**: the pull may have skipped that tombstone while the edit was pending.
-- **Rejections are permanent** (`read-only`, `id-conflict`, `invalid-reference`, `validation-error`). The client keeps the local data, marks it "couldn't sync" and drops the outbox entry. A delete stays in the outbox until its undo snackbar is dismissed (user decision, ADR-0020).
+- **Rejections are permanent** (`read-only`, `id-conflict`, `invalid-reference`, `validation-error`). The client keeps the local data, marks it "couldn't sync" (a `sync_rejections` row) and drops the outbox entry. The mark clears only when a later push of that record is accepted (ADR-0023). A delete stays in the outbox until its undo snackbar is dismissed (user decision, ADR-0020): it is held with `held_until` and isn't pushed before then.
+- **Outbox rules** (ADR-0023): coalescing keeps the first `created_at` and bumps `revision`; an UPSERT after a DELETE (undo) turns the row back into an UPSERT, but a DELETE is never dropped, even after an insert that was never pushed. After a push the engine removes a row only if its `revision` is unchanged, so an edit made during the push is pushed next.
 - **Active (unfinished) workout is local-only.** It enters the outbox when it is finished. This removes most of the realistic conflicts and avoids sync traffic during a session.
 
 ### 5.5 Initial sync (new device / reinstall)
@@ -221,7 +226,7 @@ The device keeps a **full local replica** of the user's data. Personal workout d
 
 - After login, `pull_cursor = 0`. The engine loops `GET /sync/pull?cursor=…&limit=500` until `hasMore == false`, applying **each page in its own transaction**. If the app is killed, the next run resumes from the saved cursor.
 - PRs are recalculated **once** at the end of the initial sync rather than per page.
-- The UI shows a dedicated **"Restoring your history" screen** with progress: a percentage plus "N / M workouts", counted against the per-type `totalEstimate` the server returns on every page (ADR-0020).
+- The UI shows a dedicated **"Restoring your history" screen** with progress: a percentage plus "N / M workouts", counted against the per-type `totalEstimate` the server returns on every page (ADR-0020). `totalEstimate` counts only what is left, so the first page's totals are stored in `sync_meta` (`restore_total_changes`, `restore_total_workouts`) and the baseline survives an app kill. `initial_pull_completed_at` marks the restore as finished (ADR-0023).
 - History screens read from Room. Lightweight summary projections are enough for v1. Paging 3 (Room `PagingSource`) is the upgrade path if lists grow.
 
 ### 5.6 Scheduling
@@ -436,6 +441,7 @@ Verified 2026-10-28 against Maven Central, Google Maven, GitHub releases and npm
 | Room 3 | `androidx.room3:room3-runtime` / `room3-compiler`, plugin `androidx.room3` | 3.0.3 | KSP per target (`kspAndroid`, `kspIosArm64`, `kspIosSimulatorArm64`); host tests: `sqlite-bundled-jvm` substituted on `androidHostTestRuntimeClasspath` |
 | SQLite bundled driver | `androidx.sqlite:sqlite-bundled` | 2.7.1 | |
 | WorkManager | `androidx.work:work-runtime-ktx` | 2.12.0 | `androidMain` only |
+| AndroidX Core | `androidx.core:core` | 1.18.0 | `core:designsystem` androidMain: `ViewCompat` / `HapticFeedbackConstantsCompat` for haptics (ADR-0024) |
 | Activity Compose | `androidx.activity:activity-compose` | 1.13.0 | `app:android` only (not a KMP source set); `MainActivity` hosts Compose directly, no AppCompat (ADR-0017) |
 | Core SplashScreen | `androidx.core:core-splashscreen` | 1.2.0 | `app:android` only; SplashScreen API starting theme (ADR-0017) |
 | Koin | `io.insert-koin:koin-bom`, `koin-core`, `koin-annotations` | 4.2.2 | `koin-bom` unused: both artifacts pin `koin` directly, no `platform()` needed in KMP `commonMain`; `koin-core` + `koin-annotations` applied via `repz.koin` |
@@ -534,8 +540,8 @@ Planned later (optional): Room DAO tests, Ktor `MockEngine` repository tests, sy
 
 - **ktlint** (`org.jlleitschuh.gradle.ktlint`, `ktlint_official` style via `mobile/.editorconfig`, 140-char lines) discovers every Kotlin source set itself, KMP (`commonMain`, `androidMain`, `iosMain`, `commonTest`, `androidHostTest`, `iosTest`, …), AGP 9 built-in Kotlin (`app:android`'s `main`/`test`/`androidTest`, with no `org.jetbrains.kotlin.android` plugin needed) and `*.gradle.kts` scripts alike. It also discovers KSP- and Compose-resources-generated Kotlin under each module's own build directory as if it were hand-written source; `repz.quality` excludes files under that module's own build directory (by path, not a `build` substring, so a checkout path containing `build` elsewhere is unaffected) from linting for that reason.
 - **Detekt** (`dev.detekt`, Compose rules `io.nlopez.compose.rules:detekt`) runs as the plain, non-type-resolved `detekt` task only — not the per-compilation (`detektMainAndroid`, `detektHostTestAndroid`, …) or per-source-set (`detektCommonMainSourceSet`, …) tasks the alpha also registers, which are not part of `check` by default and are left unused. `source` is set explicitly to every `src/<sourceSet>/kotlin` directory the module has, so coverage does not depend on how the alpha's own discovery handles the AGP 9 KMP library plugin or AGP 9 built-in Kotlin. Runs its own bundled Kotlin 2.4.10 in an isolated classpath; no conflict with the project's Kotlin 2.4.21 was observed.
-- Config: `mobile/config/detekt/detekt.yml`, `buildUponDefaultConfig: true`, no baseline. Contains only seven overrides: `MaxLineLength` (140, matching ktlint), `MagicNumber` (property declarations exempt — already alpha.6's own default, pinned explicitly so it survives a later alpha changing it), `LongParameterList` (`ignoreDefaultParameters: true`, for Composables with defaulted parameters), `TopLevelPropertyNaming` (`constantPattern` widened to `[A-Z][A-Za-z0-9_]*`, accepting both `UPPER_SNAKE_CASE` constants and PascalCase `CompositionLocal`s/preview vals in the same rule), `FunctionNaming` and `UnusedPrivateFunction` (both `ignoreAnnotated`, see below), and `CompositionLocalAllowlist` (the theme locals, see the next bullet) — plus the rest of the Compose rule set at its documented defaults.
-- Compose `CompositionLocalAllowlist` lists `allowedCompositionLocals: [LocalRepzColors, LocalRepzTypography, LocalRepzElevation]`, the `core:designsystem` theme locals behind `RepzTheme.colors`, `RepzTheme.typography` and `RepzElevation` (REP-19). This is the rule's own configuration, not a suppression.
+- Config: `mobile/config/detekt/detekt.yml`, `buildUponDefaultConfig: true`, no baseline. Contains only eight overrides: `MaxLineLength` (140, matching ktlint), `MagicNumber` (property declarations exempt — already alpha.6's own default, pinned explicitly so it survives a later alpha changing it), `LongParameterList` (`ignoreDefaultParameters: true`, for Composables with defaulted parameters), `TopLevelPropertyNaming` (`constantPattern` widened to `[A-Z][A-Za-z0-9_]*`, accepting both `UPPER_SNAKE_CASE` constants and PascalCase `CompositionLocal`s/preview vals in the same rule), `FunctionNaming` and `UnusedPrivateFunction` (both `ignoreAnnotated`, see below), `CompositionLocalAllowlist` (the theme locals, see the next bullet), and `CyclomaticComplexMethod` (`ignoreSimpleWhenEntries: true`, so the debug catalog's one-branch-per-page `when` doesn't count; user-approved, ADR-0024) — plus the rest of the Compose rule set at its documented defaults.
+- Compose `CompositionLocalAllowlist` lists `allowedCompositionLocals: [LocalRepzColors, LocalRepzTypography, LocalRepzElevation, LocalReducedMotion, LocalRepzHaptics]`, the `core:designsystem` theme locals behind `RepzTheme.colors`, `RepzTheme.typography`, `RepzElevation`, reduced motion (internal) and `RepzHaptics.current`. This is the rule's own configuration, not a suppression.
 - `build-logic/convention` cannot apply `repz.quality` (it builds it), so it configures both tools on itself by hand, identically; its own source scan also covers every `src/<sourceSet>/kotlin` it has, not just `src/main/kotlin`.
 - Root `mobile/build.gradle.kts` applies `base` (gives the root project a `check` task) and ktlint (lints the root `*.gradle.kts` and `settings.gradle.kts`); its `check` depends on `build-logic`'s own `:convention:check` so the included build is gated too.
 - `./gradlew ktlintFormat` auto-fixes formatting; Detekt findings are fixed by hand (`autoCorrect: false`).
@@ -588,7 +594,7 @@ A plain Kotlin/JVM module, not a KMP one: it reads source **text** (via Konsist 
 
 ## 14. Decision log
 
-All decisions live in [`docs/adr/`](adr/) (ADR-0001 … ADR-0022). Add a new ADR for every decision that changes this document.
+All decisions live in [`docs/adr/`](adr/) (ADR-0001 … ADR-0024). Add a new ADR for every decision that changes this document.
 
 ## 15. Risks to verify in the first scaffold spike
 
