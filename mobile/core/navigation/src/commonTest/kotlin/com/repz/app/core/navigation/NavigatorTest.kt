@@ -498,4 +498,77 @@ class NavigatorTest {
             navigator.visibleStacks,
         )
     }
+
+    // sessionEpoch is part of VisibleNavKey.contentKey (core/navigation/RepzNavDisplay.kt's own
+    // per-stack VisibleNavKeys read it the same way): a session change must bump it so every
+    // stack's root leaves its decorator's list and its saveable state/ViewModelStore are
+    // discarded, but ordinary tab switching within one session must leave it untouched.
+
+    @Test
+    fun given_signedInNavigator_whenSignedOut_thenEveryStackRootContentKeyDiffersFromBefore() {
+        val navigator = navigator(isAuthenticated = true)
+        val before = navigator.rootContentKeys()
+
+        navigator.onSignedOut()
+
+        val after = navigator.rootContentKeys()
+        before.forEach { (stackId, keyBefore) ->
+            assertTrue(keyBefore != after.getValue(stackId), "content key for $stackId did not change")
+        }
+    }
+
+    @Test
+    fun given_signedOutNavigator_whenSignedIn_thenEveryStackRootContentKeyDiffersFromBefore() {
+        val navigator = navigator(isAuthenticated = false)
+        val before = navigator.rootContentKeys()
+
+        navigator.onSignedIn()
+
+        val after = navigator.rootContentKeys()
+        before.forEach { (stackId, keyBefore) ->
+            assertTrue(keyBefore != after.getValue(stackId), "content key for $stackId did not change")
+        }
+    }
+
+    @Test
+    fun given_signedInNavigator_whenSwitchingTabsWithinASession_thenSessionEpochAndContentKeysAreUnchanged() {
+        val navigator = navigator(isAuthenticated = true)
+        val epochBefore = navigator.sessionEpoch
+        val rootContentKeysBefore = navigator.rootContentKeys()
+
+        navigator.selectTopLevel(TopLevelDestination.History)
+        navigator.navigate(FixtureHistoryEntryRoute(workoutId = "w1"))
+        navigator.selectTopLevel(TopLevelDestination.Train)
+        navigator.selectTopLevel(TopLevelDestination.Exercises)
+
+        assertEquals(epochBefore, navigator.sessionEpoch)
+        assertEquals(rootContentKeysBefore, navigator.rootContentKeys())
+    }
+
+    @Test
+    fun given_navigatorWithABumpedSessionEpoch_whenSavedAndRestored_thenSessionEpochAndContentKeysAreStable() {
+        val navigator = navigator(isAuthenticated = true)
+        navigator.onSignedOut()
+        navigator.onSignedIn()
+        val epochBeforeRestore = navigator.sessionEpoch
+        val rootContentKeysBeforeRestore = navigator.rootContentKeys()
+
+        val restored = navigator(isAuthenticated = false, restoredState = navigator.saveState())
+
+        assertEquals(epochBeforeRestore, restored.sessionEpoch)
+        assertEquals(rootContentKeysBeforeRestore, restored.rootContentKeys())
+    }
 }
+
+/**
+ * Every stack's root key, tagged exactly as [Navigator.visibleEntries] and `RepzNavDisplay` tag
+ * it, for stacks that aren't necessarily visible right now.
+ */
+private fun Navigator.rootContentKeys(): Map<BackStackId, String> =
+    buildMap {
+        put(BackStackId.Auth, VisibleNavKey(authBackStack.first(), BackStackId.Auth, depth = 0, sessionEpoch).contentKey)
+        TopLevelDestination.entries.forEach { destination ->
+            val stackId = BackStackId.Tab(destination)
+            put(stackId, VisibleNavKey(backStacks.getValue(destination).first(), stackId, depth = 0, sessionEpoch).contentKey)
+        }
+    }

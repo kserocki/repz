@@ -10,9 +10,9 @@ import androidx.navigation3.runtime.NavKey
  * Keeps one back stack per [TopLevelDestination] plus a back stack for the signed-out auth flow.
  * Switching tabs keeps every stack; re-selecting the current tab pops it to its root; `goBack()`
  * at a non-Train root selects Train, at Train's root or the auth root returns `false`; pushing
- * the key already on top is a no-op; sign-in resets every tab and selects Train; sign-out resets
- * every tab and restarts the auth stack; [selectTopLevel] is ignored while signed out;
- * [syncAuthentication] is the only way a caller should move between the two.
+ * the key already on top is a no-op; sign-in and sign-out both reset every tab and the auth stack
+ * to their roots and bump [sessionEpoch] (sign-in also selects Train); [selectTopLevel] is ignored
+ * while signed out; [syncAuthentication] is the only way a caller should move between the two.
  */
 class Navigator(
     private val topLevelRoots: Map<TopLevelDestination, NavKey>,
@@ -42,11 +42,32 @@ class Navigator(
     var selectedDestination: TopLevelDestination by mutableStateOf(restoredState?.selectedDestination ?: TopLevelDestination.Train)
         private set
 
-    /** Every [TopLevelDestination]'s own back stack keys, tracked for recomposition whether or not it is the selected tab. */
-    val backStacks: Map<TopLevelDestination, List<NavKey>> get() = tabBackStacks
+    /**
+     * Bumped by every [onSignedIn]/[onSignedOut], saved and restored as part of [NavigatorState].
+     * Part of each [VisibleNavKey.contentKey], so a session change gives every stack's entries a
+     * new content key even though their [NavKey]s, stacks and depths are unchanged: navigation3
+     * sees every entry leave the decorated list it was in, discarding its saveable state and
+     * `ViewModelStore` before the next session's entries are decorated.
+     */
+    var sessionEpoch: Int by mutableStateOf(restoredState?.sessionEpoch ?: 0)
+        private set
 
-    /** The signed-out flow's back stack keys, tracked for recomposition whether or not [isAuthenticated]. */
-    val authBackStack: List<NavKey> get() = authNavBackStack
+    /**
+     * Every [TopLevelDestination]'s own back stack keys, tracked for recomposition whether or not
+     * it is the selected tab. A plain value snapshot (`toList()`), not the live `NavBackStack`:
+     * `NavBackStack` has no structural `equals()`/`hashCode()` (only identity), which makes
+     * comparing it directly an asymmetric trap (`a == navBackStack` and `navBackStack == a` can
+     * disagree), and returning it as-is would let a caller downcast past the `List` type and
+     * mutate a stack without going through [navigate]/[selectTopLevel].
+     */
+    val backStacks: Map<TopLevelDestination, List<NavKey>>
+        get() = tabBackStacks.mapValues { (_, stack) -> stack.toList() }
+
+    /**
+     * The signed-out flow's back stack keys, tracked for recomposition whether or not
+     * [isAuthenticated]. Same value-snapshot reasoning as [backStacks].
+     */
+    val authBackStack: List<NavKey> get() = authNavBackStack.toList()
 
     /**
      * The stacks currently on screen, in display order: just the auth stack signed out; Train
@@ -126,19 +147,23 @@ class Navigator(
         if (isSignedIn) onSignedIn() else onSignedOut()
     }
 
-    /** Resets every tab to its root and selects [TopLevelDestination.Train]. */
+    /** Resets every tab and the auth stack to their roots, selects [TopLevelDestination.Train] and bumps [sessionEpoch]. */
     fun onSignedIn() {
         TopLevelDestination.entries.forEach(::resetToRoot)
+        authNavBackStack.clear()
+        authNavBackStack.add(authRoot)
         selectedDestination = TopLevelDestination.Train
         isAuthenticated = true
+        sessionEpoch++
     }
 
-    /** Resets every tab to its root and restarts the auth stack at its root. */
+    /** Resets every tab and the auth stack to their roots and bumps [sessionEpoch]. */
     fun onSignedOut() {
         TopLevelDestination.entries.forEach(::resetToRoot)
         authNavBackStack.clear()
         authNavBackStack.add(authRoot)
         isAuthenticated = false
+        sessionEpoch++
     }
 
     fun saveState(): NavigatorState =
@@ -147,6 +172,7 @@ class Navigator(
             selectedDestination = selectedDestination,
             topLevelBackStacks = tabBackStacks.mapValues { (_, stack) -> stack.toList() },
             authBackStack = authNavBackStack.toList(),
+            sessionEpoch = sessionEpoch,
         )
 
     private fun resetToRoot(destination: TopLevelDestination) {
@@ -169,5 +195,5 @@ class Navigator(
     private fun taggedEntries(
         stack: NavBackStack<NavKey>,
         stackId: BackStackId,
-    ): List<VisibleNavKey> = stack.mapIndexed { depth, key -> VisibleNavKey(key, stackId, depth) }
+    ): List<VisibleNavKey> = stack.mapIndexed { depth, key -> VisibleNavKey(key, stackId, depth, sessionEpoch) }
 }

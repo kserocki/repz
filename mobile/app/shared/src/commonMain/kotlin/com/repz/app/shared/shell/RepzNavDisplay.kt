@@ -29,31 +29,37 @@ internal fun RepzNavDisplay(
 ) {
     val provider = remember { stackScoped(entryProvider { repzEntries() }) }
 
+    val sessionEpoch = navigator.sessionEpoch
+
     val entriesByStack: Map<BackStackId, List<NavEntry<VisibleNavKey>>> =
         mapOf(
-            BackStackId.Auth to rememberStackEntries(BackStackId.Auth, navigator.authBackStack, provider),
+            BackStackId.Auth to rememberStackEntries(BackStackId.Auth, navigator.authBackStack, sessionEpoch, provider),
             BackStackId.Tab(TopLevelDestination.Train) to
                 rememberStackEntries(
                     BackStackId.Tab(TopLevelDestination.Train),
                     navigator.backStacks.getValue(TopLevelDestination.Train),
+                    sessionEpoch,
                     provider,
                 ),
             BackStackId.Tab(TopLevelDestination.History) to
                 rememberStackEntries(
                     BackStackId.Tab(TopLevelDestination.History),
                     navigator.backStacks.getValue(TopLevelDestination.History),
+                    sessionEpoch,
                     provider,
                 ),
             BackStackId.Tab(TopLevelDestination.Exercises) to
                 rememberStackEntries(
                     BackStackId.Tab(TopLevelDestination.Exercises),
                     navigator.backStacks.getValue(TopLevelDestination.Exercises),
+                    sessionEpoch,
                     provider,
                 ),
             BackStackId.Tab(TopLevelDestination.Profile) to
                 rememberStackEntries(
                     BackStackId.Tab(TopLevelDestination.Profile),
                     navigator.backStacks.getValue(TopLevelDestination.Profile),
+                    sessionEpoch,
                     provider,
                 ),
         )
@@ -75,10 +81,11 @@ internal fun RepzNavDisplay(
 private fun rememberStackEntries(
     stackId: BackStackId,
     backStack: List<NavKey>,
+    sessionEpoch: Int,
     entryProvider: (VisibleNavKey) -> NavEntry<VisibleNavKey>,
 ): List<NavEntry<VisibleNavKey>> =
     rememberDecoratedNavEntries(
-        backStack = backStack.mapIndexed { depth, key -> VisibleNavKey(key, stackId, depth) },
+        backStack = backStack.mapIndexed { depth, key -> VisibleNavKey(key, stackId, depth, sessionEpoch) },
         entryDecorators = listOf(rememberSaveableStateHolderNavEntryDecorator(), rememberViewModelStoreNavEntryDecorator()),
         entryProvider = entryProvider,
     )
