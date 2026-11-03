@@ -36,7 +36,7 @@ internal actual fun rememberPlatformHapticPerformer(): RepzHapticPerformer {
 
 private class AndroidHapticPerformer(
     private val view: View,
-    private val vibrator: Vibrator,
+    private val vibrator: Vibrator?,
 ) : RepzHapticPerformer {
     private val pendingCallbacks = mutableListOf<Runnable>()
 
@@ -67,7 +67,7 @@ private class AndroidHapticPerformer(
     private fun performSuccess() {
         view.performHaptic(HapticFeedbackConstantsCompat.CONFIRM)
         postDelayed(RepzHapticTimings.successHeavyClickDelay.inWholeMilliseconds) {
-            vibrator.performHeavyClick()
+            vibrator?.performHeavyClick()
         }
     }
 
@@ -85,9 +85,10 @@ private fun View.performHaptic(feedbackConstant: Int) {
     ViewCompat.performHapticFeedback(this, feedbackConstant)
 }
 
-private fun Context.systemVibrator(): Vibrator =
+/** Null when the device or a preview has no vibrator service; the heavy click is then skipped. */
+private fun Context.systemVibrator(): Vibrator? =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        getSystemService(VibratorManager::class.java).defaultVibrator
+        getSystemService(VibratorManager::class.java)?.defaultVibrator
     } else {
         @Suppress("DEPRECATION")
         getSystemService(Vibrator::class.java)
