@@ -42,30 +42,18 @@ private fun RepzDesignSystemCatalogMotionSprings2ReducedMotionPreview() {
 
 @Preview
 @Composable
-private fun RepzDesignSystemCatalogMotionMorphsLightPreview() {
-    RepzTheme(darkTheme = false) { RepzDesignSystemCatalog(RepzCatalogPage.MotionMorphs) }
+private fun RepzDesignSystemCatalogMotionTweensLightPreview() {
+    RepzTheme(darkTheme = false) { RepzDesignSystemCatalog(RepzCatalogPage.MotionTweens) }
 }
 
 @Preview
 @Composable
-private fun RepzDesignSystemCatalogMotionMorphsDarkPreview() {
-    RepzTheme(darkTheme = true) { RepzDesignSystemCatalog(RepzCatalogPage.MotionMorphs) }
+private fun RepzDesignSystemCatalogMotionTweensDarkPreview() {
+    RepzTheme(darkTheme = true) { RepzDesignSystemCatalog(RepzCatalogPage.MotionTweens) }
 }
 
 @Preview
 @Composable
-private fun RepzDesignSystemCatalogMotionMorphsReducedMotionPreview() {
-    RepzTheme(darkTheme = false, reducedMotion = true) { RepzDesignSystemCatalog(RepzCatalogPage.MotionMorphs) }
-}
-
-@Preview
-@Composable
-private fun RepzDesignSystemCatalogHapticsLightPreview() {
-    RepzTheme(darkTheme = false) { RepzDesignSystemCatalog(RepzCatalogPage.Haptics) }
-}
-
-@Preview
-@Composable
-private fun RepzDesignSystemCatalogHapticsDarkPreview() {
-    RepzTheme(darkTheme = true) { RepzDesignSystemCatalog(RepzCatalogPage.Haptics) }
+private fun RepzDesignSystemCatalogMotionTweensReducedMotionPreview() {
+    RepzTheme(darkTheme = false, reducedMotion = true) { RepzDesignSystemCatalog(RepzCatalogPage.MotionTweens) }
 }

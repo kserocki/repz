@@ -52,6 +52,7 @@ fun RepzDesignSystemCatalog(
             RepzCatalogPage.SpacingElevation2 -> ElevationCatalogPage()
             RepzCatalogPage.MotionSprings1 -> MotionSpringsCatalogPage1()
             RepzCatalogPage.MotionSprings2 -> MotionSpringsCatalogPage2()
+            RepzCatalogPage.MotionTweens -> MotionTweensCatalogPage()
             RepzCatalogPage.MotionMorphs -> MotionMorphsCatalogPage()
             RepzCatalogPage.Haptics -> HapticsCatalogPage()
         }
