@@ -73,6 +73,10 @@ Run from `mobile/` unless noted. One-time setup: create the git-ignored `mobile/
 |---|---|---|
 | Full build (all targets, incl. Android lint and the Koin graph check) | `./gradlew build` | works |
 | Unit tests (Android host + iOS simulator) | `./gradlew allTests` | works |
+| Live API smoke test (`core:network`, opt-in; needs the API running) | `./gradlew :core:network:testAndroidHostTest -Prepz.liveApiUrl=http://localhost:3000 [-Prepz.liveApiAccessTtlSeconds=3] --tests '*LiveApiSmokeTest.givenA*'`; with the API stopped, `--tests '*givenStoppedApi*'` | works |
+| Android device tests (`core:network`, Keystore + emulator reachability) | `./gradlew :core:network:connectedAndroidDeviceTest [-Pandroid.testInstrumentationRunnerArguments.repzLiveApi=true]` | works |
+| iOS simulator reachability (`core:network`, opt-in; needs the API running) | `SIMCTL_CHILD_REPZ_LIVE_API_URL=http://localhost:3000 ./gradlew :core:network:iosSimulatorArm64Test` | works |
+| build-logic unit tests | `./gradlew -p build-logic :convention:test` | works |
 | Android debug APK / install | `./gradlew :app:android:assembleDebug` · `:app:android:installDebug` | launchable (REP-11) |
 | Module list | `./gradlew projects` | works |
 | Design-system catalog (debug builds) | Android: `adb shell am start -n com.repz.app/.MainActivity --es repz.catalog <page> [--ez repz.dynamicColor true] [--ez repz.reducedMotion true]` · iOS: launch arguments `-RepzCatalogPage <page> [-RepzReducedMotion YES]`; pages in `docs/ARCHITECTURE.md` §2 | works (REP-19) |

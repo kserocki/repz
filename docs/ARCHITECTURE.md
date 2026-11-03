@@ -55,9 +55,9 @@ repz/
     │   ├── domain/              # models + value types (Weight, Rpe, ids), DomainResult/DomainError, ValidationLimits, PR calculator; repository interfaces + use cases from REP-27 (pure Kotlin)
     │   ├── data/                # repository implementations (Room + outbox)
     │   ├── database/            # Room KMP: entities, DAOs, migrations
-    │   ├── network/             # Ktor client, DTOs, auth plugin, API services
+    │   ├── network/             # Ktor client, DTOs, auth plugin, API services, session/token storage (TokenStore, Q3)
     │   ├── sync/                # SyncEngine, outbox processing, platform schedulers
-    │   ├── datastore/           # user preferences, token storage
+    │   ├── datastore/           # user preferences (TokenStore lives in core:network, Q3)
     │   ├── designsystem/        # theme, tokens, components, motion primitives
     │   ├── ui/                  # MVI helpers, shared UI utils, formatters
     │   ├── navigation/          # Navigator, top-level destinations, NavKey serialization
@@ -261,9 +261,9 @@ Logout **wipes the local database** (data belongs to a user). If the outbox is n
 | DI | Koin + **Koin Compiler Plugin** (annotations, compile-time graph verification) |
 | Database | **Room 3** (`androidx.room3`, KSP) + bundled SQLite driver |
 | Background work | WorkManager (Android), BGTaskScheduler (iOS) |
-| Networking | Ktor client + kotlinx.serialization, Ktor `Auth` plugin (bearer + refresh) |
+| Networking | Ktor client + kotlinx.serialization, Ktor `Auth` plugin (bearer + refresh); OkHttp engine on Android, Darwin on iOS, HTTP caching disabled on both (ADR-0011); base URL defaults to the emulator/simulator loopback (`10.0.2.2` / `localhost`), physical-device base URL deferred (Q5, REP-79) |
 | Preferences | DataStore Preferences (multiplatform) |
-| Secure storage | Android: Keystore-backed encryption, iOS: Keychain (behind `TokenStore`) |
+| Secure storage | Android: Android Keystore, AES-256-GCM, no EncryptedSharedPreferences; iOS: Keychain, `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly` (behind `TokenStore`, `core:network`, ADR-0011) |
 | Images | Coil 3 (only if exercise images are added) |
 | Logging | Kermit |
 | Resources / i18n | Compose Multiplatform Resources: EN (default) + PL |
@@ -465,6 +465,8 @@ Verified 2026-10-28 against Maven Central, Google Maven, GitHub releases and npm
 | Konsist | `com.lemonappdev:konsist` | 0.18.1 | `KotlinFileParser` rejects `.kts` files outright (confirmed in REP-9); rules that need build-script content read it as plain text instead |
 | Roborazzi | `io.github.takahirom.roborazzi` | 1.77.0 | later; iOS support experimental |
 
+**New artefacts (REP-25):** `GenerateContractFixturesTask` (`mobile/build-logic/convention`), which turns `contract/fixtures/**` into Kotlin source for `core:network`'s `commonTest` (ADR-0010); the Android network security config (`core:network/src/androidMain/res/xml/repz_network_security_config.xml`), cleartext only for `10.0.2.2` and `localhost`; `backup_rules.xml` and `data_extraction_rules.xml` (`app/android`), excluding the Keystore-backed `repz_secure_session` preferences file from backup and device transfer; the iOS `Info.plist` `NSAppTransportSecurity.NSAllowsLocalNetworking` key, for cleartext calls to the simulator's `localhost`; and the `androidDeviceTest` source set (AGP 9's KMP device tests, `core:network`'s Keystore and reachability tests, §12).
+
 ### Toolchain
 
 The machine toolchain the mobile build is verified against (checked in REP-5):
@@ -527,12 +529,15 @@ Re-verified on npm, nodejs.org and Docker Hub on 2026-10-29 (REP-12).
 | Unit tests | `commonTest` on the Android host test (`testAndroidHostTest`) + iOS simulator (`iosSimulatorArm64Test`) | `./gradlew check`; CI `mobile.yml` `android` job + `ios` job for `iosSimulatorArm64Test` |
 | TS | Biome (`pnpm lint`), TypeScript 7 `tsc --noEmit` (`pnpm typecheck`), Vitest (`pnpm test`) | `pnpm lint && pnpm typecheck && pnpm test && pnpm build`; CI `api.yml` |
 | OpenAPI contract | `pnpm openapi:export` with a clean tree (no spec drift); strict fixture validation and coverage in `pnpm test` | CI `api.yml` |
+| OpenAPI contract (mobile) | `ContractFixturesTest` decodes every `contract/fixtures/**` file with `StrictContractJson`, coverage checked both ways (ADR-0010) | part of the Unit tests gate above; CI `mobile.yml` also runs on a `contract/**`-only change (path filter) |
 | DB migrations in sync and applicable | `pnpm db:check` + `pnpm db:generate` with a clean tree; `pnpm db:migrate` twice on Postgres 18.6 | CI `api.yml` |
 | iOS app build | `xcodebuild` simulator build, no signing | CI `mobile.yml` `ios` job |
 | Compose resources packaged on Android | `verifyComposeResourcesPackaged` (every module with `composeResources` must ship them in the merged Android assets; KMP library targets need `androidResources { enable = true }`, set in the `repz.kmp.library` convention) | `./gradlew check`; CI `mobile.yml` `android` job |
 | Brand assets reproducible | `android_vectors.py` + `sync-brand-assets.sh`, then a clean `git status` | CI `mobile.yml` `brand-assets` job |
 
-Planned later (optional): Room DAO tests, Ktor `MockEngine` repository tests, sync conflict scenarios, backend Vitest + testcontainers, screenshot tests.
+Planned later (optional): Room DAO tests, sync conflict scenarios, backend Vitest + testcontainers, screenshot tests. (Ktor `MockEngine` repository tests and the mobile contract test, both listed here before, now exist: `core:network`'s `commonTest` suites build its clients through `createRepzHttpClients(engine = MockEngine{...}, ...)`, and the "OpenAPI contract (mobile)" row above covers the fixtures.)
+
+**Opt-in checks (REP-25), never part of `check` or CI** — no emulator, no simulator network reachability and no running API there: `core:network`'s Android device tests (`KeystoreSecureStringStorageTest`, `LocalApiReachabilityTest`; `./gradlew :core:network:connectedAndroidDeviceTest`, the reachability case gated by the instrumentation argument `repzLiveApi`); its iOS reachability test (`LocalApiReachabilityTest`, gated by the `REPZ_LIVE_API_URL` environment variable; `./gradlew :core:network:iosSimulatorArm64Test`); and its live API smoke test (`LiveApiSmokeTest`, `androidHostTest`, excluded from every `Test` task unless `-Prepz.liveApiUrl=<url>` is passed). The equivalent iOS Keychain storage test is not automated at all: a bare Kotlin/Native `iosSimulatorArm64Test` process has no Keychain access (`errSecNotAvailable`), so a write silently fails there regardless of the code under test; the manual check is a follow-up (REP-30).
 
 ### 12.1 ktlint and Detekt (REP-9)
 
@@ -547,6 +552,7 @@ Planned later (optional): Room DAO tests, Ktor `MockEngine` repository tests, sy
 - `./gradlew ktlintFormat` auto-fixes formatting; Detekt findings are fixed by hand (`autoCorrect: false`).
 - `FunctionNaming.ignoreAnnotated: ['Composable']` and `UnusedPrivateFunction.ignoreAnnotated: ['Preview']`: `ignoreAnnotated` does not appear in the generated default config for either rule because it is a **generic key accepted on every rule** (`dev.detekt.api.Config.Companion`, `ConfigValidationKt`, `AnnotationSuppressorKt`), not a per-rule property — confirmed against the alpha.6 jars. Verified: a `@Composable fun SampleComposable()` and a private `@Composable @Preview fun` are not flagged by `FunctionNaming`, while a plain (non-Composable) PascalCase function still is. A custom multipreview annotation would not need adding to `FunctionNaming`'s list (it is still `@Composable`); it would need adding to `UnusedPrivateFunction`'s `ignoreAnnotated` and to the exact `"Preview"` name match in the S1 and N4 Konsist rules (§12.2).
 - **Accepted gap (user, 2026-10-29):** `UnusedPrivateFunction` implements `RequiresAnalysisApi`, so it needs type resolution and never runs in our plain, non-type-resolved `detekt` gate — its `ignoreAnnotated` override is configured for when the gate gains type resolution, but today a private `@Preview` function is simply never checked for being unused (confirmed: an unused private `@Preview` function produced no finding at all). Revisit when Detekt 2.0 is stable.
+- **`FunctionNaming.excludes` (REP-25, 2026-11-03):** widened to AGP 9's KMP test source sets, `androidHostTest` and `androidDeviceTest`, alongside Detekt's own default test excludes (`commonTest`, `iosTest`, …), so `given…_when…_then…` test function names (Konsist N6) pass there the same way they already did in `commonTest`.
 
 ### 12.2 Konsist rule catalogue (`:konsist-tests`, REP-9)
 
