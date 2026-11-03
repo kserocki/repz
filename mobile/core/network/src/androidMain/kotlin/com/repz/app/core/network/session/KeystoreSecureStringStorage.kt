@@ -14,10 +14,12 @@ import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 
-private const val ANDROID_KEYSTORE_PROVIDER = "AndroidKeyStore"
-private const val KEY_ALIAS = "repz.session.v1"
-private const val PREFERENCES_FILE_NAME = "repz_secure_session"
-private const val PREFERENCES_KEY = "tokens"
+// internal, not private: KeystoreSecureStringStorageTest (androidDeviceTest) corrupts the stored
+// entry and invalidates the Keystore key directly to exercise the two recovery paths below.
+internal const val ANDROID_KEYSTORE_PROVIDER = "AndroidKeyStore"
+internal const val KEY_ALIAS = "repz.session.v1"
+internal const val PREFERENCES_FILE_NAME = "repz_secure_session"
+internal const val PREFERENCES_KEY = "tokens"
 private const val GCM_TAG_LENGTH_BITS = 128
 private const val IV_CIPHERTEXT_DELIMITER = "."
 
