@@ -34,3 +34,19 @@ kotlin {
         }
     }
 }
+
+// The live API smoke test (androidHostTest's LiveApiSmokeTest) needs a running API and is never
+// part of the normal gates: excluded from every Test task unless -Prepz.liveApiUrl=<url> is passed
+// (Spotter's manual test plan, L1-L6). providers.gradleProperty keeps this configuration-cache safe.
+private val liveApiUrl = providers.gradleProperty("repz.liveApiUrl")
+private val liveApiAccessTtlSeconds = providers.gradleProperty("repz.liveApiAccessTtlSeconds").orElse("900")
+
+tasks.withType<Test>().configureEach {
+    systemProperty("repz.liveApiUrl", liveApiUrl.getOrElse(""))
+    systemProperty("repz.liveApiAccessTtlSeconds", liveApiAccessTtlSeconds.get())
+    if (!liveApiUrl.isPresent) {
+        filter {
+            excludeTestsMatching("com.repz.app.core.network.livesmoke.LiveApiSmokeTest")
+        }
+    }
+}
