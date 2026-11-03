@@ -20,20 +20,34 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.common)
+            implementation(projects.core.domain)
+            implementation(projects.feature.auth.api)
             implementation(projects.feature.auth.impl)
+            implementation(projects.feature.workout.api)
             implementation(projects.feature.workout.impl)
+            implementation(projects.feature.exercises.api)
             implementation(projects.feature.exercises.impl)
+            implementation(projects.feature.history.api)
             implementation(projects.feature.history.impl)
             implementation(projects.feature.templates.impl)
+            implementation(projects.feature.settings.api)
             implementation(projects.feature.settings.impl)
             implementation(projects.core.data)
             implementation(projects.core.sync)
             implementation(projects.core.navigation)
             implementation(projects.core.designsystem)
             implementation(projects.core.network)
+            implementation(libs.androidx.navigation3.ui)
+            implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+            implementation(libs.androidx.lifecycle.runtime.compose)
+            implementation(libs.koin.compose.viewmodel)
+            implementation(libs.koin.core.viewmodel)
+            implementation(libs.compose.material3)
         }
         commonTest.dependencies {
             implementation(projects.core.testing)
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.turbine)
         }
     }
 }

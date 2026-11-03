@@ -1,6 +1,9 @@
 package com.repz.app.shared.di
 
+import com.repz.app.core.domain.session.SessionRepository
+import com.repz.app.shared.shell.AuthGateViewModel
 import org.koin.core.annotation.ComponentScan
+import org.koin.core.annotation.KoinViewModel
 import org.koin.core.annotation.Module
 
 /**
@@ -9,4 +12,7 @@ import org.koin.core.annotation.Module
  */
 @Module
 @ComponentScan("com.repz.app.shared")
-class AppModule
+class AppModule {
+    @KoinViewModel
+    fun authGateViewModel(sessionRepository: SessionRepository): AuthGateViewModel = AuthGateViewModel(sessionRepository)
+}
