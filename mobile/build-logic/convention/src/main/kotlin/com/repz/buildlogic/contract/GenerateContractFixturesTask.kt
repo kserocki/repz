@@ -13,6 +13,7 @@ import org.gradle.kotlin.dsl.register
 import java.io.File
 
 private const val MAX_FIXTURE_BYTES = 60_000
+private const val FIRST_PRINTABLE_CHARACTER_CODE = 0x20
 
 // <operationId>/request/<case>.json or <operationId>/<3-digit status>/<case>.json
 private val OPERATION_FIXTURE_PATH = Regex("""^[a-zA-Z][a-zA-Z0-9]*/(request|\d{3})/[\w.-]+\.json$""")
@@ -116,7 +117,7 @@ internal fun escapeKotlinStringLiteral(raw: String): String =
                 character == '\n' -> append("\\n")
                 character == '\r' -> append("\\r")
                 character == '\t' -> append("\\t")
-                character.code < 0x20 -> append("\\u%04x".format(character.code))
+                character.code < FIRST_PRINTABLE_CHARACTER_CODE -> append("\\u%04x".format(character.code))
                 else -> append(character)
             }
         }
