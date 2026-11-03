@@ -22,7 +22,7 @@ internal fun RepzNavDisplay(
         modifier = modifier,
         onBack = { navigator.goBack() },
         entryDecorators = listOf(rememberSaveableStateHolderNavEntryDecorator(), rememberViewModelStoreNavEntryDecorator()),
-        entryProvider = stackScoped(entryProvider { repzEntries(navigator) }),
+        entryProvider = stackScoped(entryProvider { repzEntries() }),
     )
 }
 

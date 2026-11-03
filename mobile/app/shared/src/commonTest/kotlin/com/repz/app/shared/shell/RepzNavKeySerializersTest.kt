@@ -18,8 +18,8 @@ import kotlin.test.assertEquals
 /**
  * Regression test (§3.5): every root `NavKey` is registered in [RepzNavKeySerializers], so a
  * forgotten registration fails here instead of at runtime. `LoginRoute`/`RegisterRoute` have no
- * placeholder entry yet (REP-30 adds them), but they must already round-trip so a restored
- * back stack that reached them survives process death.
+ * placeholder entry yet (a later feature adds them), but they must already round-trip so a
+ * restored back stack that reached them survives process death.
  */
 class RepzNavKeySerializersTest {
     private val json = Json { serializersModule = RepzNavKeySerializers }

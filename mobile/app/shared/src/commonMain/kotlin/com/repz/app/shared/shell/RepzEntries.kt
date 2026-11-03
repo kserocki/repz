@@ -2,7 +2,6 @@ package com.repz.app.shared.shell
 
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
-import com.repz.app.core.navigation.Navigator
 import com.repz.app.core.navigation.TopLevelDestination
 import com.repz.app.feature.auth.api.WelcomeRoute
 import com.repz.app.feature.exercises.api.ExercisesRoute
@@ -14,11 +13,10 @@ import com.repz.app.shared.shell.ui.TabRootPlaceholder
 
 /**
  * The one list every feature edits as its screens land: a placeholder for every root key until
- * its real `xEntries(navigator)` function replaces the line (§3.6). [navigator] is unused until
- * REP-30 adds `authEntries(navigator)` in its place; kept here now so that replacement is a
- * one-line swap, not a signature change.
+ * its real `xEntries(navigator)` function replaces the line (§3.6). A later `authEntries(navigator)`
+ * line adds back a `navigator: Navigator` parameter here; until then every entry is static.
  */
-internal fun EntryProviderScope<NavKey>.repzEntries(navigator: Navigator) {
+internal fun EntryProviderScope<NavKey>.repzEntries() {
     // TODO(REP-30): replace with authEntries(navigator)
     entry<WelcomeRoute> { BrandBackground() }
     // TODO(REP-32): replace with the real Train home

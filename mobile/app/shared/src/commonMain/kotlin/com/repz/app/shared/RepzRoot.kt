@@ -20,10 +20,9 @@ import com.repz.app.shared.shell.RepzAppShell
  * reaches [RepzTheme] when the catalog is showing, so the normal launch path is unaffected.
  *
  * [debugSignedIn] is a third debug-only hook (ADR-0025): `true` makes the auth gate
- * ([com.repz.app.shared.shell.AuthGateViewModel]) treat the session as signed in without any
- * stored tokens, so the signed-in shell can be reached by hand before REP-30 adds a real login
- * flow. The platform shells read it the same way as the other two hooks and pass `false` in
- * release builds.
+ * ([com.repz.app.shared.shell.AuthGate]) treat the session as signed in without any stored
+ * tokens, so the signed-in shell can be reached by hand before a real login flow exists. The
+ * platform shells read it the same way as the other two hooks and pass `false` in release builds.
  */
 @Composable
 fun RepzRoot(

@@ -10,7 +10,7 @@ import com.repz.app.core.navigation.rememberNavigator
 import com.repz.app.feature.auth.api.WelcomeRoute
 import com.repz.app.shared.shell.ui.AppShellScaffold
 import com.repz.app.shared.shell.ui.BrandBackground
-import org.koin.compose.viewmodel.koinViewModel
+import org.koin.compose.koinInject
 
 /**
  * The real app shell behind [com.repz.app.shared.RepzRoot]: a session-driven auth gate (ADR-0025)
@@ -19,7 +19,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * brand background is drawn.
  *
  * [debugSignedIn] makes the gate treat the session as signed in without any stored tokens, so the
- * signed-in shell can be reached by hand before REP-30 adds a real login flow.
+ * signed-in shell can be reached by hand before a real login flow exists.
  */
 @Composable
 internal fun RepzAppShell(
@@ -32,7 +32,7 @@ internal fun RepzAppShell(
             authRoot = WelcomeRoute,
             configuration = RepzNavigationConfiguration,
         )
-    val gate = koinViewModel<AuthGateViewModel>()
+    val gate = koinInject<AuthGate>()
     val gateState by gate.state.collectAsStateWithLifecycle()
     val isSignedIn = if (debugSignedIn) true else (gateState as? AuthGateUiState.Ready)?.isSignedIn
 
