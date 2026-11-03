@@ -285,9 +285,10 @@ Shadows are only for things floating under the finger (FAB, dragged item, rest p
 
 - **Material Symbols Rounded**, opsz 24, wght 400, grade 0 (dark theme grade −25).
 - FILL 0 by default. FILL 1 for: selected nav item, active toggle, completed state, PR trophy.
-- Sizes: 20 dp in dense rows, 24 dp default, 28 dp in the nav bar.
+- Sizes: 20 dp in dense rows, 24 dp default, 28 dp in the nav bar — `RepzIconSize` (`core:designsystem`) holds the three as `dense`/`default`/`navBar`; a feature never hard-codes an icon size.
 - Custom equipment icons (24 dp, stroke): Barbell, Dumbbell, Kettlebell, Machine, Cable, Bodyweight, Band, Other. Path data is on board 03.
 - Set types: W / 1·2·3 / D / F letter badges. PR: `trophy`, `workspace_premium`. Sync: `cloud_done`, `cloud_sync`, `cloud_upload`, `cloud_off`, `sync_problem`.
+- **Landed (REP-28):** the 4 `RepzNavigationBar` icons (Train/`fitness_center`, History/`history`, Exercises/`exercise`, Profile/`person`, each with its FILL-1 `_filled` variant) as Material Symbols Rounded drawables in `core:designsystem`'s `composeResources/drawable/`, under the Apache License 2.0 (`composeResources/files/licenses/material_symbols_apache2.txt`). `core:designsystem`'s `build.gradle.kts` sets `publicResClass = true`, so its generated resources class is visible to other modules (`app:shared` references `DesignSystemRes.drawable.symbol_*`), not only within `core:designsystem` itself. The remaining icon set lands with REP-72.
 
 ## 9. Components (`core:designsystem`, prefix `Repz`)
 

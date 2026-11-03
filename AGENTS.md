@@ -79,7 +79,7 @@ Run from `mobile/` unless noted. One-time setup: create the git-ignored `mobile/
 | build-logic unit tests | `./gradlew -p build-logic :convention:test` | works |
 | Android debug APK / install | `./gradlew :app:android:assembleDebug` · `:app:android:installDebug` | launchable (REP-11) |
 | Module list | `./gradlew projects` | works |
-| Design-system catalog (debug builds) | Android: `adb shell am start -n com.repz.app/.MainActivity --es repz.catalog <page> [--ez repz.dynamicColor true] [--ez repz.reducedMotion true]` · iOS: launch arguments `-RepzCatalogPage <page> [-RepzReducedMotion YES]`; pages in `docs/ARCHITECTURE.md` §2 | works (REP-19) |
+| Design-system catalog (debug builds) | Android: `adb shell am start -n com.repz.app/.MainActivity --es repz.catalog <page> [--ez repz.dynamicColor true] [--ez repz.reducedMotion true] [--ez repz.debugSignedIn true]` · iOS: launch arguments `-RepzCatalogPage <page> [-RepzReducedMotion YES] [-RepzDebugSignedIn YES]`; pages in `docs/ARCHITECTURE.md` §2. The debug signed-in flag (ADR-0025) works with or without a catalog page: it makes the auth gate treat the session as signed in without any stored tokens, debuggable/`DEBUG` builds only | works (REP-19, debug signed-in: REP-28) |
 | Style, static analysis, architecture tests | `./gradlew check` (ktlint, Detekt + Compose rules, Konsist, Android lint, unit tests) | works |
 | Auto-fix formatting | `./gradlew ktlintFormat` | works |
 | iOS app | open `mobile/iosApp/iosApp.xcodeproj` in Xcode · `xcodebuild -project mobile/iosApp/iosApp.xcodeproj -scheme iosApp -destination 'generic/platform=iOS Simulator' build` | works (REP-11) |
