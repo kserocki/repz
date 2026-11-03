@@ -119,6 +119,11 @@ Compose:
     active: true
   ParameterNaming:
     active: true
+    # AppShellScaffold's selection callback (REP-28, fixed cross-team signature, §3.7): "selected"
+    # here names the destination that becomes current, not a past event, same spirit as the rule's
+    # own built-in onFocusChanged/onValueChangeFinished exceptions.
+    allowedLambdaParameterNames:
+      - onDestinationSelected
   PreviewAnnotationNaming:
     active: true
   PreviewNaming:

@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Repz</string>
+    <string name="nav_train">Trening</string>
+    <string name="nav_history">Historia</string>
+    <string name="nav_exercises">Ćwiczenia</string>
+    <string name="nav_profile">Profil</string>
 </resources>
