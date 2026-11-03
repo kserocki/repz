@@ -55,9 +55,10 @@ internal const val INSTALL_MARKER_DEFAULTS_KEY = "repz.session.installMarker"
  * after the first unlock, and it is never included in an iCloud backup or migrated to another
  * device.
  *
- * The Keychain survives an app deletion (unlike `NSUserDefaults`), so on the first [read] of a
- * process, an absent [INSTALL_MARKER_DEFAULTS_KEY] flag means this is a fresh install: the stale
- * item is wiped before anything else happens, so a reinstall always starts signed out.
+ * The Keychain survives an app deletion (unlike `NSUserDefaults`), so on the first access of a
+ * process ([read], [write] or [delete]), an absent [INSTALL_MARKER_DEFAULTS_KEY] flag means this is
+ * a fresh install: the stale item is wiped before anything else happens, so a reinstall always
+ * starts signed out.
  *
  * The query is assembled through Core Foundation calls directly, not a bridged Kotlin `Map`: the
  * `kSec*` constants are `CFStringRef` pointers, and bridging a `Map` boxes them as Kotlin objects on
@@ -78,6 +79,7 @@ class KeychainSecureStringStorage(
 
     override suspend fun write(value: String): Boolean =
         withContext(dispatchers.io) {
+            clearOnReinstallOnce()
             val data =
                 requireNotNull(NSString.create(string = value).dataUsingEncoding(NSUTF8StringEncoding)) {
                     "Failed to UTF-8 encode the persisted token JSON"
@@ -87,6 +89,7 @@ class KeychainSecureStringStorage(
 
     override suspend fun delete() {
         withContext(dispatchers.io) {
+            clearOnReinstallOnce()
             val status = deleteKeychainItem()
             if (status != errSecSuccess && status != errSecItemNotFound) {
                 logger.w { "Keychain delete failed: OSStatus $status" }
