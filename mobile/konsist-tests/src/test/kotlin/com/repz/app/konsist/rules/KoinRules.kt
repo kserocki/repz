@@ -2,6 +2,8 @@ package com.repz.app.konsist.rules
 
 import com.lemonappdev.konsist.api.container.KoScope
 import com.lemonappdev.konsist.api.declaration.KoAnnotationDeclaration
+import com.lemonappdev.konsist.api.declaration.KoClassDeclaration
+import com.lemonappdev.konsist.api.declaration.combined.KoClassAndObjectDeclaration
 import com.lemonappdev.konsist.api.verify.assertFalse
 import com.lemonappdev.konsist.api.verify.assertTrue
 import com.repz.app.konsist.support.repzSourceFile
@@ -73,24 +75,35 @@ fun checkD4ProviderFunctionsDeclareReturnType(scope: KoScope) {
 /**
  * D5: each Koin definition - a provider function inside a `@Module` class, or a `@Single`/
  * `@Factory`/`@Scoped`/`@KoinViewModel` class - has exactly one owner: the pair of (return type,
- * qualifier annotations) is unique across every main source set (ARCH §9, §12.2).
+ * qualifier annotations) is unique across every main source set (ARCH §9, §12.2). The one
+ * exception is a binding provided once per platform inside an `expect`/`actual` `@Module`
+ * (ADR-0008's S1 pattern, e.g. `PlatformModule.secureStringStorage`): every `actual` with the same
+ * fully qualified class name counts as one owner, since `androidMain`/`iosMain` (and their test
+ * source sets) never compile into the same graph — but two such `actual`s in the *same* source
+ * set, or two differently named classes, still count as separate owners and still fail.
  */
 fun checkD5OneOwnerPerDefinition(scope: KoScope) {
     data class Definition(
         val returnType: String,
         val qualifier: String,
         val location: String,
+        val owner: KoinOwner,
     )
 
     val fromProviderFunctions =
         scope
             .classesAndObjects()
             .filter { it.hasAnnotationWithName("Module") }
-            .flatMap { it.functions(includeNested = false, includeLocal = false) }
-            .filter { it.hasAnnotationWithName(KOIN_DEFINITION_ANNOTATIONS) && !it.repzSourceFile().isTest }
-            .mapNotNull { function ->
+            .flatMap { moduleClass -> moduleClass.functions(includeNested = false, includeLocal = false).map { it to moduleClass } }
+            .filter { (function, _) -> function.hasAnnotationWithName(KOIN_DEFINITION_ANNOTATIONS) && !function.repzSourceFile().isTest }
+            .mapNotNull { (function, moduleClass) ->
                 val returnType = function.returnType?.sourceType ?: return@mapNotNull null
-                Definition(returnType, qualifierKey(function.annotations), "${function.repzSourceFile().modulePath}.${function.name}()")
+                Definition(
+                    returnType = returnType,
+                    qualifier = qualifierKey(function.annotations),
+                    location = "${function.repzSourceFile().modulePath}.${function.name}()",
+                    owner = koinOwnerOf(moduleClass),
+                )
             }
 
     val fromDefinitionClasses =
@@ -99,9 +112,10 @@ fun checkD5OneOwnerPerDefinition(scope: KoScope) {
             .filter { it.hasAnnotationWithName(KOIN_DEFINITION_ANNOTATIONS) && !it.repzSourceFile().isTest }
             .map { classOrObject ->
                 Definition(
-                    classOrObject.name,
-                    qualifierKey(classOrObject.annotations),
-                    "${classOrObject.repzSourceFile().modulePath}.${classOrObject.name}",
+                    returnType = classOrObject.name,
+                    qualifier = qualifierKey(classOrObject.annotations),
+                    location = "${classOrObject.repzSourceFile().modulePath}.${classOrObject.name}",
+                    owner = koinOwnerOf(classOrObject),
                 )
             }
 
@@ -109,12 +123,40 @@ fun checkD5OneOwnerPerDefinition(scope: KoScope) {
         (fromProviderFunctions + fromDefinitionClasses)
             .groupBy { it.returnType to it.qualifier }
             .filterValues { it.size > 1 }
+            .filterValues { definitions -> !isOnePerPlatformActual(definitions.map { it.owner }) }
 
     check(duplicateOwners.isEmpty()) {
         "D5: each Koin definition has exactly one owner (ARCH §9): " +
             duplicateOwners.entries.joinToString { (key, definitions) -> "${key.first} -> ${definitions.map { it.location }}" }
     }
 }
+
+/**
+ * True when every owner sharing a (return type, qualifier) is an `actual` class with the same
+ * fully qualified name, each in a distinct source set (so no two can ever compile together).
+ */
+private fun isOnePerPlatformActual(owners: List<KoinOwner>): Boolean {
+    val allActual = owners.all { it.isActual }
+    val fullyQualifiedNames = owners.mapTo(mutableSetOf()) { it.fullyQualifiedName }
+    val sameNonNullClass = fullyQualifiedNames.size == 1 && fullyQualifiedNames.single() != null
+    val sourceSetNames = owners.map { it.sourceSetName }
+    val onePerSourceSet = sourceSetNames.toSet().size == sourceSetNames.size
+
+    return allActual && sameNonNullClass && onePerSourceSet
+}
+
+private data class KoinOwner(
+    val isActual: Boolean,
+    val fullyQualifiedName: String?,
+    val sourceSetName: String?,
+)
+
+private fun koinOwnerOf(classOrObject: KoClassAndObjectDeclaration): KoinOwner =
+    KoinOwner(
+        isActual = (classOrObject as? KoClassDeclaration)?.hasActualModifier == true,
+        fullyQualifiedName = classOrObject.fullyQualifiedName,
+        sourceSetName = classOrObject.repzSourceFile().sourceSetName,
+    )
 
 // "Module" (class-level) plus annotations unrelated to Koin qualification: without these, two
 // definitions that differ only by @OptIn/@Suppress/@JvmStatic would wrongly count as distinct.
