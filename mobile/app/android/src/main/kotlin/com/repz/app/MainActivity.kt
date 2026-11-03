@@ -22,8 +22,8 @@ private const val EXTRA_DEBUG_SIGNED_IN = "repz.debugSignedIn"
  * In debuggable builds only, the `repz.catalog`/`repz.dynamicColor`/`repz.reducedMotion` intent
  * extras open the debug design-system catalog instead of the normal launch placeholder, and force
  * its reduced-motion state. The `repz.debugSignedIn` extra (ADR-0025) makes the auth gate treat
- * the session as signed in without stored tokens, so the signed-in shell can be reached before
- * REP-30 adds a real login flow. A release build never reads these extras, so it always renders
+ * the session as signed in without stored tokens, so the signed-in shell can be reached without
+ * logging in. A release build never reads these extras, so it always renders
  * the normal placeholder, following the live platform setting, regardless of what is passed.
  */
 class MainActivity : ComponentActivity() {
