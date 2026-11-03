@@ -9,11 +9,9 @@ plugins {
 val generateContractFixturesTask = registerGenerateContractFixtures()
 
 kotlin {
-    // Device tests (instrumented, run on an emulator/device): KeystoreSecureStringStorageTest
-    // against the real Android Keystore, and the gated LocalApiReachabilityTest. No commonTest
-    // sharing here (AGP's device test source set tree is `null`), unlike `withHostTest`. Registered
-    // before `sourceSets` below so the `androidDeviceTest` source set accessor exists there.
-    androidLibrary {
+    // Device tests run against the real Android Keystore. Registered before `sourceSets` below,
+    // because the `androidDeviceTest` source set only exists after this block.
+    android {
         withDeviceTestBuilder {
             // Default name/source set ("deviceTest" / "androidDeviceTest"); only the runner differs.
         }.configure {
