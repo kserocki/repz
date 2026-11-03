@@ -219,7 +219,7 @@ class LiveApiSmokeTest {
 
     // L5
     @Test
-    fun givenALoggedOutSession_whenACallIsMadeAfterTheTokenExpires_thenItIsSessionExpired() =
+    fun givenASessionRevokedServerSide_whenGetMeIsCalledAfterTheAccessTokenExpires_thenTheResultIsSessionExpired() =
         runBlocking<Unit> {
             requireLiveApi()
             val session = LiveApiSession(liveApiUrl, logWriter)
@@ -228,14 +228,19 @@ class LiveApiSmokeTest {
             session.sessionManager.start(authSession.toAuthTokens())
             val refreshToken = session.sessionManager.currentRefreshToken()!!
 
+            // Revokes the refresh token server-side only (no local end()): the client still believes
+            // it's signed in, the same as another device logging this session out remotely.
             session.authApi.logout(refreshToken)
-            session.sessionManager.end()
             delay((accessTtlSeconds + 1).seconds)
-            // A logged-out refresh token is rejected the same way an expired one is: the client-side
-            // "signed out" vs "expired" distinction is local only, the server returns the same 401.
-            val refreshed = session.refreshTokensCall(refreshToken)
 
-            assertIs<NetworkResult.Failure>(refreshed)
+            val result = session.userApi.getMe()
+
+            val failure = assertIs<NetworkResult.Failure>(result)
+            assertEquals(NetworkError.SessionExpired, failure.error)
+            val status = session.sessionManager.status.value
+            assertIs<SessionStatus.SignedOut>(status)
+            assertEquals(SignOutReason.Expired, status.reason)
+            assertNull(session.sessionManager.currentTokens())
         }
 
     // L6 - opt-in like the rest of the class, but meant to be run on its own
