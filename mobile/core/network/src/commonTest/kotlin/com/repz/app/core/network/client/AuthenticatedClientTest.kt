@@ -48,6 +48,12 @@ private fun problemJsonHeaders(vararg extra: Pair<String, String>) =
         *extra.map { it.first to listOf(it.second) }.toTypedArray(),
     )
 
+private fun problemBody(
+    urn: String,
+    title: String,
+    status: Int,
+): String = """{"type":"urn:repz:problem:$urn","title":"$title","status":$status,"instance":"/auth/refresh","requestId":"r"}"""
+
 /** A minimal fake auth server: rotates tokens on refresh, requires the current access token for `/me` and the sync routes. */
 private class RotatingAuthServer {
     private var accessToken = INITIAL_ACCESS_TOKEN
@@ -159,7 +165,7 @@ class AuthenticatedClientTest {
                 RotatingAuthServer().apply {
                     refreshBehavior = { _ ->
                         respond(
-                            """{"type":"urn:repz:problem:invalid-refresh-token","title":"x","status":401,"instance":"/auth/refresh","requestId":"r"}""",
+                            problemBody("invalid-refresh-token", "x", 401),
                             HttpStatusCode.Unauthorized,
                             problemJsonHeaders(),
                         )
@@ -185,7 +191,7 @@ class AuthenticatedClientTest {
                     refreshBehavior =
                         { _ ->
                             respond(
-                                """{"type":"urn:repz:problem:validation-error","title":"x","status":400,"instance":"/auth/refresh","requestId":"r"}""",
+                                problemBody("validation-error", "x", 400),
                                 HttpStatusCode.BadRequest,
                                 problemJsonHeaders(),
                             )

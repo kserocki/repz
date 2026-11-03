@@ -32,6 +32,14 @@ private fun jsonHeaders() = headersOf(HttpHeaders.ContentType, "application/json
 
 private suspend fun HttpRequestData.bodyText(): String = body.toByteArray().decodeToString()
 
+private fun sessionResponseJson(displayName: String = "A"): String =
+    """{"user":{"id":"b6e6b6a0-0000-4a22-8a33-000000000001","email":"a@b.com","displayName":"$displayName",""" +
+        """"unitSystem":"kg"},"accessToken":"a","refreshToken":"r","expiresIn":900}"""
+
+private fun emptyPullResponseJson(): String =
+    """{"changes":[],"nextCursor":0,"hasMore":false,""" +
+        """"totalEstimate":{"total":0,"workout":0,"template":0,"exercise":0}}"""
+
 class ApiServicesTest {
     @Test
     fun givenRegister_whenCalled_thenItPostsToAuthRegisterOverThePublicClientWithTheBody() =
@@ -40,11 +48,7 @@ class ApiServicesTest {
             val clients =
                 testClients { request ->
                     captured = request
-                    respond(
-                        """{"user":{"id":"b6e6b6a0-0000-4a22-8a33-000000000001","email":"a@b.com","displayName":"A","unitSystem":"kg"},"accessToken":"a","refreshToken":"r","expiresIn":900}""",
-                        HttpStatusCode.Created,
-                        jsonHeaders(),
-                    )
+                    respond(sessionResponseJson(), HttpStatusCode.Created, jsonHeaders())
                 }
             val authApi = KtorAuthApi(clients.public)
 
@@ -65,11 +69,7 @@ class ApiServicesTest {
             val clients =
                 testClients { request ->
                     captured = request
-                    respond(
-                        """{"user":{"id":"b6e6b6a0-0000-4a22-8a33-000000000001","email":"a@b.com","displayName":"A","unitSystem":"kg"},"accessToken":"a","refreshToken":"r","expiresIn":900}""",
-                        HttpStatusCode.OK,
-                        jsonHeaders(),
-                    )
+                    respond(sessionResponseJson(), HttpStatusCode.OK, jsonHeaders())
                 }
             val authApi = KtorAuthApi(clients.public)
 
@@ -217,11 +217,7 @@ class ApiServicesTest {
             val clients =
                 testClients(sessionManager = sessionManager) { request ->
                     captured = request
-                    respond(
-                        """{"changes":[],"nextCursor":0,"hasMore":false,"totalEstimate":{"total":0,"workout":0,"template":0,"exercise":0}}""",
-                        HttpStatusCode.OK,
-                        jsonHeaders(),
-                    )
+                    respond(emptyPullResponseJson(), HttpStatusCode.OK, jsonHeaders())
                 }
             val syncApi = KtorSyncApi(clients)
 
