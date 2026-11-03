@@ -21,7 +21,7 @@ abstract class ExerciseDao(
     @Query("SELECT * FROM exercises WHERE id = :id AND is_deleted = 0")
     abstract fun observeExercise(id: Uuid): Flow<ExerciseWithTranslations?>
 
-    /** History/summary names (Q1): includes tombstones for ids the device has ever seen. */
+    /** Includes tombstones, so history can still name a deleted exercise (ADR-0023). */
     @Transaction
     @Query("SELECT * FROM exercises WHERE id IN (:ids)")
     abstract suspend fun findExercisesIncludingDeleted(ids: List<Uuid>): List<ExerciseWithTranslations>

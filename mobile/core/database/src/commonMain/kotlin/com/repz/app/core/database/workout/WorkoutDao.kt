@@ -13,7 +13,7 @@ abstract class WorkoutDao(
     private val database: RepzDatabase,
 ) {
     @Transaction
-    @Query("SELECT * FROM workouts WHERE finished_at IS NULL AND is_deleted = 0 LIMIT 1")
+    @Query("SELECT * FROM workouts WHERE finished_at IS NULL AND is_deleted = 0 ORDER BY started_at DESC LIMIT 1")
     abstract fun observeActiveWorkout(): Flow<WorkoutAggregate?>
 
     @Transaction

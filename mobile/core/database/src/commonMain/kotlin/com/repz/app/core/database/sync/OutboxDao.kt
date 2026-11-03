@@ -72,14 +72,14 @@ abstract class OutboxDao {
     abstract suspend fun countPending(): Int
 
     @Query("SELECT * FROM outbox WHERE entity_type = :entityType AND entity_id = :entityId")
-    abstract suspend fun findEntry(
+    internal abstract suspend fun findEntry(
         entityType: SyncEntityType,
         entityId: Uuid,
     ): OutboxEntryEntity?
 
     @Insert
-    abstract suspend fun insertEntry(entry: OutboxEntryEntity)
+    internal abstract suspend fun insertEntry(entry: OutboxEntryEntity)
 
     @Update
-    abstract suspend fun updateEntry(entry: OutboxEntryEntity): Int
+    internal abstract suspend fun updateEntry(entry: OutboxEntryEntity): Int
 }

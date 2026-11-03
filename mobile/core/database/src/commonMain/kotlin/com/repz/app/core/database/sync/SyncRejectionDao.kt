@@ -23,10 +23,10 @@ abstract class SyncRejectionDao {
     abstract fun observeCount(): Flow<Int>
 
     @Update
-    abstract suspend fun updateRejection(rejection: SyncRejectionEntity): Int
+    internal abstract suspend fun updateRejection(rejection: SyncRejectionEntity): Int
 
     @Insert
-    abstract suspend fun insertRejection(rejection: SyncRejectionEntity)
+    internal abstract suspend fun insertRejection(rejection: SyncRejectionEntity)
 
     /**
      * Re-upsert replaces the stored problem/timestamp. No `@Upsert`: see

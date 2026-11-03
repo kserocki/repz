@@ -18,6 +18,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
+import kotlin.uuid.Uuid
 
 class OutboxDaoTest {
     // Room needs a real dispatcher for its query/invalidation work, not the runTest scheduler.
@@ -61,18 +62,48 @@ class OutboxDaoTest {
         }
 
     @Test
-    fun givenSeveralEntries_whenFindingReadyToPush_thenOrderedByCreatedAtThenTypeThenIdWithLimitRespected() =
+    fun givenEntriesCreatedAtDifferentTimes_whenFindingReadyToPush_thenOrderedByCreatedAtFirst() =
         runTest {
-            val lastCreated = testUuid("2")
-            val sameInstantLowerId = testUuid("3")
-            val sameInstantHigherId = testUuid("4")
-            outboxDao.enqueue(SyncEntityType.WORKOUT, lastCreated, OutboxOperation.UPSERT, now + 60.seconds)
-            outboxDao.enqueue(SyncEntityType.WORKOUT, sameInstantHigherId, OutboxOperation.UPSERT, now)
-            outboxDao.enqueue(SyncEntityType.WORKOUT, sameInstantLowerId, OutboxOperation.UPSERT, now)
+            val createdLast = testUuid("2")
+            val createdFirst = testUuid("3")
+            outboxDao.enqueue(SyncEntityType.WORKOUT, createdLast, OutboxOperation.UPSERT, now + 60.seconds)
+            outboxDao.enqueue(SyncEntityType.WORKOUT, createdFirst, OutboxOperation.UPSERT, now)
+
+            val entries = outboxDao.findReadyToPush(now + 600.seconds, limit = 100)
+
+            assertEquals(listOf(createdFirst, createdLast), entries.map { it.entityId })
+        }
+
+    @Test
+    fun givenEntriesWithTheSameCreatedAtButDifferentTypes_whenFindingReadyToPush_thenTypeBreaksTheTieBeforeId() =
+        runTest {
+            // entityId deliberately contradicts entityType order: if id were the tie-break instead
+            // of type, "exercise" (higher id) would sort after "workout" (lower id), not before it.
+            val higherIdLowerType = testUuid("9")
+            val lowerIdHigherType = testUuid("1")
+            outboxDao.enqueue(SyncEntityType.WORKOUT, lowerIdHigherType, OutboxOperation.UPSERT, now)
+            outboxDao.enqueue(SyncEntityType.EXERCISE, higherIdLowerType, OutboxOperation.UPSERT, now)
+
+            val entries = outboxDao.findReadyToPush(now, limit = 100)
+
+            assertEquals(
+                listOf(SyncEntityType.EXERCISE to higherIdLowerType, SyncEntityType.WORKOUT to lowerIdHigherType),
+                entries.map { it.entityType to it.entityId },
+            )
+        }
+
+    @Test
+    fun givenMoreReadyEntriesThanTheLimit_whenFindingReadyToPush_thenOnlyTheOldestUpToTheLimitAreReturned() =
+        runTest {
+            val oldest = testUuid("2")
+            val secondOldest = testUuid("3")
+            outboxDao.enqueue(SyncEntityType.WORKOUT, testUuid("4"), OutboxOperation.UPSERT, now + 120.seconds)
+            outboxDao.enqueue(SyncEntityType.WORKOUT, secondOldest, OutboxOperation.UPSERT, now + 60.seconds)
+            outboxDao.enqueue(SyncEntityType.WORKOUT, oldest, OutboxOperation.UPSERT, now)
 
             val entries = outboxDao.findReadyToPush(now + 600.seconds, limit = 2)
 
-            assertEquals(listOf(sameInstantLowerId, sameInstantHigherId), entries.map { it.entityId })
+            assertEquals(listOf(oldest, secondOldest), entries.map { it.entityId })
         }
 
     @Test
@@ -109,25 +140,38 @@ class OutboxDaoTest {
         }
 
     @Test
-    fun givenAFailingWriteTransaction_whenSavingAWorkoutAndEnqueuing_thenNeitherThePersistedWorkoutNorTheOutboxRowSurvive() =
+    fun givenOutboxEntries_whenCountingPending_thenReturnsTheCurrentRowCount() =
+        runTest {
+            assertEquals(0, outboxDao.countPending())
+
+            outboxDao.enqueue(SyncEntityType.WORKOUT, entityId, OutboxOperation.UPSERT, now)
+            outboxDao.enqueue(SyncEntityType.EXERCISE, testUuid("2"), OutboxOperation.UPSERT, now)
+
+            assertEquals(2, outboxDao.countPending())
+        }
+
+    @Test
+    fun givenAPendingEntry_whenAttemptsAreIncremented_thenTheCounterGoesUpWithoutChangingTheRevision() =
+        runTest {
+            outboxDao.enqueue(SyncEntityType.WORKOUT, entityId, OutboxOperation.UPSERT, now)
+            val before = outboxDao.findReadyToPush(now, 100).single()
+
+            outboxDao.incrementAttempts(SyncEntityType.WORKOUT, entityId)
+            outboxDao.incrementAttempts(SyncEntityType.WORKOUT, entityId)
+
+            val after = outboxDao.findReadyToPush(now, 100).single()
+            assertEquals(2, after.attempts)
+            assertEquals(before.revision, after.revision)
+        }
+
+    @Test
+    fun givenAFailingWriteTransaction_whenSavingANewWorkoutAndEnqueuing_thenNeitherThePersistedWorkoutNorTheOutboxRowSurvive() =
         runTest {
             val workoutId = testUuid("5")
-            val workout =
-                WorkoutEntity(
-                    workoutId,
-                    null,
-                    "Push day",
-                    "",
-                    now,
-                    now,
-                    now,
-                    serverVersion = null,
-                    isDeleted = false,
-                )
 
             assertFailsWith<RollbackTestException> {
                 database.withWriteTransaction {
-                    database.workoutDao().saveSyncedWorkout(workout, emptyList(), emptyList())
+                    database.workoutDao().saveLocalWorkout(workout(workoutId), emptyList(), emptyList())
                     outboxDao.enqueue(SyncEntityType.WORKOUT, workoutId, OutboxOperation.UPSERT, now)
                     throw RollbackTestException()
                 }
@@ -136,6 +180,48 @@ class OutboxDaoTest {
             assertNull(database.workoutDao().findWorkoutIncludingDeleted(workoutId))
             assertTrue(outboxDao.findPendingEntityIds(SyncEntityType.WORKOUT, listOf(workoutId)).isEmpty())
         }
+
+    @Test
+    fun givenAFailingWriteTransaction_whenUpdatingAnExistingWorkoutAndItsOutboxRow_thenBothAreLeftUnchanged() =
+        runTest {
+            val workoutId = testUuid("6")
+            database.workoutDao().saveLocalWorkout(workout(workoutId, name = "Push day"), emptyList(), emptyList())
+            outboxDao.enqueue(SyncEntityType.WORKOUT, workoutId, OutboxOperation.UPSERT, now)
+            val revisionBeforeRollback = outboxDao.findReadyToPush(now, 100).single().revision
+
+            assertFailsWith<RollbackTestException> {
+                database.withWriteTransaction {
+                    database.workoutDao().saveLocalWorkout(workout(workoutId, name = "Leg day"), emptyList(), emptyList())
+                    outboxDao.enqueue(SyncEntityType.WORKOUT, workoutId, OutboxOperation.UPSERT, now + 60.seconds)
+                    throw RollbackTestException()
+                }
+            }
+
+            assertEquals(
+                "Push day",
+                database
+                    .workoutDao()
+                    .findWorkoutIncludingDeleted(workoutId)
+                    ?.workout
+                    ?.name,
+            )
+            assertEquals(revisionBeforeRollback, outboxDao.findReadyToPush(now, 100).single().revision)
+        }
+
+    private fun workout(
+        id: Uuid,
+        name: String = "Push day",
+    ) = WorkoutEntity(
+        id = id,
+        templateId = null,
+        name = name,
+        notes = "",
+        startedAt = now,
+        finishedAt = now,
+        updatedAt = now,
+        serverVersion = null,
+        isDeleted = false,
+    )
 
     private class RollbackTestException : Exception()
 }

@@ -172,6 +172,25 @@ class WorkoutDaoTest {
         }
 
     @Test
+    fun givenAPurgedWorkout_whenItsChildrenAreCounted_thenNoneRemain() =
+        runTest {
+            val purgedWorkoutId = testUuid("1")
+            val exerciseId = testUuid("2")
+            val setId = testUuid("3")
+            workoutDao.saveSyncedWorkout(
+                workout(purgedWorkoutId),
+                listOf(workoutExercise(exerciseId, purgedWorkoutId, 0)),
+                listOf(workoutSet(setId, exerciseId, 0)),
+            )
+
+            workoutDao.purge(purgedWorkoutId)
+
+            assertNull(workoutDao.findWorkoutIncludingDeleted(purgedWorkoutId))
+            assertEquals(0, database.workoutRawDao().countExerciseRowsById(exerciseId))
+            assertEquals(0, database.workoutRawDao().countSetRowsById(setId))
+        }
+
+    @Test
     fun givenAPurgedWorkoutsChildren_whenTheirIdsAreReusedByAnotherWorkout_thenTheInsertSucceedsBecauseCascadeDeletedThem() =
         runTest {
             val purgedWorkoutId = testUuid("1")

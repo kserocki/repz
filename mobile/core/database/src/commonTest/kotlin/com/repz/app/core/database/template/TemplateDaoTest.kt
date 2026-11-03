@@ -120,26 +120,32 @@ class TemplateDaoTest {
         }
 
     @Test
-    fun givenAPurgedTemplatesChildren_whenTheirIdsAreReusedByAnotherTemplate_thenTheInsertSucceedsBecauseCascadeDeletedThem() =
+    fun givenAPurgedTemplate_whenItsChildrenAreCounted_thenNoneRemain() =
         runTest {
             val purgedTemplateId = testUuid("1")
-            val reusedExerciseId = testUuid("2")
-            templateDao.saveSyncedTemplate(
-                template(purgedTemplateId),
-                listOf(templateExercise(purgedTemplateId, 0, exerciseId = reusedExerciseId)),
-            )
+            templateDao.saveSyncedTemplate(template(purgedTemplateId), listOf(templateExercise(purgedTemplateId, 0)))
 
             templateDao.purge(purgedTemplateId)
+
             assertNull(templateDao.findTemplateIncludingDeleted(purgedTemplateId))
+            assertEquals(0, database.templateRawDao().countExercisesByTemplateId(purgedTemplateId))
+        }
 
-            val newTemplateId = testUuid("3")
-            templateDao.saveSyncedTemplate(
-                template(newTemplateId),
-                listOf(templateExercise(newTemplateId, 0, exerciseId = reusedExerciseId)),
-            )
+    @Test
+    fun givenAPurgedTemplatesId_whenReusedByANewTemplateAtTheSamePosition_thenTheInsertSucceedsBecauseCascadeDeletedTheOldChild() =
+        runTest {
+            val templateId = testUuid("1")
+            templateDao.saveSyncedTemplate(template(templateId), listOf(templateExercise(templateId, 0, exerciseId = testUuid("2"))))
 
-            val aggregate = templateDao.findTemplateIncludingDeleted(newTemplateId)
-            assertEquals(listOf(reusedExerciseId), aggregate?.exercises?.map { it.exerciseId })
+            templateDao.purge(templateId)
+
+            // template_exercises' primary key is (template_id, position): if the old row at
+            // position 0 had survived the cascade, this second insert at the same id/position
+            // would fail on a primary key conflict.
+            templateDao.saveSyncedTemplate(template(templateId), listOf(templateExercise(templateId, 0, exerciseId = testUuid("3"))))
+
+            val aggregate = templateDao.findTemplateIncludingDeleted(templateId)
+            assertEquals(listOf(testUuid("3")), aggregate?.exercises?.map { it.exerciseId })
         }
 
     @Test

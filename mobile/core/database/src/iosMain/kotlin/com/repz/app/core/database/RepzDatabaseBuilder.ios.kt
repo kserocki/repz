@@ -15,7 +15,7 @@ import platform.Foundation.NSUserDomainMask
 fun repzDatabaseBuilder(): RoomDatabase.Builder<RepzDatabase> =
     Room.databaseBuilder<RepzDatabase>(name = "${applicationSupportDirectoryPath()}/$REPZ_DATABASE_FILE_NAME")
 
-/** Internal so the iOS instrumented test can locate and clean up the same database file. */
+/** Internal so the iOS test can locate and clean up the same database file. */
 @OptIn(ExperimentalForeignApi::class)
 internal fun applicationSupportDirectoryPath(): String {
     val applicationSupportDirectory =

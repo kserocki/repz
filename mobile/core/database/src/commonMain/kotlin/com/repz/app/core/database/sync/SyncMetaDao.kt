@@ -11,16 +11,16 @@ import kotlinx.coroutines.flow.map
 @Dao
 abstract class SyncMetaDao {
     @Query("SELECT * FROM sync_meta WHERE id = ${SyncMetaEntity.SINGLETON_ID}")
-    abstract fun observeNullable(): Flow<SyncMetaEntity?>
+    internal abstract fun observeNullable(): Flow<SyncMetaEntity?>
 
     @Query("SELECT * FROM sync_meta WHERE id = ${SyncMetaEntity.SINGLETON_ID}")
-    abstract suspend fun findNullable(): SyncMetaEntity?
+    internal abstract suspend fun findNullable(): SyncMetaEntity?
 
     @Update
-    abstract suspend fun updateMeta(meta: SyncMetaEntity): Int
+    internal abstract suspend fun updateMeta(meta: SyncMetaEntity): Int
 
     @Insert
-    abstract suspend fun insertMeta(meta: SyncMetaEntity)
+    internal abstract suspend fun insertMeta(meta: SyncMetaEntity)
 
     /** [SyncMetaEntity.INITIAL] when the row is missing, i.e. before the first sync ever ran. */
     fun observe(): Flow<SyncMetaEntity> = observeNullable().map { it ?: SyncMetaEntity.INITIAL }

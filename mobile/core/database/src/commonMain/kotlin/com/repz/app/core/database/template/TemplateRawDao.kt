@@ -26,4 +26,8 @@ internal abstract class TemplateRawDao {
 
     @Insert
     abstract suspend fun insertExercises(exercises: List<TemplateExerciseEntity>)
+
+    /** Test-only: lets a test assert the `ON DELETE CASCADE` directly instead of through PK reuse. */
+    @Query("SELECT COUNT(*) FROM template_exercises WHERE template_id = :templateId")
+    abstract suspend fun countExercisesByTemplateId(templateId: Uuid): Int
 }

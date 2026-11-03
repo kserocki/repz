@@ -26,8 +26,8 @@ abstract class PersonalRecordDao {
     }
 
     @Query("DELETE FROM personal_records WHERE exercise_id IN (:exerciseIds)")
-    abstract suspend fun deleteForExercises(exerciseIds: List<Uuid>)
+    internal abstract suspend fun deleteForExercises(exerciseIds: List<Uuid>)
 
     @Insert
-    abstract suspend fun insertAll(records: List<PersonalRecordEntity>)
+    internal abstract suspend fun insertAll(records: List<PersonalRecordEntity>)
 }
