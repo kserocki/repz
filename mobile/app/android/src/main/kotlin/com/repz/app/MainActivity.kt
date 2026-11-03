@@ -11,6 +11,7 @@ import com.repz.app.shared.RepzRoot
 private const val EXTRA_CATALOG_PAGE_KEY = "repz.catalog"
 private const val EXTRA_CATALOG_DYNAMIC_COLOR = "repz.dynamicColor"
 private const val EXTRA_CATALOG_REDUCED_MOTION = "repz.reducedMotion"
+private const val EXTRA_DEBUG_SIGNED_IN = "repz.debugSignedIn"
 
 /**
  * The launcher activity. `installSplashScreen()` must run before `super.onCreate()` so the
@@ -20,8 +21,10 @@ private const val EXTRA_CATALOG_REDUCED_MOTION = "repz.reducedMotion"
  *
  * In debuggable builds only, the `repz.catalog`/`repz.dynamicColor`/`repz.reducedMotion` intent
  * extras open the debug design-system catalog instead of the normal launch placeholder, and force
- * its reduced-motion state. A release build never reads these extras, so it always renders the
- * normal placeholder, following the live platform setting, regardless of what is passed.
+ * its reduced-motion state. The `repz.debugSignedIn` extra (ADR-0025) makes the auth gate treat
+ * the session as signed in without stored tokens, so the signed-in shell can be reached before
+ * REP-30 adds a real login flow. A release build never reads these extras, so it always renders
+ * the normal placeholder, following the live platform setting, regardless of what is passed.
  */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,12 +41,14 @@ class MainActivity : ComponentActivity() {
             } else {
                 null
             }
+        val debugSignedIn = isDebuggable && intent.getBooleanExtra(EXTRA_DEBUG_SIGNED_IN, false)
 
         setContent {
             RepzRoot(
                 catalogPageKey = catalogPageKey,
                 catalogDynamicColor = catalogDynamicColor,
                 catalogReducedMotion = catalogReducedMotion,
+                debugSignedIn = debugSignedIn,
             )
         }
     }
