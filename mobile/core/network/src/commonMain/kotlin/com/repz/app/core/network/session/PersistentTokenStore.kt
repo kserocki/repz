@@ -20,11 +20,12 @@ class PersistentTokenStore(
     override suspend fun load(): AuthTokens? {
         val raw = storage.read() ?: return null
         val persisted = decodeOrNull(raw)
-        if (persisted == null || persisted.version != PERSISTED_TOKENS_VERSION) {
+        return if (persisted == null || persisted.version != PERSISTED_TOKENS_VERSION) {
             storage.delete()
-            return null
+            null
+        } else {
+            AuthTokens(AccessToken(persisted.accessToken), RefreshToken(persisted.refreshToken))
         }
-        return AuthTokens(AccessToken(persisted.accessToken), RefreshToken(persisted.refreshToken))
     }
 
     override suspend fun save(tokens: AuthTokens): TokenSaveResult {
@@ -42,6 +43,9 @@ class PersistentTokenStore(
         storage.delete()
     }
 
+    // The stored value is deliberately discarded on any decode failure (corrupt or old-format
+    // data signs the session out cleanly, by design), so there is nothing to do with `e` here.
+    @Suppress("SwallowedException")
     private fun decodeOrNull(raw: String): PersistedTokens? =
         try {
             NetworkJson.decodeFromString(PersistedTokens.serializer(), raw)

@@ -6,16 +6,14 @@ import com.repz.app.core.network.dto.sync.PushChangeDto
 import com.repz.app.core.network.dto.sync.TemplatePayloadDto
 import com.repz.app.core.network.dto.sync.WorkoutPayloadDto
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.json.JsonDecoder
-import kotlinx.serialization.json.JsonEncoder
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -35,7 +33,7 @@ internal object PushChangeDtoSerializer : KSerializer<PushChangeDto> {
         encoder: Encoder,
         value: PushChangeDto,
     ) {
-        val jsonEncoder = encoder as? JsonEncoder ?: throw SerializationException("PushChangeDto can only be encoded as JSON")
+        val jsonEncoder = requireJsonEncoder(encoder, "PushChangeDto")
         val json = jsonEncoder.json
 
         val jsonObject =
@@ -75,40 +73,40 @@ internal object PushChangeDtoSerializer : KSerializer<PushChangeDto> {
     }
 
     override fun deserialize(decoder: Decoder): PushChangeDto {
-        val jsonDecoder = decoder as? JsonDecoder ?: throw SerializationException("PushChangeDto can only be decoded from JSON")
+        val jsonDecoder = requireJsonDecoder(decoder, "PushChangeDto")
         val json = jsonDecoder.json
-        val element = jsonDecoder.decodeJsonElement()
-        val jsonObject = element as? JsonObject ?: throw SerializationException("PushChangeDto must be a JSON object")
+        val jsonObject = requireJsonObject(jsonDecoder.decodeJsonElement(), "PushChangeDto")
 
-        val typeElement = jsonObject["type"] ?: throw SerializationException("PushChangeDto is missing \"type\"")
-        val idElement = jsonObject["id"] ?: throw SerializationException("PushChangeDto is missing \"id\"")
-        val deletedElement = jsonObject["deleted"] ?: throw SerializationException("PushChangeDto is missing \"deleted\"")
-
-        val type = json.decodeFromJsonElement(SyncTypeDto.serializer(), typeElement)
-        val id = json.decodeFromJsonElement(Uuid.serializer(), idElement)
-        val deleted = deletedElement.jsonPrimitive.boolean
+        val type = json.decodeFromJsonElement(SyncTypeDto.serializer(), requireField(jsonObject, "type", "PushChangeDto"))
+        val id = json.decodeFromJsonElement(Uuid.serializer(), requireField(jsonObject, "id", "PushChangeDto"))
+        val deleted = requireField(jsonObject, "deleted", "PushChangeDto").jsonPrimitive.boolean
         val payloadElement = jsonObject["payload"] ?: JsonNull
 
         return if (deleted) {
-            if (payloadElement != JsonNull) throw SerializationException("A deleted PushChangeDto must have a null payload")
+            requireNullPayload(payloadElement, "deleted PushChangeDto")
             PushChangeDto.Delete(type, id)
         } else {
-            when (type) {
-                SyncTypeDto.WORKOUT -> {
-                    PushChangeDto.UpsertWorkout(id, json.decodeFromJsonElement(WorkoutPayloadDto.serializer(), payloadElement))
-                }
-
-                SyncTypeDto.TEMPLATE -> {
-                    PushChangeDto.UpsertTemplate(id, json.decodeFromJsonElement(TemplatePayloadDto.serializer(), payloadElement))
-                }
-
-                SyncTypeDto.EXERCISE -> {
-                    PushChangeDto.UpsertCustomExercise(
-                        id,
-                        json.decodeFromJsonElement(CustomExercisePayloadDto.serializer(), payloadElement),
-                    )
-                }
-            }
+            decodeUpsert(json, type, id, payloadElement)
         }
     }
+
+    private fun decodeUpsert(
+        json: Json,
+        type: SyncTypeDto,
+        id: Uuid,
+        payloadElement: JsonElement,
+    ): PushChangeDto =
+        when (type) {
+            SyncTypeDto.WORKOUT -> {
+                PushChangeDto.UpsertWorkout(id, json.decodeFromJsonElement(WorkoutPayloadDto.serializer(), payloadElement))
+            }
+
+            SyncTypeDto.TEMPLATE -> {
+                PushChangeDto.UpsertTemplate(id, json.decodeFromJsonElement(TemplatePayloadDto.serializer(), payloadElement))
+            }
+
+            SyncTypeDto.EXERCISE -> {
+                PushChangeDto.UpsertCustomExercise(id, json.decodeFromJsonElement(CustomExercisePayloadDto.serializer(), payloadElement))
+            }
+        }
 }

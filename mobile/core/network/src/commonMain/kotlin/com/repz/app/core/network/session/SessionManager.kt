@@ -9,8 +9,8 @@ import kotlinx.coroutines.sync.withLock
 
 /**
  * The one in-memory copy of the current session: the access-token cache the bearer plugin reads
- * from ([TokenRefresher], `loadTokens`), and the [status] the auth gate (REP-28) and the rest of the
- * app observe. A `StateFlow`, not a one-shot event, so a late collector still sees `SignedOut(Expired)`.
+ * from ([TokenRefresher], `loadTokens`), and the [status] the auth gate and the rest of the app
+ * observe. A `StateFlow`, not a one-shot event, so a late collector still sees `SignedOut(Expired)`.
  */
 class SessionManager(
     private val tokenStore: TokenStore,
@@ -35,7 +35,7 @@ class SessionManager(
             restoredStatus
         }
 
-    /** After a successful login/register (REP-27/30). The session is usable for this process even when persisting it fails. */
+    /** After a successful login/register. The session is usable for this process even when persisting it fails. */
     suspend fun start(newTokens: AuthTokens): TokenSaveResult =
         mutex.withLock {
             tokens = newTokens

@@ -11,7 +11,10 @@ data class ExerciseTranslationDto(
     val instructions: String?,
 )
 
-/** Sync pull only: a catalog or a custom exercise, as the client sees it (mapping validates `imageUrl`/`sourceUrl` in REP-26). */
+/**
+ * Sync pull only: a catalog or a custom exercise, as the client sees it. `imageUrl`/`sourceUrl`
+ * validation happens where this maps to a domain entity, not here.
+ */
 @Serializable
 data class ExercisePayloadDto(
     val name: String,

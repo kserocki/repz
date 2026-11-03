@@ -23,7 +23,12 @@ private val PROBLEM_JSON_CONTENT_TYPE = ContentType.parse("application/problem+j
  * the authenticated client be reported as [NetworkError.SessionExpired] once the refresh flow has
  * already signed the session out, instead of a generic [NetworkError.Api]. Never throws, except a
  * programming error or [kotlinx.coroutines.CancellationException] (Konsist E1).
+ *
+ * Catching `Throwable` here is deliberate, not an oversight (Konsist E1 requires it to be paired
+ * with [rethrowIfCancellation]), and the extra early returns are the clearest shape for "map this
+ * exception type to that `NetworkResult`, otherwise fall through".
  */
+@Suppress("TooGenericExceptionCaught", "ReturnCount")
 internal suspend fun <T> apiCall(
     sessionManager: SessionManager? = null,
     decode: suspend (HttpResponse) -> T,
