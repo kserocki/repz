@@ -18,14 +18,21 @@ import platform.UIKit.UIViewController
  * `catalogReducedMotion`). A plain (non-nullable) `Boolean` avoids bridging an `NSNumber?` to
  * Swift: `false` maps to `null` (follow the live platform setting) and `true` forces it, matching
  * what `-RepzReducedMotion YES`/absent does in `ComposeView.swift`.
+ *
+ * [debugSignedIn] is the debug-only "treat the session as signed in" hook ([RepzRoot]'s
+ * `debugSignedIn`). `ComposeView.swift` reads it from a user default only under `#if DEBUG` and
+ * passes a literal `false` otherwise, so release builds never bypass the real session state. No
+ * default value, for the same reason as [catalogReducedMotion].
  */
 fun mainViewController(
     catalogPageKey: String?,
     catalogReducedMotion: Boolean,
+    debugSignedIn: Boolean,
 ): UIViewController =
     ComposeUIViewController {
         RepzRoot(
             catalogPageKey = catalogPageKey,
             catalogReducedMotion = if (catalogReducedMotion) true else null,
+            debugSignedIn = debugSignedIn,
         )
     }
