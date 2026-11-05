@@ -2,6 +2,9 @@ package com.repz.app.shared.di
 
 import android.content.Context
 import com.repz.app.core.common.coroutines.AppDispatchers
+import com.repz.app.core.database.RepzDatabase
+import com.repz.app.core.database.buildRepzDatabase
+import com.repz.app.core.database.repzDatabaseBuilder
 import com.repz.app.core.network.session.KeystoreSecureStringStorage
 import com.repz.app.core.network.session.SecureStringStorage
 import org.koin.core.annotation.Module
@@ -14,4 +17,10 @@ actual class PlatformModule {
         context: Context,
         dispatchers: AppDispatchers,
     ): SecureStringStorage = KeystoreSecureStringStorage(context, dispatchers)
+
+    @Single
+    fun repzDatabase(
+        context: Context,
+        dispatchers: AppDispatchers,
+    ): RepzDatabase = repzDatabaseBuilder(context).buildRepzDatabase(dispatchers.io)
 }
