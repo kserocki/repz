@@ -18,7 +18,7 @@ After `logo/app-icon` changes, regenerate what consumes it on each platform:
 # Android: adaptive-icon + splash VectorDrawables (stdlib only, no venv needed)
 python3 logo/src/android_vectors.py
 
-# iOS: AppIcon + LaunchSymbol asset catalog (copies PNG/SVG as-is)
+# iOS: AppIcon + LaunchBar asset catalog (copies PNG/SVG as-is)
 ../mobile/iosApp/scripts/sync-brand-assets.sh
 ```
 

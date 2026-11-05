@@ -8,8 +8,8 @@ SYM, STACK, HOR = body("symbol"), body("lockup-stacked"), body("lockup-horizonta
 CYAN, DEEP, MIST = "#00C2E0", "#00687A", "#A6EEFF"
 INK, PAPER, WHITE = "#0E1416", "#F5FAFB", "#FFFFFF"
 
-# Just the bar, for the splash/launch-screen bar-only frame (REP-21): the OS splash shows only the
-# empty bar, so the app's first Compose frame can start from an identical static image.
+# Just the bar, for the splash/launch-screen bar-only frame: the OS splash shows only the empty
+# bar, so the app's first Compose frame can start from an identical static image.
 BAR_PATH_D = re.search(r'<path id="bar" fill="#000000" d="([^"]+)"/>', open(f"{M}/symbol.svg").read()).group(1)
 BAR_ONLY = f'<path fill="{{c}}" d="{BAR_PATH_D}"/>'
 

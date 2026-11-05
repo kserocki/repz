@@ -160,21 +160,12 @@ def monochrome_drawable() -> str:
     return vector_xml(source, symbol_group(source, color_override=None))
 
 
-def splash_symbol_drawable() -> str:
-    """Same geometry as the monochrome layer, scaled down by SPLASH_SYMBOL_SCALE so the SplashScreen
-    API renders it at 144 dp (not 172.8 dp) in its 288 dp no-background icon box. The fill is the
-    themed splash colour, not a brand hex."""
-    source = "android-monochrome-108.svg"
-    return vector_xml(
-        source,
-        symbol_group(source, color_override="@color/splash_symbol", extra_scale=SPLASH_SYMBOL_SCALE),
-    )
-
-
 def splash_bar_drawable() -> str:
-    """Same geometry, transform and SPLASH_SYMBOL_SCALE as [splash_symbol_drawable], but only the
-    `bar` path (REP-21: the OS splash shows just the empty bar, not the full assembled symbol, so
-    Compose's first frame can start from an identical static frame before MOT-01 loads the plates)."""
+    """Same geometry and SPLASH_SYMBOL_SCALE the splash icon has always used, scaled down so the
+    SplashScreen API renders it at 144 dp (not 172.8 dp) in its 288 dp no-background icon box, but
+    only the `bar` path: the OS splash shows just the empty bar, not the full assembled symbol, so
+    Compose's first frame can start from an identical static frame before MOT-01 loads the plates.
+    The fill is the themed splash colour, not a brand hex."""
     source = "android-monochrome-108.svg"
     return vector_xml(
         source,
@@ -196,7 +187,6 @@ def main() -> None:
     write("ic_launcher_background.xml", background_drawable())
     write("ic_launcher_foreground.xml", foreground_drawable())
     write("ic_launcher_monochrome.xml", monochrome_drawable())
-    write("splash_symbol.xml", splash_symbol_drawable())
     write("splash_bar.xml", splash_bar_drawable())
 
 

@@ -17,7 +17,7 @@ All files are generated from `logo/src/build.py` (geometry) and `logo/src/varian
 | `logo/motion/` | `splash-storyboard.svg/png` (6 key frames) |
 | `logo/src/` | Generators + stroke-based sources (outlined to `master/` with picosvg); `android_vectors.py` converts `app-icon/android-*-108.svg` into Android VectorDrawables (stdlib only) |
 | `mobile/app/android/src/main/res/drawable/` | Android adaptive-icon + splash VectorDrawables, generated from `logo/app-icon/android-*-108.svg` by `logo/src/android_vectors.py`. Never edit by hand |
-| `mobile/iosApp/iosApp/Assets.xcassets/` | iOS `AppIcon` + `LaunchSymbol` image sets, copied as-is from `logo/app-icon/ios-*-1024.png` and `logo/color/symbol-{deep,cyan}.svg` by `mobile/iosApp/scripts/sync-brand-assets.sh`. Never edit by hand |
+| `mobile/iosApp/iosApp/Assets.xcassets/` | iOS `AppIcon` + `LaunchBar` image sets, copied as-is from `logo/app-icon/ios-*-1024.png` and `logo/color/symbol-bar-{deep,cyan}.svg` by `mobile/iosApp/scripts/sync-brand-assets.sh`. Never edit by hand |
 
 ## 2. Geometry (symbol grid 320 × 160, centre x = 160, y = 80)
 
