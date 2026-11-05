@@ -97,7 +97,24 @@ fun RegisterContent(
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            RegisterFields(state, onIntent, focusRequesters)
+            RegisterFields(
+                displayName = state.displayName,
+                onDisplayNameChange = { onIntent(RegisterIntent.DisplayNameChanged(it)) },
+                onDisplayNameFocusLoss = { onIntent(RegisterIntent.DisplayNameFocusLost) },
+                displayNameError = state.displayNameError,
+                email = state.email,
+                onEmailChange = { onIntent(RegisterIntent.EmailChanged(it)) },
+                onEmailFocusLoss = { onIntent(RegisterIntent.EmailFocusLost) },
+                emailError = state.emailError,
+                password = state.password,
+                onPasswordChange = { onIntent(RegisterIntent.PasswordChanged(it)) },
+                onPasswordFocusLoss = { onIntent(RegisterIntent.PasswordFocusLost) },
+                isPasswordVisible = state.isPasswordVisible,
+                onPasswordVisibilityToggle = { onIntent(RegisterIntent.PasswordVisibilityToggled) },
+                passwordError = state.passwordError,
+                onSubmit = { onIntent(RegisterIntent.SubmitClicked) },
+                focusRequesters = focusRequesters,
+            )
         }
 
         Column(
@@ -142,13 +159,47 @@ private fun RegisterOfflineBanner(isVisible: Boolean) {
 
 @Composable
 private fun ColumnScope.RegisterFields(
-    state: RegisterUiState,
-    onIntent: (RegisterIntent) -> Unit,
+    displayName: String,
+    onDisplayNameChange: (String) -> Unit,
+    onDisplayNameFocusLoss: () -> Unit,
+    displayNameError: DisplayNameFieldError?,
+    email: String,
+    onEmailChange: (String) -> Unit,
+    onEmailFocusLoss: () -> Unit,
+    emailError: EmailFieldError?,
+    password: String,
+    onPasswordChange: (String) -> Unit,
+    onPasswordFocusLoss: () -> Unit,
+    isPasswordVisible: Boolean,
+    onPasswordVisibilityToggle: () -> Unit,
+    passwordError: PasswordFieldError?,
+    onSubmit: () -> Unit,
     focusRequesters: Map<RegisterField, FocusRequester>,
 ) {
-    RegisterDisplayNameField(state, onIntent, focusRequesters)
-    RegisterEmailField(state, onIntent, focusRequesters)
-    RegisterPasswordField(state, onIntent, focusRequesters)
+    RegisterDisplayNameField(
+        displayName = displayName,
+        onDisplayNameChange = onDisplayNameChange,
+        onDisplayNameFocusLoss = onDisplayNameFocusLoss,
+        error = displayNameError,
+        focusRequesters = focusRequesters,
+    )
+    RegisterEmailField(
+        email = email,
+        onEmailChange = onEmailChange,
+        onEmailFocusLoss = onEmailFocusLoss,
+        error = emailError,
+        focusRequesters = focusRequesters,
+    )
+    RegisterPasswordField(
+        password = password,
+        onPasswordChange = onPasswordChange,
+        onPasswordFocusLoss = onPasswordFocusLoss,
+        isPasswordVisible = isPasswordVisible,
+        onPasswordVisibilityToggle = onPasswordVisibilityToggle,
+        error = passwordError,
+        onSubmit = onSubmit,
+        focusRequesters = focusRequesters,
+    )
 }
 
 // A tight group per field (DESIGN_SYSTEM §9): the error message is its own element below the
@@ -157,20 +208,22 @@ private fun ColumnScope.RegisterFields(
 
 @Composable
 private fun ColumnScope.RegisterDisplayNameField(
-    state: RegisterUiState,
-    onIntent: (RegisterIntent) -> Unit,
+    displayName: String,
+    onDisplayNameChange: (String) -> Unit,
+    onDisplayNameFocusLoss: () -> Unit,
+    error: DisplayNameFieldError?,
     focusRequesters: Map<RegisterField, FocusRequester>,
 ) {
-    val errorMessage = state.displayNameError?.message()
+    val errorMessage = error?.message()
     Column(verticalArrangement = Arrangement.spacedBy(RepzSpacing.xs)) {
         RepzTextField(
-            value = state.displayName,
-            onValueChange = { onIntent(RegisterIntent.DisplayNameChanged(it)) },
+            value = displayName,
+            onValueChange = onDisplayNameChange,
             label = stringResource(Res.string.register_display_name_label),
             isError = errorMessage != null,
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusRequesters.getValue(RegisterField.Email).requestFocus() }),
-            onFocusLoss = { onIntent(RegisterIntent.DisplayNameFocusLost) },
+            onFocusLoss = onDisplayNameFocusLoss,
             modifier =
                 Modifier
                     .fillMaxWidth()
@@ -185,20 +238,22 @@ private fun ColumnScope.RegisterDisplayNameField(
 
 @Composable
 private fun ColumnScope.RegisterEmailField(
-    state: RegisterUiState,
-    onIntent: (RegisterIntent) -> Unit,
+    email: String,
+    onEmailChange: (String) -> Unit,
+    onEmailFocusLoss: () -> Unit,
+    error: EmailFieldError?,
     focusRequesters: Map<RegisterField, FocusRequester>,
 ) {
-    val errorMessage = state.emailError?.message()
+    val errorMessage = error?.message()
     Column(verticalArrangement = Arrangement.spacedBy(RepzSpacing.xs)) {
         RepzTextField(
-            value = state.email,
-            onValueChange = { onIntent(RegisterIntent.EmailChanged(it)) },
+            value = email,
+            onValueChange = onEmailChange,
             label = stringResource(Res.string.auth_email_label),
             isError = errorMessage != null,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next, autoCorrectEnabled = false),
             keyboardActions = KeyboardActions(onNext = { focusRequesters.getValue(RegisterField.Password).requestFocus() }),
-            onFocusLoss = { onIntent(RegisterIntent.EmailFocusLost) },
+            onFocusLoss = onEmailFocusLoss,
             modifier =
                 Modifier
                     .fillMaxWidth()
@@ -214,23 +269,28 @@ private fun ColumnScope.RegisterEmailField(
 
 @Composable
 private fun ColumnScope.RegisterPasswordField(
-    state: RegisterUiState,
-    onIntent: (RegisterIntent) -> Unit,
+    password: String,
+    onPasswordChange: (String) -> Unit,
+    onPasswordFocusLoss: () -> Unit,
+    isPasswordVisible: Boolean,
+    onPasswordVisibilityToggle: () -> Unit,
+    error: PasswordFieldError?,
+    onSubmit: () -> Unit,
     focusRequesters: Map<RegisterField, FocusRequester>,
 ) {
-    val errorMessage = state.passwordError?.message()
+    val errorMessage = error?.message()
     Column(verticalArrangement = Arrangement.spacedBy(RepzSpacing.xs)) {
         RepzPasswordField(
-            value = state.password,
-            onValueChange = { onIntent(RegisterIntent.PasswordChanged(it)) },
+            value = password,
+            onValueChange = onPasswordChange,
             label = stringResource(Res.string.auth_password_label),
-            isPasswordVisible = state.isPasswordVisible,
-            onPasswordVisibilityToggle = { onIntent(RegisterIntent.PasswordVisibilityToggled) },
+            isPasswordVisible = isPasswordVisible,
+            onPasswordVisibilityToggle = onPasswordVisibilityToggle,
             supportingText = if (errorMessage == null) registerPasswordHint() else null,
             isError = errorMessage != null,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { onIntent(RegisterIntent.SubmitClicked) }),
-            onFocusLoss = { onIntent(RegisterIntent.PasswordFocusLost) },
+            keyboardActions = KeyboardActions(onDone = { onSubmit() }),
+            onFocusLoss = onPasswordFocusLoss,
             modifier =
                 Modifier
                     .fillMaxWidth()
