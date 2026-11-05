@@ -1,8 +1,8 @@
 import XCTest
 
 /// End-to-end auth flow against the local API (REP-30 §3.9, §6.3): Welcome -> Register/Login ->
-/// signed-in shell, plus the Keychain-restore check from REP-25 Q6, and the REP-87 Profile tab +
-/// log-out walk (§3.10 W1).
+/// signed-in shell, plus the Keychain-restore check from REP-25 Q6, the Profile tab with its
+/// log-out confirmation dialog, and logging back in afterward.
 ///
 /// Needs the API reachable at `localhost:3000` (`pnpm dev`, migrated DB) and the app not yet
 /// signed in. Never runs in CI: `mobile.yml`'s iOS job only ever calls `xcodebuild ... build`
@@ -47,10 +47,10 @@ final class AuthFlowUITests: XCTestCase {
         add(emailAttachment)
     }
 
-    /// REP-87 W1: register -> Profile tab shows the account header -> Log out dialog cancels
-    /// without side effects -> confirming it returns to Welcome at once -> relaunch stays on
-    /// Welcome (Keychain cleared, REP-87 §3.1) -> logging back in with the same credentials lands
-    /// on Train (ADR-0025, Q11).
+    /// Register -> Profile tab shows the account header -> the log-out dialog cancels without
+    /// side effects -> confirming it clears the session and returns to Welcome at once ->
+    /// relaunch stays on Welcome, proving the Keychain was cleared -> logging back in with the
+    /// same credentials lands on Train (ADR-0025) and Profile shows the same account again.
     func testLogOutThenLogBackIn() throws {
         let password = "correct-horse-battery"
         app.launch()
@@ -105,17 +105,23 @@ final class AuthFlowUITests: XCTestCase {
 
         XCTAssertTrue(trainTab.waitForExistence(timeout: 10), "Did not land on Train after logging back in")
         attach("train-after-relogin")
+
+        element(label: "Profile").tap()
+        XCTAssertTrue(displayName.waitForExistence(timeout: 5), "profile_display_name not found after logging back in")
+        XCTAssertEqual(displayName.label, "UI Test", "Profile showed the wrong display name after logging back in")
+        XCTAssertEqual(emailLabel.label, email, "Profile showed the wrong email after logging back in")
+        attach("profile-after-relogin")
     }
 
-    /// REP-87 W1 / I3: the same Profile + logout dialog walk in Polish (board 13, Q8 copy),
-    /// launched with the Polish locale so `-AppleLanguages`/`-AppleLocale` select the generated
-    /// `values-pl` resources (ADR-0017).
+    /// The same Profile and log-out dialog walk in Polish (board 13 copy), launched with the
+    /// Polish locale so `-AppleLanguages`/`-AppleLocale` select the generated `values-pl`
+    /// resources (ADR-0017).
     func testProfileInPolish() throws {
         app.launchArguments += ["-AppleLanguages", "(pl)", "-AppleLocale", "pl_PL"]
         app.launch()
         attach("welcome-page-1-pl")
 
-        registerNewAccount()
+        registerNewAccount(signedInTabLabel: "Trening")
 
         let profileTab = element(label: "Profil")
         XCTAssertTrue(profileTab.waitForExistence(timeout: 5), "Profil nav item not found")
@@ -128,7 +134,7 @@ final class AuthFlowUITests: XCTestCase {
     }
 
     /// I5: a never-registered email on a fresh install (Spotter uninstalls the app first; this
-    /// test does not, since logging out to reset state mid-suite is not possible yet).
+    /// test does not, since it only needs a signed-out Welcome screen, not a clean install).
     func testWrongPasswordShowsError() throws {
         app.launch()
         attach("welcome-page-1")
@@ -155,11 +161,13 @@ final class AuthFlowUITests: XCTestCase {
 
     /// Registers a brand-new account from the Welcome pager (board 07) through to the signed-in
     /// shell and returns the email used. Assumes `app.launch()` already ran and Welcome page 1 is
-    /// showing.
+    /// showing. `signedInTabLabel` is the localized nav bar label for the first tab ("Train" in
+    /// English), since the signed-in shell is detected by that label, not a test tag.
     @discardableResult
     private func registerNewAccount(
         displayName: String = "UI Test",
-        password: String = "correct-horse-battery"
+        password: String = "correct-horse-battery",
+        signedInTabLabel: String = "Train"
     ) -> String {
         let email = "uitest+\(Int(Date().timeIntervalSince1970))@repz.app"
 
@@ -167,6 +175,7 @@ final class AuthFlowUITests: XCTestCase {
         // Log in sit alongside Skip.
         app.swipeLeft()
         app.swipeLeft()
+        attach("welcome-page-3")
 
         let createAccount = element(identifier: "welcome_create_account")
         XCTAssertTrue(createAccount.waitForExistence(timeout: 5), "welcome_create_account not found")
@@ -185,9 +194,13 @@ final class AuthFlowUITests: XCTestCase {
         registerPassword.tap()
         registerPassword.typeText(password)
 
+        attach("register-filled")
         element(identifier: "register_submit").tap()
 
-        XCTAssertTrue(trainTab.waitForExistence(timeout: 10), "Did not land on the signed-in shell after registering")
+        XCTAssertTrue(
+            element(label: signedInTabLabel).waitForExistence(timeout: 10),
+            "Did not land on the signed-in shell after registering"
+        )
         return email
     }
 
