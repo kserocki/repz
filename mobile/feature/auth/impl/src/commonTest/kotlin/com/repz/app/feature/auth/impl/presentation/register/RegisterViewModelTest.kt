@@ -228,6 +228,21 @@ class RegisterViewModelTest {
         }
 
     @Test
+    fun given_emailTakenError_whenFocusLostWithoutEditing_thenTakenErrorStays() =
+        runTest(dispatcher) {
+            val repository = FakeAuthRepository(registerResult = DomainResult.Failure(AuthError.EmailTaken))
+            val viewModel = viewModel(repository)
+            viewModel.fillValidFields()
+            viewModel.onIntent(RegisterIntent.SubmitClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+            assertEquals(EmailFieldError.Taken, viewModel.state.value.emailError)
+
+            viewModel.onIntent(RegisterIntent.EmailFocusLost)
+
+            assertEquals(EmailFieldError.Taken, viewModel.state.value.emailError)
+        }
+
+    @Test
     fun given_emailTakenError_whenEmailEdited_thenClears() =
         runTest(dispatcher) {
             val repository = FakeAuthRepository(registerResult = DomainResult.Failure(AuthError.EmailTaken))

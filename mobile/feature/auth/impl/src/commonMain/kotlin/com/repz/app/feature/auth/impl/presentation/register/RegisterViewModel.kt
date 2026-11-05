@@ -84,10 +84,14 @@ class RegisterViewModel(
                 }
 
                 RegisterField.Email -> {
-                    if (current.email.isEmpty() && current.emailError == null) {
-                        current
-                    } else {
-                        current.copy(emailError = validateEmail(current.email))
+                    when {
+                        // Taken only clears on an edit (handled in onFieldChanged); losing focus
+                        // without changing the value must not re-validate it away.
+                        current.emailError == EmailFieldError.Taken -> current
+
+                        current.email.isEmpty() && current.emailError == null -> current
+
+                        else -> current.copy(emailError = validateEmail(current.email))
                     }
                 }
 
