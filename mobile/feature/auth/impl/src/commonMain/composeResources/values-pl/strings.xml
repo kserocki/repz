@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="welcome_skip">Pomiń</string>
-    <string name="welcome_page_log_sets_title">Zapisz serię w 2 dotknięciach</string>
+    <string name="welcome_page_log_sets_title">Zapis serii w 2 tapach</string>
     <string name="welcome_page_log_sets_body">Twoje ostatnie wyniki są już wpisane. Dotknij gotowe, odpocznij, powtórz.</string>
     <string name="welcome_page_works_offline_title">Działa offline</string>
     <string name="welcome_page_works_offline_body">Zapisuj serie bez połączenia z siecią. Repz zsynchronizuje się, gdy wrócisz online.</string>
