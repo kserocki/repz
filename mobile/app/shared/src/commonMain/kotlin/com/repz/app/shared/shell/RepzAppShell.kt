@@ -80,10 +80,10 @@ internal fun RepzAppShell(
         if (phase != LaunchHandoffPhase.Done) {
             LaunchHandoff(
                 phase = phase,
-                onLogoFinished = {
+                onLogoFinish = {
                     phase = nextLaunchHandoffPhase(phase, isSignedIn, isNavigatorSynced, isLogoFinished = true, isFadeFinished = false)
                 },
-                onFadeFinished = {
+                onFadeFinish = {
                     phase = nextLaunchHandoffPhase(phase, isSignedIn, isNavigatorSynced, isLogoFinished = true, isFadeFinished = true)
                 },
             )
