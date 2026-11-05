@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,7 +18,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.focus.FocusRequester
@@ -74,47 +72,44 @@ fun LoginContent(
     snackbarHostState: RepzSnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            RepzTopAppBar(onBackClick = onBackClick, backButtonModifier = Modifier.testTag("auth_back"))
-            LoginOfflineBanner(state.isOfflineBannerVisible)
+    Column(modifier = modifier.fillMaxSize()) {
+        RepzTopAppBar(onBackClick = onBackClick, backButtonModifier = Modifier.testTag("auth_back"))
+        LoginOfflineBanner(state.isOfflineBannerVisible)
 
-            Column(
-                modifier =
-                    Modifier
-                        .weight(1f)
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = RepzSpacing.xl, vertical = RepzSpacing.lg),
-                verticalArrangement = Arrangement.spacedBy(RepzSpacing.lg),
-            ) {
-                Text(stringResource(Res.string.login_title), style = MaterialTheme.typography.headlineLargeEmphasized)
-                LoginFields(state, onIntent, focusRequesters)
-            }
-
-            Column(
-                modifier =
-                    Modifier
-                        .padding(horizontal = RepzSpacing.xl)
-                        .imePadding()
-                        .navigationBarsPadding()
-                        .padding(bottom = RepzSpacing.xl),
-            ) {
-                RepzButton(
-                    stringResource(Res.string.auth_log_in),
-                    onClick = { onIntent(LoginIntent.SubmitClicked) },
-                    modifier = Modifier.fillMaxWidth().testTag("login_submit"),
-                    style = RepzButtonStyle.Filled,
-                    size = RepzButtonSize.Medium,
-                    isLoading = state.isSubmitting,
-                    loadingContentDescription = stringResource(Res.string.login_submitting),
-                )
-            }
+        Column(
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = RepzSpacing.xl, vertical = RepzSpacing.lg),
+            verticalArrangement = Arrangement.spacedBy(RepzSpacing.lg),
+        ) {
+            Text(stringResource(Res.string.login_title), style = MaterialTheme.typography.headlineLargeEmphasized)
+            LoginFields(state, onIntent, focusRequesters)
         }
 
-        RepzSnackbarHost(
-            state = snackbarHostState,
-            modifier = Modifier.align(Alignment.BottomCenter).imePadding().navigationBarsPadding(),
-        )
+        Column(
+            modifier =
+                Modifier
+                    .padding(horizontal = RepzSpacing.xl)
+                    .imePadding()
+                    .navigationBarsPadding()
+                    .padding(bottom = RepzSpacing.xl),
+            verticalArrangement = Arrangement.spacedBy(RepzSpacing.sm),
+        ) {
+            // Above the CTA, not overlaid on top of it (board 07): a shown snackbar pushes the
+            // button up instead of covering it.
+            RepzSnackbarHost(state = snackbarHostState, modifier = Modifier.fillMaxWidth())
+            RepzButton(
+                stringResource(Res.string.auth_log_in),
+                onClick = { onIntent(LoginIntent.SubmitClicked) },
+                modifier = Modifier.fillMaxWidth().testTag("login_submit"),
+                style = RepzButtonStyle.Filled,
+                size = RepzButtonSize.Medium,
+                isLoading = state.isSubmitting,
+                loadingContentDescription = stringResource(Res.string.login_submitting),
+            )
+        }
     }
 }
 

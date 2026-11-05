@@ -28,6 +28,13 @@ class RepzSnackbarHostState internal constructor(
         val result = delegate.showSnackbar(message = message, actionLabel = actionLabel)
         return result == SnackbarResult.ActionPerformed
     }
+
+    /** Dismisses the currently shown snackbar, if any, without waiting for its
+     * [showWithAction] call to return. Callers use this so a stale message (e.g. a previous
+     * error) never survives a fresh resubmit. */
+    fun dismissCurrent() {
+        delegate.currentSnackbarData?.dismiss()
+    }
 }
 
 @Composable
