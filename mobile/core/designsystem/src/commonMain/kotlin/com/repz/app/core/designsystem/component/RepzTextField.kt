@@ -21,6 +21,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -37,12 +40,10 @@ import org.jetbrains.compose.resources.stringResource
  * [androidx.compose.material3.OutlinedTextFieldDefaults.MinHeight]), `shapes.small` (8), 1 dp
  * `outline` / 2 dp focused `primary` / 2 dp error (M3 defaults, unchanged).
  *
- * [errorText] replaces [supportingText] with the error copy prefixed by a 16 dp error icon
- * (`RepzIconSize.inline`), appearing instantly and fading in over [RepzMotion.tweens.short]
- * (MOTION.md §1). [isError] alone (no [errorText]) draws the error outline without replacing the
- * supporting text, for a field whose error is shown elsewhere (e.g. the email field when
- * credentials are rejected on Login). [onFocusLoss] fires only after the field has gained focus at
- * least once.
+ * [isError] draws the error outline and M3's own generic `error(...)` TalkBack semantics; the error
+ * *message* is a separate concern, deliberately not this field's `supportingText` or any other
+ * parameter here: render a [RepzFieldError] below it instead (see its doc for why). [onFocusLoss]
+ * fires only after the field has gained focus at least once.
  */
 @Composable
 fun RepzTextField(
@@ -51,8 +52,7 @@ fun RepzTextField(
     label: String,
     modifier: Modifier = Modifier,
     supportingText: String? = null,
-    errorText: String? = null,
-    isError: Boolean = errorText != null,
+    isError: Boolean = false,
     enabled: Boolean = true,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
@@ -64,7 +64,6 @@ fun RepzTextField(
         label = label,
         modifier = modifier,
         supportingText = supportingText,
-        errorText = errorText,
         isError = isError,
         enabled = enabled,
         keyboardOptions = keyboardOptions,
@@ -86,8 +85,7 @@ fun RepzPasswordField(
     onPasswordVisibilityToggle: () -> Unit,
     modifier: Modifier = Modifier,
     supportingText: String? = null,
-    errorText: String? = null,
-    isError: Boolean = errorText != null,
+    isError: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     onFocusLoss: (() -> Unit)? = null,
@@ -98,7 +96,6 @@ fun RepzPasswordField(
         label = label,
         modifier = modifier,
         supportingText = supportingText,
-        errorText = errorText,
         isError = isError,
         enabled = true,
         keyboardOptions = keyboardOptions,
@@ -124,7 +121,6 @@ private fun RepzBaseTextField(
     onValueChange: (String) -> Unit,
     label: String,
     supportingText: String?,
-    errorText: String?,
     isError: Boolean,
     enabled: Boolean,
     keyboardOptions: KeyboardOptions,
@@ -135,7 +131,6 @@ private fun RepzBaseTextField(
     trailingIcon: (@Composable () -> Unit)?,
 ) {
     var wasFocused by remember { mutableStateOf(false) }
-    val supportingTextSlot: (@Composable () -> Unit)? = fieldSupportingTextSlot(supportingText, errorText)
 
     OutlinedTextField(
         value = value,
@@ -149,7 +144,7 @@ private fun RepzBaseTextField(
             },
         enabled = enabled,
         label = { Text(label) },
-        supportingText = supportingTextSlot,
+        supportingText = supportingText?.let { { Text(it) } },
         isError = isError,
         visualTransformation = visualTransformation,
         keyboardOptions = keyboardOptions,
@@ -160,36 +155,28 @@ private fun RepzBaseTextField(
     )
 }
 
-/** `errorText` replaces `supportingText` (animated, see [RepzFieldErrorText]); with neither, there is
- * no supporting-text slot at all. */
-private fun fieldSupportingTextSlot(
-    supportingText: String?,
-    errorText: String?,
-): (@Composable () -> Unit)? =
-    when {
-        errorText != null -> {
-            { RepzFieldErrorText(errorText) }
-        }
-
-        supportingText != null -> {
-            { Text(supportingText) }
-        }
-
-        else -> {
-            null
-        }
-    }
-
-/** The error row: icon + text, instant then fading in over [RepzMotion.tweens.short] (MOTION.md
- * §1). Keyed by [errorText] so a new error message restarts the fade. */
+/**
+ * A [RepzTextField]/[RepzPasswordField]'s error message (icon + text), placed by the caller
+ * directly below the field instead of passing it in as the field's own `supportingText`: M3's
+ * `OutlinedTextField` merges label/value/supportingText into one semantics node, and Compose
+ * Multiplatform's iOS bridge doesn't expose that merged supportingText while the field is
+ * non-blank, so a VoiceOver user would never hear it. As its own element here it is reachable on
+ * both platforms, and a polite live region announces it the moment it appears. Pair it with
+ * `isError = true` on the field above for the error outline and Android's own TalkBack
+ * announcement. Instant, then fades in over [RepzMotion.tweens.short] (MOTION.md §1); keyed by
+ * [text] so a new message restarts the fade.
+ */
 @Composable
-private fun RepzFieldErrorText(errorText: String) {
-    key(errorText) {
+fun RepzFieldError(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    key(text) {
         val alpha = remember { Animatable(0f) }
         val fadeInSpec = RepzMotion.tweens.short<Float>()
         LaunchedEffect(Unit) { alpha.animateTo(1f, fadeInSpec) }
         Row(
-            modifier = Modifier.alpha(alpha.value),
+            modifier = modifier.alpha(alpha.value).semantics { liveRegion = LiveRegionMode.Polite },
             horizontalArrangement = Arrangement.spacedBy(RepzSpacing.xs),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -199,7 +186,7 @@ private fun RepzFieldErrorText(errorText: String) {
                 modifier = Modifier.size(RepzIconSize.inline),
                 tint = MaterialTheme.colorScheme.error,
             )
-            Text(errorText)
+            Text(text, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
         }
     }
 }

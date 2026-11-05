@@ -32,6 +32,7 @@ import com.repz.app.core.designsystem.component.RepzBanner
 import com.repz.app.core.designsystem.component.RepzButton
 import com.repz.app.core.designsystem.component.RepzButtonSize
 import com.repz.app.core.designsystem.component.RepzButtonStyle
+import com.repz.app.core.designsystem.component.RepzFieldError
 import com.repz.app.core.designsystem.component.RepzIcon
 import com.repz.app.core.designsystem.component.RepzPasswordField
 import com.repz.app.core.designsystem.component.RepzSnackbarHost
@@ -145,55 +146,102 @@ private fun ColumnScope.RegisterFields(
     onIntent: (RegisterIntent) -> Unit,
     focusRequesters: Map<RegisterField, FocusRequester>,
 ) {
-    RepzTextField(
-        value = state.displayName,
-        onValueChange = { onIntent(RegisterIntent.DisplayNameChanged(it)) },
-        label = stringResource(Res.string.register_display_name_label),
-        errorText = state.displayNameError?.message(),
-        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Next),
-        keyboardActions = KeyboardActions(onNext = { focusRequesters.getValue(RegisterField.Email).requestFocus() }),
-        onFocusLoss = { onIntent(RegisterIntent.DisplayNameFocusLost) },
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequesters.getValue(RegisterField.DisplayName))
-                .testTag("register_display_name"),
-    )
+    RegisterDisplayNameField(state, onIntent, focusRequesters)
+    RegisterEmailField(state, onIntent, focusRequesters)
+    RegisterPasswordField(state, onIntent, focusRequesters)
+}
 
-    RepzTextField(
-        value = state.email,
-        onValueChange = { onIntent(RegisterIntent.EmailChanged(it)) },
-        label = stringResource(Res.string.auth_email_label),
-        errorText = state.emailError?.message(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next, autoCorrectEnabled = false),
-        keyboardActions = KeyboardActions(onNext = { focusRequesters.getValue(RegisterField.Password).requestFocus() }),
-        onFocusLoss = { onIntent(RegisterIntent.EmailFocusLost) },
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequesters.getValue(RegisterField.Email))
-                .semantics { contentType = ContentType.EmailAddress }
-                .testTag("register_email"),
-    )
+// A tight group per field (DESIGN_SYSTEM §9): the error message is its own element below the
+// field, not the field's `supportingText` (RepzFieldError's doc explains why), so each needs its
+// own small gap here instead of the outer fields column's normal item spacing.
 
-    RepzPasswordField(
-        value = state.password,
-        onValueChange = { onIntent(RegisterIntent.PasswordChanged(it)) },
-        label = stringResource(Res.string.auth_password_label),
-        isPasswordVisible = state.isPasswordVisible,
-        onPasswordVisibilityToggle = { onIntent(RegisterIntent.PasswordVisibilityToggled) },
-        supportingText = if (state.passwordError == null) registerPasswordHint() else null,
-        errorText = state.passwordError?.message(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(onDone = { onIntent(RegisterIntent.SubmitClicked) }),
-        onFocusLoss = { onIntent(RegisterIntent.PasswordFocusLost) },
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequesters.getValue(RegisterField.Password))
-                .semantics { contentType = ContentType.NewPassword }
-                .testTag("register_password"),
-    )
+@Composable
+private fun ColumnScope.RegisterDisplayNameField(
+    state: RegisterUiState,
+    onIntent: (RegisterIntent) -> Unit,
+    focusRequesters: Map<RegisterField, FocusRequester>,
+) {
+    val errorMessage = state.displayNameError?.message()
+    Column(verticalArrangement = Arrangement.spacedBy(RepzSpacing.xs)) {
+        RepzTextField(
+            value = state.displayName,
+            onValueChange = { onIntent(RegisterIntent.DisplayNameChanged(it)) },
+            label = stringResource(Res.string.register_display_name_label),
+            isError = errorMessage != null,
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(onNext = { focusRequesters.getValue(RegisterField.Email).requestFocus() }),
+            onFocusLoss = { onIntent(RegisterIntent.DisplayNameFocusLost) },
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequesters.getValue(RegisterField.DisplayName))
+                    .testTag("register_display_name"),
+        )
+        if (errorMessage != null) {
+            RepzFieldError(errorMessage, modifier = Modifier.padding(start = RepzSpacing.lg))
+        }
+    }
+}
+
+@Composable
+private fun ColumnScope.RegisterEmailField(
+    state: RegisterUiState,
+    onIntent: (RegisterIntent) -> Unit,
+    focusRequesters: Map<RegisterField, FocusRequester>,
+) {
+    val errorMessage = state.emailError?.message()
+    Column(verticalArrangement = Arrangement.spacedBy(RepzSpacing.xs)) {
+        RepzTextField(
+            value = state.email,
+            onValueChange = { onIntent(RegisterIntent.EmailChanged(it)) },
+            label = stringResource(Res.string.auth_email_label),
+            isError = errorMessage != null,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next, autoCorrectEnabled = false),
+            keyboardActions = KeyboardActions(onNext = { focusRequesters.getValue(RegisterField.Password).requestFocus() }),
+            onFocusLoss = { onIntent(RegisterIntent.EmailFocusLost) },
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequesters.getValue(RegisterField.Email))
+                    .semantics { contentType = ContentType.EmailAddress }
+                    .testTag("register_email"),
+        )
+        if (errorMessage != null) {
+            RepzFieldError(errorMessage, modifier = Modifier.padding(start = RepzSpacing.lg))
+        }
+    }
+}
+
+@Composable
+private fun ColumnScope.RegisterPasswordField(
+    state: RegisterUiState,
+    onIntent: (RegisterIntent) -> Unit,
+    focusRequesters: Map<RegisterField, FocusRequester>,
+) {
+    val errorMessage = state.passwordError?.message()
+    Column(verticalArrangement = Arrangement.spacedBy(RepzSpacing.xs)) {
+        RepzPasswordField(
+            value = state.password,
+            onValueChange = { onIntent(RegisterIntent.PasswordChanged(it)) },
+            label = stringResource(Res.string.auth_password_label),
+            isPasswordVisible = state.isPasswordVisible,
+            onPasswordVisibilityToggle = { onIntent(RegisterIntent.PasswordVisibilityToggled) },
+            supportingText = if (errorMessage == null) registerPasswordHint() else null,
+            isError = errorMessage != null,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = { onIntent(RegisterIntent.SubmitClicked) }),
+            onFocusLoss = { onIntent(RegisterIntent.PasswordFocusLost) },
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequesters.getValue(RegisterField.Password))
+                    .semantics { contentType = ContentType.NewPassword }
+                    .testTag("register_password"),
+        )
+        if (errorMessage != null) {
+            RepzFieldError(errorMessage, modifier = Modifier.padding(start = RepzSpacing.lg))
+        }
+    }
 }
 
 @Composable

@@ -31,6 +31,7 @@ import com.repz.app.core.designsystem.component.RepzBanner
 import com.repz.app.core.designsystem.component.RepzButton
 import com.repz.app.core.designsystem.component.RepzButtonSize
 import com.repz.app.core.designsystem.component.RepzButtonStyle
+import com.repz.app.core.designsystem.component.RepzFieldError
 import com.repz.app.core.designsystem.component.RepzIcon
 import com.repz.app.core.designsystem.component.RepzPasswordField
 import com.repz.app.core.designsystem.component.RepzSnackbarHost
@@ -135,43 +136,56 @@ private fun ColumnScope.LoginFields(
     onIntent: (LoginIntent) -> Unit,
     focusRequesters: Map<LoginField, FocusRequester>,
 ) {
-    RepzTextField(
-        value = state.email,
-        onValueChange = { onIntent(LoginIntent.EmailChanged(it)) },
-        label = stringResource(Res.string.auth_email_label),
-        isError = state.emailError != null || state.areCredentialsRejected,
-        errorText = state.emailError?.message(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next, autoCorrectEnabled = false),
-        keyboardActions = KeyboardActions(onNext = { focusRequesters.getValue(LoginField.Password).requestFocus() }),
-        onFocusLoss = { onIntent(LoginIntent.EmailFocusLost) },
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequesters.getValue(LoginField.Email))
-                .semantics { contentType = ContentType.Username }
-                .testTag("login_email"),
-    )
+    // A tight group per field (DESIGN_SYSTEM §9): the error message is its own element below the
+    // field, not the field's `supportingText` (RepzFieldError's doc explains why), so it needs its
+    // own small gap here instead of the outer fields column's normal item spacing.
+    val emailErrorMessage = state.emailError?.message()
+    Column(verticalArrangement = Arrangement.spacedBy(RepzSpacing.xs)) {
+        RepzTextField(
+            value = state.email,
+            onValueChange = { onIntent(LoginIntent.EmailChanged(it)) },
+            label = stringResource(Res.string.auth_email_label),
+            isError = state.emailError != null || state.areCredentialsRejected,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next, autoCorrectEnabled = false),
+            keyboardActions = KeyboardActions(onNext = { focusRequesters.getValue(LoginField.Password).requestFocus() }),
+            onFocusLoss = { onIntent(LoginIntent.EmailFocusLost) },
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequesters.getValue(LoginField.Email))
+                    .semantics { contentType = ContentType.Username }
+                    .testTag("login_email"),
+        )
+        if (emailErrorMessage != null) {
+            RepzFieldError(emailErrorMessage, modifier = Modifier.padding(start = RepzSpacing.lg))
+        }
+    }
 
-    RepzPasswordField(
-        value = state.password,
-        onValueChange = { onIntent(LoginIntent.PasswordChanged(it)) },
-        label = stringResource(Res.string.auth_password_label),
-        isPasswordVisible = state.isPasswordVisible,
-        onPasswordVisibilityToggle = { onIntent(LoginIntent.PasswordVisibilityToggled) },
-        isError = state.passwordError != null || state.areCredentialsRejected,
-        errorText =
-            state.passwordError?.message()
-                ?: if (state.areCredentialsRejected) stringResource(Res.string.login_invalid_credentials) else null,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(onDone = { onIntent(LoginIntent.SubmitClicked) }),
-        onFocusLoss = { onIntent(LoginIntent.PasswordFocusLost) },
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequesters.getValue(LoginField.Password))
-                .semantics { contentType = ContentType.Password }
-                .testTag("login_password"),
-    )
+    val passwordErrorMessage =
+        state.passwordError?.message()
+            ?: if (state.areCredentialsRejected) stringResource(Res.string.login_invalid_credentials) else null
+    Column(verticalArrangement = Arrangement.spacedBy(RepzSpacing.xs)) {
+        RepzPasswordField(
+            value = state.password,
+            onValueChange = { onIntent(LoginIntent.PasswordChanged(it)) },
+            label = stringResource(Res.string.auth_password_label),
+            isPasswordVisible = state.isPasswordVisible,
+            onPasswordVisibilityToggle = { onIntent(LoginIntent.PasswordVisibilityToggled) },
+            isError = state.passwordError != null || state.areCredentialsRejected,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = { onIntent(LoginIntent.SubmitClicked) }),
+            onFocusLoss = { onIntent(LoginIntent.PasswordFocusLost) },
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequesters.getValue(LoginField.Password))
+                    .semantics { contentType = ContentType.Password }
+                    .testTag("login_password"),
+        )
+        if (passwordErrorMessage != null) {
+            RepzFieldError(passwordErrorMessage, modifier = Modifier.padding(start = RepzSpacing.lg))
+        }
+    }
 }
 
 @Composable
