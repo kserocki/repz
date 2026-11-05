@@ -8,8 +8,7 @@ import com.repz.app.core.domain.result.DomainResult
 
 /**
  * Registration and login against the API. On success the session is started (persisted where
- * possible) and the session state becomes signed in. Logging out is not here: it wipes the local
- * database and is a separate, later concern.
+ * possible) and the session state becomes signed in.
  */
 interface AuthRepository {
     suspend fun register(
@@ -22,4 +21,7 @@ interface AuthRepository {
         email: EmailAddress,
         password: Password,
     ): DomainResult<User, AuthError>
+
+    /** Ends the session on this device at once, offline too; the server-side revoke is best effort. */
+    suspend fun logOut()
 }

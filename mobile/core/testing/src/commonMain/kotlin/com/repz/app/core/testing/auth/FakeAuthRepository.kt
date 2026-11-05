@@ -20,12 +20,16 @@ class FakeAuthRepository(
 ) : AuthRepository {
     var logInGate: CompletableDeferred<Unit>? = null
     var registerGate: CompletableDeferred<Unit>? = null
+    var logOutGate: CompletableDeferred<Unit>? = null
 
     private val mutableLogInCalls = mutableListOf<Pair<EmailAddress, Password>>()
     val logInCalls: List<Pair<EmailAddress, Password>> get() = mutableLogInCalls
 
     private val mutableRegisterCalls = mutableListOf<Triple<EmailAddress, Password, DisplayName>>()
     val registerCalls: List<Triple<EmailAddress, Password, DisplayName>> get() = mutableRegisterCalls
+
+    var logOutCallCount: Int = 0
+        private set
 
     override suspend fun register(
         email: EmailAddress,
@@ -44,5 +48,10 @@ class FakeAuthRepository(
         mutableLogInCalls += email to password
         logInGate?.await()
         return logInResult
+    }
+
+    override suspend fun logOut() {
+        logOutCallCount++
+        logOutGate?.await()
     }
 }
