@@ -29,6 +29,7 @@ final class AuthFlowUITests: XCTestCase {
     /// signed in without showing any auth screen).
     func testRegisterThenRelaunchStaysSignedIn() throws {
         app.launch()
+        waitForWelcomeReady()
         attach("welcome-page-1")
 
         let email = registerNewAccount()
@@ -54,6 +55,7 @@ final class AuthFlowUITests: XCTestCase {
     func testLogOutThenLogBackIn() throws {
         let password = "correct-horse-battery"
         app.launch()
+        waitForWelcomeReady()
         attach("welcome-page-1")
 
         let email = registerNewAccount(password: password)
@@ -93,6 +95,7 @@ final class AuthFlowUITests: XCTestCase {
         )
         attach("welcome-after-relaunch")
 
+        waitForWelcomeReady()
         element(identifier: "welcome_log_in").tap()
         let loginEmail = element(identifier: "login_email")
         XCTAssertTrue(loginEmail.waitForExistence(timeout: 5), "login_email not found")
@@ -119,6 +122,7 @@ final class AuthFlowUITests: XCTestCase {
     func testProfileInPolish() throws {
         app.launchArguments += ["-AppleLanguages", "(pl)", "-AppleLocale", "pl_PL"]
         app.launch()
+        waitForWelcomeReady()
         attach("welcome-page-1-pl")
 
         registerNewAccount(signedInTabLabel: "Trening")
@@ -137,6 +141,7 @@ final class AuthFlowUITests: XCTestCase {
     /// test does not, since it only needs a signed-out Welcome screen, not a clean install).
     func testWrongPasswordShowsError() throws {
         app.launch()
+        waitForWelcomeReady()
         attach("welcome-page-1")
 
         element(identifier: "welcome_log_in").tap()
@@ -202,6 +207,21 @@ final class AuthFlowUITests: XCTestCase {
             "Did not land on the signed-in shell after registering"
         )
         return email
+    }
+
+    /// Waits out the MOT-01 launch hand-off (bar -> plates -> crossfade, REP-21) before the first
+    /// interaction with Welcome. The hand-off overlay sits on top of Welcome, consumes every touch
+    /// and hides Welcome from accessibility until it finishes; a tap landing during it only skips
+    /// the animation instead of reaching Welcome underneath. `welcome_log_in` lives outside the
+    /// pager and is present on all 3 Welcome pages, so it is a reliable "Welcome is interactive"
+    /// signal regardless of which page is current; waiting for it to both exist and be hittable
+    /// (not just exist) is what catches the hand-off still intercepting touches.
+    private func waitForWelcomeReady(timeout: TimeInterval = 10) {
+        let cta = element(identifier: "welcome_log_in")
+        let isReady = NSPredicate(format: "exists == true AND isHittable == true")
+        let expectation = XCTNSPredicateExpectation(predicate: isReady, object: cta)
+        let result = XCTWaiter().wait(for: [expectation], timeout: timeout)
+        XCTAssertEqual(result, .completed, "Welcome was not interactive (launch hand-off never finished) within \(timeout)s")
     }
 
     private var trainTab: XCUIElement { element(label: "Train") }
