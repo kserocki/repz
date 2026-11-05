@@ -36,7 +36,9 @@ import com.repz.app.core.designsystem.motion.RepzDurations
 import com.repz.app.core.designsystem.motion.RepzMotion
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
@@ -61,6 +63,10 @@ private val PostWordmarkHold = 300.milliseconds
  * frame — [playback] itself never changes, so a second recomposition does not replay it: the caller
  * owns the phase).
  *
+ * [skipRequests] lets a caller that wraps this in its own full-window touch layer (e.g. the launch
+ * hand-off, whose tap-to-skip must work anywhere on the layer, not only over this composable's own
+ * bounds) forward a tap in here too; this composable's own tap area keeps working standalone.
+ *
  * Reduced motion ([LocalReducedMotion]): the symbol stays assembled from the first frame, only the
  * wordmark fades in, over [RepzDurations.reducedMotionFade] — brand/LOGO.md §5's "Reduced motion:
  * static logo, 150 ms fade".
@@ -72,6 +78,7 @@ fun RepzLaunchLogo(
     modifier: Modifier = Modifier,
     color: Color = RepzLogoDefaults.color(),
     symbolWidth: Dp = RepzLogoDefaults.SplashSymbolWidth,
+    skipRequests: Flow<Unit> = emptyFlow(),
 ) {
     val reducedMotion = LocalReducedMotion.current
     val haptics = RepzHaptics.current
@@ -94,6 +101,10 @@ fun RepzLaunchLogo(
 
     LaunchedEffect(playback) {
         playLaunchLogo(playback, reducedMotion, runtime, specs, onFinish = { currentOnFinish() })
+    }
+
+    LaunchedEffect(skipRequests) {
+        skipRequests.collect { tapRequests.tryEmit(Unit) }
     }
 
     val tapModifier =

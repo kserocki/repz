@@ -10,6 +10,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.hideFromAccessibility
+import androidx.compose.ui.semantics.semantics
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.repz.app.core.navigation.Navigator
 import com.repz.app.core.navigation.rememberNavigator
@@ -71,9 +73,18 @@ internal fun RepzAppShell(
             )
     }
 
+    // The launch layer is visually opaque in every phase except FadingOut (and it is never
+    // composed at all once Done): whatever is revealed below must stay unreachable by
+    // TalkBack/VoiceOver until the crossfade actually starts to reveal it, matching the touch
+    // blocking LaunchHandoff itself does for the same window.
+    val isLaunchLayerOpaque = phase != LaunchHandoffPhase.Done && phase != LaunchHandoffPhase.FadingOut
+    val hiddenWhileOpaqueModifier = if (isLaunchLayerOpaque) Modifier.semantics { hideFromAccessibility() } else Modifier
+
     Box(modifier = modifier) {
         if (isNavigatorSynced) {
-            SignedInAppShellScaffold(navigator)
+            Box(modifier = hiddenWhileOpaqueModifier) {
+                SignedInAppShellScaffold(navigator)
+            }
         } else if (phase == LaunchHandoffPhase.Done) {
             // A later in-process session change (sign-out/sign-in) desynced the navigator for one
             // frame (ADR-0025's guard) while the session was already known, so phase stays `Done`
