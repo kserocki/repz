@@ -16,7 +16,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="402" height="874"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LaunchSymbol" translatesAutoresizingMaskIntoConstraints="NO" id="QLs-8M-7v9">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LaunchBar" translatesAutoresizingMaskIntoConstraints="NO" id="QLs-8M-7v9">
                                 <rect key="frame" x="123.16" y="398.08" width="155.68" height="77.84"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="155.68" id="b3C-wn-6gP"/>
@@ -38,7 +38,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="LaunchSymbol" width="155.68" height="77.84"/>
+        <image name="LaunchBar" width="155.68" height="77.84"/>
         <namedColor name="LaunchBackground">
             <color red="0.96078431372549022" green="0.98039215686274506" blue="0.98431372549019602" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

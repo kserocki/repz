@@ -39,6 +39,8 @@ jobs:
               - 'brand/**'
               - 'mobile/app/android/src/main/res/**'
               - 'mobile/iosApp/**'
+              - 'mobile/core/designsystem/src/commonMain/kotlin/com/repz/app/core/designsystem/logo/RepzLogoGeometry.kt'
+              - 'mobile/core/designsystem/src/commonMain/composeResources/drawable/logo_wordmark.xml'
               - '.github/workflows/mobile.yml'
 
   android:
@@ -155,6 +157,7 @@ jobs:
       - name: Regenerate brand assets
         run: |
           python3 brand/logo/src/android_vectors.py
+          python3 brand/logo/src/compose_logo.py
           mobile/iosApp/scripts/sync-brand-assets.sh
 
       - name: Fail if regeneration is not a no-op

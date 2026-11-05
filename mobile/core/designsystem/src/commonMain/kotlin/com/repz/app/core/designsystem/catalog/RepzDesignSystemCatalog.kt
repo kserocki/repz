@@ -57,6 +57,8 @@ fun RepzDesignSystemCatalog(
             RepzCatalogPage.Haptics -> HapticsCatalogPage()
             RepzCatalogPage.ComponentsActions -> ComponentsActionsCatalogPage()
             RepzCatalogPage.ComponentsInputs -> ComponentsInputsCatalogPage()
+            RepzCatalogPage.Logo -> LogoCatalogPage()
+            RepzCatalogPage.LogoLoader -> LogoLoaderCatalogPage()
         }
     }
 }
