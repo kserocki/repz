@@ -14,6 +14,7 @@ private fun labelFor(style: RepzButtonStyle) =
         RepzButtonStyle.Filled -> "Add set"
         RepzButtonStyle.Outlined -> "Keep training"
         RepzButtonStyle.Text -> "See all"
+        RepzButtonStyle.Hero -> "Create account"
     }
 
 /** One row per style, each showing small/medium, disabled and loading, so every state in
