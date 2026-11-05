@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="designsystem_back">Wstecz</string>
+    <string name="designsystem_show_password">Pokaż hasło</string>
+    <string name="designsystem_hide_password">Ukryj hasło</string>
+</resources>
