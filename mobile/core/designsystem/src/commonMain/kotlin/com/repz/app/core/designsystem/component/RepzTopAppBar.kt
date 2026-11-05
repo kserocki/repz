@@ -17,11 +17,16 @@ import org.jetbrains.compose.resources.stringResource
  * The small top app bar (DESIGN_SYSTEM §6/§9, board 07): height 64, `surface` container, `titleLarge`
  * title (M3's own default for a small [TopAppBar]), status-bar insets applied (M3's default
  * [TopAppBarDefaults.windowInsets]). `onBackClick == null` omits the navigation icon entirely.
+ *
+ * [backButtonModifier] reaches the back button itself (e.g. a feature's `Modifier.testTag(...)`),
+ * since [modifier] lands on the whole bar and a tag there would report the full-width bar's bounds
+ * to UiAutomator/XCUITest instead of the small tappable icon.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RepzTopAppBar(
     modifier: Modifier = Modifier,
+    backButtonModifier: Modifier = Modifier,
     title: String? = null,
     onBackClick: (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
@@ -31,7 +36,7 @@ fun RepzTopAppBar(
         modifier = modifier,
         navigationIcon = {
             if (onBackClick != null) {
-                IconButton(onClick = onBackClick) {
+                IconButton(onClick = onBackClick, modifier = backButtonModifier) {
                     RepzIcon(icon = RepzIcon.ArrowBack, contentDescription = stringResource(Res.string.designsystem_back))
                 }
             }
