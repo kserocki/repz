@@ -5,7 +5,7 @@
     <string name="welcome_page_log_sets_body">Twoje ostatnie wyniki są już wpisane. Dotknij gotowe, odpocznij, powtórz.</string>
     <string name="welcome_page_works_offline_title">Działa offline</string>
     <string name="welcome_page_works_offline_body">Zapisuj serie bez połączenia z siecią. Repz zsynchronizuje się, gdy wrócisz online.</string>
-    <string name="welcome_page_progress_title">Śledź postępy i rekordy</string>
+    <string name="welcome_page_progress_title">Śledź swoje rekordy</string>
     <string name="welcome_page_progress_body">Wykresy i rekordy życiowe aktualizują się po każdym treningu.</string>
     <string name="welcome_page_indicator">Strona %1$d z %2$d</string>
 
