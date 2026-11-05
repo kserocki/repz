@@ -9,6 +9,8 @@ import com.repz.app.core.designsystem.generated.resources.Res
 import com.repz.app.core.designsystem.generated.resources.symbol_arrow_back
 import com.repz.app.core.designsystem.generated.resources.symbol_cloud_off
 import com.repz.app.core.designsystem.generated.resources.symbol_error
+import com.repz.app.core.designsystem.generated.resources.symbol_fitness_center
+import com.repz.app.core.designsystem.generated.resources.symbol_trophy
 import com.repz.app.core.designsystem.generated.resources.symbol_logout
 import com.repz.app.core.designsystem.generated.resources.symbol_visibility
 import com.repz.app.core.designsystem.generated.resources.symbol_visibility_off
@@ -16,13 +18,16 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
 /** The auth subset of Material Symbols Rounded (DESIGN_SYSTEM §8); the 4 nav-bar icons ship
- * separately and the remaining icon set arrives later. */
+ * separately and the remaining icon set arrives later. [FitnessCenter] and [Trophy] double as
+ * Welcome's backdrop placeholder icons until its live illustrations ship. */
 enum class RepzIcon {
     ArrowBack,
     Visibility,
     VisibilityOff,
     Error,
     CloudOff,
+    FitnessCenter,
+    Trophy,
     Logout,
 }
 
@@ -52,5 +57,7 @@ private val RepzIcon.drawableResource: DrawableResource
             RepzIcon.VisibilityOff -> Res.drawable.symbol_visibility_off
             RepzIcon.Error -> Res.drawable.symbol_error
             RepzIcon.CloudOff -> Res.drawable.symbol_cloud_off
+            RepzIcon.FitnessCenter -> Res.drawable.symbol_fitness_center
+            RepzIcon.Trophy -> Res.drawable.symbol_trophy
             RepzIcon.Logout -> Res.drawable.symbol_logout
         }

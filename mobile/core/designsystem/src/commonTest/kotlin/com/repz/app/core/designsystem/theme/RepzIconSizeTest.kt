@@ -11,5 +11,6 @@ class RepzIconSizeTest {
         assertEquals(24.dp, RepzIconSize.default)
         assertEquals(28.dp, RepzIconSize.navBar)
         assertEquals(16.dp, RepzIconSize.inline)
+        assertEquals(64.dp, RepzIconSize.illustration)
     }
 }

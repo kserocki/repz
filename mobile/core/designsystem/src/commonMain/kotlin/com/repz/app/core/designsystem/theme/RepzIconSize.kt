@@ -12,4 +12,8 @@ object RepzIconSize {
 
     /** The error icon inlined in a field's error text; not yet in DESIGN_SYSTEM §8's table. */
     val inline: Dp = 16.dp
+
+    /** The large placeholder icon centred in an illustration backdrop (e.g. Welcome) until the live
+     * illustration ships; not yet in DESIGN_SYSTEM §8's table. */
+    val illustration: Dp = 64.dp
 }

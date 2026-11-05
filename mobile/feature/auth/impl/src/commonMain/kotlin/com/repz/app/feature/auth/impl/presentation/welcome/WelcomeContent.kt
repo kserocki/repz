@@ -30,7 +30,9 @@ import androidx.compose.ui.text.style.TextAlign
 import com.repz.app.core.designsystem.component.RepzButton
 import com.repz.app.core.designsystem.component.RepzButtonSize
 import com.repz.app.core.designsystem.component.RepzButtonStyle
+import com.repz.app.core.designsystem.component.RepzIcon
 import com.repz.app.core.designsystem.component.RepzPageIndicator
+import com.repz.app.core.designsystem.theme.RepzIconSize
 import com.repz.app.core.designsystem.theme.RepzShapes
 import com.repz.app.core.designsystem.theme.RepzSpacing
 import com.repz.app.feature.auth.impl.generated.resources.Res
@@ -47,11 +49,12 @@ import com.repz.app.feature.auth.impl.generated.resources.welcome_skip
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
-// Q1: the page-1 backdrop shape on every page, no live illustration content. Shape/colour per
-// Muse's board-07 measurement vs. DESIGN_SYSTEM §5 check (2026-11-05): using the documented
-// "illustration backdrop" accent (cookie4Sided) and the plan's surfaceContainerHigh; flagged as a
-// question (board 07's path measures as a 9-lobed cookie on a different container colour) for
-// confirmation.
+// User decision 2026-11-05: board 07's backdrop measures as a 9-lobed cookie
+// (RepzShapes.cookie9Sided) on `surfaceContainer`, not the documented illustration-backdrop
+// default of cookie4Sided/surfaceContainerHigh (DESIGN_SYSTEM §13) — board 07 draws its other
+// illustration backdrops (board 12) on surfaceContainerHigh, so the lower elevation here reads as
+// deliberate for this full-bleed, non-card placement. A single large Material Symbols Rounded icon
+// stands in for the live per-page illustration until that ships.
 private const val BACKDROP_WIDTH_FRACTION = 0.8f
 
 // Capped by height as well as width: on a taller phone, width is always the binding constraint and
@@ -118,7 +121,7 @@ fun WelcomeContent(
                 stringResource(Res.string.auth_create_account),
                 onClick = { onIntent(WelcomeIntent.CreateAccountClicked) },
                 modifier = Modifier.fillMaxWidth().testTag("welcome_create_account"),
-                style = RepzButtonStyle.Filled,
+                style = RepzButtonStyle.Hero,
                 size = RepzButtonSize.Medium,
             )
             RepzButton(
@@ -144,6 +147,12 @@ private fun WelcomePageBody(
             WelcomePage.WorksOffline -> Res.string.welcome_page_works_offline_title to Res.string.welcome_page_works_offline_body
             WelcomePage.Progress -> Res.string.welcome_page_progress_title to Res.string.welcome_page_progress_body
         }
+    val placeholderIcon =
+        when (page) {
+            WelcomePage.LogSets -> RepzIcon.FitnessCenter
+            WelcomePage.WorksOffline -> RepzIcon.CloudOff
+            WelcomePage.Progress -> RepzIcon.Trophy
+        }
 
     BoxWithConstraints(modifier = modifier) {
         val backdropSize = minOf(maxWidth * BACKDROP_WIDTH_FRACTION, maxHeight * BACKDROP_MAX_HEIGHT_FRACTION)
@@ -161,9 +170,17 @@ private fun WelcomePageBody(
                 modifier =
                     Modifier
                         .size(backdropSize)
-                        .background(color = MaterialTheme.colorScheme.surfaceContainerHigh, shape = RepzShapes.cookie4Sided.toShape())
+                        .background(color = MaterialTheme.colorScheme.surfaceContainer, shape = RepzShapes.cookie9Sided.toShape())
                         .clearAndSetSemantics {},
-            )
+                contentAlignment = Alignment.Center,
+            ) {
+                RepzIcon(
+                    icon = placeholderIcon,
+                    contentDescription = null,
+                    modifier = Modifier.size(RepzIconSize.illustration),
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+            }
             Text(
                 stringResource(titleRes),
                 modifier = Modifier.padding(top = RepzSpacing.xl),
