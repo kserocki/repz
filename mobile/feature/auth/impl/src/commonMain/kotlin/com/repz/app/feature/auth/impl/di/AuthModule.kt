@@ -16,10 +16,4 @@ class AuthModule {
 
     @Factory
     fun registerUseCase(authRepository: AuthRepository): RegisterUseCase = RegisterUseCase(authRepository)
-
-    @KoinViewModel
-    fun loginViewModel(logIn: LogInUseCase): LoginViewModel = LoginViewModel(logIn)
-
-    @KoinViewModel
-    fun registerViewModel(register: RegisterUseCase): RegisterViewModel = RegisterViewModel(register)
 }

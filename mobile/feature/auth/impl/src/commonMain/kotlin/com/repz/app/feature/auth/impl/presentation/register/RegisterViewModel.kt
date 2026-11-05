@@ -22,11 +22,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.core.annotation.KoinViewModel
 
 /**
  * On a successful registration [RegisterUiState.isSubmitting] stays `true`: navigation to the
  * signed-in shell is driven by the session, not by this ViewModel (ADR-0025).
  */
+@KoinViewModel
 class RegisterViewModel(
     private val register: RegisterUseCase,
 ) : ViewModel() {
