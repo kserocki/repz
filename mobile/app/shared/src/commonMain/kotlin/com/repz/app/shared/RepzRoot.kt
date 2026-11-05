@@ -15,9 +15,10 @@ import com.repz.app.shared.shell.RepzAppShell
  * [catalogDynamicColor]. The platform shells read this from a debug-only intent extra / launch
  * argument and pass null in release builds, so the normal path below is unchanged.
  *
- * [catalogReducedMotion] is a second debug-only hook, forwarded as [RepzTheme]'s `reducedMotion`:
- * `null` (the default) follows the live platform setting, `true`/`false` forces it. It only ever
- * reaches [RepzTheme] when the catalog is showing, so the normal launch path is unaffected.
+ * [debugReducedMotion] is a second debug-only hook, forwarded as [RepzTheme]'s `reducedMotion` on
+ * both paths: `null` (the default) follows the live platform setting, `true`/`false` forces it.
+ * The debug catalog uses it to pin a page's motion state for inspection; the app path uses it so
+ * Spotter can force reduced motion on the launch hand-off without a device setting.
  *
  * [debugSignedIn] is a third debug-only hook (ADR-0025): `true` makes the auth gate
  * ([com.repz.app.shared.shell.AuthGate]) treat the session as signed in without any stored
@@ -29,16 +30,16 @@ fun RepzRoot(
     modifier: Modifier = Modifier,
     catalogPageKey: String? = null,
     catalogDynamicColor: Boolean = false,
-    catalogReducedMotion: Boolean? = null,
+    debugReducedMotion: Boolean? = null,
     debugSignedIn: Boolean = false,
 ) {
     val catalogPage = RepzCatalogPage.fromKey(catalogPageKey)
     if (catalogPage != null) {
-        RepzTheme(dynamicColor = catalogDynamicColor, reducedMotion = catalogReducedMotion) {
+        RepzTheme(dynamicColor = catalogDynamicColor, reducedMotion = debugReducedMotion) {
             RepzDesignSystemCatalog(page = catalogPage, modifier = modifier)
         }
     } else {
-        RepzTheme {
+        RepzTheme(reducedMotion = debugReducedMotion) {
             RepzAppShell(debugSignedIn = debugSignedIn, modifier = modifier)
         }
     }
