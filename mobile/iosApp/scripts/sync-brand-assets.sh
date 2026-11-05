@@ -14,6 +14,7 @@ assets_dir="${ios_app_dir}/iosApp/Assets.xcassets"
 
 app_icon_set="${assets_dir}/AppIcon.appiconset"
 launch_symbol_set="${assets_dir}/LaunchSymbol.imageset"
+launch_bar_set="${assets_dir}/LaunchBar.imageset"
 
 cp "${brand_app_icon_dir}/ios-light-1024.png" "${app_icon_set}/ios-light-1024.png"
 cp "${brand_app_icon_dir}/ios-dark-1024.png" "${app_icon_set}/ios-dark-1024.png"
@@ -21,5 +22,8 @@ cp "${brand_app_icon_dir}/ios-tinted-1024.png" "${app_icon_set}/ios-tinted-1024.
 
 cp "${brand_color_dir}/symbol-deep.svg" "${launch_symbol_set}/symbol-deep.svg"
 cp "${brand_color_dir}/symbol-cyan.svg" "${launch_symbol_set}/symbol-cyan.svg"
+
+cp "${brand_color_dir}/symbol-bar-deep.svg" "${launch_bar_set}/symbol-bar-deep.svg"
+cp "${brand_color_dir}/symbol-bar-cyan.svg" "${launch_bar_set}/symbol-bar-cyan.svg"
 
 echo "Synced brand assets into ${assets_dir#"${repo_root}"/}"
