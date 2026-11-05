@@ -27,6 +27,8 @@ enum class RepzCatalogPage(
     Haptics("haptics"),
     ComponentsActions("components-actions"),
     ComponentsInputs("components-inputs"),
+    Logo("logo"),
+    LogoLoader("logo-loader"),
     ;
 
     companion object {

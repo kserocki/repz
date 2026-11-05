@@ -16,4 +16,5 @@ internal object CatalogSpecimens {
 
     const val HAPTICS_ENABLED_LABEL = "Haptics enabled"
     const val PLAY_ALL_LABEL = "Play all"
+    const val LOADER_DESCRIPTION = "Loading"
 }
