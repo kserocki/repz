@@ -1,5 +1,6 @@
 package com.repz.app.shared.shell
 
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,7 +50,10 @@ internal fun RepzAppShell(
             onDestinationClick = navigator::selectTopLevel,
             modifier = modifier,
         ) { paddingValues ->
-            RepzNavDisplay(navigator = navigator, modifier = Modifier.padding(paddingValues))
+            RepzNavDisplay(
+                navigator = navigator,
+                modifier = Modifier.padding(paddingValues).consumeWindowInsets(paddingValues),
+            )
         }
     }
 }

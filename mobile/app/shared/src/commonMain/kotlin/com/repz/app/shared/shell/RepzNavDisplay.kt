@@ -27,7 +27,7 @@ internal fun RepzNavDisplay(
     navigator: Navigator,
     modifier: Modifier = Modifier,
 ) {
-    val provider = remember { stackScoped(entryProvider { repzEntries() }) }
+    val provider = remember(navigator) { stackScoped(entryProvider { repzEntries(navigator) }) }
 
     val sessionEpoch = navigator.sessionEpoch
 

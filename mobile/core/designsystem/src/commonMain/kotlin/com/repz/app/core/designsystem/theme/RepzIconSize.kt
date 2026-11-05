@@ -9,4 +9,7 @@ object RepzIconSize {
     val dense: Dp = 20.dp
     val default: Dp = 24.dp
     val navBar: Dp = 28.dp
+
+    /** The error icon inlined in a field's error text; not yet in DESIGN_SYSTEM §8's table. */
+    val inline: Dp = 16.dp
 }

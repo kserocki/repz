@@ -285,10 +285,11 @@ Shadows are only for things floating under the finger (FAB, dragged item, rest p
 
 - **Material Symbols Rounded**, opsz 24, wght 400, grade 0 (dark theme grade −25).
 - FILL 0 by default. FILL 1 for: selected nav item, active toggle, completed state, PR trophy.
-- Sizes: 20 dp in dense rows, 24 dp default, 28 dp in the nav bar — `RepzIconSize` (`core:designsystem`) holds the three as `dense`/`default`/`navBar`; a feature never hard-codes an icon size.
+- Sizes: 20 dp in dense rows, 24 dp default, 28 dp in the nav bar, 16 dp inline in a field's error text — `RepzIconSize` (`core:designsystem`) holds the four as `dense`/`default`/`navBar`/`inline`; a feature never hard-codes an icon size.
 - Custom equipment icons (24 dp, stroke): Barbell, Dumbbell, Kettlebell, Machine, Cable, Bodyweight, Band, Other. Path data is on board 03.
 - Set types: W / 1·2·3 / D / F letter badges. PR: `trophy`, `workspace_premium`. Sync: `cloud_done`, `cloud_sync`, `cloud_upload`, `cloud_off`, `sync_problem`.
 - **Landed (REP-28):** the 4 `RepzNavigationBar` icons (Train/`fitness_center`, History/`history`, Exercises/`exercise`, Profile/`person`, each with its FILL-1 `_filled` variant) as Material Symbols Rounded drawables in `core:designsystem`'s `composeResources/drawable/`, under the Apache License 2.0 (`composeResources/files/licenses/material_symbols_apache2.txt`). `core:designsystem`'s `build.gradle.kts` sets `publicResClass = true`, so its generated resources class is visible to other modules (`app:shared` references `DesignSystemRes.drawable.symbol_*`), not only within `core:designsystem` itself. The remaining icon set lands with REP-72.
+- **Landed (REP-30/REP-82):** 5 more Material Symbols Rounded drawables for the auth screens — `arrow_back`, `visibility`, `visibility_off`, `error`, `cloud_off` — same opsz 24/wght 400/FILL 0/grade 0 export and Apache 2.0 licence file as REP-28's set, wrapped by `RepzIcon(icon: RepzIcon, contentDescription: String?, modifier, tint)` (enum `RepzIcon`: `ArrowBack`, `Visibility`, `VisibilityOff`, `Error`, `CloudOff`). Dark-theme grade −25 above isn't achievable with a static vector drawable; still open for REP-72.
 
 ## 9. Components (`core:designsystem`, prefix `Repz`)
 
@@ -311,6 +312,15 @@ Shadows are only for things floating under the finger (FAB, dragged item, rest p
 | Banners, snackbar (undo 6 s), dialogs, sheets, M3 Expressive loading indicator, skeleton shimmer (only after a 150 ms delay) | board 06 |
 | Form fields | filled/outlined, password toggle + strength meter, errors on blur (not per keystroke), segmented buttons, switch, slider, settings list items |
 | Empty states | illustration + title + body + action (MOT-23) |
+
+**Landed (REP-30/REP-82):** the auth-screen subset, built to the signatures the implementation plan fixed in advance:
+- `RepzButton(text, onClick, modifier, style: RepzButtonStyle = Filled, size: RepzButtonSize = Medium, enabled, isLoading, loadingContentDescription)` — only `Filled`/`Outlined`/`Text` and `Small`(40)/`Medium`(56) exist; the size is a minimum height, so a long or enlarged label wraps onto more lines instead of clipping; `Tonal` and `XS`/`L`/`XL` come with REP-22. Pressed shape (rest `height / 2`, pressed `shapes.medium` 12) and scale 0.96 run on `RepzMotion.springs.pressMorph()` (MOT-22); reduced motion keeps the state layer only and skips the shape/scale change. Loading keeps the button's measured size, replaces the label with M3's own loading indicator, and never reads as disabled to accessibility unless it also is.
+- `RepzTextField` / `RepzPasswordField(value, onValueChange, label, modifier, supportingText, isError, enabled, keyboardOptions, keyboardActions, onFocusLoss)` — outlined only (no filled field yet, no strength meter), height 56. An error message is shown with `RepzFieldError(text)` placed directly below the field (pair it with `isError = true`), not through the field: M3 merges a field's supportingText into the field's own accessibility node, and on iOS that text isn't exposed while the field has a value, so VoiceOver would never read it. `RepzFieldError` is its own element with a polite live region; it appears instantly, then fades in over `RepzMotion.tweens.short()`. The parameter is named **`onFocusLoss`**, not `onFocusLost`: Detekt's compose-rules `ParameterNaming` check rejects a past-tense verb on a `@Composable` lambda parameter.
+- `RepzTopAppBar(modifier, title, onBackClick, actions, backButtonModifier)` — small bar, height 64. `backButtonModifier` (an addition beyond the original signature) tags the 48 dp back icon button itself, separately from the bar's own `modifier`, so a test tag lands on a tappable target instead of the whole bar.
+- `RepzBanner(icon: RepzIcon, title, modifier, body)` — `warningContainer`/`onWarningContainer`, `shapes.large`, polite live region.
+- `RepzPageIndicator(pageCount, currentPage, contentDescription, modifier)` — the Welcome pager's dots, active 24×8 / inactive 8×8, gap 6, no animation.
+- `RepzSnackbarHostState.showWithAction(message, actionLabel): Boolean` + `rememberRepzSnackbarHostState()` / `RepzSnackbarHost` — wraps M3's `SnackbarHostState`; the `Boolean` is whether the action was tapped. `dismissCurrent()` hides the visible snackbar, so a stale message never survives a resubmit; callers show it in its own coroutine so it never blocks their effect collector.
+- Two catalog pages, `components-actions` and `components-inputs` (ARCHITECTURE §2), each fitting one iPhone Duo screen.
 
 ## 10. Screens (inventory)
 
@@ -372,3 +382,11 @@ Notable behaviours from the design:
 | Rest timer in background | Android foreground service | **Scheduled local notification** (`AlarmManager` / `UNUserNotificationCenter`) + `restEndsAt` in DB | ADR-0013: reliable, little native code |
 | Haptics toggle, language row | new rows in Settings | adopted | |
 | Weekly goal | default 4, setting not designed | stored in user preferences, default 4; setting UI **open question** | ask before building the goal UI |
+| Auth CTA colour (REP-30, Q8) | Board 07 draws Create account/Log in on `primaryContainer` | `RepzButtonStyle.Filled` (`primary`), matching board 04 + board 18 | board 07 conflicts with the documented colour rules (`primaryContainer` = hero/FAB only); user decision 2026-11-03 |
+| "Forgot password?" (REP-30, Q4) | shown on Log in | hidden | no password reset in v1 (ARCHITECTURE §1) |
+| Terms/Privacy line (REP-30, Q5) | shown on Register | hidden | no Terms/Privacy documents exist yet |
+| Password strength meter (REP-30, Q6) | 4-segment meter, advisory copy | password field's supporting text "At least 8 characters", red when violated | no scoring rule or level copy defined; deferred to a follow-up issue |
+| Offline banner on auth (REP-30, Q7) | proactive: banner + disabled button, re-enables on reconnect | reactive: banner after a failed attempt, button stays enabled, fades out on the next submit | no connectivity monitor until REP-26 |
+| Welcome page sizes (REP-30, Q12) | titles 34/32 px @ weight 800, subtitle 15 px, banner body 13 px, gaps 28/10 px — off the type scale and the 4 dp grid | nearest tokens: titles `headlineLargeEmphasized`; subtitle and welcome body `bodyLarge`; banner title `titleSmall`; banner body `bodyMedium`; 28 → `xl` (24), 10 → `sm` (8). Component-internal sizes (page indicator 24×8 / 8×8, gap 6) stay exact | keeps `core:designsystem` on its token set; board values aren't on it |
+| Welcome pager backdrop shape (REP-30) | board 07's backdrop measures as a 9-lobed `Cookie9Sided` polygon on `surfaceContainer` | `RepzShapes.cookie4Sided` on `surfaceContainerHigh`, per §5/§11's documented "illustration backdrop" accent | the committed docs are the source of truth over the local mockup export; user decision 2026-11-05 |
+| Welcome backdrop size on short screens (REP-30) | board 07 sizes the backdrop at 80 % of the width only | capped at `min(0.8 × width, 0.4 × height)`, with a vertical scroll as a fallback | on short or square-ish screens a width-only size pushed the page text off screen; no-op on regular phones |

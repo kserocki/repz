@@ -240,12 +240,16 @@ Haptics respect the in-app "Haptics" setting (F23) through `RepzTheme(hapticsEna
 - **Haptic:** none
 - **Reduced motion:** Crossfade 150 ms
 
+### Auth offline banner (REP-30)
+- The offline banners on Log in ("You're offline") and Register ("You need a connection to create an account") fade in and out with `RepzMotion.effectsSprings.effectsDefault()` (alpha only, no movement). They aren't a numbered MOT entry: they use the effects spring as-is.
+
 ### MOT-22 · Press feedback
 - **Trigger:** Press on any primary surface
 - **Animates:** Shape morph to pressed radius + scale 0.96 (pressMorph), release spring back
 - **Choreography:** Immediate on touch down
 - **Haptic:** none (except buttons that act)
 - **Reduced motion:** Ripple/state layer only
+- **Landed (REP-82):** implemented in `RepzButton` (`core:designsystem`) — rest-state radius is `height / 2`, pressed radius is `MaterialTheme.shapes.medium`'s 12 dp, animated together with `scale(0.96f)` on `RepzMotion.springs.pressMorph()`. `LocalReducedMotion` drops the shape/scale animation and keeps only M3's own state layer. Other primary surfaces land with REP-48.
 
 ### MOT-23 · Empty states
 - **Trigger:** Empty state shown
