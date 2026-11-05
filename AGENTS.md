@@ -83,7 +83,7 @@ Run from `mobile/` unless noted. One-time setup: create the git-ignored `mobile/
 | Style, static analysis, architecture tests | `./gradlew check` (ktlint, Detekt + Compose rules, Konsist, Android lint, unit tests) | works |
 | Auto-fix formatting | `./gradlew ktlintFormat` | works |
 | iOS app | open `mobile/iosApp/iosApp.xcodeproj` in Xcode · `xcodebuild -project mobile/iosApp/iosApp.xcodeproj -scheme iosApp -destination 'generic/platform=iOS Simulator' build` | works (REP-11) |
-| iOS UI tests, auth flow (needs the local API running; never runs in CI) | `cd mobile/iosApp && xcodebuild test -project iosApp.xcodeproj -scheme iosApp -destination 'platform=iOS Simulator,name=iPhone Duo' -only-testing:iosAppUITests/AuthFlowUITests/<testName>` (`testRegisterThenRelaunchStaysSignedIn` or `testWrongPasswordShowsError`); the second needs a fresh install first: `xcrun simctl uninstall booted com.repz.app` | added in REP-30, see ADR-0011 |
+| iOS UI tests, auth flow (needs the local API running; never runs in CI) | `cd mobile/iosApp && xcodebuild test -project iosApp.xcodeproj -scheme iosApp -destination 'platform=iOS Simulator,name=iPhone Duo' -only-testing:iosAppUITests/AuthFlowUITests/<testName>` (`testRegisterThenRelaunchStaysSignedIn` or `testWrongPasswordShowsError`); the second needs a fresh install first: `xcrun simctl uninstall booted com.repz.app` | works (REP-30) |
 | Postgres for the API | `docker compose up -d` (from the repo root; needs Docker/OrbStack running) | works |
 | API setup / dev | `cd api && pnpm install` · `pnpm dev` (Node 26, `.env` from `.env.example`) | works |
 | API gates (from `api/`) | `pnpm lint` · `pnpm typecheck` · `pnpm test` · `pnpm build` | works |
