@@ -6,10 +6,9 @@ import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -107,17 +106,27 @@ fun RepzLaunchLogo(
     val description = stringResource(Res.string.designsystem_logo_description)
     val layout = launchLogoLayout(symbolWidth)
 
-    Column(
-        modifier = modifier.then(tapModifier).semantics { contentDescription = description },
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        RepzLogoSymbol(modifier = Modifier.width(symbolWidth), color = color, state = state, contentDescription = null)
-        Spacer(modifier = Modifier.height(layout.gapBelowPlates))
+    // A Box, not a Column: the symbol is the box's only sizing child (the wordmark's own
+    // un-offset height is always smaller, see launchLogoLayout), so this composable's reported
+    // size is exactly the symbol's — a caller that centres RepzLaunchLogo centres the symbol
+    // itself, at the same point and size in every phase. A Column that always reserves the
+    // wordmark's height+gap, even while its alpha is 0, shifts the symbol's own centre off the OS
+    // splash icon's position. The wordmark is placed below by an absolute offset, which overflows
+    // this box's bounds without affecting its measured size.
+    Box(modifier = modifier.then(tapModifier).semantics { contentDescription = description }) {
+        RepzLogoSymbol(
+            modifier = Modifier.align(Alignment.TopCenter).width(symbolWidth),
+            color = color,
+            state = state,
+            contentDescription = null,
+        )
         Image(
             painter = painterResource(Res.drawable.logo_wordmark),
             contentDescription = null,
             modifier =
                 Modifier
+                    .align(Alignment.TopCenter)
+                    .offset(y = layout.symbolHeight + layout.gapBelowPlates)
                     .width(layout.wordmarkWidth)
                     .aspectRatio(layout.wordmarkAspectRatio)
                     .graphicsLayer {
@@ -132,8 +141,12 @@ fun RepzLaunchLogo(
 
 /** [RepzLaunchLogo]'s stacked-lockup layout (Q8: wordmark at 0.7 scale, centred, 24 grid units
  * under the plates), derived from [symbolWidth] so the symbol and wordmark scale together. Exposed
- * so a preview can render the finished frame without replaying the choreography. */
+ * so a preview can render the finished frame without replaying the choreography. [symbolHeight] is
+ * the symbol's own measured height at [symbolWidth] (matches [RepzLogoSymbol]'s
+ * `aspectRatio(RepzLogoGeometry.artworkAspectRatio)` exactly), so a caller can anchor the wordmark
+ * below the symbol without the symbol itself ever needing to share a parent with it. */
 internal data class LaunchLogoLayout(
+    val symbolHeight: Dp,
     val wordmarkWidth: Dp,
     val wordmarkAspectRatio: Float,
     val gapBelowPlates: Dp,
@@ -142,6 +155,7 @@ internal data class LaunchLogoLayout(
 internal fun launchLogoLayout(symbolWidth: Dp): LaunchLogoLayout {
     val unitToDp = symbolWidth / RepzLogoGeometry.artworkBounds.width
     return LaunchLogoLayout(
+        symbolHeight = symbolWidth / RepzLogoGeometry.artworkAspectRatio,
         wordmarkWidth = unitToDp * (RepzLogoGeometry.WORDMARK_WIDTH * RepzLogoGeometry.STACKED_WORDMARK_SCALE),
         wordmarkAspectRatio = RepzLogoGeometry.WORDMARK_WIDTH / RepzLogoGeometry.WORDMARK_HEIGHT,
         gapBelowPlates =
