@@ -185,11 +185,13 @@ class OfflineFirstAuthRepositoryTest {
     @Test
     fun given400ValidationErrorWithKnownPaths_whenRegistering_thenFailsWithFieldsRejected() =
         runTest {
+            // Real shape from contract/fixtures/register/400/validation-error.json: the hook joins
+            // [result.target, ...issue.path] with ".", so every path is prefixed by its target ("json").
             val fieldErrors =
                 listOf(
-                    ProblemFieldError("email", "Invalid email"),
-                    ProblemFieldError("password", "Too short"),
-                    ProblemFieldError("displayName", "Blank"),
+                    ProblemFieldError("json.email", "Invalid email address"),
+                    ProblemFieldError("json.password", "Too small: expected string to have >=8 characters"),
+                    ProblemFieldError("json.displayName", "Too small: expected string to have >=1 characters"),
                 )
             val error = NetworkError.Api(400, apiProblem(ProblemType.ValidationError, 400, fieldErrors))
             val result = registerWith(NetworkResult.Failure(error))
@@ -201,9 +203,20 @@ class OfflineFirstAuthRepositoryTest {
         }
 
     @Test
+    fun given400ValidationErrorWithTargetPrefixedPasswordPath_whenLoggingIn_thenFailsWithFieldsRejected() =
+        runTest {
+            // Real shape from contract/fixtures/login/400/validation-error.json.
+            val fieldErrors = listOf(ProblemFieldError("json.password", "Too small: expected string to have >=1 characters"))
+            val error = NetworkError.Api(400, apiProblem(ProblemType.ValidationError, 400, fieldErrors))
+            val result = logInWith(NetworkResult.Failure(error))
+
+            assertEquals(DomainResult.Failure(AuthError.FieldsRejected(setOf(AccountField.Password))), result)
+        }
+
+    @Test
     fun given400ValidationErrorWithNoKnownPath_whenRegistering_thenFailsWithUnexpected() =
         runTest {
-            val error = NetworkError.Api(400, apiProblem(ProblemType.ValidationError, 400, listOf(ProblemFieldError("unknown", "?"))))
+            val error = NetworkError.Api(400, apiProblem(ProblemType.ValidationError, 400, listOf(ProblemFieldError("json.unknown", "?"))))
             val result = registerWith(NetworkResult.Failure(error))
 
             assertEquals(DomainResult.Failure(AuthError.Unexpected), result)

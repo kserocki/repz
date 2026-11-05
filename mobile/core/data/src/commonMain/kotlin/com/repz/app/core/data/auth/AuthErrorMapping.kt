@@ -43,8 +43,13 @@ private fun ApiProblem.toFieldsRejectedOrUnexpected(): AuthError {
     return if (fields.isEmpty()) AuthError.Unexpected else AuthError.FieldsRejected(fields)
 }
 
+/**
+ * `validationErrorHook` (api/src/shared/errors.ts) joins `[target, ...issue.path]` with ".", so a
+ * field path arrives as e.g. "json.email". The field name is always the part after the target,
+ * so dropping the first segment matches regardless of the target name.
+ */
 private fun String.toAccountFieldOrNull(): AccountField? =
-    when (this) {
+    when (substringAfter('.')) {
         "email" -> AccountField.Email
         "password" -> AccountField.Password
         "displayName" -> AccountField.DisplayName
