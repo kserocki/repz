@@ -4,7 +4,7 @@
     <string name="welcome_page_log_sets_title">Log a set in 2 taps</string>
     <string name="welcome_page_log_sets_body">Your last numbers are already filled in. Tap done, rest, repeat.</string>
     <string name="welcome_page_works_offline_title">Works offline</string>
-    <string name="welcome_page_works_offline_body">Log every set without net connection. Repz syncs when you\'re back online.</string>
+    <string name="welcome_page_works_offline_body">Log every set without net connection. Repz syncs when you're back online.</string>
     <string name="welcome_page_progress_title">See your progress &amp; PRs</string>
     <string name="welcome_page_progress_body">Charts and personal records update after every workout.</string>
     <string name="welcome_page_indicator">Page %1$d of %2$d</string>
@@ -26,8 +26,8 @@
 
     <string name="login_title">Welcome back</string>
     <string name="login_submitting">Logging in</string>
-    <string name="login_offline_title">You\'re offline</string>
-    <string name="login_offline_body">Logging in needs a connection. Once you\'re in, Repz works offline.</string>
+    <string name="login_offline_title">You're offline</string>
+    <string name="login_offline_body">Logging in needs a connection. Once you're in, Repz works offline.</string>
     <string name="login_invalid_credentials">Email or password is incorrect</string>
 
     <string name="error_email_invalid">Enter a valid email, like name@example.com</string>
