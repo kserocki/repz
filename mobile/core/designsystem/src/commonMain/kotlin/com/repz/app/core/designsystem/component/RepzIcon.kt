@@ -10,8 +10,8 @@ import com.repz.app.core.designsystem.generated.resources.symbol_arrow_back
 import com.repz.app.core.designsystem.generated.resources.symbol_cloud_off
 import com.repz.app.core.designsystem.generated.resources.symbol_error
 import com.repz.app.core.designsystem.generated.resources.symbol_fitness_center
-import com.repz.app.core.designsystem.generated.resources.symbol_trophy
 import com.repz.app.core.designsystem.generated.resources.symbol_logout
+import com.repz.app.core.designsystem.generated.resources.symbol_trophy
 import com.repz.app.core.designsystem.generated.resources.symbol_visibility
 import com.repz.app.core.designsystem.generated.resources.symbol_visibility_off
 import org.jetbrains.compose.resources.DrawableResource
