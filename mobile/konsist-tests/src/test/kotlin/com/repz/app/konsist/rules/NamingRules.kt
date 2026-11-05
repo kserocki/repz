@@ -195,3 +195,27 @@ fun checkN7NoMockingLibraries(scope: KoScope) {
         it.name.startsWith("io.mockk") || it.name.startsWith("org.mockito")
     }
 }
+
+// A standalone identifier ending in "Intent", as a whole word, so "LoginIntent" and the parameter
+// type of a lambda like "(LoginIntent) -> Unit" both match, but "IntentFilter" does not.
+private val INTENT_TYPE_NAME = Regex("""\b[A-Za-z][A-Za-z0-9_]*Intent\b""")
+
+/**
+ * N8: only `@Composable fun XScreen`/`XContent` may declare a parameter whose type is an `*Intent`
+ * type, including a function type that takes one (e.g. `(XIntent) -> Unit`); every other
+ * composable, `@Preview` functions included, takes explicit values and present-tense event lambdas
+ * instead (AGENTS.md §4, ADR-0005).
+ */
+fun checkN8NoIntentOutsideScreenOrContent(scope: KoScope) {
+    scope
+        .functions()
+        .filter { it.hasAnnotationWithName("Composable") }
+        .filterNot { it.name.endsWith("Screen") || it.name.endsWith("Content") }
+        .assertTrue(
+            additionalMessage =
+                "N8: only *Screen/*Content composables may declare an *Intent parameter, incl. a function " +
+                    "type taking one, e.g. (XIntent) -> Unit (AGENTS.md §4, ADR-0005)",
+        ) { function ->
+            function.parameters.none { parameter -> INTENT_TYPE_NAME.containsMatchIn(parameter.type.text) }
+        }
+}

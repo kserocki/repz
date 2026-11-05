@@ -44,7 +44,7 @@ design/     git-ignored local design export
 
 ## 4. Conventions
 
-- **Screens:** MVI-lite. `XUiState` (immutable, `ImmutableList`), `sealed interface XIntent`, `sealed interface XEffect`, `XViewModel` with `state`, `effects`, `onIntent()`, a stateful `XScreen` and a stateless `XContent` with a `@Preview` per state.
+- **Screens:** MVI-lite. `XUiState` (immutable, `ImmutableList`), `sealed interface XIntent`, `sealed interface XEffect`, `XViewModel` with `state`, `effects`, `onIntent()`, a stateful `XScreen` and a stateless `XContent` with a `@Preview` per state. `XContent(state, onIntent)` is the only composable that knows `XIntent`; every other composable it uses takes explicit values and present-tense event lambdas (`email`, `onEmailChange`, `onSubmit`, …), never `onIntent` or an `XUiState`-wide parameter.
 - **Use cases:** `VerbNounUseCase` with a single `operator fun invoke`.
 - **Repositories:** the interface lives in domain (`WorkoutRepository`); the implementation is `OfflineFirstWorkoutRepository` in `core:data`.
 - **DI:** every module **that has bindings** exposes exactly one `@Module` class that declares them as **explicit provider functions** (`@Single fun workoutRepository(dao: WorkoutDao, clock: Clock): WorkoutRepository = OfflineFirstWorkoutRepository(dao, clock)`). `core:domain` and `core:common` stay Koin-free. Their shared use cases are provided by `DomainModule`, and `Clock`, `IdGenerator` and dispatchers by `CommonModule`, both in `app:shared`. Features provide only their own feature-local use cases. **Each definition has exactly one owner**, because the compiler plugin isn't verified to flag duplicates (Koin resolves them last-wins at runtime). Don't use cross-module `@ComponentScan` (Koin compiler plugin 1.2.1 loses those hints on iOS, see ADR-0008 and REP-58). `app:shared` lists all modules in its `@KoinApplication`. The ViewModel provider shape (`@KoinViewModel` as a module function) gets verified on iOS in REP-28.
@@ -79,7 +79,7 @@ Run from `mobile/` unless noted. One-time setup: create the git-ignored `mobile/
 | build-logic unit tests | `./gradlew -p build-logic :convention:test` | works |
 | Android debug APK / install | `./gradlew :app:android:assembleDebug` · `:app:android:installDebug` | launchable (REP-11) |
 | Module list | `./gradlew projects` | works |
-| Design-system catalog (debug builds) | Android: `adb shell am start -n com.repz.app/.MainActivity --es repz.catalog <page> [--ez repz.dynamicColor true] [--ez repz.reducedMotion true] [--ez repz.debugSignedIn true]` · iOS: launch arguments `-RepzCatalogPage <page> [-RepzReducedMotion YES] [-RepzDebugSignedIn YES]`; pages in `docs/ARCHITECTURE.md` §2. The debug signed-in flag (ADR-0025) works with or without a catalog page: it makes the auth gate treat the session as signed in without any stored tokens, debuggable/`DEBUG` builds only | works (REP-19, debug signed-in: REP-28) |
+| Design-system catalog (debug builds) | Android: `adb shell am start -n com.repz.app/.MainActivity --es repz.catalog <page> [--ez repz.dynamicColor true] [--ez repz.reducedMotion true] [--ez repz.debugSignedIn true]` · iOS: launch arguments `-RepzCatalogPage <page> [-RepzReducedMotion YES] [-RepzDebugSignedIn YES]`; pages in `docs/ARCHITECTURE.md` §2. The debug signed-in flag (ADR-0025) works with or without a catalog page: it makes the auth gate treat the session as signed in without any stored tokens, debuggable/`DEBUG` builds only. The reduced-motion flag now also reaches the real app path (the launch hand-off's MOT-01), not only the catalog | works (REP-19, debug signed-in: REP-28, app path: REP-21) |
 | Style, static analysis, architecture tests | `./gradlew check` (ktlint, Detekt + Compose rules, Konsist, Android lint, unit tests) | works |
 | Auto-fix formatting | `./gradlew ktlintFormat` | works |
 | iOS app | open `mobile/iosApp/iosApp.xcodeproj` in Xcode · `xcodebuild -project mobile/iosApp/iosApp.xcodeproj -scheme iosApp -destination 'generic/platform=iOS Simulator' build` | works (REP-11) |
@@ -89,7 +89,7 @@ Run from `mobile/` unless noted. One-time setup: create the git-ignored `mobile/
 | API gates (from `api/`) | `pnpm lint` · `pnpm typecheck` · `pnpm test` · `pnpm build` | works |
 | OpenAPI export (from `api/`) | `pnpm openapi:export` (commit `api/openapi.json`); browse at `http://localhost:<port>/docs` | works |
 | DB schema and migrations (from `api/`) | `pnpm db:generate` (after a schema change) · `pnpm db:migrate` (needs Postgres) · `pnpm db:check`; reset with `docker compose down -v` | works |
-| Brand assets reproducible (from the repo root) | `python3 brand/logo/src/android_vectors.py && mobile/iosApp/scripts/sync-brand-assets.sh && git status --porcelain` (must print nothing) | works |
+| Brand assets reproducible (from the repo root) | `python3 brand/logo/src/android_vectors.py && python3 brand/logo/src/compose_logo.py && mobile/iosApp/scripts/sync-brand-assets.sh && git status --porcelain` (must print nothing) | works |
 
 **CI (GitHub Actions)** runs the same commands (ADR-0018):
 - `.github/workflows/mobile.yml`: `./gradlew check :app:android:assembleDebug` on Linux; `./gradlew iosSimulatorArm64Test compileKotlinIosArm64` and the `xcodebuild` simulator build on macOS (`xcode-27`); the brand-asset check.

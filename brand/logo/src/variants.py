@@ -8,6 +8,11 @@ SYM, STACK, HOR = body("symbol"), body("lockup-stacked"), body("lockup-horizonta
 CYAN, DEEP, MIST = "#00C2E0", "#00687A", "#A6EEFF"
 INK, PAPER, WHITE = "#0E1416", "#F5FAFB", "#FFFFFF"
 
+# Just the bar, for the splash/launch-screen bar-only frame: the OS splash shows only the empty
+# bar, so the app's first Compose frame can start from an identical static image.
+BAR_PATH_D = re.search(r'<path id="bar" fill="#000000" d="([^"]+)"/>', open(f"{M}/symbol.svg").read()).group(1)
+BAR_ONLY = f'<path fill="{{c}}" d="{BAR_PATH_D}"/>'
+
 def out(path, vb, inner, bg=None, title="Repz logo", rx=0):
     w, h = vb.split()[2:]
     bgr = f'<rect width="{w}" height="{h}" rx="{rx}" fill="{bg}"/>' if bg else ""
@@ -19,6 +24,7 @@ def out(path, vb, inner, bg=None, title="Repz logo", rx=0):
 ways = {"white": WHITE, "cyan": CYAN, "deep": DEEP, "ink": INK, "black": "#000000"}
 for n, c in ways.items():
     out(f"color/symbol-{n}.svg", "0 0 320 160", SYM.format(c=c))
+    out(f"color/symbol-bar-{n}.svg", "0 0 320 160", BAR_ONLY.format(c=c))
     out(f"color/lockup-stacked-{n}.svg", "0 0 320 260", STACK.format(c=c))
     out(f"color/lockup-horizontal-{n}.svg", "0 0 470 116", HOR.format(c=c))
 pad = lambda inner, dx, dy: f'<g transform="translate({dx} {dy})">{inner}</g>'

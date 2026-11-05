@@ -8,6 +8,9 @@ symbol_person_filled.xml, symbol_arrow_back.xml, symbol_visibility.xml,
 symbol_visibility_off.xml, symbol_error.xml, symbol_cloud_off.xml, symbol_trophy.xml
 (DESIGN_SYSTEM.md §8).
 
+Also covers the 'logout' glyph (FILL 0, wght 400, GRAD 0, opsz 24), same export settings:
+symbol_logout.xml (DESIGN_SYSTEM.md §8, REP-87).
+
 Copyright Google Inc.
 
 This Font Software is licensed under the Apache License, Version 2.0.

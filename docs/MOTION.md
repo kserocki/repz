@@ -94,11 +94,13 @@ Haptics respect the in-app "Haptics" setting (F23) through `RepzTheme(hapticsEna
 ★ = has a full storyboard in the design (boards 15/17).
 
 ### MOT-01 · Logo · "Load the bar" ★
-- **Trigger:** Cold start into Welcome (after the OS splash shows the full symbol)
-- **Animates:** 7 separate parts (LOGO.md): plates fly out, bar scaleX 0→1 (logoBar ζ0.8/k600); inner plates slide in from both screen edges at 120 ms, middle 230 ms, collars 340 ms (logoPlate ζ0.45/k500, visible overshoot); each landing = symbol scaleY 1→0.97→1 (logoImpact ζ0.5/k800); wordmark alpha + y 12 dp→0 at 600 ms (effects ζ1.0/k380)
-- **Choreography:** Bar → inner → middle → collars → wordmark; done ≈ 1000 ms; tap skips to final frame. Returning users: straight crossfade to Train home
-- **Haptic:** Light tick per plate landing (not during OS splash)
-- **Reduced motion:** Static logo, 150 ms fade
+- **Trigger:** Cold start into Welcome. The OS splash shows only the bar (not the full symbol); the app's launch layer holds the identical bar, at the same position, from its first frame — MOT-01 itself starts from there
+- **Animates:** 6 plate parts land onto the already-visible bar (LOGO.md) — no bar growth, no "fly out" phase: inner plates slide in from both screen edges at 120 ms, middle 230 ms, collars 340 ms (logoPlate ζ0.45/k500, visible overshoot); each landing = symbol scaleY 1→0.97→1 (logoImpact ζ0.5/k800); wordmark alpha + y 12 dp→0 at 600 ms (effects ζ1.0/k380)
+- **Choreography:** Bar on screen at t=0 → inner → middle → collars → wordmark settles; 300 ms hold on the finished lockup; then a 200 ms overlapping crossfade into Welcome (the destination is already composed underneath, so there is no blank frame); tap anywhere skips straight to the finished frame and starts the hold/fade at once. Returning users (signed in): the same bar holds, then the same crossfade straight into Train — no plates, no wordmark
+- **Haptic:** Light tick on each pair's first contact with its rest position, 3 per run (not during the OS splash phase, none in reduced motion)
+- **Reduced motion:** Full logo snaps in, wordmark fades over 150 ms; 300 ms hold; 150 ms crossfade
+
+**Landed (REP-21):** the OS splash shows only the bar (`splash_bar.xml` / iOS `LaunchBar`), and the launch hand-off layer (`app:shared`'s `LaunchHandoffPhase`, ADR-0025 amendment) draws the same bar from its very first Compose frame, so the native-to-Compose hand-off is pixel-identical on both platforms (measured ≤ 1 px centre deviation). The `logoBar` spring token is still defined (shown on the `motion-springs-2` catalog page) but unused here: the bar never animates, since it is already on screen. The launch layer blocks every pointer event and hides the composed destination from TalkBack/VoiceOver until `FadingOut` starts, so a tap anywhere — not only over the logo — skips, and nothing hidden underneath is reachable by touch or a11y first. A process-death restore (`LaunchHandoffPhase.HoldingRestoredFrame`) shows the same static bar and crossfades once the session resolves again, without replaying the plate animation; a configuration change or a later in-process sign-out/sign-in never replays it either (`phase` is `rememberSaveable` and `Done` is sticky).
 
 ### MOT-02 · Nav bar selection
 - **Trigger:** Tab tap
@@ -269,6 +271,8 @@ Haptics respect the in-app "Haptics" setting (F23) through `RepzTheme(hapticsEna
 ### MOT-25 · Branded loader `RepzLoader`
 Plates load pair by pair in a loop (logoPlate). Determinate variant: each completed step locks one plate pair (see MOT-18). Sizes 24 / 48 / 96 dp. Used on A5 and in pull-to-refresh. Reduced motion: static symbol + progress text.
 
+**Landed (REP-21):** the bar is always drawn. Indeterminate: one shared cycle — all 3 pairs slide in and fade in `stagger.logoPlatesPerPair` (110 ms) apart (inner → middle → outer), hold together for 300 ms once the last pair has landed, then all fade out together before the cycle repeats (≈ 1.2 s total). Determinate (`progress: Float?`, 0f..1f): `lockedPairCount`/`pairStates` lock one pair per completed third (`Locked`/`Loading`/`Pending`); the current (`Loading`) pair keeps running the indeterminate slide/fade; a `Pending` pair is drawn as a dashed outline at its own rest position (not offset), stroke/dash from board 07 A5, in `MaterialTheme.colorScheme.outlineVariant` — never the brand colour, since it marks an empty slot. `contentDescription` is required (unlike `RepzLogoSymbol`'s, which may be decorative); `progressSemantics()` (indeterminate) or `progressSemantics(progress)` exposes it. Reduced motion: indeterminate shows the static, fully assembled symbol; determinate snaps locked pairs in solid with no loop/slide; `RepzLoader` draws no progress text itself (the caller's job, e.g. A5's percentage).
+
 ### MOT-26 · Start-workout plates
 Part of MOT-03: the icon-sized dumbbell in the hero button loads its plates (~400 ms) during the container transform.
 
@@ -289,6 +293,8 @@ Part of MOT-23: one outer collar wobbles (rotate ±4°, logoPlate) every few sec
 | Shape morph | `androidx.graphics.shapes` `Morph` + `MaterialShapes`, progress driven by an `Animatable` |
 | Shared elements / container transform | `SharedTransitionLayout` + `sharedBounds` / `sharedElement`, wired through Nav3 scenes |
 | Particles | one `Canvas` + a frame loop (`withFrameNanos`), plain data arrays, no composable per particle |
-| Logo parts | `RepzLogoSymbol(state)` draws 7 shapes with independent `Animatable`s; geometry from `brand/LOGO.md` §2 |
+| Logo parts | `RepzLogoSymbol(modifier, color, state, contentDescription)` draws 7 shapes with independent `Animatable`s (`RepzLogoSymbolState`, `RepzLogoPose.BarOnly`/`Assembled`); geometry generated from `brand/LOGO.md` §2 into `RepzLogoGeometry` |
+| Logo launch hand-off (MOT-01) | `RepzLaunchLogo(playback: RepzLaunchLogoPlayback, onFinish, modifier, color, symbolWidth, skipRequests)`, `core:designsystem` `logo/` package |
+| Branded loader (MOT-25) | `RepzLoader(contentDescription, modifier, size: RepzLoaderSize, progress, color)`, `core:designsystem` `logo/` package |
 | Number roll | `AnimatedContent` per digit with a slide-from-below/above `ContentTransform` |
 | Path draw | `PathMeasure.getSegment` driven by a tween (`pathDraw`) |

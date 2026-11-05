@@ -5,6 +5,7 @@ plugins {
     id("repz.kmp.library")
     id("repz.compose")
     id("repz.koin")
+    id("repz.room.consumer")
 }
 
 kotlin {
@@ -33,6 +34,7 @@ kotlin {
             implementation(projects.feature.settings.api)
             implementation(projects.feature.settings.impl)
             implementation(projects.core.data)
+            implementation(projects.core.database)
             implementation(projects.core.sync)
             implementation(projects.core.navigation)
             implementation(projects.core.designsystem)

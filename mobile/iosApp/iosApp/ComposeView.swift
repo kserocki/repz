@@ -16,13 +16,13 @@ private let reducedMotionDefaultsKey = "RepzReducedMotion"
 private let debugSignedInDefaultsKey = "RepzDebugSignedIn"
 
 /// Wraps the shared Compose UI
-/// (`mainViewController(catalogPageKey:catalogReducedMotion:debugSignedIn:)` in `app:shared`
+/// (`mainViewController(catalogPageKey:debugReducedMotion:debugSignedIn:)` in `app:shared`
 /// iosMain) as a SwiftUI view.
 struct ComposeView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
         MainViewControllerKt.mainViewController(
             catalogPageKey: debugCatalogPageKey(),
-            catalogReducedMotion: debugCatalogReducedMotion(),
+            debugReducedMotion: debugReducedMotionFlag(),
             debugSignedIn: debugSignedInFlag()
         )
     }
@@ -41,8 +41,10 @@ struct ComposeView: UIViewControllerRepresentable {
 
     /// The debug-only "force reduced motion" hook: reads the flag from `UserDefaults` only in
     /// `DEBUG` builds, so a release build never compiles in this lookup and always passes `false`
-    /// (`mainViewController` maps that to "follow the live platform setting").
-    private func debugCatalogReducedMotion() -> Bool {
+    /// (`mainViewController` maps that to "follow the live platform setting"). Reaches both the
+    /// catalog path and the real app path (the launch hand-off), so Spotter can force reduced
+    /// motion on MOT-01 with `-RepzReducedMotion YES` without a simulator setting.
+    private func debugReducedMotionFlag() -> Bool {
         #if DEBUG
         return UserDefaults.standard.bool(forKey: reducedMotionDefaultsKey)
         #else

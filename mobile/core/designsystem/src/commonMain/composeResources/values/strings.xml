@@ -3,4 +3,6 @@
     <string name="designsystem_back">Back</string>
     <string name="designsystem_show_password">Show password</string>
     <string name="designsystem_hide_password">Hide password</string>
+    <string name="designsystem_logo_description">Repz</string>
+    <string name="designsystem_loading">Loading</string>
 </resources>
