@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.repz.app.core.designsystem.motion.LocalReducedMotion
 import com.repz.app.core.designsystem.motion.RepzMotion
 
-enum class RepzButtonStyle { Filled, Outlined, Text }
+enum class RepzButtonStyle { Filled, Outlined, Text, Hero }
 
 enum class RepzButtonSize { Small, Medium }
 
@@ -90,8 +90,10 @@ private val RepzButtonSize.loadingIndicatorSize: Dp
 /**
  * The primary action control (DESIGN_SYSTEM §9, board 04): [RepzButtonStyle.Filled] (high
  * emphasis, `primary`/`onPrimary`; the decided CTA colour for every call to action, recorded in
- * DESIGN_SYSTEM §13), [RepzButtonStyle.Outlined] (medium emphasis, `outline` border) or
- * [RepzButtonStyle.Text] (low emphasis). [RepzButtonSize.Small] (40 dp) or
+ * DESIGN_SYSTEM §13), [RepzButtonStyle.Outlined] (medium emphasis, `outline` border),
+ * [RepzButtonStyle.Text] (low emphasis) or [RepzButtonStyle.Hero] (`primaryContainer`/
+ * `onPrimaryContainer`, the brand-cyan treatment board 07 draws for its boldest CTA; Welcome's
+ * "Create account" only, DESIGN_SYSTEM §13). [RepzButtonSize.Small] (40 dp) or
  * [RepzButtonSize.Medium] (56 dp) is a minimum height: at larger font scales [text] wraps to more
  * lines and the button grows to fit, never clipping or truncating. XS/L/XL ship later.
  *
@@ -181,6 +183,17 @@ private fun RepzButtonStyle.colors(disabled: Boolean): ButtonColors {
             )
         }
 
+        RepzButtonStyle.Hero -> {
+            val container = MaterialTheme.colorScheme.primaryContainer
+            val content = MaterialTheme.colorScheme.onPrimaryContainer
+            ButtonColors(
+                containerColor = container,
+                contentColor = content,
+                disabledContainerColor = if (disabled) disabledContainer else container,
+                disabledContentColor = if (disabled) disabledContent else content,
+            )
+        }
+
         RepzButtonStyle.Outlined, RepzButtonStyle.Text -> {
             val content = MaterialTheme.colorScheme.primary
             ButtonColors(
@@ -206,7 +219,7 @@ private fun RepzButtonStyle.border(disabled: Boolean): BorderStroke? =
             BorderStroke(OutlinedButtonBorderWidth, color)
         }
 
-        RepzButtonStyle.Filled, RepzButtonStyle.Text -> {
+        RepzButtonStyle.Filled, RepzButtonStyle.Text, RepzButtonStyle.Hero -> {
             null
         }
     }
