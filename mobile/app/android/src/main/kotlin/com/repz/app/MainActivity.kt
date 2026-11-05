@@ -23,7 +23,7 @@ private const val EXTRA_DEBUG_SIGNED_IN = "repz.debugSignedIn"
  * frame underneath has already been drawn. Leaving this unset lets the system play its own default
  * icon exit animation and auto-remove the view on its own schedule — decoupled from whether Compose
  * has actually drawn anything yet, which left a blank frame between the splash fading out and the
- * app shell's launch bar (identical in shape/position) appearing underneath (REP-21 review).
+ * app shell's launch bar (identical in shape/position) appearing underneath.
  *
  * In debuggable builds only, the `repz.catalog`/`repz.dynamicColor` intent extras open the debug
  * design-system catalog instead of the normal app shell. `repz.reducedMotion` forces reduced
