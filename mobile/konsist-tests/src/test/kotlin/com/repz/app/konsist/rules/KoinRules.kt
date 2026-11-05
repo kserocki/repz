@@ -187,10 +187,9 @@ fun checkD5OneOwnerPerDefinition(scope: KoScope) {
  * providers are not evaluated here), whose entire body is a single constructor call of a class
  * declared in this project, outside `core:domain`/`core:common`, with every argument a bare
  * identifier (not computed, e.g. `database.currentUserDao()` or `Clock.System`), does nothing a
- * class-level annotation couldn't: annotate that class instead. `core:testing`'s cross-module
- * probe is exempt: its whole purpose is proving a provider-function definition still resolves
- * correctly next to a scanned one, so it deliberately keeps one even though it is a bare
- * pass-through.
+ * class-level annotation couldn't: annotate that class instead. No module is exempt, including
+ * `core:testing`'s cross-module probe: its provider carries a literal argument precisely so it
+ * stays a real provider rather than a pass-through this rule would otherwise reject.
  */
 fun checkD6NoPassThroughProvider(scope: KoScope) {
     val classModulePaths = scope.classes().groupBy({ it.name }, { it.repzSourceFile().modulePath })
@@ -201,9 +200,7 @@ fun checkD6NoPassThroughProvider(scope: KoScope) {
             .filter { it.hasAnnotationWithName(MODULE_ANNOTATION) }
             .flatMap { it.functions(includeNested = false, includeLocal = false) }
             .filter { function ->
-                function.hasAnnotationWithName(KOIN_DEFINITION_ANNOTATIONS) &&
-                    function.repzSourceFile().sourceSetName == "commonMain" &&
-                    function.repzSourceFile().modulePath !in PASS_THROUGH_EXEMPT_PROVIDER_MODULE_PATHS
+                function.hasAnnotationWithName(KOIN_DEFINITION_ANNOTATIONS) && function.repzSourceFile().sourceSetName == "commonMain"
             }.mapNotNull { function ->
                 val calleeName = passThroughCalleeName(function) ?: return@mapNotNull null
                 val calleeModulePaths = classModulePaths[calleeName].orEmpty()
@@ -217,7 +214,6 @@ fun checkD6NoPassThroughProvider(scope: KoScope) {
 }
 
 private val PASS_THROUGH_EXEMPT_CALLEE_MODULE_PATHS = setOf(":core:domain", ":core:common")
-private val PASS_THROUGH_EXEMPT_PROVIDER_MODULE_PATHS = setOf(":core:testing")
 
 /**
  * D7: a class's name states its role, so its Koin definition kind must match it (ARCH §12.2):

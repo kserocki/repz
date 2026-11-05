@@ -1,6 +1,8 @@
 package com.repz.app.koinprobe
 
+import com.repz.app.core.testing.koin.KoinProbeContract
 import com.repz.app.core.testing.koin.KoinProbeDependency
+import com.repz.app.core.testing.koin.KoinProbeProvidedDependency
 import com.repz.app.core.testing.koin.KoinProbeProviderModule
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Factory
@@ -18,6 +20,8 @@ class KoinProbeConsumerModule
 @Factory
 class KoinProbeConsumer(
     val dependency: KoinProbeDependency,
+    val contract: KoinProbeContract,
+    val provided: KoinProbeProvidedDependency,
 )
 
 @org.koin.core.annotation.KoinApplication(modules = [KoinProbeProviderModule::class, KoinProbeConsumerModule::class])
