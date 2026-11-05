@@ -51,9 +51,13 @@ internal fun RepzAppShell(
         isSignedIn?.let(navigator::syncAuthentication)
     }
 
-    // A fresh process starts in `HoldingSplashFrame` and never goes back once it reaches `Done`:
-    // `rememberSaveable` survives a configuration change or a process-death restore, so neither
-    // replays the hand-off, but a cold start (no saved state) always starts it.
+    // A fresh process starts in `HoldingSplashFrame`. A configuration change restores `phase`
+    // as-is and never replays anything, because the session is already resolved by the time one
+    // can happen. A process-death restore can also land on a saved `Done` while the session is
+    // unresolved again (`isSignedIn == null`, only possible right after process start):
+    // `nextLaunchHandoffPhase` routes that combination to `HoldingRestoredFrame`, so the same
+    // static bar the OS splash just showed reappears and then crossfades into the restored
+    // destination once the session resolves — MOT-01 itself never replays.
     var phase by rememberSaveable { mutableStateOf(LaunchHandoffPhase.HoldingSplashFrame) }
 
     LaunchedEffect(isSignedIn, isNavigatorSynced) {
@@ -71,9 +75,11 @@ internal fun RepzAppShell(
         if (isNavigatorSynced) {
             SignedInAppShellScaffold(navigator)
         } else if (phase == LaunchHandoffPhase.Done) {
-            // A later session change desynced the navigator for one frame (ADR-0025's guard); the
-            // hand-off is already done and never replays, so this stays the plain background
-            // rather than the launch layer.
+            // A later in-process session change (sign-out/sign-in) desynced the navigator for one
+            // frame (ADR-0025's guard) while the session was already known, so phase stays `Done`
+            // and this is the plain background rather than the launch layer. A process-death
+            // restore with the session still unknown routes through `HoldingRestoredFrame`
+            // instead (see `nextLaunchHandoffPhase`), so it never reaches this branch.
             BrandBackground()
         }
 

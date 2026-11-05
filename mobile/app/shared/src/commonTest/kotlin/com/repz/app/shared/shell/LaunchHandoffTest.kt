@@ -143,4 +143,88 @@ class LaunchHandoffTest {
 
         assertEquals(LaunchHandoffPhase.Done, phase)
     }
+
+    @Test
+    fun givenDoneRestoredFromProcessDeath_whenSessionUnknownAgain_thenMovesToHoldingRestoredFrame() {
+        val phase =
+            nextLaunchHandoffPhase(
+                current = LaunchHandoffPhase.Done,
+                isSignedIn = null,
+                isNavigatorSynced = false,
+                isLogoFinished = false,
+                isFadeFinished = false,
+            )
+
+        assertEquals(LaunchHandoffPhase.HoldingRestoredFrame, phase)
+    }
+
+    @Test
+    fun givenHoldingRestoredFrame_whenSessionStillUnknown_thenStaysHoldingRestoredFrame() {
+        val phase =
+            nextLaunchHandoffPhase(
+                current = LaunchHandoffPhase.HoldingRestoredFrame,
+                isSignedIn = null,
+                isNavigatorSynced = false,
+                isLogoFinished = false,
+                isFadeFinished = false,
+            )
+
+        assertEquals(LaunchHandoffPhase.HoldingRestoredFrame, phase)
+    }
+
+    @Test
+    fun givenHoldingRestoredFrame_whenSignedOutButNavigatorNotSyncedYet_thenStaysHoldingRestoredFrame() {
+        val phase =
+            nextLaunchHandoffPhase(
+                current = LaunchHandoffPhase.HoldingRestoredFrame,
+                isSignedIn = false,
+                isNavigatorSynced = false,
+                isLogoFinished = false,
+                isFadeFinished = false,
+            )
+
+        assertEquals(LaunchHandoffPhase.HoldingRestoredFrame, phase)
+    }
+
+    @Test
+    fun givenHoldingRestoredFrame_whenSignedOutAndSynced_thenMovesStraightToFadingOutWithoutLoadingTheBar() {
+        val phase =
+            nextLaunchHandoffPhase(
+                current = LaunchHandoffPhase.HoldingRestoredFrame,
+                isSignedIn = false,
+                isNavigatorSynced = true,
+                isLogoFinished = false,
+                isFadeFinished = false,
+            )
+
+        assertEquals(LaunchHandoffPhase.FadingOut, phase)
+    }
+
+    @Test
+    fun givenHoldingRestoredFrame_whenSignedInAndSynced_thenMovesStraightToFadingOut() {
+        val phase =
+            nextLaunchHandoffPhase(
+                current = LaunchHandoffPhase.HoldingRestoredFrame,
+                isSignedIn = true,
+                isNavigatorSynced = true,
+                isLogoFinished = false,
+                isFadeFinished = false,
+            )
+
+        assertEquals(LaunchHandoffPhase.FadingOut, phase)
+    }
+
+    @Test
+    fun givenHoldingRestoredFrame_whenFadingOutFinishes_thenMovesToDone() {
+        val phase =
+            nextLaunchHandoffPhase(
+                current = LaunchHandoffPhase.FadingOut,
+                isSignedIn = false,
+                isNavigatorSynced = true,
+                isLogoFinished = false,
+                isFadeFinished = true,
+            )
+
+        assertEquals(LaunchHandoffPhase.Done, phase)
+    }
 }
