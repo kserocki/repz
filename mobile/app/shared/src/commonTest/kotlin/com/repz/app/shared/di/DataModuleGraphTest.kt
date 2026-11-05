@@ -12,8 +12,8 @@ import kotlin.test.assertSame
 
 /**
  * Regression test: `DataModule`'s `SessionRepository` and `AppModule`'s `AuthGate` (both class-level
- * `@Single` definitions, REP-58) resolve from the real `RepzApp` graph on every target, the same way
- * [CommonModuleTest] and [NetworkModuleGraphTest] do.
+ * `@Single` definitions, ADR-0008) resolve from the real `RepzApp` graph on every target, the same
+ * way [CommonModuleTest] and [NetworkModuleGraphTest] do.
  */
 class DataModuleGraphTest {
     @AfterTest
@@ -29,7 +29,7 @@ class DataModuleGraphTest {
         assertSame(koin.get<SessionRepository>(), koin.get<SessionRepository>())
     }
 
-    /** One instance bound to both its own class and its auto-bound interface (REP-58 Q1). */
+    /** One instance bound to both its own class and its auto-bound interface (ADR-0008). */
     @Test
     fun givenRepzApp_whenStarted_thenSessionRepositoryIsTheSameInstanceAsOfflineFirstSessionRepository() {
         startKoin<RepzApp> { platformTestDeclaration() }

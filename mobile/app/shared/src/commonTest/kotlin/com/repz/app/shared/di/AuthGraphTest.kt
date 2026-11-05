@@ -17,8 +17,8 @@ import kotlin.test.assertNotSame
  * Regression test: `AuthModule`'s definitions resolve from the real `RepzApp` graph on every
  * target, the same way [DataModuleGraphTest] and [NetworkModuleGraphTest] do. `LoginViewModel` and
  * `RegisterViewModel` are the project's first real class-level `@KoinViewModel` definitions, so
- * this also verifies that shape works end to end (ADR-0008, REP-58), not only that the Koin
- * compiler plugin accepts it at compile time.
+ * this also verifies that shape works end to end (ADR-0008), not only that the Koin compiler
+ * plugin accepts it at compile time.
  */
 class AuthGraphTest {
     @AfterTest

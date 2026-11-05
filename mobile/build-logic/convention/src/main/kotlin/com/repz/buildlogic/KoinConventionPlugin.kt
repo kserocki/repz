@@ -25,7 +25,7 @@ class KoinConventionPlugin : Plugin<Project> {
 
             extensions.configure<KoinGradleExtension> {
                 // Fails the build when a definition is reachable only transitively, where
-                // compile-time safety can't see it (new in 1.2.2, opt-in; REP-58 Q4).
+                // compile-time safety can't see it (new in 1.2.2, opt-in; ADR-0008).
                 hiddenDependencyCheck.set("error")
             }
 

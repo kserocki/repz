@@ -18,9 +18,9 @@ import org.koin.core.annotation.Single
  * it across the two modules the same way the existing cross-module probe does.
  *
  * Every other binding is a class-level `@Single` picked up by the scan (`TokenStore`,
- * `SessionManager`, `AuthApi`, `UserApi`, `SyncApi`, `HealthApi`, REP-58). What's left here can't be
- * annotated: [ApiConfig] is a plain value built from a platform function, and [RepzHttpClients] has
- * an `internal constructor` and is built by [createRepzHttpClients] (ADR-0008 reason 1).
+ * `SessionManager`, `AuthApi`, `UserApi`, `SyncApi`, `HealthApi`, ADR-0008). What's left here can't
+ * be annotated: [ApiConfig] is a plain value built from a platform function, and [RepzHttpClients]
+ * has an `internal constructor` and is built by [createRepzHttpClients] (ADR-0008 reason 1).
  */
 @Module
 @ComponentScan("com.repz.app.core.network")

@@ -14,7 +14,7 @@ import org.koin.core.annotation.Single
  * from ([TokenRefresher], `loadTokens`), and the [status] the auth gate and the rest of the app
  * observe. A `StateFlow`, not a one-shot event, so a late collector still sees `SignedOut(Expired)`.
  *
- * [logger] defaults to a tagged [Logger] (REP-58 Q2): with the Koin compiler plugin's default
+ * [logger] defaults to a tagged [Logger] (ADR-0008): with the Koin compiler plugin's default
  * `skipDefaultValues = true`, a non-null, unqualified parameter with a default isn't injected, so
  * this stays a plain class-level `@Single` instead of a provider function just for the tag.
  */
