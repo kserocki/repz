@@ -167,7 +167,7 @@ Decisions:
 
 ### 5.2 Local schema additions
 
-`core:database` holds 11 tables (schema v1, ADR-0023): the synced roots `workouts`, `workout_templates` and `exercises`; their children `workout_exercises`, `workout_sets`, `template_exercises` and `exercise_translations`; and the local-only `personal_records`, `outbox`, `sync_rejections` and `sync_meta`. Ids are `TEXT`, timestamps are epoch milliseconds, and vocabularies hold the server's strings. Children cascade from their root; there are no foreign keys between aggregates.
+`core:database` holds 12 tables (schema v1, ADR-0023; `current_user` added by its REP-87 amendment): the synced roots `workouts`, `workout_templates` and `exercises`; their children `workout_exercises`, `workout_sets`, `template_exercises` and `exercise_translations`; and the local-only `personal_records`, `outbox`, `sync_rejections`, `sync_meta` and `current_user`. Ids are `TEXT`, timestamps are epoch milliseconds, and vocabularies hold the server's strings. Children cascade from their root; there are no foreign keys between aggregates.
 
 Every syncable root table has:
 
@@ -183,6 +183,7 @@ At most **one pending entry per entity** (coalescing): ten edits to one workout 
 `sync_rejections` table: `entity_type`, `entity_id`, `problem_type`, `rejected_at` (the "couldn't sync" marks).
 `sync_meta` table (one row): `pull_cursor`, `last_successful_sync_at`, `initial_pull_completed_at`, `restore_total_changes`, `restore_total_workouts`.
 `personal_records` table: derived records, one row per `(exercise_id, type)`, never synced.
+`current_user` table (REP-87): a single-row cache of the signed-in user's profile (`id`, `email`, `display_name`, `unit_system`), server-owned and never synced — no sync columns, no outbox, no `sync_rejections` use. Written on login/register and refreshed best-effort by `GET /me`; read by the Profile tab (`feature:settings`); cleared on logout (§5.7, ADR-0011 amendment).
 
 ### 5.3 Algorithm
 
@@ -246,7 +247,9 @@ The device keeps a **full local replica** of the user's data. Personal workout d
 
 ### 5.7 Logout
 
-Logout **wipes the local database** (data belongs to a user). If the outbox is not empty, the user sees a confirmation: *"N changes haven't been synced yet."*
+**Today (REP-87):** the Profile tab's Log out row opens a confirmation dialog (F25 normal variant, no unsynced-changes count yet). On confirm the session ends **locally first** — tokens cleared from Keystore/Keychain, the cached `current_user` row deleted — so the auth gate (ADR-0025) shows Welcome at once, offline included; the server-side refresh-token revoke (`POST /auth/logout`) is a fire-and-forget best effort on the app-lifetime scope (ADR-0011 amendment). This is everything the local DB holds today, so there is nothing else to clear.
+
+**Deferred (REP-45, needs REP-26/27):** once the sync engine and the first synced writers exist, logout must **wipe the rest of the local database** (data belongs to a user) sparing the exercise catalog snapshot, and the F25 **unsynced** variant warns first when the outbox isn't empty: *"N changes haven't been synced yet."*
 
 ---
 

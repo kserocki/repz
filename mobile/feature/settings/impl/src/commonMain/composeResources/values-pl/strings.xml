@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_log_out">Wyloguj się</string>
+
+    <string name="log_out_dialog_title">Wylogować się?</string>
+    <string name="log_out_dialog_body">W każdej chwili możesz zalogować się ponownie. Twoje dane zostają na Twoim koncie.</string>
+    <string name="log_out_dialog_confirm">Wyloguj się</string>
+    <string name="log_out_dialog_cancel">Anuluj</string>
+</resources>

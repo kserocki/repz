@@ -5,6 +5,8 @@ import androidx.room3.ConstructedBy
 import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import androidx.room3.RoomDatabaseConstructor
+import com.repz.app.core.database.account.CurrentUserDao
+import com.repz.app.core.database.account.CurrentUserEntity
 import com.repz.app.core.database.converter.RepzTypeConverters
 import com.repz.app.core.database.exercise.ExerciseDao
 import com.repz.app.core.database.exercise.ExerciseEntity
@@ -44,6 +46,7 @@ const val REPZ_DATABASE_FILE_NAME = "repz.db"
         OutboxEntryEntity::class,
         SyncRejectionEntity::class,
         SyncMetaEntity::class,
+        CurrentUserEntity::class,
     ],
     version = 1,
 )
@@ -63,6 +66,8 @@ abstract class RepzDatabase : RoomDatabase() {
     abstract fun syncRejectionDao(): SyncRejectionDao
 
     abstract fun syncMetaDao(): SyncMetaDao
+
+    abstract fun currentUserDao(): CurrentUserDao
 
     /** Backs [WorkoutDao]'s multi-step transactions; not part of this database's public surface. */
     internal abstract fun workoutRawDao(): WorkoutRawDao

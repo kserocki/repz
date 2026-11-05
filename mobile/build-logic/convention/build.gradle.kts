@@ -85,6 +85,10 @@ gradlePlugin {
             id = "repz.room"
             implementationClass = "com.repz.buildlogic.RoomConventionPlugin"
         }
+        register("roomConsumer") {
+            id = "repz.room.consumer"
+            implementationClass = "com.repz.buildlogic.RoomConsumerConventionPlugin"
+        }
         register("compose") {
             id = "repz.compose"
             implementationClass = "com.repz.buildlogic.ComposeConventionPlugin"
