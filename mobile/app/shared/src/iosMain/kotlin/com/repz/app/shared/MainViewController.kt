@@ -16,7 +16,7 @@ import platform.UIKit.UIViewController
  *
  * [debugReducedMotion] is the debug-only "force reduced motion" hook ([RepzRoot]'s
  * `debugReducedMotion`), reaching both the catalog path and the real app path (the launch
- * hand-off, REP-21). A plain (non-nullable) `Boolean` avoids bridging an `NSNumber?` to Swift:
+ * hand-off). A plain (non-nullable) `Boolean` avoids bridging an `NSNumber?` to Swift:
  * `false` maps to `null` (follow the live platform setting) and `true` forces it, matching what
  * `-RepzReducedMotion YES`/absent does in `ComposeView.swift`.
  *
