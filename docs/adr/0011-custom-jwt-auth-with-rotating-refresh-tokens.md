@@ -32,3 +32,22 @@ Tokens are stored in the platform Keychain/Keystore. Logout wipes the local DB (
 - **Accepted edge case:** a process killed between the server committing a token rotation and the local `save()` landing, restarted more than the reuse grace window (30 s, above) later, ends up signed out — the rotated refresh token was never persisted, so the next refresh presents the already-superseded one.
 - **Keychain storage test gap (Q6):** the write/read device test for `KeychainSecureStringStorage` is not automated. A bare Kotlin/Native `iosSimulatorArm64Test` process (`simctl spawn`, no app bundle, no entitlements) has no Keychain access at all — every `SecItem*` call fails with `errSecNotAvailable` (OSStatus -25291) regardless of how the code is written, which would make a "nothing stored" assertion pass vacuously. The manual check moves to REP-30. `KeystoreSecureStringStorageTest` (Android, `androidDeviceTest`, a real emulator process) is unaffected and does run.
 - **The app shell's gate**, which reads `SessionRepository`'s state to decide whether the signed-out flow or the signed-in shell appears, is documented separately in ADR-0025.
+
+## Client UI (REP-30, 2026-11-05)
+
+`feature:auth:impl`'s Welcome/Register/Login screens call `core:data`'s `OfflineFirstAuthRepository`, the first caller of the client pieces above — always over the **public** Ktor client, so login and register never trigger a refresh and `SessionExpired` can't occur here.
+
+- **`NetworkError` → `AuthError`** (`core/data/.../auth/AuthErrorMapping.kt`):
+
+| `NetworkError` | `AuthError` |
+|---|---|
+| `Api(401, problem.type == InvalidCredentials)` | `InvalidCredentials` |
+| `Api(409, problem.type == EmailTaken)` | `EmailTaken` |
+| `Api(400, problem.type == ValidationError)`, a recognised field path (`email`/`password`/`displayName`) | `FieldsRejected(fields)` |
+| `Api(400, problem.type == ValidationError)`, no recognised field path | `Unexpected` |
+| `Offline` | `NoConnection` |
+| `Timeout`, `SessionExpired`, `MalformedResponse`, any other `Api` | `Unexpected` |
+
+- **A stopped local API is a connection refused, not a timeout.** It surfaces as `NetworkError.Offline`, so it maps to `AuthError.NoConnection` exactly like a genuinely offline device and shows the same banner.
+- **A failed token save still signs the process in.** `OfflineFirstAuthRepository` calls `SessionManager.start()` and returns `Success` regardless of whether the save succeeded; `SessionManager` keeps the session in memory and logs the save failure itself (REP-25 handoff).
+- **The screen never navigates on success.** The repository's job ends at `SessionManager.start()`; the resulting session change is what moves the app from the signed-out flow to the signed-in shell, through `AuthGate` and `Navigator.syncAuthentication` (ADR-0025) — no auth screen calls either.

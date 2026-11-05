@@ -246,6 +246,7 @@ Haptics respect the in-app "Haptics" setting (F23) through `RepzTheme(hapticsEna
 - **Choreography:** Immediate on touch down
 - **Haptic:** none (except buttons that act)
 - **Reduced motion:** Ripple/state layer only
+- **Landed (REP-82):** implemented in `RepzButton` (`core:designsystem`) — rest-state radius is `height / 2`, pressed radius is `MaterialTheme.shapes.medium`'s 12 dp, animated together with `scale(0.96f)` on `RepzMotion.springs.pressMorph()`. `LocalReducedMotion` drops the shape/scale animation and keeps only M3's own state layer. Other primary surfaces land with REP-48.
 
 ### MOT-23 · Empty states
 - **Trigger:** Empty state shown
