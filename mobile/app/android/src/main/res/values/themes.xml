@@ -5,7 +5,7 @@
          installSplashScreen() applies this theme on API < 31 too (MainActivity, app:android). -->
     <style name="Theme.Repz.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/splash_background</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_symbol</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_bar</item>
         <item name="postSplashScreenTheme">@style/Theme.Repz</item>
     </style>
 
