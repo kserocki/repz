@@ -293,6 +293,25 @@ class RegisterViewModelTest {
         }
 
     @Test
+    fun given_fieldsRejectedByServer_whenDisplayNameNowFailsLocalValidation_thenShowsTheLocalError() =
+        runTest(dispatcher) {
+            val repository =
+                FakeAuthRepository(registerResult = DomainResult.Failure(AuthError.FieldsRejected(setOf(AccountField.DisplayName))))
+                    .apply { registerGate = CompletableDeferred() }
+            val viewModel = viewModel(repository)
+            viewModel.fillValidFields()
+            viewModel.onIntent(RegisterIntent.SubmitClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+
+            // Edited while the request is in flight: the new value fails DisplayName.of's max length.
+            viewModel.onIntent(RegisterIntent.DisplayNameChanged("a".repeat(51)))
+            repository.registerGate?.complete(Unit)
+            dispatcher.scheduler.advanceUntilIdle()
+
+            assertEquals(DisplayNameFieldError.TooLong(50), viewModel.state.value.displayNameError)
+        }
+
+    @Test
     fun given_unexpectedError_whenSubmitted_thenEmitsShowUnexpectedErrorEffect() =
         runTest(dispatcher) {
             val repository = FakeAuthRepository(registerResult = DomainResult.Failure(AuthError.Unexpected))

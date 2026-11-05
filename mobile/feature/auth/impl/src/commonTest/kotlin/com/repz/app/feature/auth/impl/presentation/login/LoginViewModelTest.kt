@@ -315,7 +315,28 @@ class LoginViewModelTest {
 
                 assertEquals(LoginEffect.FocusField(LoginField.Password), awaitItem())
             }
-            assertEquals(PasswordFieldError.TooShort(8), viewModel.state.value.passwordError)
+            // Login has no minimum password length, so the fallback is Missing, not a register-only rule.
+            assertEquals(PasswordFieldError.Missing, viewModel.state.value.passwordError)
+        }
+
+    @Test
+    fun given_fieldsRejectedByServer_whenPasswordNowFailsLocalValidation_thenShowsTheLocalError() =
+        runTest(dispatcher) {
+            val repository =
+                FakeAuthRepository(logInResult = DomainResult.Failure(AuthError.FieldsRejected(setOf(AccountField.Password))))
+                    .apply { logInGate = CompletableDeferred() }
+            val viewModel = viewModel(repository)
+            viewModel.onIntent(LoginIntent.EmailChanged(VALID_EMAIL))
+            viewModel.onIntent(LoginIntent.PasswordChanged(VALID_PASSWORD))
+            viewModel.onIntent(LoginIntent.SubmitClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+
+            // Edited while the request is in flight: the new value fails Password.forLogIn's max length.
+            viewModel.onIntent(LoginIntent.PasswordChanged("x".repeat(129)))
+            repository.logInGate?.complete(Unit)
+            dispatcher.scheduler.advanceUntilIdle()
+
+            assertEquals(PasswordFieldError.TooLong(128), viewModel.state.value.passwordError)
         }
 
     @Test

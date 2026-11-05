@@ -170,12 +170,29 @@ class RegisterViewModel(
         }
     }
 
+    /**
+     * The local validator should have caught these already, so re-running it against the current
+     * value almost always still accepts it; the fixed fallback then describes the server's actual
+     * rule. It only disagrees when the field changed while the request was in flight.
+     */
     private fun applyFieldsRejected(fields: Set<AccountField>) {
-        val displayNameError = if (AccountField.DisplayName in fields) DisplayNameFieldError.Blank else null
-        val emailError = if (AccountField.Email in fields) EmailFieldError.Invalid else null
-        val passwordError = if (AccountField.Password in fields) PasswordFieldError.TooShort(Password.NEW_PASSWORD_LENGTH.first) else null
-        mutableState.update {
-            it.copy(isSubmitting = false, displayNameError = displayNameError, emailError = emailError, passwordError = passwordError)
+        mutableState.update { current ->
+            current.copy(
+                isSubmitting = false,
+                displayNameError =
+                    if (AccountField.DisplayName in fields) {
+                        validateDisplayName(current.displayName) ?: DisplayNameFieldError.Blank
+                    } else {
+                        null
+                    },
+                emailError = if (AccountField.Email in fields) validateEmail(current.email) ?: EmailFieldError.Invalid else null,
+                passwordError =
+                    if (AccountField.Password in fields) {
+                        validatePassword(current.password) ?: PasswordFieldError.TooShort(Password.NEW_PASSWORD_LENGTH.first)
+                    } else {
+                        null
+                    },
+            )
         }
 
         val firstRejectedField =

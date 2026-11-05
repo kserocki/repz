@@ -148,10 +148,26 @@ class LoginViewModel(
         }
     }
 
+    /**
+     * The local validator should have caught these already, so re-running it against the current
+     * value almost always still accepts it; the fixed fallback then describes the server's actual
+     * rule. It only disagrees when the field changed while the request was in flight. Login has no
+     * minimum password length, so the fallback is [PasswordFieldError.Missing], not a register-only
+     * length rule.
+     */
     private fun applyFieldsRejected(fields: Set<AccountField>) {
-        val emailError = if (AccountField.Email in fields) EmailFieldError.Invalid else null
-        val passwordError = if (AccountField.Password in fields) PasswordFieldError.TooShort(Password.NEW_PASSWORD_LENGTH.first) else null
-        mutableState.update { it.copy(isSubmitting = false, emailError = emailError, passwordError = passwordError) }
+        mutableState.update { current ->
+            current.copy(
+                isSubmitting = false,
+                emailError = if (AccountField.Email in fields) validateEmail(current.email) ?: EmailFieldError.Invalid else null,
+                passwordError =
+                    if (AccountField.Password in fields) {
+                        validatePassword(current.password) ?: PasswordFieldError.Missing
+                    } else {
+                        null
+                    },
+            )
+        }
 
         val firstRejectedField =
             when {
