@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.core.annotation.KoinViewModel
 
 /**
  * [ProfileIntent.LogOutConfirmed] sets [ProfileUiState.isLoggingOut] and never clears it: the
@@ -23,6 +24,7 @@ import kotlinx.coroutines.launch
  * (the DAO clear mid-logout) is ignored, so the header never flashes to the empty placeholder
  * before the stack swaps.
  */
+@KoinViewModel
 class ProfileViewModel(
     observeCurrentUser: ObserveCurrentUserUseCase,
     private val refreshCurrentUser: RefreshCurrentUserUseCase,
