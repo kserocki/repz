@@ -53,6 +53,13 @@ class KoinRulesTest {
     }
 
     @Test
+    fun given_d2TestOnlyScanFixture_whenChecked_thenFailsWithD2() {
+        val error = assertFails { checkD2AnnotatedClassesInsideOwnModuleScan(fixtureScope("d2-test-only-scan")) }
+
+        assertContains(error.message.orEmpty(), "D2")
+    }
+
+    @Test
     fun given_project_whenD3Checked_thenNoViolations() {
         checkD3AtMostOneModuleClassPerModule(projectScope())
     }
@@ -108,6 +115,20 @@ class KoinRulesTest {
     @Test
     fun given_d5AutoBindingFixture_whenChecked_thenFailsWithD5() {
         val error = assertFails { checkD5OneOwnerPerDefinition(fixtureScope("d5-auto-binding")) }
+
+        assertContains(error.message.orEmpty(), "D5")
+    }
+
+    @Test
+    fun given_d5AutoBindingExtraAnnotationFixture_whenChecked_thenFailsWithD5() {
+        val error = assertFails { checkD5OneOwnerPerDefinition(fixtureScope("d5-auto-binding-extra-annotation")) }
+
+        assertContains(error.message.orEmpty(), "D5")
+    }
+
+    @Test
+    fun given_d5BindsListFixture_whenChecked_thenFailsWithD5() {
+        val error = assertFails { checkD5OneOwnerPerDefinition(fixtureScope("d5-binds-list")) }
 
         assertContains(error.message.orEmpty(), "D5")
     }

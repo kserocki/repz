@@ -14,7 +14,7 @@ private const val COMPONENT_SCAN_ANNOTATION = "ComponentScan"
 private const val MODULE_ANNOTATION = "Module"
 private const val APP_SHARED_MODULE_PATH = ":app:shared"
 
-/** D1: every `@ComponentScan` names one Gradle module's root package, with no overlap (ARCH §12.2, §3.3). */
+/** D1: every `@ComponentScan` names one Gradle module's root package, with no overlap (ARCH §12.2). */
 fun checkD1ComponentScanConfiguredPerModule(scope: KoScope) {
     val componentScans =
         scope
@@ -56,12 +56,17 @@ fun checkD1ComponentScanConfiguredPerModule(scope: KoScope) {
 
 /**
  * D2: every class-level `@Single`/`@Factory`/`@Scoped`/`@KoinViewModel` (main source sets) lies
- * inside a `@ComponentScan` package of its own Gradle module, or it is never registered;
- * `@Singleton` is forbidden everywhere (ADR-0008, knowledge base).
+ * inside a `@ComponentScan` package of its own Gradle module, or it is never registered; a
+ * `@ComponentScan` in a test source set does not count towards a main class's own scan, like D1
+ * (ARCH §12.2). `@Singleton` is forbidden everywhere (ADR-0008, knowledge base).
  */
 fun checkD2AnnotatedClassesInsideOwnModuleScan(scope: KoScope) {
     val scanPackagesByModule =
-        componentScanPackagesByModule(scope.classesAndObjects().filter { it.hasAnnotationWithName(COMPONENT_SCAN_ANNOTATION) })
+        componentScanPackagesByModule(
+            scope
+                .classesAndObjects()
+                .filter { it.hasAnnotationWithName(COMPONENT_SCAN_ANNOTATION) && !it.repzSourceFile().isTest },
+        )
 
     scope
         .classesAndObjects()
@@ -119,16 +124,20 @@ fun checkD4ProviderFunctionsDeclareReturnType(scope: KoScope) {
 /**
  * D5: each Koin definition - a provider function inside a `@Module` class, or a `@Single`/
  * `@Factory`/`@Scoped`/`@KoinViewModel` class - has exactly one owner: the pair of (bound type,
- * qualifier annotations) is unique across every main source set (ARCH §9, §12.2). A class-level
- * definition contributes its own name plus every type it auto-binds to: the explicit `binds` list
- * if present, else every direct parent name except `Any`, `ViewModel`, `AndroidViewModel`,
- * `KoinComponent`, `KoinScopeComponent` (mirrors the koin-compiler-plugin's `detectAutoBindings`;
- * including a non-interface parent can only over-report, never hide a real collision). The one
- * exception is a binding provided once per platform inside an `expect`/`actual` `@Module`
- * (ADR-0008's S1 pattern, e.g. `PlatformModule.secureStringStorage`): every `actual` with the same
- * fully qualified class name counts as one owner, since `androidMain`/`iosMain` (and their test
- * source sets) never compile into the same graph — but two such `actual`s in the *same* source
- * set, or two differently named classes, still count as separate owners and still fail.
+ * qualifier annotations) is unique across every main source set (ARCH §9, §12.2). The qualifier
+ * key is built from an allow-list, not a deny-list: only `@Named`/`@Qualifier` and any project
+ * annotation class itself meta-annotated `@Named`/`@Qualifier` count, so an unrelated annotation
+ * (`@Stable`, `@Deprecated`, `@Serializable`, …) can never make two real owners of the same binding
+ * look like different qualifiers. A class-level definition contributes its own name plus every type
+ * it auto-binds to: the explicit `binds` list if present, else every direct parent name except
+ * `Any`, `ViewModel`, `AndroidViewModel`, `KoinComponent`, `KoinScopeComponent` (mirrors the
+ * koin-compiler-plugin's `detectAutoBindings`; including a non-interface parent can only
+ * over-report, never hide a real collision). The one exception is a binding provided once per
+ * platform inside an `expect`/`actual` `@Module` (ADR-0008's S1 pattern, e.g.
+ * `PlatformModule.secureStringStorage`): every `actual` with the same fully qualified class name
+ * counts as one owner, since `androidMain`/`iosMain` (and their test source sets) never compile
+ * into the same graph — but two such `actual`s in the *same* source set, or two differently named
+ * classes, still count as separate owners and still fail.
  */
 fun checkD5OneOwnerPerDefinition(scope: KoScope) {
     data class Definition(
@@ -137,6 +146,8 @@ fun checkD5OneOwnerPerDefinition(scope: KoScope) {
         val location: String,
         val owner: KoinOwner,
     )
+
+    val qualifierAnnotationNames = qualifierAnnotationNamesIn(scope)
 
     val fromProviderFunctions =
         scope
@@ -148,7 +159,7 @@ fun checkD5OneOwnerPerDefinition(scope: KoScope) {
                 val returnType = function.returnType?.sourceType ?: return@mapNotNull null
                 Definition(
                     boundType = returnType,
-                    qualifier = qualifierKey(function.annotations),
+                    qualifier = qualifierKey(function.annotations, qualifierAnnotationNames),
                     location = "${function.repzSourceFile().modulePath}.${function.name}()",
                     owner = koinOwnerOf(moduleClass),
                 )
@@ -160,7 +171,7 @@ fun checkD5OneOwnerPerDefinition(scope: KoScope) {
             .filter { it.hasAnnotationWithName(KOIN_DEFINITION_ANNOTATIONS) && !it.repzSourceFile().isTest }
             .flatMap { classOrObject ->
                 val definitionAnnotation = classOrObject.annotations.first { it.name in KOIN_DEFINITION_ANNOTATIONS }
-                val qualifier = qualifierKey(classOrObject.annotations)
+                val qualifier = qualifierKey(classOrObject.annotations, qualifierAnnotationNames)
                 val location = "${classOrObject.repzSourceFile().modulePath}.${classOrObject.name}"
                 val owner = koinOwnerOf(classOrObject)
                 boundTypeNamesOf(classOrObject, definitionAnnotation).map { boundType ->
@@ -281,9 +292,10 @@ private fun segmentsOverlap(
 
 // --- D5 auto-binding helpers -----------------------------------------------------------------
 
-// Mirrors the koin-compiler-plugin's `KoinPluginConstants.AUTO_BIND_EXCLUDED_SUPERTYPES` (1.0.2 behaviour, ARCH §12.2 Q1).
+// Mirrors the koin-compiler-plugin's `KoinPluginConstants.AUTO_BIND_EXCLUDED_SUPERTYPES` (1.0.2
+// behaviour): these supertypes are never auto-bound, so they never count as a type a class owns.
 private val AUTO_BIND_EXCLUDED_SUPERTYPES = setOf("Any", "ViewModel", "AndroidViewModel", "KoinComponent", "KoinScopeComponent")
-private val BINDS_CLASS_REFERENCE = Regex("""([A-Za-z_][A-Za-zA-Z0-9_]*)\s*::\s*class""")
+private val BINDS_CLASS_REFERENCE = Regex("""([A-Za-z_][A-Za-z0-9_]*)\s*::\s*class""")
 
 /** The class's own name plus every type it binds to: the explicit `binds` list if present, else its auto-bound parents. */
 private fun boundTypeNamesOf(
@@ -330,22 +342,36 @@ private fun koinOwnerOf(classOrObject: KoClassAndObjectDeclaration): KoinOwner =
         sourceSetName = classOrObject.repzSourceFile().sourceSetName,
     )
 
-// "Module" (class-level) plus annotations unrelated to Koin qualification: without these, two
-// definitions that differ only by @OptIn/@Suppress/@JvmStatic would wrongly count as distinct.
-private val NON_QUALIFIER_ANNOTATIONS = KOIN_DEFINITION_ANNOTATIONS + listOf(MODULE_ANNOTATION, "OptIn", "Suppress", "JvmStatic")
+// Koin's own qualifier annotations: `@Named`/`@Qualifier` themselves, plus any project annotation
+// class meta-annotated with one of them (Koin's qualifier mechanism, e.g. `@Qualifier annotation
+// class DebugLogger`). An allow-list, not a deny-list: any other annotation (`@Stable`,
+// `@Deprecated`, `@Serializable`, `@OptIn`, …) must never change a definition's qualifier key, or
+// it could hide a real D5 collision behind what looks like a different qualifier.
+private val KOIN_QUALIFIER_ANNOTATIONS = setOf("Named", "Qualifier")
 
-private fun qualifierKey(annotations: List<KoAnnotationDeclaration>): String =
+/** [KOIN_QUALIFIER_ANNOTATIONS] plus every project annotation class meta-annotated with one of them. */
+private fun qualifierAnnotationNamesIn(scope: KoScope): Set<String> =
+    KOIN_QUALIFIER_ANNOTATIONS +
+        scope
+            .classes()
+            .filter { it.hasAnnotationModifier && it.hasAnnotationWithName(KOIN_QUALIFIER_ANNOTATIONS) }
+            .map { it.name }
+
+private fun qualifierKey(
+    annotations: List<KoAnnotationDeclaration>,
+    qualifierAnnotationNames: Set<String>,
+): String =
     annotations
-        .filterNot { it.name in NON_QUALIFIER_ANNOTATIONS }
+        .filter { it.name in qualifierAnnotationNames }
         .map { it.text }
         .sorted()
         .joinToString(",")
 
 // --- D6 pass-through-provider helpers ---------------------------------------------------------
 
-private val CONSTRUCTOR_CALL_START = Regex("""^([A-Za-z_][A-Za-zA-Z0-9_]*)\(""")
-private val NAMED_ARGUMENT_LABEL = Regex("""^[A-Za-z_][A-Za-zA-Z0-9_]*\s*=(?!=)\s*""")
-private val BARE_IDENTIFIER = Regex("""^[A-Za-z_][A-Za-zA-Z0-9_]*[?!]{0,2}$""")
+private val CONSTRUCTOR_CALL_START = Regex("""^([A-Za-z_][A-Za-z0-9_]*)\(""")
+private val NAMED_ARGUMENT_LABEL = Regex("""^[A-Za-z_][A-Za-z0-9_]*\s*=(?!=)\s*""")
+private val BARE_IDENTIFIER = Regex("""^[A-Za-z_][A-Za-z0-9_]*[?!]{0,2}$""")
 
 /**
  * The name of the project class constructed by [function]'s body, when that body is exactly one
