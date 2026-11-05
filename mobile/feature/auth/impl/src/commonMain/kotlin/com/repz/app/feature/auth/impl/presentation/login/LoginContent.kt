@@ -86,7 +86,21 @@ fun LoginContent(
             verticalArrangement = Arrangement.spacedBy(RepzSpacing.lg),
         ) {
             Text(stringResource(Res.string.login_title), style = MaterialTheme.typography.headlineLargeEmphasized)
-            LoginFields(state, onIntent, focusRequesters)
+            LoginFields(
+                email = state.email,
+                onEmailChange = { onIntent(LoginIntent.EmailChanged(it)) },
+                onEmailFocusLoss = { onIntent(LoginIntent.EmailFocusLost) },
+                emailError = state.emailError,
+                password = state.password,
+                onPasswordChange = { onIntent(LoginIntent.PasswordChanged(it)) },
+                onPasswordFocusLoss = { onIntent(LoginIntent.PasswordFocusLost) },
+                isPasswordVisible = state.isPasswordVisible,
+                onPasswordVisibilityToggle = { onIntent(LoginIntent.PasswordVisibilityToggled) },
+                passwordError = state.passwordError,
+                areCredentialsRejected = state.areCredentialsRejected,
+                onSubmit = { onIntent(LoginIntent.SubmitClicked) },
+                focusRequesters = focusRequesters,
+            )
         }
 
         Column(
@@ -132,23 +146,33 @@ private fun LoginOfflineBanner(isVisible: Boolean) {
 
 @Composable
 private fun ColumnScope.LoginFields(
-    state: LoginUiState,
-    onIntent: (LoginIntent) -> Unit,
+    email: String,
+    onEmailChange: (String) -> Unit,
+    onEmailFocusLoss: () -> Unit,
+    emailError: EmailFieldError?,
+    password: String,
+    onPasswordChange: (String) -> Unit,
+    onPasswordFocusLoss: () -> Unit,
+    isPasswordVisible: Boolean,
+    onPasswordVisibilityToggle: () -> Unit,
+    passwordError: PasswordFieldError?,
+    areCredentialsRejected: Boolean,
+    onSubmit: () -> Unit,
     focusRequesters: Map<LoginField, FocusRequester>,
 ) {
     // A tight group per field (DESIGN_SYSTEM §9): the error message is its own element below the
     // field, not the field's `supportingText` (RepzFieldError's doc explains why), so it needs its
     // own small gap here instead of the outer fields column's normal item spacing.
-    val emailErrorMessage = state.emailError?.message()
+    val emailErrorMessage = emailError?.message()
     Column(verticalArrangement = Arrangement.spacedBy(RepzSpacing.xs)) {
         RepzTextField(
-            value = state.email,
-            onValueChange = { onIntent(LoginIntent.EmailChanged(it)) },
+            value = email,
+            onValueChange = onEmailChange,
             label = stringResource(Res.string.auth_email_label),
-            isError = state.emailError != null || state.areCredentialsRejected,
+            isError = emailError != null || areCredentialsRejected,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next, autoCorrectEnabled = false),
             keyboardActions = KeyboardActions(onNext = { focusRequesters.getValue(LoginField.Password).requestFocus() }),
-            onFocusLoss = { onIntent(LoginIntent.EmailFocusLost) },
+            onFocusLoss = onEmailFocusLoss,
             modifier =
                 Modifier
                     .fillMaxWidth()
@@ -162,19 +186,19 @@ private fun ColumnScope.LoginFields(
     }
 
     val passwordErrorMessage =
-        state.passwordError?.message()
-            ?: if (state.areCredentialsRejected) stringResource(Res.string.login_invalid_credentials) else null
+        passwordError?.message()
+            ?: if (areCredentialsRejected) stringResource(Res.string.login_invalid_credentials) else null
     Column(verticalArrangement = Arrangement.spacedBy(RepzSpacing.xs)) {
         RepzPasswordField(
-            value = state.password,
-            onValueChange = { onIntent(LoginIntent.PasswordChanged(it)) },
+            value = password,
+            onValueChange = onPasswordChange,
             label = stringResource(Res.string.auth_password_label),
-            isPasswordVisible = state.isPasswordVisible,
-            onPasswordVisibilityToggle = { onIntent(LoginIntent.PasswordVisibilityToggled) },
-            isError = state.passwordError != null || state.areCredentialsRejected,
+            isPasswordVisible = isPasswordVisible,
+            onPasswordVisibilityToggle = onPasswordVisibilityToggle,
+            isError = passwordError != null || areCredentialsRejected,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { onIntent(LoginIntent.SubmitClicked) }),
-            onFocusLoss = { onIntent(LoginIntent.PasswordFocusLost) },
+            keyboardActions = KeyboardActions(onDone = { onSubmit() }),
+            onFocusLoss = onPasswordFocusLoss,
             modifier =
                 Modifier
                     .fillMaxWidth()
