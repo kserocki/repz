@@ -62,7 +62,7 @@ class LocalApiReachabilityTest {
                     sessionManager = sessionManager,
                     logger = Logger.withTag(NETWORK_LOG_TAG),
                 )
-            val healthApi: HealthApi = KtorHealthApi(clients.public)
+            val healthApi: HealthApi = KtorHealthApi(clients)
 
             val result = healthApi.check()
 

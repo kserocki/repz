@@ -89,7 +89,7 @@ private class LiveApiSession(
     private val logger = Logger(StaticConfig(logWriterList = listOf(logWriter)))
     val sessionManager = SessionManager(PersistentTokenStore(InMemorySecureStringStorage()), logger)
     private val clients = createRepzHttpClients(platformHttpClientEngine(), ApiConfig(baseUrl), sessionManager, logger)
-    val authApi: AuthApi = KtorAuthApi(clients.public)
+    val authApi: AuthApi = KtorAuthApi(clients)
     val userApi: UserApi = KtorUserApi(clients)
     val syncApi: SyncApi = KtorSyncApi(clients)
     val refreshTokensCall = RefreshTokensCall(clients.public)

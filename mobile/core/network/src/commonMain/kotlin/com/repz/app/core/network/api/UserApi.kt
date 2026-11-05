@@ -11,6 +11,7 @@ import io.ktor.client.request.patch
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import org.koin.core.annotation.Single
 
 interface UserApi {
     suspend fun getMe(): NetworkResult<UserDto>
@@ -19,6 +20,7 @@ interface UserApi {
     suspend fun updateMe(request: UpdateProfileRequestDto): NetworkResult<UserDto>
 }
 
+@Single
 internal class KtorUserApi(
     private val clients: RepzHttpClients,
 ) : UserApi {

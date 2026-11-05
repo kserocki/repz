@@ -33,7 +33,7 @@ class LocalApiReachabilityTest {
             if (liveApiUrl.isEmpty()) return@runTest
 
             val clients = createRepzHttpClients(platformHttpClientEngine(), ApiConfig(liveApiUrl), testSessionManager(), testLogger())
-            val healthApi: HealthApi = KtorHealthApi(clients.public)
+            val healthApi: HealthApi = KtorHealthApi(clients)
 
             val result = healthApi.check()
 
