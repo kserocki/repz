@@ -55,6 +55,8 @@ fun RepzDesignSystemCatalog(
             RepzCatalogPage.MotionTweens -> MotionTweensCatalogPage()
             RepzCatalogPage.MotionMorphs -> MotionMorphsCatalogPage()
             RepzCatalogPage.Haptics -> HapticsCatalogPage()
+            RepzCatalogPage.ComponentsActions -> ComponentsActionsCatalogPage()
+            RepzCatalogPage.ComponentsInputs -> ComponentsInputsCatalogPage()
         }
     }
 }

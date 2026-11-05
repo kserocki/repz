@@ -25,6 +25,8 @@ enum class RepzCatalogPage(
     MotionTweens("motion-tweens"),
     MotionMorphs("motion-morphs"),
     Haptics("haptics"),
+    ComponentsActions("components-actions"),
+    ComponentsInputs("components-inputs"),
     ;
 
     companion object {
