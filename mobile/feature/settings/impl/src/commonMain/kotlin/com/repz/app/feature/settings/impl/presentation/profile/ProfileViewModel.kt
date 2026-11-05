@@ -20,8 +20,8 @@ import kotlinx.coroutines.launch
  * [ProfileIntent.LogOutConfirmed] sets [ProfileUiState.isLoggingOut] and never clears it: the
  * auth gate replaces this screen once the session ends (ADR-0025), the same reasoning as the
  * login screen's `isSubmitting`. While it is set, a `null` row from [ObserveCurrentUserUseCase]
- * (the DAO clear mid-logout) is ignored, so the header never flashes to the Q9 placeholder before
- * the stack swaps.
+ * (the DAO clear mid-logout) is ignored, so the header never flashes to the empty placeholder
+ * before the stack swaps.
  */
 class ProfileViewModel(
     observeCurrentUser: ObserveCurrentUserUseCase,

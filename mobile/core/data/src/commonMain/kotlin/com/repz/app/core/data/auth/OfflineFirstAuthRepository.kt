@@ -53,19 +53,20 @@ class OfflineFirstAuthRepository(
     ): DomainResult<User, AuthError> = signIn { authApi.login(LoginRequestDto(email.value, password.value)) }
 
     override suspend fun logOut() {
-        val refreshToken =
-            withContext(NonCancellable) {
-                val token = sessionManager.currentRefreshToken()
-                sessionManager.end()
-                currentUserDao.clear()
-                token
-            }
+        withContext(NonCancellable) {
+            val refreshToken = sessionManager.currentRefreshToken()
+            sessionManager.end()
+            currentUserDao.clear()
 
-        if (refreshToken != null) {
-            applicationScope.launch {
-                when (val result = authApi.logout(refreshToken)) {
-                    is NetworkResult.Success -> Unit
-                    is NetworkResult.Failure -> logger.w { "logout revoke failed: ${result.error::class.simpleName}" }
+            // Launched while still NonCancellable, so the call is made even if the caller (e.g. a
+            // ViewModel cleared by the auth gate's epoch bump) is cancelled the instant this
+            // withContext block returns. applicationScope itself then carries the revoke to completion.
+            if (refreshToken != null) {
+                applicationScope.launch {
+                    when (val result = authApi.logout(refreshToken)) {
+                        is NetworkResult.Success -> Unit
+                        is NetworkResult.Failure -> logger.w { "logout revoke failed: ${result.error::class.simpleName}" }
+                    }
                 }
             }
         }

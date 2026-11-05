@@ -19,8 +19,8 @@ import androidx.compose.ui.unit.dp
 import com.repz.app.core.designsystem.theme.RepzIconSize
 import com.repz.app.core.designsystem.theme.RepzSpacing
 
-// Board 13 `.li`: the icon-text gap is an exact board measurement, not on the §6 spacing grid
-// (Q12 precedent allows a component-internal dimension to stay exact).
+// Board 13 `.li`: the icon-text gap is an exact board measurement, kept exact as a
+// component-internal size rather than rounded to a value on the §6 spacing grid.
 private val ListItemMinHeight = 56.dp
 private val IconTextGap = 14.dp
 

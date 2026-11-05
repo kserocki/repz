@@ -38,5 +38,6 @@ class DataModule {
     fun userRepository(
         userApi: UserApi,
         database: RepzDatabase,
-    ): UserRepository = OfflineFirstUserRepository(userApi, database.currentUserDao())
+        sessionManager: SessionManager,
+    ): UserRepository = OfflineFirstUserRepository(userApi, database.currentUserDao(), sessionManager)
 }

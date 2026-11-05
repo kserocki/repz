@@ -15,7 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 private const val DIALOG_SCRIM_OPACITY = 0.32f
 
 /**
- * A confirmation dialog (DESIGN_SYSTEM §9, board 25, Q4): M3 `AlertDialog` (ADR-0006) in the
+ * A confirmation dialog (DESIGN_SYSTEM §9, board 25): M3 `AlertDialog` (ADR-0006) in the
  * `surfaceContainerHigh` container, `shapes.extraLarge` (28 dp), no icon, centred `headlineSmall`
  * [title] and centred `bodyMedium`/`onSurfaceVariant` [text]. The two text buttons are M3's own
  * end-aligned dialog row: [dismissText] (e.g. "Cancel", `primary`, M3's default text-button colour)
@@ -24,8 +24,7 @@ private const val DIALOG_SCRIM_OPACITY = 0.32f
  * [dismissText]'s own click — callers wire both to the same "cancel" handling. [confirmButtonModifier]
  * and [dismissButtonModifier] tag the buttons themselves (the same precedent as `RepzTopAppBar`'s
  * `backButtonModifier`), so a test tag lands on the tappable target instead of the whole dialog.
- * M3's own dialog enter/exit
- * (MOTION.md has no dialog-specific spec).
+ * Enter/exit motion is M3's own dialog default; MOTION.md has no dialog-specific spec.
  */
 @Composable
 fun RepzAlertDialog(

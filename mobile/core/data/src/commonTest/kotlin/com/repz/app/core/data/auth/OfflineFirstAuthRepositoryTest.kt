@@ -448,7 +448,7 @@ class OfflineFirstAuthRepositoryTest {
         }
 
     @Test
-    fun givenTheCallingCoroutineIsCancelledDuringTheLocalCleanup_whenLoggingOut_thenTheLocalStepsStillFinish() =
+    fun givenTheCallingCoroutineIsCancelledDuringTheLocalCleanup_whenLoggingOut_thenTheLocalStepsStillFinishAndTheRevokeSurvives() =
         runTest {
             val tokenStore =
                 FakeTokenStore().apply {
@@ -458,7 +458,10 @@ class OfflineFirstAuthRepositoryTest {
             val sessionManager = SessionManager(tokenStore, testLogger())
             sessionManager.start(AuthTokens(AccessToken("access"), RefreshToken("refresh")))
             currentUserDao.replace(sampleUserDto().toCurrentUserEntity())
-            val repository = repository(FakeAuthApi(), sessionManager)
+            val authApi = FakeAuthApi()
+            // A scope that outlives the cancelled caller below, the same as applicationScope in production.
+            val applicationScope = TestScope(testScheduler)
+            val repository = repository(authApi, sessionManager, applicationScope = applicationScope)
 
             val job = launch { repository.logOut() }
             tokenStore.reachedClearGate?.await()
@@ -466,11 +469,13 @@ class OfflineFirstAuthRepositoryTest {
             assertEquals(1, tokenStore.clearCallCount)
             tokenStore.clearGate?.complete(Unit)
             job.join()
+            applicationScope.testScheduler.advanceUntilIdle()
 
             assertTrue(job.isCancelled)
             assertEquals(SessionStatus.SignedOut(SignOutReason.LoggedOut), sessionManager.status.value)
             assertNull(tokenStore.load())
             assertNull(currentUserDao.observe().first())
+            assertEquals(listOf(RefreshToken("refresh")), authApi.logoutCalls)
         }
 
     private suspend fun logInWith(result: NetworkResult<AuthSessionDto>): DomainResult<User, AuthError> {

@@ -15,15 +15,15 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
 import com.repz.app.core.designsystem.theme.RepzShapes
 
-// Board 13 (profile header): the Cookie9 avatar is 68 dp, an exact board measurement rather than a
-// value on the §6 spacing grid (Q12 precedent allows a component-internal dimension to stay exact).
+// Board 13 (profile header): the Cookie9 avatar is 68 dp, an exact board measurement, kept exact
+// as a component-internal size rather than rounded to a value on the §6 spacing grid.
 private val AvatarSize = 68.dp
 
 /**
- * The account avatar (DESIGN_SYSTEM §5 Cookie9Sided, board 13): [monogram] (Q6: one uppercased code
+ * The account avatar (DESIGN_SYSTEM §5 Cookie9Sided, board 13): [monogram] (one uppercased code
  * point of the display name) on `primaryContainer`/`onPrimaryContainer`, the nearest emphasized
  * type token to the board's 28 px/850 weight (`headlineMediumEmphasized`). `null` renders an empty
- * `surfaceContainerHigh` placeholder (Q9: shown before any profile is cached). Decorative: the
+ * `surfaceContainerHigh` placeholder, shown before any profile is cached. Decorative: the
  * parent row's name text already carries the accessible label.
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)

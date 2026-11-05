@@ -32,8 +32,8 @@ import org.jetbrains.compose.resources.stringResource
 /**
  * Stateless (ADR-0005), board 13: the account header (Cookie9 avatar, name, email — the lifetime
  * stats line is a later follow-up, no workout data yet) and directly below it the Log out row
- * (Q5: no section caption, no other rows, no top app bar). [RepzAlertDialog] shows over it when
- * [ProfileUiState.isLogOutDialogVisible].
+ * (no section caption, no other rows, no top app bar yet: Profile has nothing else to show).
+ * [RepzAlertDialog] shows over it when [ProfileUiState.isLogOutDialogVisible].
  * No status-bar inset padding here: the app shell already consumes the scaffold's padding around
  * every tab root.
  */
@@ -71,8 +71,10 @@ fun ProfileContent(
     }
 }
 
-/** Q9: a cached-account-less header keeps the avatar's own height (no spinner, no error copy); the
- * name/email column simply isn't there yet, replacing itself as soon as the Room row arrives. */
+/**
+ * Before any profile is cached, the header keeps the avatar's own height (no spinner, no error
+ * copy); the name/email column simply isn't there yet, replacing itself as soon as the Room row arrives.
+ */
 @Composable
 private fun ProfileHeader(
     account: ProfileAccount?,

@@ -20,7 +20,6 @@ class FakeAuthRepository(
 ) : AuthRepository {
     var logInGate: CompletableDeferred<Unit>? = null
     var registerGate: CompletableDeferred<Unit>? = null
-    var logOutGate: CompletableDeferred<Unit>? = null
 
     private val mutableLogInCalls = mutableListOf<Pair<EmailAddress, Password>>()
     val logInCalls: List<Pair<EmailAddress, Password>> get() = mutableLogInCalls
@@ -52,6 +51,5 @@ class FakeAuthRepository(
 
     override suspend fun logOut() {
         logOutCallCount++
-        logOutGate?.await()
     }
 }

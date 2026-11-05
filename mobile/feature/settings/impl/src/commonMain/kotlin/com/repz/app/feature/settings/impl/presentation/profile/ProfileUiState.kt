@@ -1,7 +1,7 @@
 package com.repz.app.feature.settings.impl.presentation.profile
 
 /**
- * [account] is `null` until the Room row is known: never-cached offline shows the Q9 placeholder
+ * [account] is `null` until the Room row is known: never-cached offline shows the placeholder
  * header, never an error. [isLoggingOut] never goes back to `false` once set (the auth gate
  * replaces this screen, the same reasoning as the login screen's `isSubmitting`).
  */

@@ -2,8 +2,8 @@ package com.repz.app.feature.settings.impl.presentation.profile
 
 /**
  * The trimmed display name's first full code point (a surrogate pair, e.g. an emoji, isn't cut
- * in half), uppercased. Blank after trimming returns an empty string (the avatar then shows the
- * Q9 placeholder, since [ProfileAccount.monogram] is never used on a `null` account).
+ * in half), uppercased. Blank after trimming returns an empty string, but that string is never
+ * shown: [ProfileAccount.monogram] is only read when the account itself is non-null.
  */
 internal fun monogramOf(displayName: String): String {
     val trimmed = displayName.trim()
