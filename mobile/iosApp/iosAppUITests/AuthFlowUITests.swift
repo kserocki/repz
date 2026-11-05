@@ -93,18 +93,6 @@ final class AuthFlowUITests: XCTestCase {
 
         element(identifier: "login_submit").tap()
 
-        // KNOWN FAILING (2026-11-05, confirmed against a live API, 401 reaches the app): the
-        // exported .xcresult accessibility snapshot at timeout shows no element anywhere in the
-        // tree carrying this label, and the merged "login_password" element's value is only the
-        // masked password + "Keyboard Focused" -- no trace of the error text. Material3's
-        // OutlinedTextField (RepzPasswordField's base) merges label/value/supportingText into one
-        // semantics node, and Compose Multiplatform's iOS bridge does not expose a non-merged
-        // child for text under a merging ancestor, nor does it append supportingText to the merged
-        // accessibilityValue while the field is non-blank. Whether this is a test lookup bug (needs
-        // a different predicate/element) or a real RepzTextField/iOS accessibility gap (the error
-        // would be equally unannounced to VoiceOver) is unresolved and not something a single
-        // iosApp/iosAppUITests-only change can safely decide -- raised for Falcon/Atlas rather than
-        // guessed here. Do not "fix" this assertion without confirming which it is.
         XCTAssertTrue(
             element(label: "Email or password is incorrect").waitForExistence(timeout: 10),
             "Wrong-credentials error was not shown"

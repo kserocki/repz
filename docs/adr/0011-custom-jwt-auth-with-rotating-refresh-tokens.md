@@ -43,7 +43,7 @@ Tokens are stored in the platform Keychain/Keystore. Logout wipes the local DB (
 |---|---|
 | `Api(401, problem.type == InvalidCredentials)` | `InvalidCredentials` |
 | `Api(409, problem.type == EmailTaken)` | `EmailTaken` |
-| `Api(400, problem.type == ValidationError)`, a recognised field path (`email`/`password`/`displayName`) | `FieldsRejected(fields)` |
+| `Api(400, problem.type == ValidationError)`, a recognised field path (`email`/`password`/`displayName`; the API sends them as `json.<field>`, e.g. `json.email`, and the prefix is stripped) | `FieldsRejected(fields)` |
 | `Api(400, problem.type == ValidationError)`, no recognised field path | `Unexpected` |
 | `Offline` | `NoConnection` |
 | `Timeout`, `SessionExpired`, `MalformedResponse`, any other `Api` | `Unexpected` |

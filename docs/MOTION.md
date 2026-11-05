@@ -240,6 +240,9 @@ Haptics respect the in-app "Haptics" setting (F23) through `RepzTheme(hapticsEna
 - **Haptic:** none
 - **Reduced motion:** Crossfade 150 ms
 
+### Auth offline banner (REP-30)
+- The "You're offline" banner on Log in and Register fades in and out with `RepzMotion.effectsSprings.effectsDefault()` (alpha only, no movement). It isn't a numbered MOT entry: it uses the effects spring as-is.
+
 ### MOT-22 · Press feedback
 - **Trigger:** Press on any primary surface
 - **Animates:** Shape morph to pressed radius + scale 0.96 (pressMorph), release spring back
