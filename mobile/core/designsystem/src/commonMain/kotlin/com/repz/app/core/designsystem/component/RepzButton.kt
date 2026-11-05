@@ -6,7 +6,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.repz.app.core.designsystem.motion.LocalReducedMotion
@@ -91,7 +92,8 @@ private val RepzButtonSize.loadingIndicatorSize: Dp
  * emphasis, `primary`/`onPrimary`; the decided CTA colour for every call to action, recorded in
  * DESIGN_SYSTEM §13), [RepzButtonStyle.Outlined] (medium emphasis, `outline` border) or
  * [RepzButtonStyle.Text] (low emphasis). [RepzButtonSize.Small] (40 dp) or
- * [RepzButtonSize.Medium] (56 dp); XS/L/XL ship later.
+ * [RepzButtonSize.Medium] (56 dp) is a minimum height: at larger font scales [text] wraps to more
+ * lines and the button grows to fit, never clipping or truncating. XS/L/XL ship later.
  *
  * MOT-22 press feedback: the shape morphs from the rest pill to [PressedCornerRadius] and scales to
  * 0.96, both on [RepzMotion.springs.pressMorph]. With reduced motion, neither animates: only the
@@ -134,7 +136,10 @@ fun RepzButton(
 
     Button(
         onClick = onClick,
-        modifier = modifier.height(size.height).scale(scale),
+        // A minimum, not a fixed, height: at large font scales the label wraps to more lines and the
+        // button grows to fit it instead of clipping (AGENTS.md §4, AC #7 "buttons wrap, never
+        // truncate").
+        modifier = modifier.heightIn(min = size.height).scale(scale),
         enabled = enabled && !isLoading,
         shape = RoundedCornerShape(cornerRadius),
         colors = style.colors(disabled = isVisuallyDisabled),
@@ -154,7 +159,7 @@ fun RepzButton(
                 color = LocalContentColor.current,
             )
         } else {
-            Text(text, style = size.labelStyle)
+            Text(text, style = size.labelStyle, textAlign = TextAlign.Center)
         }
     }
 }
