@@ -1,6 +1,12 @@
 package com.repz.app.core.data.auth
 
+import androidx.room3.Room
 import co.touchlab.kermit.Logger
+import com.repz.app.core.data.user.toCurrentUserEntity
+import com.repz.app.core.data.user.toDomain
+import com.repz.app.core.database.RepzDatabase
+import com.repz.app.core.database.account.CurrentUserDao
+import com.repz.app.core.database.buildRepzDatabase
 import com.repz.app.core.domain.auth.AccountField
 import com.repz.app.core.domain.auth.AuthError
 import com.repz.app.core.domain.model.UnitSystem
@@ -26,16 +32,23 @@ import com.repz.app.core.network.session.AuthTokens
 import com.repz.app.core.network.session.RefreshToken
 import com.repz.app.core.network.session.SessionManager
 import com.repz.app.core.network.session.SessionStatus
+import com.repz.app.core.network.session.SignOutReason
 import com.repz.app.core.network.session.TokenSaveResult
 import com.repz.app.core.network.session.TokenStore
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.uuid.Uuid
 
@@ -43,12 +56,14 @@ import kotlin.uuid.Uuid
 private class FakeAuthApi : AuthApi {
     var registerResult: NetworkResult<AuthSessionDto> = NetworkResult.Failure(NetworkError.Offline)
     var loginResult: NetworkResult<AuthSessionDto> = NetworkResult.Failure(NetworkError.Offline)
+    var logoutResult: NetworkResult<Unit> = NetworkResult.Success(Unit)
 
     var registerGate: CompletableDeferred<Unit>? = null
     var loginGate: CompletableDeferred<Unit>? = null
 
     val registerCalls = mutableListOf<RegisterRequestDto>()
     val loginCalls = mutableListOf<LoginRequestDto>()
+    val logoutCalls = mutableListOf<RefreshToken>()
 
     override suspend fun register(request: RegisterRequestDto): NetworkResult<AuthSessionDto> {
         registerCalls += request
@@ -62,7 +77,10 @@ private class FakeAuthApi : AuthApi {
         return loginResult
     }
 
-    override suspend fun logout(refreshToken: RefreshToken): NetworkResult<Unit> = NetworkResult.Success(Unit)
+    override suspend fun logout(refreshToken: RefreshToken): NetworkResult<Unit> {
+        logoutCalls += refreshToken
+        return logoutResult
+    }
 }
 
 /** Same reasoning as `OfflineFirstSessionRepositoryTest`'s: `TokenStore` belongs to `core:network`. */
@@ -71,6 +89,17 @@ private class FakeTokenStore : TokenStore {
     var saveCallCount: Int = 0
         private set
     var saveResult: TokenSaveResult = TokenSaveResult.Saved
+
+    /**
+     * Suspends inside [SessionManager.end] so a test can cancel the caller while it holds this
+     * lock. [reachedClearGate] completes right before suspending, so the test can wait for that
+     * instead of assuming [clear] runs eagerly (it may hop through a real dispatcher first, e.g.
+     * a prior Room call on the same coroutine).
+     */
+    var clearGate: CompletableDeferred<Unit>? = null
+    var reachedClearGate: CompletableDeferred<Unit>? = null
+    var clearCallCount: Int = 0
+        private set
 
     override suspend fun load(): AuthTokens? = stored
 
@@ -81,6 +110,9 @@ private class FakeTokenStore : TokenStore {
     }
 
     override suspend fun clear() {
+        clearCallCount++
+        reachedClearGate?.complete(Unit)
+        clearGate?.await()
         stored = null
     }
 }
@@ -116,13 +148,29 @@ private fun apiProblem(
 ) = ApiProblem(type = type, title = "problem", status = status, detail = null, requestId = "req-1", fieldErrors = fieldErrors)
 
 class OfflineFirstAuthRepositoryTest {
+    // Room needs a real dispatcher for its query/invalidation work, not the runTest scheduler.
+    private val database = Room.inMemoryDatabaseBuilder<RepzDatabase>().buildRepzDatabase(Dispatchers.Default)
+    private val currentUserDao = database.currentUserDao()
+
+    @AfterTest
+    fun closeDatabase() {
+        database.close()
+    }
+
+    private fun repository(
+        authApi: AuthApi,
+        sessionManager: SessionManager,
+        dao: CurrentUserDao = currentUserDao,
+        applicationScope: CoroutineScope = TestScope(),
+    ) = OfflineFirstAuthRepository(authApi, sessionManager, dao, applicationScope, testLogger())
+
     @Test
     fun givenASuccessfulLogin_whenLoggingIn_thenTheSessionStartsAndTheDomainUserIsReturned() =
         runTest {
             val authApi = FakeAuthApi().apply { loginResult = NetworkResult.Success(sampleSessionDto()) }
             val tokenStore = FakeTokenStore()
             val sessionManager = SessionManager(tokenStore, testLogger())
-            val repository = OfflineFirstAuthRepository(authApi, sessionManager)
+            val repository = repository(authApi, sessionManager)
 
             val result = repository.logIn(sampleEmail(), samplePassword())
 
@@ -134,12 +182,24 @@ class OfflineFirstAuthRepositoryTest {
         }
 
     @Test
+    fun givenASuccessfulLogin_whenLoggingIn_thenTheRowIsStoredBeforeTheSessionStarts() =
+        runTest {
+            val authApi = FakeAuthApi().apply { loginResult = NetworkResult.Success(sampleSessionDto()) }
+            val sessionManager = SessionManager(FakeTokenStore(), testLogger())
+            val repository = repository(authApi, sessionManager)
+
+            repository.logIn(sampleEmail(), samplePassword())
+
+            assertEquals(sampleUserDto().toDomain(), currentUserDao.observe().first()?.toDomain())
+        }
+
+    @Test
     fun givenASuccessfulRegister_whenRegistering_thenTheSessionStartsAndTheDomainUserIsReturned() =
         runTest {
             val authApi = FakeAuthApi().apply { registerResult = NetworkResult.Success(sampleSessionDto()) }
             val tokenStore = FakeTokenStore()
             val sessionManager = SessionManager(tokenStore, testLogger())
-            val repository = OfflineFirstAuthRepository(authApi, sessionManager)
+            val repository = repository(authApi, sessionManager)
 
             val result = repository.register(sampleEmail(), samplePassword(), sampleDisplayName())
 
@@ -151,12 +211,24 @@ class OfflineFirstAuthRepositoryTest {
         }
 
     @Test
+    fun givenASuccessfulRegister_whenRegistering_thenTheRowIsStoredBeforeTheSessionStarts() =
+        runTest {
+            val authApi = FakeAuthApi().apply { registerResult = NetworkResult.Success(sampleSessionDto()) }
+            val sessionManager = SessionManager(FakeTokenStore(), testLogger())
+            val repository = repository(authApi, sessionManager)
+
+            repository.register(sampleEmail(), samplePassword(), sampleDisplayName())
+
+            assertEquals(sampleUserDto().toDomain(), currentUserDao.observe().first()?.toDomain())
+        }
+
+    @Test
     fun givenATokenSaveFailure_whenLoggingIn_thenItStillSucceedsAndSignsInForThisProcess() =
         runTest {
             val authApi = FakeAuthApi().apply { loginResult = NetworkResult.Success(sampleSessionDto()) }
             val tokenStore = FakeTokenStore().apply { saveResult = TokenSaveResult.Failed }
             val sessionManager = SessionManager(tokenStore, testLogger())
-            val repository = OfflineFirstAuthRepository(authApi, sessionManager)
+            val repository = repository(authApi, sessionManager)
 
             val result = repository.logIn(sampleEmail(), samplePassword())
 
@@ -269,7 +341,7 @@ class OfflineFirstAuthRepositoryTest {
             val authApi = FakeAuthApi().apply { loginResult = NetworkResult.Failure(NetworkError.Offline) }
             val tokenStore = FakeTokenStore()
             val sessionManager = SessionManager(tokenStore, testLogger())
-            val repository = OfflineFirstAuthRepository(authApi, sessionManager)
+            val repository = repository(authApi, sessionManager)
 
             repository.logIn(sampleEmail(), samplePassword())
 
@@ -284,7 +356,7 @@ class OfflineFirstAuthRepositoryTest {
             val authApi = FakeAuthApi().apply { loginGate = CompletableDeferred() }
             val tokenStore = FakeTokenStore()
             val sessionManager = SessionManager(tokenStore, testLogger())
-            val repository = OfflineFirstAuthRepository(authApi, sessionManager)
+            val repository = repository(authApi, sessionManager)
 
             val job = launch { repository.logIn(sampleEmail(), samplePassword()) }
             job.cancel()
@@ -296,15 +368,119 @@ class OfflineFirstAuthRepositoryTest {
             assertEquals(0, tokenStore.saveCallCount)
         }
 
+    @Test
+    fun givenASignedInSession_whenLoggingOut_thenTokensAndTheRowAreClearedAndSignOutReasonIsLoggedOut() =
+        runTest {
+            val tokenStore = FakeTokenStore().apply { saveResult = TokenSaveResult.Saved }
+            val sessionManager = SessionManager(tokenStore, testLogger())
+            sessionManager.start(AuthTokens(AccessToken("access"), RefreshToken("refresh")))
+            currentUserDao.replace(sampleUserDto().toCurrentUserEntity())
+            val repository = repository(FakeAuthApi(), sessionManager)
+
+            repository.logOut()
+
+            assertEquals(SessionStatus.SignedOut(SignOutReason.LoggedOut), sessionManager.status.value)
+            assertNull(tokenStore.load())
+            assertNull(currentUserDao.observe().first())
+        }
+
+    @Test
+    fun givenTheRevokeFailsOffline_whenLoggingOut_thenTheLocalStateIsStillCleared() =
+        runTest {
+            val tokenStore = FakeTokenStore()
+            val sessionManager = SessionManager(tokenStore, testLogger())
+            sessionManager.start(AuthTokens(AccessToken("access"), RefreshToken("refresh")))
+            val authApi = FakeAuthApi().apply { logoutResult = NetworkResult.Failure(NetworkError.Offline) }
+            val repository = repository(authApi, sessionManager)
+
+            repository.logOut()
+
+            assertEquals(SessionStatus.SignedOut(SignOutReason.LoggedOut), sessionManager.status.value)
+            assertNull(tokenStore.load())
+        }
+
+    @Test
+    fun givenTheRevokeFailsWithServerError_whenLoggingOut_thenTheLocalStateIsStillCleared() =
+        runTest {
+            val tokenStore = FakeTokenStore()
+            val sessionManager = SessionManager(tokenStore, testLogger())
+            sessionManager.start(AuthTokens(AccessToken("access"), RefreshToken("refresh")))
+            val authApi =
+                FakeAuthApi().apply {
+                    logoutResult = NetworkResult.Failure(NetworkError.Api(500, apiProblem(ProblemType.PlainHttp, 500)))
+                }
+            val repository = repository(authApi, sessionManager)
+
+            repository.logOut()
+
+            assertEquals(SessionStatus.SignedOut(SignOutReason.LoggedOut), sessionManager.status.value)
+            assertNull(tokenStore.load())
+        }
+
+    @Test
+    fun givenASignedInSession_whenLoggingOut_thenTheRevokeIsCalledOnceWithTheCapturedToken() =
+        runTest {
+            val applicationScope = TestScope(testScheduler)
+            val tokenStore = FakeTokenStore()
+            val sessionManager = SessionManager(tokenStore, testLogger())
+            sessionManager.start(AuthTokens(AccessToken("access"), RefreshToken("the-refresh-token")))
+            val authApi = FakeAuthApi()
+            val repository = repository(authApi, sessionManager, applicationScope = applicationScope)
+
+            repository.logOut()
+            applicationScope.testScheduler.advanceUntilIdle()
+
+            assertEquals(listOf(RefreshToken("the-refresh-token")), authApi.logoutCalls)
+        }
+
+    @Test
+    fun givenAnAlreadySignedOutSession_whenLoggingOut_thenNoRevokeIsCalled() =
+        runTest {
+            val applicationScope = TestScope(testScheduler)
+            val sessionManager = SessionManager(FakeTokenStore(), testLogger())
+            val authApi = FakeAuthApi()
+            val repository = repository(authApi, sessionManager, applicationScope = applicationScope)
+
+            repository.logOut()
+            applicationScope.testScheduler.advanceUntilIdle()
+
+            assertTrue(authApi.logoutCalls.isEmpty())
+        }
+
+    @Test
+    fun givenTheCallingCoroutineIsCancelledDuringTheLocalCleanup_whenLoggingOut_thenTheLocalStepsStillFinish() =
+        runTest {
+            val tokenStore =
+                FakeTokenStore().apply {
+                    reachedClearGate = CompletableDeferred()
+                    clearGate = CompletableDeferred()
+                }
+            val sessionManager = SessionManager(tokenStore, testLogger())
+            sessionManager.start(AuthTokens(AccessToken("access"), RefreshToken("refresh")))
+            currentUserDao.replace(sampleUserDto().toCurrentUserEntity())
+            val repository = repository(FakeAuthApi(), sessionManager)
+
+            val job = launch { repository.logOut() }
+            tokenStore.reachedClearGate?.await()
+            job.cancel()
+            assertEquals(1, tokenStore.clearCallCount)
+            tokenStore.clearGate?.complete(Unit)
+            job.join()
+
+            assertTrue(job.isCancelled)
+            assertEquals(SessionStatus.SignedOut(SignOutReason.LoggedOut), sessionManager.status.value)
+            assertNull(tokenStore.load())
+            assertNull(currentUserDao.observe().first())
+        }
+
     private suspend fun logInWith(result: NetworkResult<AuthSessionDto>): DomainResult<User, AuthError> {
         val authApi = FakeAuthApi().apply { loginResult = result }
-        val repository = OfflineFirstAuthRepository(authApi, SessionManager(FakeTokenStore(), testLogger()))
-        return repository.logIn(sampleEmail(), samplePassword())
+        return repository(authApi, SessionManager(FakeTokenStore(), testLogger())).logIn(sampleEmail(), samplePassword())
     }
 
     private suspend fun registerWith(result: NetworkResult<AuthSessionDto>): DomainResult<User, AuthError> {
         val authApi = FakeAuthApi().apply { registerResult = result }
-        val repository = OfflineFirstAuthRepository(authApi, SessionManager(FakeTokenStore(), testLogger()))
-        return repository.register(sampleEmail(), samplePassword(), sampleDisplayName())
+        return repository(authApi, SessionManager(FakeTokenStore(), testLogger()))
+            .register(sampleEmail(), samplePassword(), sampleDisplayName())
     }
 }

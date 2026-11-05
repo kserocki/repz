@@ -1,6 +1,7 @@
 plugins {
     id("repz.kmp.library")
     id("repz.koin")
+    id("repz.room.consumer")
 }
 
 kotlin {
@@ -11,6 +12,7 @@ kotlin {
             implementation(projects.core.database)
             implementation(projects.core.network)
             implementation(projects.core.datastore)
+            implementation(libs.kermit)
         }
         commonTest.dependencies {
             implementation(libs.kermit)
