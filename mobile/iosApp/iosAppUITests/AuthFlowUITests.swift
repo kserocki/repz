@@ -4,9 +4,9 @@ import XCTest
 /// signed-in shell, plus the Keychain-restore check from REP-25 Q6.
 ///
 /// Needs the API reachable at `localhost:3000` (`pnpm dev`, migrated DB) and the app not yet
-/// signed in. Never runs in CI (the `iosApp` scheme skips this target by default; `mobile.yml`
-/// only builds it with `build-for-testing`). Run explicitly with `-only-testing:iosAppUITests`,
-/// see `mobile/iosApp/README` command in the impl log.
+/// signed in. Never runs in CI: `mobile.yml`'s iOS job only ever calls `xcodebuild ... build`
+/// (never `xcodebuild test`), so this target's `TestAction` wiring is irrelevant to CI either way.
+/// Run explicitly with `-only-testing:iosAppUITests/AuthFlowUITests/<method>`, see the impl log.
 ///
 /// Compose's `Modifier.testTag` becomes the element's `accessibilityIdentifier` on iOS
 /// unconditionally (verified against the Compose Multiplatform 1.12.2 `ui` sources,
@@ -93,6 +93,18 @@ final class AuthFlowUITests: XCTestCase {
 
         element(identifier: "login_submit").tap()
 
+        // KNOWN FAILING (2026-11-05, confirmed against a live API, 401 reaches the app): the
+        // exported .xcresult accessibility snapshot at timeout shows no element anywhere in the
+        // tree carrying this label, and the merged "login_password" element's value is only the
+        // masked password + "Keyboard Focused" -- no trace of the error text. Material3's
+        // OutlinedTextField (RepzPasswordField's base) merges label/value/supportingText into one
+        // semantics node, and Compose Multiplatform's iOS bridge does not expose a non-merged
+        // child for text under a merging ancestor, nor does it append supportingText to the merged
+        // accessibilityValue while the field is non-blank. Whether this is a test lookup bug (needs
+        // a different predicate/element) or a real RepzTextField/iOS accessibility gap (the error
+        // would be equally unannounced to VoiceOver) is unresolved and not something a single
+        // iosApp/iosAppUITests-only change can safely decide -- raised for Falcon/Atlas rather than
+        // guessed here. Do not "fix" this assertion without confirming which it is.
         XCTAssertTrue(
             element(label: "Email or password is incorrect").waitForExistence(timeout: 10),
             "Wrong-credentials error was not shown"
