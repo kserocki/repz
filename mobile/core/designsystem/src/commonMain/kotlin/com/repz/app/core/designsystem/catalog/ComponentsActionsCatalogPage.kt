@@ -19,6 +19,7 @@ private fun buttonLabel(style: RepzButtonStyle) =
         RepzButtonStyle.Filled -> "Add set"
         RepzButtonStyle.Outlined -> "Keep training"
         RepzButtonStyle.Text -> "See all"
+        RepzButtonStyle.Hero -> "Create account"
     }
 
 /** `components-actions` (DESIGN_SYSTEM §9 `RepzButton`/`RepzTopAppBar`/`RepzPageIndicator`): every
