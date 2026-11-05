@@ -16,8 +16,14 @@ private const val EXTRA_DEBUG_SIGNED_IN = "repz.debugSignedIn"
 /**
  * The launcher activity. `installSplashScreen()` must run before `super.onCreate()` so the
  * AndroidX compat library can capture the starting theme (`Theme.Repz.Starting`) before it swaps
- * to `postSplashScreenTheme`. Nothing is loaded here, so there is no `setKeepOnScreenCondition`:
- * the splash exits with the system's default animation on the first Compose frame.
+ * to `postSplashScreenTheme`. Nothing is loaded here, so there is no `setKeepOnScreenCondition`.
+ *
+ * The exit is handed off explicitly: `setOnExitAnimationListener { it.remove() }` removes the
+ * splash view the instant it fires, which the platform guarantees is only once the first Compose
+ * frame underneath has already been drawn. Leaving this unset lets the system play its own default
+ * icon exit animation and auto-remove the view on its own schedule — decoupled from whether Compose
+ * has actually drawn anything yet, which left a blank frame between the splash fading out and the
+ * app shell's launch bar (identical in shape/position) appearing underneath (REP-21 review).
  *
  * In debuggable builds only, the `repz.catalog`/`repz.dynamicColor` intent extras open the debug
  * design-system catalog instead of the normal app shell. `repz.reducedMotion` forces reduced
@@ -29,9 +35,10 @@ private const val EXTRA_DEBUG_SIGNED_IN = "repz.debugSignedIn"
  */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        splashScreen.setOnExitAnimationListener { it.remove() }
 
         val isDebuggable = applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0
         val catalogPageKey = if (isDebuggable) intent.getStringExtra(EXTRA_CATALOG_PAGE_KEY) else null
