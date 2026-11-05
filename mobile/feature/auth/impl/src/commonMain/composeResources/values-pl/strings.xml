@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_skip">Pomiń</string>
+    <string name="welcome_page_log_sets_title">Zapisz serię w 2 dotknięciach</string>
+    <string name="welcome_page_log_sets_body">Twoje ostatnie wyniki są już wpisane. Dotknij gotowe, odpocznij, powtórz.</string>
+    <string name="welcome_page_works_offline_title">Działa offline</string>
+    <string name="welcome_page_works_offline_body">Zapisuj serie bez połączenia z siecią. Repz zsynchronizuje się, gdy wrócisz online.</string>
+    <string name="welcome_page_progress_title">Śledź postępy i rekordy</string>
+    <string name="welcome_page_progress_body">Wykresy i rekordy życiowe aktualizują się po każdym treningu.</string>
+    <string name="welcome_page_indicator">Strona %1$d z %2$d</string>
+
+    <string name="auth_create_account">Utwórz konto</string>
+    <string name="auth_log_in">Zaloguj się</string>
+    <string name="auth_email_label">E-mail</string>
+    <string name="auth_password_label">Hasło</string>
+
+    <string name="register_title">Utwórz konto</string>
+    <string name="register_subtitle">Twoje treningi synchronizują się na wszystkich urządzeniach.</string>
+    <string name="register_display_name_label">Wyświetlana nazwa</string>
+    <plurals name="register_password_hint">
+        <item quantity="one">Co najmniej %1$d znak</item>
+        <item quantity="few">Co najmniej %1$d znaki</item>
+        <item quantity="many">Co najmniej %1$d znaków</item>
+        <item quantity="other">Co najmniej %1$d znaków</item>
+    </plurals>
+    <string name="register_submitting">Tworzenie konta</string>
+    <string name="register_offline_banner">Utworzenie konta wymaga połączenia z siecią</string>
+
+    <string name="login_title">Witaj ponownie</string>
+    <string name="login_submitting">Logowanie</string>
+    <string name="login_offline_title">Jesteś offline</string>
+    <string name="login_offline_body">Logowanie wymaga połączenia z siecią. Gdy już się zalogujesz, Repz działa offline.</string>
+    <string name="login_invalid_credentials">Nieprawidłowy e-mail lub hasło</string>
+
+    <string name="error_email_invalid">Podaj prawidłowy adres e-mail, np. imie@przyklad.com</string>
+    <string name="error_email_taken">Konto z tym adresem e-mail już istnieje</string>
+    <string name="error_password_missing">Podaj hasło</string>
+    <plurals name="error_password_too_short">
+        <item quantity="one">Co najmniej %1$d znak</item>
+        <item quantity="few">Co najmniej %1$d znaki</item>
+        <item quantity="many">Co najmniej %1$d znaków</item>
+        <item quantity="other">Co najmniej %1$d znaków</item>
+    </plurals>
+    <plurals name="error_password_too_long">
+        <item quantity="one">Użyj maksymalnie %1$d znaku</item>
+        <item quantity="few">Użyj maksymalnie %1$d znaków</item>
+        <item quantity="many">Użyj maksymalnie %1$d znaków</item>
+        <item quantity="other">Użyj maksymalnie %1$d znaków</item>
+    </plurals>
+    <string name="error_display_name_blank">Podaj wyświetlaną nazwę</string>
+    <plurals name="error_display_name_too_long">
+        <item quantity="one">Użyj maksymalnie %1$d znaku</item>
+        <item quantity="few">Użyj maksymalnie %1$d znaków</item>
+        <item quantity="many">Użyj maksymalnie %1$d znaków</item>
+        <item quantity="other">Użyj maksymalnie %1$d znaków</item>
+    </plurals>
+    <string name="error_unexpected">Coś poszło nie tak. Spróbuj ponownie</string>
+    <string name="action_retry">Spróbuj ponownie</string>
+</resources>
