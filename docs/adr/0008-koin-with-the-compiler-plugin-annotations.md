@@ -1,6 +1,6 @@
 # ADR-0008: Koin with the compiler plugin (annotations)
 
-- **Status:** Accepted (2026-10-28). Amended 2026-10-29 (REP-7): decision changed to explicit provider functions after the REP-7 spike found cross-module `@ComponentScan` broken on Kotlin/Native. Amended 2026-11-03 (REP-25): added the S1 pattern for a binding that needs a platform-only constructor argument (`Context`). Amended 2026-11-03 (REP-28): `@KoinViewModel` verified as a cross-module provider function on Android and iOS (the S1 spike), with the `api`-dependency rule that makes it work.
+- **Status:** Accepted (2026-10-28). Amended 2026-10-29 (REP-7): decision changed to explicit provider functions after the REP-7 spike found cross-module `@ComponentScan` broken on Kotlin/Native. Amended 2026-11-03 (REP-25): added the S1 pattern for a binding that needs a platform-only constructor argument (`Context`). Amended 2026-11-03 (REP-28): `@KoinViewModel` verified as a cross-module provider function on Android and iOS (the S1 spike), with the `api`-dependency rule that makes it work. Amended 2026-11-05 (REP-87): the S1 pattern's predicted REP-27 reuse for `RepzDatabase` happened in REP-87 instead (ADR-0023 amendment), landing first.
 
 ## Context
 We want DI errors at compile time instead of at runtime.
@@ -23,7 +23,7 @@ Two same-named `actual class PlatformModule` definitions (one per platform sourc
 
 A compile-time graph test needs the same `Context` dependency the real app gets from `androidContext(...)`: `app:shared`'s `commonTest` declares `internal expect val platformTestDeclaration: KoinAppDeclaration`; its Android `actual` binds `single<Context> { Application() }` (a plain host `Application()`, not an Android instrumentation context); its iOS `actual` is a no-op, since `KeychainSecureStringStorage` takes no `Context`.
 
-REP-27 (the Room database builder, which also needs `Context`) reuses this pattern rather than inventing a second one.
+REP-27 (the Room database builder, which also needs `Context`) reuses this pattern rather than inventing a second one. (Correction, REP-87 amendment below: this binding was actually landed by REP-87, which needed it first; REP-27 never had to.)
 
 ## Amendment (REP-28, 2026-11-03): `@KoinViewModel` verified as a cross-module provider
 

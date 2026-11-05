@@ -7,7 +7,7 @@ import com.repz.app.core.navigation.TopLevelDestination
 import com.repz.app.feature.auth.impl.navigation.authEntries
 import com.repz.app.feature.exercises.api.ExercisesRoute
 import com.repz.app.feature.history.api.HistoryRoute
-import com.repz.app.feature.settings.api.ProfileRoute
+import com.repz.app.feature.settings.impl.navigation.settingsEntries
 import com.repz.app.feature.workout.api.TrainRoute
 import com.repz.app.shared.shell.ui.TabRootPlaceholder
 
@@ -23,6 +23,5 @@ internal fun EntryProviderScope<NavKey>.repzEntries(navigator: Navigator) {
     entry<HistoryRoute> { TabRootPlaceholder(TopLevelDestination.History) }
     // TODO(REP-42): replace with the real Exercises root
     entry<ExercisesRoute> { TabRootPlaceholder(TopLevelDestination.Exercises) }
-    // TODO(REP-45): replace with the real Profile root
-    entry<ProfileRoute> { TabRootPlaceholder(TopLevelDestination.Profile) }
+    settingsEntries()
 }

@@ -1,6 +1,6 @@
 # ADR-0023: Local database schema, outbox and sync meta
 
-- **Status:** Accepted (2026-11-03, REP-24)
+- **Status:** Accepted (2026-11-03, REP-24). Amended 2026-11-05 (REP-87): added the `current_user` table; `RepzDatabase` was wired into Koin by REP-87, not REP-27.
 
 ## Context
 The UI reads only from Room, and every write is entity + outbox in one transaction (ARCHITECTURE §5.1). `core:database` (Room 3, ADR-0007) needs a local schema that mirrors the server (ADR-0019, ADR-0020), an outbox that coalesces edits and supports undo, and a place for sync progress and permanent rejections. The sync engine (REP-26) and the repositories (REP-27) build on it.
@@ -51,6 +51,13 @@ The UI reads only from Room, and every write is entity + outbox in one transacti
   - Koin wiring of the database moves to REP-27, the first consumer. `core:database` ships the platform file builders: `repzDatabaseBuilder(context)` on Android (`getDatabasePath("repz.db")`) and `repzDatabaseBuilder()` on iOS (`repz.db` in Application Support, not the user-visible `Documents`). Both finish with `buildRepzDatabase(…)`.
   - Excluding the database file from device backups is REP-77.
 - **User decisions** (standing approval, 2026-11-02): deleted exercises keep their row; backup exclusion goes to a follow-up issue; the "couldn't sync" mark clears only on a later accepted push.
+
+## Amendment (REP-87, 2026-11-05): `current_user` table, and the database wired earlier than planned
+
+- **A 12th table, `current_user`** (`core:database`'s `account` package): a single-row cache of the signed-in user's profile for the Profile tab's header (ARCHITECTURE §5.2, §5.7). Columns: `id` (the real user id, `TEXT`, `PRIMARY KEY` — not a fixed singleton marker, so a `replace` can tell one account's row from another's when the user switches accounts), `email`, `display_name`, `unit_system` (the same lowercase-text vocabulary convention as the other closed vocabularies above, e.g. `"kg"`/`"lb"`). It is **server-owned and never synced**: no `server_version`/`is_deleted`/`updated_at` sync columns, no outbox entry, no `sync_rejections` row. `CurrentUserDao` offers only `observe()` (`Flow<CurrentUserEntity?>`, `LIMIT 1`), `replace(entity)` (one transaction: clear then insert, so exactly one row ever exists) and `clear()`.
+- Schema v1 was edited in place to add it (still true today: no build has been distributed, ADR-0023's own rule above), and the schema JSON (`mobile/core/database/schemas/com.repz.app.core.database.RepzDatabase/1.json`) was regenerated and committed.
+- Written from the `user` in the login/register response, before `SessionManager.start()`, so the Profile tab never observes a signed-in session without a cached row; refreshed best-effort by `GET /me` (`OfflineFirstUserRepository.refreshCurrentUser()`) when the Profile `ViewModel` is created, with a failed refresh leaving the stored row untouched; cleared by `AuthRepository.logOut()` (ADR-0011 amendment).
+- **Koin wiring of `RepzDatabase` landed with REP-87, not REP-27 as this ADR originally said**, because Profile (REP-87) became its first consumer before the sync engine (REP-26/27) did. It uses the S1 `expect`/`actual` `PlatformModule` pattern (ADR-0008's REP-25 amendment), which that amendment already anticipated for this exact binding: `@Single fun repzDatabase(context: Context, dispatchers: AppDispatchers): RepzDatabase = repzDatabaseBuilder(context).buildRepzDatabase(dispatchers.io)` on Android, dropping `context` on iOS. `app:shared` depends on `core:database` from this issue on. The platform file builders themselves (`repzDatabaseBuilder`) are unchanged from this ADR's original decision.
 
 ## Consequences
 - REP-26 and REP-27 follow these write paths:

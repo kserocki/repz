@@ -10,6 +10,7 @@ import com.repz.app.core.designsystem.generated.resources.symbol_arrow_back
 import com.repz.app.core.designsystem.generated.resources.symbol_cloud_off
 import com.repz.app.core.designsystem.generated.resources.symbol_error
 import com.repz.app.core.designsystem.generated.resources.symbol_fitness_center
+import com.repz.app.core.designsystem.generated.resources.symbol_logout
 import com.repz.app.core.designsystem.generated.resources.symbol_trophy
 import com.repz.app.core.designsystem.generated.resources.symbol_visibility
 import com.repz.app.core.designsystem.generated.resources.symbol_visibility_off
@@ -27,6 +28,7 @@ enum class RepzIcon {
     CloudOff,
     FitnessCenter,
     Trophy,
+    Logout,
 }
 
 /** One Material Symbols Rounded icon at its intrinsic 24 dp size unless [modifier] overrides it
@@ -57,4 +59,5 @@ private val RepzIcon.drawableResource: DrawableResource
             RepzIcon.CloudOff -> Res.drawable.symbol_cloud_off
             RepzIcon.FitnessCenter -> Res.drawable.symbol_fitness_center
             RepzIcon.Trophy -> Res.drawable.symbol_trophy
+            RepzIcon.Logout -> Res.drawable.symbol_logout
         }

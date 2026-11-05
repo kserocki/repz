@@ -155,6 +155,30 @@ class NamingRulesTest {
     }
 
     @Test
+    fun given_project_whenN8Checked_thenNoViolations() {
+        checkN8NoIntentOutsideScreenOrContent(projectScope())
+    }
+
+    @Test
+    fun given_n8AllowedChildLambdasFixture_whenChecked_thenNoViolations() {
+        checkN8NoIntentOutsideScreenOrContent(fixtureScope("n8-allowed-child-lambdas"))
+    }
+
+    @Test
+    fun given_n8ChildFunctionTypeIntentFixture_whenChecked_thenFailsOnFunctionTypeParameter() {
+        val error = assertFails { checkN8NoIntentOutsideScreenOrContent(fixtureScope("n8-child-function-type-intent")) }
+
+        assertContains(error.message.orEmpty(), "only *Screen/*Content composables may declare an *Intent parameter")
+    }
+
+    @Test
+    fun given_n8ChildIntentParameterFixture_whenChecked_thenFailsOnIntentParameter() {
+        val error = assertFails { checkN8NoIntentOutsideScreenOrContent(fixtureScope("n8-child-intent-parameter")) }
+
+        assertContains(error.message.orEmpty(), "only *Screen/*Content composables may declare an *Intent parameter")
+    }
+
+    @Test
     fun given_project_whenV1Checked_thenNoViolations() {
         checkV1FeatureApiShape(projectScope())
     }
