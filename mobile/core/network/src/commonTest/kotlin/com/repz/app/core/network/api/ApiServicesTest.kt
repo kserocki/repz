@@ -50,7 +50,7 @@ class ApiServicesTest {
                     captured = request
                     respond(sessionResponseJson(), HttpStatusCode.Created, jsonHeaders())
                 }
-            val authApi = KtorAuthApi(clients.public)
+            val authApi = KtorAuthApi(clients)
 
             authApi.register(RegisterRequestDto("a@b.com", "pw", "Alex"))
 
@@ -71,7 +71,7 @@ class ApiServicesTest {
                     captured = request
                     respond(sessionResponseJson(), HttpStatusCode.OK, jsonHeaders())
                 }
-            val authApi = KtorAuthApi(clients.public)
+            val authApi = KtorAuthApi(clients)
 
             authApi.login(LoginRequestDto("a@b.com", "pw"))
 
@@ -90,7 +90,7 @@ class ApiServicesTest {
                     captured = request
                     respond("", HttpStatusCode.NoContent)
                 }
-            val authApi = KtorAuthApi(clients.public)
+            val authApi = KtorAuthApi(clients)
 
             authApi.logout(RefreshToken("the-refresh-token"))
 
@@ -109,7 +109,7 @@ class ApiServicesTest {
                     captured = request
                     respond("""{"status":"ok"}""", HttpStatusCode.OK, jsonHeaders())
                 }
-            val healthApi = KtorHealthApi(clients.public)
+            val healthApi = KtorHealthApi(clients)
 
             healthApi.check()
 

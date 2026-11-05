@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.koin.core.annotation.Single
 
 /**
  * Whether the app shell should show the auth flow or the signed-in shell (ADR-0025). This is a
@@ -33,6 +34,7 @@ sealed interface AuthGateUiState {
  * provided once for the whole app, not a `ViewModel` (it is read with `koinInject`, never
  * `koinViewModel`, since it has no screen of its own, per Konsist N4).
  */
+@Single
 class AuthGate(
     sessionRepository: SessionRepository,
     applicationScope: CoroutineScope,

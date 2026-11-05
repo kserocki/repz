@@ -17,6 +17,7 @@ dependencies {
     compileOnly(libs.compose.compiler.gradlePlugin)
     compileOnly(libs.detekt.gradlePlugin)
     compileOnly(libs.ktlint.gradlePlugin)
+    compileOnly(libs.koin.compiler.gradlePlugin)
     detektPlugins(libs.compose.rules.detekt)
     testImplementation(libs.kotlin.test)
 }

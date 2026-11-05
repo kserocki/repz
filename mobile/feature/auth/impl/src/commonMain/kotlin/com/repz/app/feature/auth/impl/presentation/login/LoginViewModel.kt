@@ -19,12 +19,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.core.annotation.KoinViewModel
 
 /**
  * On a successful login [LoginUiState.isSubmitting] stays `true`: navigation to the signed-in
  * shell is driven by the session, not by this ViewModel (ADR-0025), so the button must not flash
  * back to its idle state before the app shell swaps the stack.
  */
+@KoinViewModel
 class LoginViewModel(
     private val logIn: LogInUseCase,
 ) : ViewModel() {

@@ -3,6 +3,7 @@ package com.repz.app.core.network.session
 import com.repz.app.core.network.client.NetworkJson
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
+import org.koin.core.annotation.Single
 
 private const val PERSISTED_TOKENS_VERSION = 1
 
@@ -14,6 +15,7 @@ private data class PersistedTokens(
     val refreshToken: String,
 )
 
+@Single
 class PersistentTokenStore(
     private val storage: SecureStringStorage,
 ) : TokenStore {

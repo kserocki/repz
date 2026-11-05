@@ -15,7 +15,7 @@ Read `docs/ARCHITECTURE.md` §5 and ADR-0002/0003 first. **The aggregate is the 
 1. **Domain:** the model plus repository interface in `core:domain`. IDs come from `IdGenerator` (client-side UUID).
 2. **Room 3** (`core:database`): the root entity has `id`, `server_version: Long?`, `is_deleted`, `updated_at`. Add child entities with FK + cascade. DAO methods: `Flow` for observation, `suspend` for writes. No `@Upsert` and no `@Insert(REPLACE)`: write with update-then-insert-if-0-rows inside a transaction (ADR-0007). Schema v1 may be edited in place until the first public build; after that, bump the version and add a migration, never a destructive fallback (ADR-0023). The schema JSON is committed.
 3. **Repository** (`core:data`, `OfflineFirstXRepository`): every write runs in one transaction: save the entity through its DAO and `outboxDao.enqueue(type, id, op)` (coalescing, ADR-0023) and then `syncScheduler.requestSync()`. Reads are `Flow` from Room mapped `toDomain()`. A delete is a tombstone (`is_deleted = true`) + outbox DELETE.
-4. **SyncHandler** (`core:sync`): implement `SyncHandler<XPayload>` (`type`, `toPayload(id)`, `apply(change)`, skip apply when a pending outbox entry exists). Register it via Koin. **Do not edit `SyncEngine`** (open/closed).
+4. **SyncHandler** (`core:sync`): implement `SyncHandler<XPayload>` (`type`, `toPayload(id)`, `apply(change)`, skip apply when a pending outbox entry exists). Register it with `@Single` on the handler class itself, inside `core:sync`'s own `@Module` — it auto-binds to `SyncHandler<XPayload>` (ADR-0008). How `SyncEngine` collects every registered handler is decided in REP-26. **Do not edit `SyncEngine`** (open/closed).
 5. **DTO:** the payload DTO in `core:network` plus a fixture.
 
 ## Server (api)

@@ -7,7 +7,9 @@ import com.repz.app.core.domain.model.account.DisplayName
 import com.repz.app.core.domain.model.account.EmailAddress
 import com.repz.app.core.domain.model.account.Password
 import com.repz.app.core.domain.result.DomainResult
+import org.koin.core.annotation.Factory
 
+@Factory
 class RegisterUseCase(
     private val authRepository: AuthRepository,
 ) {

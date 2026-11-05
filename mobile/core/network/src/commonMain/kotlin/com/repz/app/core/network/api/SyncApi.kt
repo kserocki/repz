@@ -13,6 +13,7 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import org.koin.core.annotation.Single
 
 /** The default (and maximum) page size for [SyncApi.pull] (ADR-0020). */
 const val MAX_PULL_LIMIT = 500
@@ -27,6 +28,7 @@ interface SyncApi {
     ): NetworkResult<PullResponseDto>
 }
 
+@Single
 internal class KtorSyncApi(
     private val clients: RepzHttpClients,
 ) : SyncApi {

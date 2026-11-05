@@ -1,5 +1,6 @@
 package com.repz.app.core.network.api
 
+import com.repz.app.core.network.client.RepzHttpClients
 import com.repz.app.core.network.dto.auth.AuthSessionDto
 import com.repz.app.core.network.dto.auth.LoginRequestDto
 import com.repz.app.core.network.dto.auth.LogoutRequestDto
@@ -7,12 +8,12 @@ import com.repz.app.core.network.dto.auth.RegisterRequestDto
 import com.repz.app.core.network.result.NetworkResult
 import com.repz.app.core.network.result.apiCall
 import com.repz.app.core.network.session.RefreshToken
-import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import org.koin.core.annotation.Single
 
 interface AuthApi {
     /** 201. */
@@ -26,9 +27,12 @@ interface AuthApi {
 }
 
 /** Always over the public client: register/login/logout never go through the bearer + refresh plugin. */
+@Single
 internal class KtorAuthApi(
-    private val publicClient: HttpClient,
+    clients: RepzHttpClients,
 ) : AuthApi {
+    private val publicClient = clients.public
+
     override suspend fun register(request: RegisterRequestDto): NetworkResult<AuthSessionDto> =
         apiCall(
             decode = { it.body() },
