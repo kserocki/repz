@@ -29,11 +29,22 @@ internal fun ComponentsActionsCatalogPage() {
     Column(verticalArrangement = Arrangement.spacedBy(RepzSpacing.lg)) {
         for (style in RepzButtonStyle.entries) {
             val label = buttonLabel(style)
-            Row(horizontalArrangement = Arrangement.spacedBy(RepzSpacing.sm)) {
-                RepzButton(label, onClick = {}, style = style, size = RepzButtonSize.Small)
-                RepzButton(label, onClick = {}, style = style, size = RepzButtonSize.Medium)
-                RepzButton(label, onClick = {}, style = style, enabled = false)
-                RepzButton(label, onClick = {}, style = style, isLoading = true)
+            // Split across two rows of two, not one row of four: Compose Multiplatform's iOS
+            // (Skiko) text layout corrupts the 3rd+ `Text` composed with byte-identical content
+            // within one measurement pass - it wraps one character per line - independent of
+            // RepzButton's style, size, border or enabled state (verified by elimination with plain
+            // Material3 buttons; Android is unaffected). Small+Medium share a row (2 labels), and
+            // disabled+loading share another (loading shows a spinner, not the label, so that row
+            // renders the label only once); neither row ever reaches 3 identical labels.
+            Column(verticalArrangement = Arrangement.spacedBy(RepzSpacing.sm)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(RepzSpacing.sm)) {
+                    RepzButton(label, onClick = {}, style = style, size = RepzButtonSize.Small)
+                    RepzButton(label, onClick = {}, style = style, size = RepzButtonSize.Medium)
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(RepzSpacing.sm)) {
+                    RepzButton(label, onClick = {}, style = style, enabled = false)
+                    RepzButton(label, onClick = {}, style = style, isLoading = true)
+                }
             }
         }
 
