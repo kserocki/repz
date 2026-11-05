@@ -3,16 +3,19 @@ package com.repz.app.feature.auth.impl.presentation.welcome
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -50,6 +53,12 @@ import org.jetbrains.compose.resources.stringResource
 // question (board 07's path measures as a 9-lobed cookie on a different container colour) for
 // confirmation.
 private const val BACKDROP_WIDTH_FRACTION = 0.8f
+
+// Capped by height as well as width: on a taller phone, width is always the binding constraint and
+// this never applies. On a shorter/more square viewport, sizing the 1:1 backdrop from width alone
+// left no room for the title and body underneath (iOS QA bug: body silently clipped, PL title cut
+// mid-word). Never let the decorative backdrop claim more than this share of the page's height.
+private const val BACKDROP_MAX_HEIGHT_FRACTION = 0.4f
 
 /**
  * The 3-page pager (DESIGN_SYSTEM §9/§10 A2, board 07): Skip (text button, hidden on the last
@@ -136,31 +145,38 @@ private fun WelcomePageBody(
             WelcomePage.Progress -> Res.string.welcome_page_progress_title to Res.string.welcome_page_progress_body
         }
 
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Box(
-            modifier =
-                Modifier
-                    .fillMaxWidth(BACKDROP_WIDTH_FRACTION)
-                    .aspectRatio(1f)
-                    .background(color = MaterialTheme.colorScheme.surfaceContainerHigh, shape = RepzShapes.cookie4Sided.toShape())
-                    .clearAndSetSemantics {},
-        )
-        Text(
-            stringResource(titleRes),
-            modifier = Modifier.padding(top = RepzSpacing.xl),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.headlineLargeEmphasized,
-        )
-        Text(
-            stringResource(bodyRes),
-            modifier = Modifier.padding(top = RepzSpacing.sm),
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            style = MaterialTheme.typography.bodyLarge,
-        )
+    BoxWithConstraints(modifier = modifier) {
+        val backdropSize = minOf(maxWidth * BACKDROP_WIDTH_FRACTION, maxHeight * BACKDROP_MAX_HEIGHT_FRACTION)
+
+        // Scrollable, not just centered: a safety net so the body stays reachable instead of being
+        // silently clipped (the same approach Register/Login already use for their forms) even past
+        // the backdrop's own height cap above, e.g. at a very large font scale. A no-op on a normal
+        // phone, where the content already fits and verticalArrangement centers it as before.
+        Column(
+            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Box(
+                modifier =
+                    Modifier
+                        .size(backdropSize)
+                        .background(color = MaterialTheme.colorScheme.surfaceContainerHigh, shape = RepzShapes.cookie4Sided.toShape())
+                        .clearAndSetSemantics {},
+            )
+            Text(
+                stringResource(titleRes),
+                modifier = Modifier.padding(top = RepzSpacing.xl),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.headlineLargeEmphasized,
+            )
+            Text(
+                stringResource(bodyRes),
+                modifier = Modifier.padding(top = RepzSpacing.sm),
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        }
     }
 }
