@@ -22,3 +22,15 @@ internal fun pairStates(progress: Float): Map<RepzPlatePair, PairState> {
         }
     }
 }
+
+/** A plate pair's [entry] (0 = rest, 1 = at its entry start) and [plateAlpha] before any animation
+ * has run. */
+internal data class LoaderPlatePose(
+    val entry: Float,
+    val plateAlpha: Float,
+)
+
+/** Every pair's pose before the indeterminate loop's first (or next) staggered entrance: off its
+ * rest slot and fully hidden, so a pair still waiting for its own turn is never drawn solid at the
+ * wrong, off-slot position — not even for the one frame before its delayed entrance starts. */
+internal fun initialLoaderPlatePose(): LoaderPlatePose = LoaderPlatePose(entry = 1f, plateAlpha = 0f)

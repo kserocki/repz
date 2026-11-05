@@ -101,4 +101,11 @@ class RepzLoaderProgressTest {
             pairStates(1f),
         )
     }
+
+    @Test
+    fun given_initialLoaderPlatePose_whenRead_thenOffSlotAndFullyHidden() {
+        val pose = initialLoaderPlatePose()
+        assertEquals(1f, pose.entry)
+        assertEquals(0f, pose.plateAlpha)
+    }
 }

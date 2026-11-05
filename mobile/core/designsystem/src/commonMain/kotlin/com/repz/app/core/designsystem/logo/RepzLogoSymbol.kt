@@ -72,7 +72,10 @@ fun RepzLogoSymbol(
 }
 
 private val DefaultOutlineStrokeWidth = 1.5.dp
-private const val DASH_ON_OFF_RATIO = 3f
+
+// Board 07 A5's pending-pair outline: a 6-grid-unit dash on a 3-grid-unit stroke, i.e. twice the
+// stroke width.
+private const val DASH_ON_OFF_RATIO = 2f
 
 /**
  * The 7-part drawing shared by [RepzLogoSymbol] and [RepzLoader]: one [Canvas], [state]'s
@@ -87,6 +90,7 @@ internal fun RepzLogoSymbolCanvas(
     plateDistancePx: (part: RepzLogoPart, artworkWidthPx: Float) -> Float,
     modifier: Modifier = Modifier,
     outlineStrokeWidth: Dp = DefaultOutlineStrokeWidth,
+    outlineColor: Color = color,
 ) {
     val outlineStrokePx = with(LocalDensity.current) { outlineStrokeWidth.toPx() }
 
@@ -97,6 +101,7 @@ internal fun RepzLogoSymbolCanvas(
                 part = RepzLogoPart.Bar,
                 artworkWidthPx = artworkWidthPx,
                 color = color,
+                outlineColor = outlineColor,
                 fillAlpha = 1f,
                 outlineAlpha = 0f,
                 outlineStrokePx = outlineStrokePx,
@@ -114,6 +119,7 @@ internal fun RepzLogoSymbolCanvas(
                             part = part,
                             artworkWidthPx = artworkWidthPx,
                             color = color,
+                            outlineColor = outlineColor,
                             fillAlpha = baseAlpha * (1f - outlined),
                             outlineAlpha = baseAlpha * outlined,
                             outlineStrokePx = outlineStrokePx,
@@ -129,6 +135,7 @@ private fun DrawScope.drawLogoPart(
     part: RepzLogoPart,
     artworkWidthPx: Float,
     color: Color,
+    outlineColor: Color,
     fillAlpha: Float,
     outlineAlpha: Float,
     outlineStrokePx: Float,
@@ -141,7 +148,7 @@ private fun DrawScope.drawLogoPart(
     if (outlineAlpha > 0f) {
         val dash = PathEffect.dashPathEffect(floatArrayOf(outlineStrokePx * DASH_ON_OFF_RATIO, outlineStrokePx * DASH_ON_OFF_RATIO))
         drawRoundRect(
-            color = color,
+            color = outlineColor,
             topLeft = rect.topLeft,
             size = rect.size,
             cornerRadius = cornerRadius,

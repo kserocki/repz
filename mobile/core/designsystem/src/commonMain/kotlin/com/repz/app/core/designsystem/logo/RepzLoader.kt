@@ -28,11 +28,12 @@ private val DefaultLoaderOutlineStrokeWidth = 1.5.dp
 
 /**
  * The branded loader (MOT-25, brand/LOGO.md §5 "Reuse inside the app"): the bar is always drawn,
- * the 3 plate pairs load pair by pair. [progress] `null` loops indeterminately (every pair in turn,
- * [RepzStagger.logoPlatesPerPair] apart); otherwise `0f..1f` locks one pair per third (MOT-18):
- * locked pairs are solid and still, the next pair keeps looping, pairs still to come are drawn as a
- * dashed outline. [contentDescription] is required (unlike [RepzLogoSymbol]'s, which may be purely
- * decorative): a loader is never only decorative.
+ * the 3 plate pairs load pair by pair. [progress] `null` loops indeterminately: all 3 pairs slide
+ * in and fade in, one after another [RepzStagger.logoPlatesPerPair] apart, hold together, then all
+ * fade out together before the cycle repeats (Q4) — otherwise `0f..1f` locks one pair per third
+ * (MOT-18): locked pairs are solid and still, the next pair keeps looping, pairs still to come are
+ * drawn as a dashed outline at their own rest slot. [contentDescription] is required (unlike
+ * [RepzLogoSymbol]'s, which may be purely decorative): a loader is never only decorative.
  *
  * Reduced motion: indeterminate shows the static, fully assembled symbol; determinate snaps locked
  * pairs in solid and leaves the rest as dashed outlines, with no loop and no sliding (MOT-25).
@@ -95,6 +96,7 @@ fun RepzLoader(
                 .semantics { this.contentDescription = contentDescription },
         plateDistancePx = ::oneLocalPlateWidthDistancePx,
         outlineStrokeWidth = if (size == RepzLoaderSize.Small) SmallOutlineStrokeWidth else DefaultLoaderOutlineStrokeWidth,
+        outlineColor = RepzLogoDefaults.pendingOutlineColor(),
     )
 }
 
@@ -114,8 +116,10 @@ private suspend fun RepzLogoSymbolState.snapPairLocked(pair: RepzPlatePair) {
     isOutlined.getValue(pair).snapTo(0f)
 }
 
+/** A pending pair waits at its own rest slot (board 07 A5: the dashed collars sit exactly where the
+ * solid plate will land), only drawn as an outline, never one plate width outward. */
 private suspend fun RepzLogoSymbolState.snapPairDashed(pair: RepzPlatePair) {
-    plateEntry.getValue(pair).snapTo(1f)
+    plateEntry.getValue(pair).snapTo(0f)
     plateAlpha.getValue(pair).snapTo(1f)
     isOutlined.getValue(pair).snapTo(1f)
 }
@@ -135,28 +139,63 @@ private suspend fun lockPairIn(
     }
 }
 
-/** All 3 pairs loop in turn, [RepzStagger.logoPlatesPerPair] apart (Q4): each pair's own cycle
- * takes the same time (the same specs, the same [LoopHold]), so the stagger never drifts. */
+/** One shared cycle for all 3 pairs (Q4): each pair slides in + fades in
+ * [RepzStagger.logoPlatesPerPair] after the previous one started; once the last pair (outer) has
+ * landed, the trio holds together for [LoopHold], then all 3 fade out together on `effectsDefault`
+ * — never staggered — before the cycle repeats. A single shared loop, not 3 independent ones, is
+ * what keeps the fade-out together: 3 independent per-pair loops drift apart (each one's own hold
+ * starts as soon as it lands) and so do their fade-outs. */
 private suspend fun loopIndeterminate(
     state: RepzLogoSymbolState,
     slideSpec: FiniteAnimationSpec<Float>,
     fadeInSpec: FiniteAnimationSpec<Float>,
     fadeOutSpec: FiniteAnimationSpec<Float>,
 ) {
-    RepzPlatePair.entries.forEach { state.isOutlined.getValue(it).snapTo(0f) }
-    coroutineScope {
-        RepzPlatePair.entries.forEachIndexed { index, pair ->
-            launch {
-                delay(RepzStagger.logoPlatesPerPair * index)
-                loopSinglePair(state, pair, slideSpec, fadeInSpec, fadeOutSpec)
+    val restPose = initialLoaderPlatePose()
+    RepzPlatePair.entries.forEach { pair ->
+        state.isOutlined.getValue(pair).snapTo(0f)
+        state.plateEntry.getValue(pair).snapTo(restPose.entry)
+        state.plateAlpha.getValue(pair).snapTo(restPose.plateAlpha)
+    }
+    while (true) {
+        coroutineScope {
+            RepzPlatePair.entries.forEachIndexed { index, pair ->
+                launch {
+                    delay(RepzStagger.logoPlatesPerPair * index)
+                    slideInPair(state, pair, slideSpec, fadeInSpec)
+                }
             }
         }
+        delay(LoopHold)
+        coroutineScope {
+            RepzPlatePair.entries.forEach { pair ->
+                launch { state.plateAlpha.getValue(pair).animateTo(0f, fadeOutSpec) }
+            }
+        }
+        RepzPlatePair.entries.forEach { state.plateEntry.getValue(it).snapTo(restPose.entry) }
     }
 }
 
-/** One pair's indeterminate loop, and the determinate loader's single "next" ([PairState.Loading])
- * pair: slide in + fade in, hold, fade out together, repeat (Q4). A [CoroutineScope] extension only
- * so [isActive] resolves; every call site is already inside one ([LaunchedEffect] or [launch]). */
+/** One pair's one-shot entrance: slide to rest and fade in together. The indeterminate loop's
+ * shared cycle calls this once per pair per lap; [loopSinglePair] is the determinate loader's own
+ * perpetual per-pair loop ([PairState.Loading]), which still owns its pair alone. */
+private suspend fun slideInPair(
+    state: RepzLogoSymbolState,
+    pair: RepzPlatePair,
+    slideSpec: FiniteAnimationSpec<Float>,
+    fadeInSpec: FiniteAnimationSpec<Float>,
+) {
+    coroutineScope {
+        launch { state.plateEntry.getValue(pair).animateTo(0f, slideSpec) }
+        launch { state.plateAlpha.getValue(pair).animateTo(1f, fadeInSpec) }
+    }
+}
+
+/** The determinate loader's single "next" ([PairState.Loading]) pair, looping alone while it waits
+ * to lock: slide in + fade in, hold, fade out, repeat (Q4). The indeterminate loader does not call
+ * this — its 3 pairs share one cycle instead ([loopIndeterminate]), so their fade-outs stay
+ * together. A [CoroutineScope] extension only so [isActive] resolves; the call site is already
+ * inside one ([LaunchedEffect]). */
 private suspend fun CoroutineScope.loopSinglePair(
     state: RepzLogoSymbolState,
     pair: RepzPlatePair,

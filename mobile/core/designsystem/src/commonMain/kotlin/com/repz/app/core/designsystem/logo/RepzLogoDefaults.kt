@@ -25,4 +25,10 @@ object RepzLogoDefaults {
     @Composable
     @ReadOnlyComposable
     fun loaderColor(): Color = MaterialTheme.colorScheme.primary
+
+    /** [RepzLoader]'s pending-pair dashed outline (board 07 A5): always `outlineVariant`, not
+     * overridable — it marks an empty slot, not the brand mark itself. */
+    @Composable
+    @ReadOnlyComposable
+    fun pendingOutlineColor(): Color = MaterialTheme.colorScheme.outlineVariant
 }
