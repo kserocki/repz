@@ -9,6 +9,7 @@ import com.repz.app.core.designsystem.generated.resources.Res
 import com.repz.app.core.designsystem.generated.resources.symbol_arrow_back
 import com.repz.app.core.designsystem.generated.resources.symbol_cloud_off
 import com.repz.app.core.designsystem.generated.resources.symbol_error
+import com.repz.app.core.designsystem.generated.resources.symbol_logout
 import com.repz.app.core.designsystem.generated.resources.symbol_visibility
 import com.repz.app.core.designsystem.generated.resources.symbol_visibility_off
 import org.jetbrains.compose.resources.DrawableResource
@@ -22,6 +23,7 @@ enum class RepzIcon {
     VisibilityOff,
     Error,
     CloudOff,
+    Logout,
 }
 
 /** One Material Symbols Rounded icon at its intrinsic 24 dp size unless [modifier] overrides it
@@ -50,4 +52,5 @@ private val RepzIcon.drawableResource: DrawableResource
             RepzIcon.VisibilityOff -> Res.drawable.symbol_visibility_off
             RepzIcon.Error -> Res.drawable.symbol_error
             RepzIcon.CloudOff -> Res.drawable.symbol_cloud_off
+            RepzIcon.Logout -> Res.drawable.symbol_logout
         }
