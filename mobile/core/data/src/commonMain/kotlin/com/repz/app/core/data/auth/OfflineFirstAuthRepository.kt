@@ -22,6 +22,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.core.annotation.Single
 
 /**
  * Auth is online-only: register/login always call the API, no local fallback. The `OfflineFirst`
@@ -33,13 +34,18 @@ import kotlinx.coroutines.withContext
  * profile is wiped on this device at once, in [NonCancellable] steps so the auth gate's epoch
  * bump can't cut them short, and the server-side revoke is a best-effort, fire-and-forget call on
  * [applicationScope].
+ *
+ * [logger] defaults to a tagged [Logger] (ADR-0008): with the Koin compiler plugin's default
+ * `skipDefaultValues = true`, a non-null, unqualified parameter with a default isn't injected, so
+ * this stays a plain class-level `@Single` instead of a provider function just for the tag.
  */
+@Single
 class OfflineFirstAuthRepository(
     private val authApi: AuthApi,
     private val sessionManager: SessionManager,
     private val currentUserDao: CurrentUserDao,
     private val applicationScope: CoroutineScope,
-    private val logger: Logger,
+    private val logger: Logger = Logger.withTag(AUTH_LOG_TAG),
 ) : AuthRepository {
     override suspend fun register(
         email: EmailAddress,

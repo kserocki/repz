@@ -10,6 +10,7 @@ import com.repz.app.core.network.result.NetworkResult
 import com.repz.app.core.network.session.SessionManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.koin.core.annotation.Single
 
 /**
  * Room `current_user` is the source of truth (rule 6); [refreshCurrentUser] only ever improves it,
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.map
  * still in flight when the user signs out could re-insert the previous account's row after logout,
  * or overwrite the next account's freshly stored row.
  */
+@Single
 class OfflineFirstUserRepository(
     private val userApi: UserApi,
     private val currentUserDao: CurrentUserDao,

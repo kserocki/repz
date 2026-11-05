@@ -8,8 +8,10 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import org.koin.core.annotation.Single
 
 /** Over `core:network`'s [SessionManager]; [scope] is the app-lifetime scope so [sessionState] keeps observing for the process's life. */
+@Single
 class OfflineFirstSessionRepository(
     private val sessionManager: SessionManager,
     scope: CoroutineScope,
