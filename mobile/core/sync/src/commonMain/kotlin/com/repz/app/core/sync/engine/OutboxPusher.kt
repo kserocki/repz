@@ -15,6 +15,7 @@ import com.repz.app.core.network.dto.sync.PushChangeDto
 import com.repz.app.core.network.dto.sync.PushRequestDto
 import com.repz.app.core.network.dto.sync.PushResponseDto
 import com.repz.app.core.network.dto.sync.RejectedChangeDto
+import com.repz.app.core.network.dto.sync.encodedSizeInBytes
 import com.repz.app.core.network.result.NetworkResult
 import com.repz.app.core.sync.handler.SyncHandlerRegistry
 import com.repz.app.core.sync.record.PersonalRecordsRefresher
@@ -26,6 +27,10 @@ private data class OutboxKey(
     val entityType: SyncEntityType,
     val entityId: Uuid,
 )
+
+private fun List<AcceptedChangeDto>.acceptedCountsByType() = groupingBy { it.type }.eachCount()
+
+private fun List<RejectedChangeDto>.rejectedCountsByType() = groupingBy { it.type }.eachCount()
 
 /**
  * Pushes every ready outbox row, batched by [batchPushChanges] (ARCHITECTURE §5.3/§5.4, ADR-0020).
@@ -107,9 +112,17 @@ internal class OutboxPusher(
         entriesByKey: Map<OutboxKey, OutboxEntryEntity>,
         attempted: MutableSet<OutboxKey>,
     ): SyncOutcome? {
+        val requestBytes = batch.sumOf { it.encodedSizeInBytes() }
+        logger.i { "pushBatch: sending ${batch.size} changes, $requestBytes bytes" }
+
         when (val result = syncApi.push(PushRequestDto(batch))) {
             is NetworkResult.Success -> {
-                applyResponse(result.value, entriesByKey)
+                val response = result.value
+                logger.i {
+                    "pushBatch: response accepted=${response.accepted.acceptedCountsByType()} " +
+                        "rejected=${response.rejected.rejectedCountsByType()}"
+                }
+                applyResponse(response, entriesByKey)
                 batch.forEach { attempted += it.key() }
                 return null
             }
@@ -121,6 +134,7 @@ internal class OutboxPusher(
                 val outcome = error.toSyncOutcome()
                 if (outcome is SyncOutcome.Failed) {
                     batch.forEach { incrementAttempts(it.key()) }
+                    logger.w { "pushBatch: failed as a whole with $error, bumped attempts on ${batch.size} rows" }
                 }
                 return outcome
             }
