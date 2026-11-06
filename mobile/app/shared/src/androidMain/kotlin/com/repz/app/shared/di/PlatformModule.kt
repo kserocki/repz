@@ -5,6 +5,8 @@ import com.repz.app.core.common.coroutines.AppDispatchers
 import com.repz.app.core.database.RepzDatabase
 import com.repz.app.core.database.buildRepzDatabase
 import com.repz.app.core.database.repzDatabaseBuilder
+import com.repz.app.core.datastore.UserPreferencesDataSource
+import com.repz.app.core.datastore.repzPreferencesDataStore
 import com.repz.app.core.network.session.KeystoreSecureStringStorage
 import com.repz.app.core.network.session.SecureStringStorage
 import org.koin.core.annotation.Module
@@ -23,4 +25,10 @@ actual class PlatformModule {
         context: Context,
         dispatchers: AppDispatchers,
     ): RepzDatabase = repzDatabaseBuilder(context).buildRepzDatabase(dispatchers.io)
+
+    @Single
+    fun userPreferencesDataSource(
+        context: Context,
+        dispatchers: AppDispatchers,
+    ): UserPreferencesDataSource = UserPreferencesDataSource(repzPreferencesDataStore(context, dispatchers.io))
 }
