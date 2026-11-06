@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Live workout, Train v0 and exercise picker v0 strings (REP-34 plan §3.11, Q6 approved). -->
+<resources>
+    <string name="train_start_workout">Start workout</string>
+    <string name="train_templates_title">Your templates</string>
+    <string name="train_template_start">Start</string>
+    <plurals name="train_template_exercise_count">
+        <item quantity="one">%1$d exercise</item>
+        <item quantity="other">%1$d exercises</item>
+    </plurals>
+    <string name="train_workout_in_progress">Workout in progress</string>
+    <string name="train_resume">Resume</string>
+
+    <string name="workout_default_name_monday">Monday workout</string>
+    <string name="workout_default_name_tuesday">Tuesday workout</string>
+    <string name="workout_default_name_wednesday">Wednesday workout</string>
+    <string name="workout_default_name_thursday">Thursday workout</string>
+    <string name="workout_default_name_friday">Friday workout</string>
+    <string name="workout_default_name_saturday">Saturday workout</string>
+    <string name="workout_default_name_sunday">Sunday workout</string>
+
+    <string name="live_minimize">Minimize workout</string>
+    <string name="live_edit_name">Edit workout name</string>
+    <string name="live_more_options">Workout options</string>
+    <string name="live_finish">Finish</string>
+    <string name="live_discard">Discard workout</string>
+    <string name="live_add_exercise">Add exercise</string>
+    <string name="live_empty_title">Add your first exercise</string>
+    <string name="live_empty_body">The timer is already running. Pick exercises and your last numbers fill in automatically.</string>
+    <string name="live_empty_add_exercises">Add exercises</string>
+
+    <string name="card_options">Exercise options</string>
+    <string name="card_menu_reorder">Reorder</string>
+    <string name="card_menu_notes">Notes</string>
+    <string name="card_menu_remove">Remove</string>
+    <plurals name="card_progress">
+        <item quantity="one">%1$d of %2$d done</item>
+        <item quantity="other">%1$d of %2$d done</item>
+    </plurals>
+    <string name="card_subtitle">%1$s · %2$s</string>
+    <string name="card_column_set">Set</string>
+    <string name="card_column_previous">Prev</string>
+    <string name="card_column_reps">Reps</string>
+    <string name="card_add_set">Add set</string>
+    <string name="card_notes_label">Notes</string>
+
+    <string name="exercise_unknown">Unknown exercise</string>
+
+    <string name="set_badge_warmup">W</string>
+    <string name="set_badge_drop">D</string>
+    <string name="set_badge_failure">F</string>
+    <string name="set_previous_value">%1$s × %2$d</string>
+    <string name="set_previous_none">—</string>
+    <string name="set_last_line">Last: %1$s × %2$d</string>
+    <string name="set_type_warmup">Warm-up</string>
+    <string name="set_type_normal">Normal</string>
+    <string name="set_type_drop">Drop set</string>
+    <string name="set_type_failure">Failure</string>
+    <plurals name="set_complete">
+        <item quantity="one">Complete set %1$s, %2$s for %3$d rep</item>
+        <item quantity="other">Complete set %1$s, %2$s for %3$d reps</item>
+    </plurals>
+    <string name="set_uncomplete">Mark set %1$s as not done</string>
+    <string name="set_weight">Weight, set %1$s</string>
+    <string name="set_reps">Reps, set %1$s</string>
+    <string name="set_badge">Set %1$s type</string>
+    <string name="set_action_delete">Delete set</string>
+    <string name="set_action_mark_warmup">Mark as warm-up</string>
+    <string name="set_action_mark_drop">Mark as drop set</string>
+    <string name="set_action_mark_failure">Mark as failure set</string>
+    <string name="set_action_mark_normal">Mark as normal set</string>
+    <string name="set_deleted">Set deleted</string>
+    <string name="exercise_removed">Exercise removed</string>
+    <string name="undo">Undo</string>
+
+    <string name="reorder_title">Reorder exercises</string>
+    <string name="reorder_done">Done</string>
+    <plurals name="reorder_subtitle">
+        <item quantity="one">%1$d set · %2$d done</item>
+        <item quantity="other">%1$d sets · %2$d done</item>
+    </plurals>
+    <string name="reorder_drag_handle">Drag to reorder</string>
+    <string name="reorder_move_up">Move up</string>
+    <string name="reorder_move_down">Move down</string>
+
+    <string name="discard_dialog_title">Discard workout?</string>
+    <plurals name="discard_dialog_body">
+        <item quantity="one">%1$s has %2$d logged set. Discarding removes them from this device. This can\'t be undone.</item>
+        <item quantity="other">%1$s has %2$d logged sets. Discarding removes them from this device. This can\'t be undone.</item>
+    </plurals>
+    <string name="discard_dialog_confirm">Discard</string>
+    <string name="discard_dialog_cancel">Keep training</string>
+
+    <string name="finish_failed">Couldn\'t finish the workout. Try again.</string>
+
+    <string name="picker_title">Add exercise</string>
+    <string name="keypad_context">%1$s · Set %2$s</string>
+    <string name="picker_back">Back</string>
+</resources>

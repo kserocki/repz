@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="train_start_workout">Rozpocznij trening</string>
+    <string name="train_templates_title">Twoje szablony</string>
+    <string name="train_template_start">Rozpocznij</string>
+    <plurals name="train_template_exercise_count">
+        <item quantity="one">%1$d ćwiczenie</item>
+        <item quantity="few">%1$d ćwiczenia</item>
+        <item quantity="many">%1$d ćwiczeń</item>
+        <item quantity="other">%1$d ćwiczeń</item>
+    </plurals>
+    <string name="train_workout_in_progress">Trening w toku</string>
+    <string name="train_resume">Wznów</string>
+
+    <string name="workout_default_name_monday">Trening poniedziałkowy</string>
+    <string name="workout_default_name_tuesday">Trening wtorkowy</string>
+    <string name="workout_default_name_wednesday">Trening środowy</string>
+    <string name="workout_default_name_thursday">Trening czwartkowy</string>
+    <string name="workout_default_name_friday">Trening piątkowy</string>
+    <string name="workout_default_name_saturday">Trening sobotni</string>
+    <string name="workout_default_name_sunday">Trening niedzielny</string>
+
+    <string name="live_minimize">Zminimalizuj trening</string>
+    <string name="live_edit_name">Edytuj nazwę treningu</string>
+    <string name="live_more_options">Opcje treningu</string>
+    <string name="live_finish">Zakończ</string>
+    <string name="live_discard">Odrzuć trening</string>
+    <string name="live_add_exercise">Dodaj ćwiczenie</string>
+    <string name="live_empty_title">Dodaj pierwsze ćwiczenie</string>
+    <string name="live_empty_body">Czas już leci. Wybierz ćwiczenia, a Twoje ostatnie wyniki uzupełnią się same.</string>
+    <string name="live_empty_add_exercises">Dodaj ćwiczenia</string>
+
+    <string name="card_options">Opcje ćwiczenia</string>
+    <string name="card_menu_reorder">Zmień kolejność</string>
+    <string name="card_menu_notes">Notatki</string>
+    <string name="card_menu_remove">Usuń</string>
+    <plurals name="card_progress">
+        <item quantity="one">%1$d z %2$d gotowa</item>
+        <item quantity="few">%1$d z %2$d gotowe</item>
+        <item quantity="many">%1$d z %2$d gotowych</item>
+        <item quantity="other">%1$d z %2$d gotowych</item>
+    </plurals>
+    <string name="card_subtitle">%1$s · %2$s</string>
+    <string name="card_column_set">Seria</string>
+    <string name="card_column_previous">Poprz.</string>
+    <string name="card_column_reps">Powt.</string>
+    <string name="card_add_set">Dodaj serię</string>
+    <string name="card_notes_label">Notatki</string>
+
+    <string name="exercise_unknown">Nieznane ćwiczenie</string>
+
+    <string name="set_badge_warmup">W</string>
+    <string name="set_badge_drop">D</string>
+    <string name="set_badge_failure">F</string>
+    <string name="set_previous_value">%1$s × %2$d</string>
+    <string name="set_previous_none">—</string>
+    <string name="set_last_line">Ostatnio: %1$s × %2$d</string>
+    <string name="set_type_warmup">Rozgrzewka</string>
+    <string name="set_type_normal">Normalna</string>
+    <string name="set_type_drop">Drop set</string>
+    <string name="set_type_failure">Do upadku</string>
+    <plurals name="set_complete">
+        <item quantity="one">Zakończ serię %1$s, %2$s × %3$d powt.</item>
+        <item quantity="few">Zakończ serię %1$s, %2$s × %3$d powt.</item>
+        <item quantity="many">Zakończ serię %1$s, %2$s × %3$d powt.</item>
+        <item quantity="other">Zakończ serię %1$s, %2$s × %3$d powt.</item>
+    </plurals>
+    <string name="set_uncomplete">Oznacz serię %1$s jako niewykonaną</string>
+    <string name="set_weight">Ciężar, seria %1$s</string>
+    <string name="set_reps">Powtórzenia, seria %1$s</string>
+    <string name="set_badge">Typ serii %1$s</string>
+    <string name="set_action_delete">Usuń serię</string>
+    <string name="set_action_mark_warmup">Oznacz jako rozgrzewkę</string>
+    <string name="set_action_mark_drop">Oznacz jako drop set</string>
+    <string name="set_action_mark_failure">Oznacz jako serię do upadku</string>
+    <string name="set_action_mark_normal">Oznacz jako zwykłą serię</string>
+    <string name="set_deleted">Seria usunięta</string>
+    <string name="exercise_removed">Ćwiczenie usunięte</string>
+    <string name="undo">Cofnij</string>
+
+    <string name="reorder_title">Zmień kolejność ćwiczeń</string>
+    <string name="reorder_done">Gotowe</string>
+    <plurals name="reorder_subtitle">
+        <item quantity="one">%1$d seria · %2$d gotowe</item>
+        <item quantity="few">%1$d serie · %2$d gotowe</item>
+        <item quantity="many">%1$d serii · %2$d gotowe</item>
+        <item quantity="other">%1$d serii · %2$d gotowe</item>
+    </plurals>
+    <string name="reorder_drag_handle">Przeciągnij, aby zmienić kolejność</string>
+    <string name="reorder_move_up">Przesuń w górę</string>
+    <string name="reorder_move_down">Przesuń w dół</string>
+
+    <string name="discard_dialog_title">Odrzucić trening?</string>
+    <plurals name="discard_dialog_body">
+        <item quantity="one">%1$s: %2$d zapisana seria. Odrzucenie usunie je z tego urządzenia. Tego nie można cofnąć.</item>
+        <item quantity="few">%1$s: %2$d zapisane serie. Odrzucenie usunie je z tego urządzenia. Tego nie można cofnąć.</item>
+        <item quantity="many">%1$s: %2$d zapisanych serii. Odrzucenie usunie je z tego urządzenia. Tego nie można cofnąć.</item>
+        <item quantity="other">%1$s: %2$d zapisanych serii. Odrzucenie usunie je z tego urządzenia. Tego nie można cofnąć.</item>
+    </plurals>
+    <string name="discard_dialog_confirm">Odrzuć</string>
+    <string name="discard_dialog_cancel">Trenuj dalej</string>
+
+    <string name="finish_failed">Nie udało się zakończyć treningu. Spróbuj ponownie.</string>
+
+    <string name="picker_title">Dodaj ćwiczenie</string>
+    <string name="keypad_context">%1$s · Seria %2$s</string>
+    <string name="picker_back">Wstecz</string>
+</resources>
