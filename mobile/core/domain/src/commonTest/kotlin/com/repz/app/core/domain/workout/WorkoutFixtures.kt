@@ -23,7 +23,7 @@ internal fun testWorkoutSet(
     seed: Int,
     weight: Weight = Weight.fromKilograms(50.0),
     reps: Int = 5,
-    completedAt: Instant = Instant.fromEpochSeconds(seed.toLong()),
+    completedAt: Instant? = Instant.fromEpochSeconds(seed.toLong()),
 ): WorkoutSet =
     WorkoutSet(
         id = WorkoutSetId(testUuid(seed)),
@@ -62,5 +62,23 @@ internal fun testFinishedWorkout(
         notes = notes,
         startedAt = startedAt,
         finishedAt = finishedAt,
+        exercises = exercises,
+    )
+
+/** [testFinishedWorkout]'s active-workout counterpart: `finishedAt = null`. */
+internal fun testActiveWorkout(
+    seed: Int = 1,
+    name: String = "Push day",
+    notes: String = "",
+    startedAt: Instant = Instant.fromEpochSeconds(0),
+    exercises: List<WorkoutExercise> = listOf(testWorkoutExercise(seed)),
+): Workout =
+    Workout(
+        id = WorkoutId(testUuid(seed)),
+        templateId = null,
+        name = name,
+        notes = notes,
+        startedAt = startedAt,
+        finishedAt = null,
         exercises = exercises,
     )
