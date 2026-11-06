@@ -12,7 +12,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
+import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.repz.app.core.domain.sync.SyncScheduler
 import com.repz.app.core.navigation.Navigator
 import com.repz.app.core.navigation.rememberNavigator
 import com.repz.app.feature.auth.api.WelcomeRoute
@@ -51,6 +53,19 @@ internal fun RepzAppShell(
 
     LaunchedEffect(isSignedIn) {
         isSignedIn?.let(navigator::syncAuthentication)
+    }
+
+    // The one shared foreground/login sync trigger (ARCHITECTURE §5.6, ADR-0027 Q7): CMP's iOS
+    // lifecycle maps `willEnterForeground` to `ON_START`, so this single effect covers both
+    // platforms' "app foreground" row and, since `isSignedIn` flipping to true re-keys it, "just
+    // logged in" too. `SyncEngine.sync()` itself re-checks the session, so a debug-signed-in run
+    // (isSignedIn true with no real session) still sends zero requests.
+    val syncScheduler = koinInject<SyncScheduler>()
+    LifecycleStartEffect(isSignedIn) {
+        if (isSignedIn == true) {
+            syncScheduler.requestSync()
+        }
+        onStopOrDispose {}
     }
 
     // A fresh process starts in `HoldingSplashFrame`. A configuration change restores `phase`
