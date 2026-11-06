@@ -46,7 +46,7 @@ internal class ChangePuller(
 
             when (val result = syncApi.pull(meta.pullCursor, MAX_PULL_LIMIT)) {
                 is NetworkResult.Failure -> {
-                    logger.i { "pullUntilDone: page fetch failed, cursor stays at ${meta.pullCursor}: ${result.error}" }
+                    logger.w { "pullUntilDone: page fetch failed, cursor stays at ${meta.pullCursor}: ${result.error}" }
                     return result.error.toSyncOutcome()
                 }
 
