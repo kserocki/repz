@@ -254,6 +254,36 @@ class WorkoutDaoTest {
             assertEquals(listOf(finishedId), found.map { it.workout.id })
         }
 
+    @Test
+    fun givenFinishedActiveAndDeletedWorkouts_whenFindingFinishedWorkouts_thenOnlyTheFinishedNonDeletedOnesAreReturnedNewestFirst() =
+        runTest {
+            val olderFinishedId = testUuid("1")
+            val newerFinishedId = testUuid("2")
+            val activeId = testUuid("3")
+            val deletedId = testUuid("4")
+
+            workoutDao.saveSyncedWorkout(
+                workout(olderFinishedId, finishedAt = Instant.parse("2024-01-01T12:00:00Z")),
+                emptyList(),
+                emptyList(),
+            )
+            workoutDao.saveSyncedWorkout(
+                workout(newerFinishedId, finishedAt = Instant.parse("2024-01-02T12:00:00Z")),
+                emptyList(),
+                emptyList(),
+            )
+            workoutDao.saveSyncedWorkout(workout(activeId, finishedAt = null), emptyList(), emptyList())
+            workoutDao.saveSyncedWorkout(
+                workout(deletedId, finishedAt = Instant.parse("2024-01-03T12:00:00Z"), isDeleted = true),
+                emptyList(),
+                emptyList(),
+            )
+
+            val found = workoutDao.findFinishedWorkouts()
+
+            assertEquals(listOf(newerFinishedId, olderFinishedId), found.map { it.workout.id })
+        }
+
     private fun workout(
         id: Uuid,
         templateId: Uuid? = null,

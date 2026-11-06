@@ -20,6 +20,11 @@ abstract class WorkoutDao(
     @Query("SELECT * FROM workouts WHERE finished_at IS NOT NULL AND is_deleted = 0 ORDER BY started_at DESC")
     abstract fun observeFinishedWorkouts(): Flow<List<WorkoutAggregate>>
 
+    /** Same filter as [observeFinishedWorkouts], a one-shot read for a full-history recompute. */
+    @Transaction
+    @Query("SELECT * FROM workouts WHERE finished_at IS NOT NULL AND is_deleted = 0 ORDER BY started_at DESC")
+    abstract suspend fun findFinishedWorkouts(): List<WorkoutAggregate>
+
     @Transaction
     @Query("SELECT * FROM workouts WHERE id = :id AND is_deleted = 0")
     abstract fun observeWorkout(id: Uuid): Flow<WorkoutAggregate?>

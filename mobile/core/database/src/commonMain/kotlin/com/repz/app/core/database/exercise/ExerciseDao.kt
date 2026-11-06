@@ -12,7 +12,7 @@ import kotlin.uuid.Uuid
 abstract class ExerciseDao(
     private val database: RepzDatabase,
 ) {
-    /** Not deleted; sorting by localised name happens in `core:data`. */
+    /** Not deleted; order unspecified, callers sort by localised name. */
     @Transaction
     @Query("SELECT * FROM exercises WHERE is_deleted = 0")
     abstract fun observeExercises(): Flow<List<ExerciseWithTranslations>>

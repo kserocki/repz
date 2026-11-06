@@ -59,6 +59,22 @@ class PersonalRecordDaoTest {
             }
         }
 
+    @Test
+    fun givenRecordsAcrossExercises_whenReplacingAll_thenTheWholeTableIsReplaced() =
+        runTest {
+            val exerciseAId = testUuid("1")
+            val exerciseBId = testUuid("2")
+            val exerciseCId = testUuid("3")
+            personalRecordDao.replaceForExercises(listOf(exerciseAId), records = listOf(record(exerciseAId, "heaviest")))
+            personalRecordDao.replaceForExercises(listOf(exerciseBId), records = listOf(record(exerciseBId, "most_reps")))
+
+            personalRecordDao.replaceAll(listOf(record(exerciseCId, "est_1rm")))
+
+            personalRecordDao.observeAll().test {
+                assertEquals(listOf(exerciseCId), awaitItem().map { it.exerciseId })
+            }
+        }
+
     private fun record(
         exerciseId: Uuid,
         type: String,
