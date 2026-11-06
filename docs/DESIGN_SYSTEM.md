@@ -399,7 +399,7 @@ Notable behaviours from the design:
 |---|---|---|---|
 | Rest timer in background | Android foreground service | **Scheduled local notification** (`AlarmManager` / `UNUserNotificationCenter`) + `restEndsAt` in DB | ADR-0013: reliable, little native code |
 | Haptics toggle, language row | new rows in Settings | adopted | |
-| Weekly goal | default 4, setting not designed | stored in user preferences, default 4; setting UI **open question** | ask before building the goal UI |
+| Weekly goal (REP-27, Q3) | default 4, setting not designed | stored in user preferences (`weeklyWorkoutGoal`, workouts/week), default 4, accepted range 1–7; setting UI **open question** | a range was needed to validate the setter; what counts as a week is decided with the Train/History UI |
 | Auth CTA colour (REP-30, Q8) | Board 07 draws Create account/Log in on `primaryContainer` | Register/Log in submit buttons: `RepzButtonStyle.Filled` (`primary`), matching board 04 + board 18 (2026-11-03). Welcome's "Create account" only: `RepzButtonStyle.Hero` (`primaryContainer`/`onPrimaryContainer`), matching board 07's own colours exactly; "Log in" stays `Outlined` | board 07 conflicts with the documented colour rules (`primaryContainer` = hero/FAB only) for CTAs generally, but board 07's own treatment is kept for Welcome's single boldest CTA; user decisions 2026-11-03 and 2026-11-05 |
 | "Forgot password?" (REP-30, Q4) | shown on Log in | hidden | no password reset in v1 (ARCHITECTURE §1) |
 | Terms/Privacy line (REP-30, Q5) | shown on Register | hidden | no Terms/Privacy documents exist yet |
