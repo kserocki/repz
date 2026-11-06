@@ -20,6 +20,7 @@ import com.repz.app.core.network.dto.sync.RejectedChangeDto
 import com.repz.app.core.network.result.NetworkError
 import com.repz.app.core.network.result.NetworkResult
 import com.repz.app.core.sync.fakes.FakeSyncApi
+import com.repz.app.core.sync.inMemoryRepzDatabase
 import com.repz.app.core.sync.testSyncEngine
 import com.repz.app.core.sync.testUuid
 import kotlinx.coroutines.CompletableDeferred
@@ -292,32 +293,41 @@ class SyncEnginePushTest {
         }
 
     @Test
-    fun givenAnActiveWorkoutsOutboxRow_whenSyncing_thenItIsLeftAndTheRunSendsNothing() =
+    fun givenAnUpsertRowWhoseEntityIsMissing_whenSyncing_thenItIsDropped() =
         runTest {
             val syncApi = FakeSyncApi()
             val harness = testSyncEngine(backgroundScope, syncApi = syncApi)
-            val workoutId = testUuid("1")
-            harness.database.workoutDao().saveSyncedWorkout(
-                WorkoutEntity(
-                    id = workoutId,
-                    templateId = null,
-                    name = "Push day",
-                    notes = "",
-                    startedAt = FINISHED_AT,
-                    finishedAt = null,
-                    updatedAt = FINISHED_AT,
-                    serverVersion = null,
-                    isDeleted = false,
-                ),
-                emptyList(),
-                emptyList(),
-            )
-            harness.database.outboxDao().enqueue(SyncEntityType.WORKOUT, workoutId, OutboxOperation.UPSERT, FINISHED_AT)
+            val missingWorkoutId = testUuid("1")
+            harness.database.outboxDao().enqueue(SyncEntityType.WORKOUT, missingWorkoutId, OutboxOperation.UPSERT, FINISHED_AT)
 
             harness.engine.sync()
 
             assertTrue(syncApi.pushRequests.isEmpty())
-            assertEquals(1, harness.database.outboxDao().countPending())
+            assertEquals(0, harness.database.outboxDao().countPending())
+        }
+
+    /**
+     * [OutboxPusher] reads an outbox row (its revision included) once per round, then - only if
+     * [com.repz.app.core.sync.handler.SyncHandler.buildUpsert] finds nothing to push - drops that
+     * same row via `deleteIfUnchanged(type, id, revision)`. A real edit landing in that narrow window
+     * isn't reproducible from outside without a dedicated test seam (both steps are plain,
+     * un-gated suspend calls within one loop iteration), so this exercises the exact guard call
+     * directly: a revision read before a concurrent edit must not be allowed to drop the edited row.
+     */
+    @Test
+    fun givenTheRowWasEditedAfterItWasReadAndBeforeItWasDropped_whenDroppingWithTheStaleRevision_thenTheRowSurvives() =
+        runTest {
+            val database = inMemoryRepzDatabase()
+            val missingWorkoutId = testUuid("1")
+            database.outboxDao().enqueue(SyncEntityType.WORKOUT, missingWorkoutId, OutboxOperation.UPSERT, FINISHED_AT)
+            val readBeforeTheEdit = database.outboxDao().findReadyToPush(FINISHED_AT, limit = 10).single()
+            // A local edit lands after this revision was read, but before the drop below runs.
+            database.outboxDao().enqueue(SyncEntityType.WORKOUT, missingWorkoutId, OutboxOperation.UPSERT, FINISHED_AT)
+
+            val deletedRows = database.outboxDao().deleteIfUnchanged(SyncEntityType.WORKOUT, missingWorkoutId, readBeforeTheEdit.revision)
+
+            assertEquals(0, deletedRows)
+            assertEquals(1, database.outboxDao().countPending())
         }
 
     @Test

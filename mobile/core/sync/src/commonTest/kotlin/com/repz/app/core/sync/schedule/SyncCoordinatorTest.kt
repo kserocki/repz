@@ -5,11 +5,13 @@ import com.repz.app.core.domain.session.SignOutReason
 import com.repz.app.core.sync.fakes.FakeBackgroundSyncScheduler
 import com.repz.app.core.sync.testSyncEngine
 import com.repz.app.core.testing.session.FakeSessionRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class SyncCoordinatorTest {
     @Test
     fun givenStart_whenCalled_thenTheSchedulerStartsBeforeAnySessionStateIsObserved() =

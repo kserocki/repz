@@ -30,10 +30,13 @@ private data class OutboxKey(
 /**
  * Pushes every ready outbox row, batched by [batchPushChanges] (ARCHITECTURE §5.3/§5.4, ADR-0020).
  *
- * TODO(REP-26): the "nothing pushable right now" branch of [buildChange] currently always leaves
- * the row in place; confirm with Anvil whether a genuinely missing entity (as opposed to a
- * still-active workout) should instead drop it via [OutboxDao.deleteIfUnchanged] - see the SY-2
- * hand-off question.
+ * A null from [com.repz.app.core.sync.handler.SyncHandler.buildUpsert] (the row is missing, or -
+ * for a workout - it is still active) always drops the outbox row via [OutboxDao.deleteIfUnchanged]:
+ * both reasons are defensive only (an active workout never actually reaches the outbox,
+ * ARCHITECTURE §5.4), and dropping is harmless either way - a later legitimate write re-enqueues
+ * its own outbox row. The revision guard still protects a row edited after [pushReadyChanges] read
+ * it: `deleteIfUnchanged` only removes the row if its revision still matches that earlier read, so a
+ * row re-enqueued in the meantime survives.
  */
 internal class OutboxPusher(
     private val database: RepzDatabase,
@@ -88,7 +91,10 @@ internal class OutboxPusher(
             OutboxOperation.UPSERT -> {
                 val change = handler.buildUpsert(entry.entityId)
                 if (change == null) {
-                    logger.i { "pushReadyChanges: nothing to push for ${entry.entityType}/${entry.entityId} right now, leaving it" }
+                    logger.w {
+                        "buildChange: nothing to push for ${entry.entityType}/${entry.entityId}, dropping its outbox row if unchanged"
+                    }
+                    outboxDao.deleteIfUnchanged(entry.entityType, entry.entityId, entry.revision)
                 }
                 change
             }

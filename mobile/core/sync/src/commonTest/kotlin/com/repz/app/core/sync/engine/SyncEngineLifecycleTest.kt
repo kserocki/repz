@@ -12,6 +12,7 @@ import com.repz.app.core.sync.testSyncEngine
 import com.repz.app.core.sync.testUuid
 import com.repz.app.core.testing.session.FakeSessionRepository
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runCurrent
@@ -21,6 +22,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.time.Instant
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class SyncEngineLifecycleTest {
     @Test
     fun givenASignedOutSession_whenSyncing_thenSkipsWithZeroApiCalls() =

@@ -23,6 +23,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
@@ -190,7 +191,16 @@ class SyncEnginePullTest {
                     .copy(initialPullCompletedAt = UPDATED_AT),
             )
             val pendingId = testUuid("1")
-            harness.database.outboxDao().enqueue(SyncEntityType.WORKOUT, pendingId, OutboxOperation.UPSERT, UPDATED_AT)
+            // Held, so the push pass never looks at it (and, since REP-26's deleteIfUnchanged-on-null
+            // fix, never has a chance to drop it either): it stays pending for findPendingEntityIds
+            // throughout the whole run, which is the only thing this test cares about.
+            harness.database.outboxDao().enqueue(
+                SyncEntityType.WORKOUT,
+                pendingId,
+                OutboxOperation.DELETE,
+                UPDATED_AT,
+                heldUntil = UPDATED_AT + 10.minutes,
+            )
             syncApi.pullHandler = { cursor, _ ->
                 if (cursor == 0L) {
                     NetworkResult.Success(
