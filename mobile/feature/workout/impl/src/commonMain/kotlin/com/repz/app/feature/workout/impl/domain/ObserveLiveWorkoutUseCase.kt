@@ -7,6 +7,7 @@ import com.repz.app.core.domain.model.UnitSystem
 import com.repz.app.core.domain.model.Workout
 import com.repz.app.core.domain.model.WorkoutSet
 import com.repz.app.core.domain.preferences.UserPreferencesRepository
+import com.repz.app.core.domain.preferences.WeightStep
 import com.repz.app.core.domain.workout.FindLastPerformanceUseCase
 import com.repz.app.core.domain.workout.WorkoutRepository
 import kotlinx.coroutines.flow.Flow
@@ -21,6 +22,7 @@ data class LiveWorkoutSnapshot(
     val exercisesById: Map<ExerciseId, Exercise>,
     val lastPerformanceByExercise: Map<ExerciseId, List<WorkoutSet>>,
     val unit: UnitSystem,
+    val weightStep: WeightStep,
 )
 
 /**
@@ -48,7 +50,13 @@ class ObserveLiveWorkoutUseCase(
             if (workout == null || context == null) {
                 null
             } else {
-                LiveWorkoutSnapshot(workout, context.exercisesById, context.lastPerformanceByExercise, prefs.unitSystem)
+                LiveWorkoutSnapshot(
+                    workout = workout,
+                    exercisesById = context.exercisesById,
+                    lastPerformanceByExercise = context.lastPerformanceByExercise,
+                    unit = prefs.unitSystem,
+                    weightStep = prefs.weightStepFor(prefs.unitSystem),
+                )
             }
         }
     }

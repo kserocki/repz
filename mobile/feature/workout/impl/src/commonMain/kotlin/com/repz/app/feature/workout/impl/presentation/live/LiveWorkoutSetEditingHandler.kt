@@ -6,6 +6,7 @@ import com.repz.app.core.domain.model.SetType
 import com.repz.app.core.domain.model.Weight
 import com.repz.app.core.domain.model.WorkoutExerciseId
 import com.repz.app.core.domain.model.WorkoutSetId
+import com.repz.app.core.domain.preferences.WeightStep
 import com.repz.app.core.domain.result.DomainResult
 import com.repz.app.core.domain.validation.ValidationLimits
 import com.repz.app.core.domain.workout.findSet
@@ -16,6 +17,7 @@ import com.repz.app.core.domain.workout.withSetUpdated
 import com.repz.app.core.domain.workout.withoutSet
 import com.repz.app.feature.workout.impl.domain.EditActiveWorkoutUseCase
 import com.repz.app.feature.workout.impl.domain.LiveWorkoutSnapshot
+import com.repz.app.feature.workout.impl.domain.SetWeightStepUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,6 +28,7 @@ import kotlin.time.Clock
 /** Adding/editing/completing/deleting a set and the keypad's own field navigation (T12, Q5). */
 internal class LiveWorkoutSetEditingHandler(
     private val editActiveWorkout: EditActiveWorkoutUseCase,
+    private val setWeightStep: SetWeightStepUseCase,
     private val idGenerator: IdGenerator,
     private val clock: Clock,
     private val scope: CoroutineScope,
@@ -126,6 +129,11 @@ internal class LiveWorkoutSetEditingHandler(
     fun onKeypadFieldSelected(field: SetField) {
         val current = localState.value.editingField ?: return
         localState.update { it.copy(editingField = current.copy(field = field)) }
+    }
+
+    /** The keypad's Step chip (keypad plan §8.2); persisted device-wide, for `step.unitSystem` only. */
+    fun onWeightStepChanged(step: WeightStep) {
+        scope.launch { setWeightStep(step) }
     }
 
     fun onNextFieldRequested() {

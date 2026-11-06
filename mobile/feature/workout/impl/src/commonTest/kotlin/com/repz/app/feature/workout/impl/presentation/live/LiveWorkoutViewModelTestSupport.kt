@@ -15,6 +15,7 @@ import com.repz.app.feature.workout.impl.domain.ActiveWorkoutWriteLock
 import com.repz.app.feature.workout.impl.domain.DiscardActiveWorkoutUseCase
 import com.repz.app.feature.workout.impl.domain.EditActiveWorkoutUseCase
 import com.repz.app.feature.workout.impl.domain.ObserveLiveWorkoutUseCase
+import com.repz.app.feature.workout.impl.domain.SetWeightStepUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestDispatcher
@@ -33,15 +34,17 @@ internal fun TestScope.liveWorkoutViewModel(
     workouts: FakeWorkoutRepository,
     exercises: FakeExerciseRepository = FakeExerciseRepository(),
     clock: MutableClock = MutableClock(Instant.fromEpochSeconds(0)),
+    preferences: FakeUserPreferencesRepository = FakeUserPreferencesRepository(),
 ): LiveWorkoutViewModel {
     val findLastPerformance = FindLastPerformanceUseCase(workouts)
     val recalculate = RecalculatePersonalRecordsUseCase(workouts, FakePersonalRecordRepository(), FakeTransactionRunner())
     val viewModel =
         LiveWorkoutViewModel(
-            observeLiveWorkout = ObserveLiveWorkoutUseCase(workouts, exercises, findLastPerformance, FakeUserPreferencesRepository()),
+            observeLiveWorkout = ObserveLiveWorkoutUseCase(workouts, exercises, findLastPerformance, preferences),
             editActiveWorkout = EditActiveWorkoutUseCase(workouts, ActiveWorkoutWriteLock()),
             discardActiveWorkout = DiscardActiveWorkoutUseCase(workouts),
             finishActiveWorkout = FinishActiveWorkoutUseCase(workouts, SaveFinishedWorkoutUseCase(workouts, recalculate), clock),
+            setWeightStep = SetWeightStepUseCase(preferences),
             idGenerator = SequentialIdGenerator(),
             clock = clock,
             languageTag = { "en" },

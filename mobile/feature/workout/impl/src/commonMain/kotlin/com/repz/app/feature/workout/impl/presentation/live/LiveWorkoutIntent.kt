@@ -5,6 +5,7 @@ import com.repz.app.core.domain.model.SetType
 import com.repz.app.core.domain.model.Weight
 import com.repz.app.core.domain.model.WorkoutExerciseId
 import com.repz.app.core.domain.model.WorkoutSetId
+import com.repz.app.core.domain.preferences.WeightStep
 
 sealed interface LiveWorkoutIntent {
     data object MinimizeClicked : LiveWorkoutIntent
@@ -76,7 +77,10 @@ sealed interface LiveWorkoutIntent {
         val field: SetField,
     ) : LiveWorkoutIntent
 
-    // TODO(REP-35): add `data class WeightStepChanged(val step: WeightStep) : LiveWorkoutIntent` once that type lands.
+    /** The keypad's Step chip (keypad plan §8.2): persisted device-wide via `SetWeightStepUseCase`. */
+    data class WeightStepChanged(
+        val step: WeightStep,
+    ) : LiveWorkoutIntent
 
     /** T12: Weight -> Reps of the same set -> Weight of the next set -> Weight of the next card's first set; Done on the last field. */
     data object NextFieldRequested : LiveWorkoutIntent

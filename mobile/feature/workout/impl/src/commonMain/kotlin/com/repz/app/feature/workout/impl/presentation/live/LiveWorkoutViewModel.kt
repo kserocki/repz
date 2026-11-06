@@ -10,6 +10,7 @@ import com.repz.app.feature.workout.impl.domain.DiscardActiveWorkoutUseCase
 import com.repz.app.feature.workout.impl.domain.EditActiveWorkoutUseCase
 import com.repz.app.feature.workout.impl.domain.LiveWorkoutSnapshot
 import com.repz.app.feature.workout.impl.domain.ObserveLiveWorkoutUseCase
+import com.repz.app.feature.workout.impl.domain.SetWeightStepUseCase
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -43,6 +44,7 @@ class LiveWorkoutViewModel(
     editActiveWorkout: EditActiveWorkoutUseCase,
     discardActiveWorkout: DiscardActiveWorkoutUseCase,
     finishActiveWorkout: FinishActiveWorkoutUseCase,
+    setWeightStep: SetWeightStepUseCase,
     idGenerator: IdGenerator,
     clock: Clock,
     languageTag: () -> String = { Locale.current.toLanguageTag() },
@@ -68,7 +70,16 @@ class LiveWorkoutViewModel(
             ::sendEffect,
         )
     private val setEditingHandler =
-        LiveWorkoutSetEditingHandler(editActiveWorkout, idGenerator, clock, viewModelScope, localState, snapshotFlow, ::sendEffect)
+        LiveWorkoutSetEditingHandler(
+            editActiveWorkout,
+            setWeightStep,
+            idGenerator,
+            clock,
+            viewModelScope,
+            localState,
+            snapshotFlow,
+            ::sendEffect,
+        )
     private val exerciseHandler =
         LiveWorkoutExerciseHandler(editActiveWorkout, viewModelScope, localState, snapshotFlow, ::sendEffect)
     private val uiStateMapper = LiveWorkoutUiStateMapper(languageTag, clock)
@@ -106,6 +117,7 @@ class LiveWorkoutViewModel(
             is LiveWorkoutIntent.SetRepsEntered -> setEditingHandler.onSetRepsEntered(intent.setId, intent.reps)
             is LiveWorkoutIntent.SetRpeEntered -> setEditingHandler.onSetRpeEntered(intent.setId, intent.rpe)
             is LiveWorkoutIntent.KeypadFieldSelected -> setEditingHandler.onKeypadFieldSelected(intent.field)
+            is LiveWorkoutIntent.WeightStepChanged -> setEditingHandler.onWeightStepChanged(intent.step)
             LiveWorkoutIntent.NextFieldRequested -> setEditingHandler.onNextFieldRequested()
             LiveWorkoutIntent.KeypadDismissed -> localState.update { it.copy(editingField = null) }
             is LiveWorkoutIntent.NotesClicked -> exerciseHandler.onNotesClicked(intent.exerciseId)

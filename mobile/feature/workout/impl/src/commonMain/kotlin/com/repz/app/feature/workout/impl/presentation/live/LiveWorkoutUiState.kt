@@ -7,6 +7,7 @@ import com.repz.app.core.domain.model.UnitSystem
 import com.repz.app.core.domain.model.Weight
 import com.repz.app.core.domain.model.WorkoutExerciseId
 import com.repz.app.core.domain.model.WorkoutSetId
+import com.repz.app.core.domain.preferences.WeightStep
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlin.time.Duration
@@ -28,7 +29,7 @@ data class LiveWorkoutUiState(
     val isReordering: Boolean = false,
     val editingField: SetFieldRef? = null,
     val keypadTarget: LiveKeypadTargetUi? = null,
-    // TODO(REP-35): add `val weightStep: WeightStep = WeightStep.defaultFor(unit)` once that core:domain type lands.
+    val weightStep: WeightStep = WeightStep.defaultFor(UnitSystem.KG),
     val discardConfirmation: DiscardConfirmationUi? = null,
 ) {
     val isEmpty: Boolean get() = !isLoading && exercises.isEmpty()

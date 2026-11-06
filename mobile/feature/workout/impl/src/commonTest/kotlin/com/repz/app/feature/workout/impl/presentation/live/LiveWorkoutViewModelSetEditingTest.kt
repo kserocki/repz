@@ -4,7 +4,10 @@ import app.cash.turbine.test
 import com.repz.app.core.domain.model.ExerciseId
 import com.repz.app.core.domain.model.Rpe
 import com.repz.app.core.domain.model.SetType
+import com.repz.app.core.domain.model.UnitSystem
 import com.repz.app.core.domain.model.Weight
+import com.repz.app.core.domain.preferences.WeightStep
+import com.repz.app.core.testing.preferences.FakeUserPreferencesRepository
 import com.repz.app.core.testing.time.MutableClock
 import com.repz.app.core.testing.workout.FakeWorkoutRepository
 import com.repz.app.feature.workout.impl.testActiveWorkout
@@ -524,6 +527,30 @@ class LiveWorkoutViewModelSetEditingTest {
                     ?.last
             assertEquals(Weight.fromKilograms(60.0), last?.weight)
             assertEquals(10, last?.reps)
+        }
+
+    @Test
+    fun givenDefaultPreferences_whenStateIsRead_thenWeightStepMatchesTheUnitsDefault() =
+        runTest(dispatcher) {
+            val workout = testActiveWorkout()
+            val viewModel = liveWorkoutViewModel(dispatcher, workouts = FakeWorkoutRepository(listOf(workout)))
+
+            assertEquals(WeightStep.defaultFor(UnitSystem.KG), viewModel.state.value.weightStep)
+        }
+
+    @Test
+    fun givenAWeightStepChanged_whenHandled_thenItIsPersistedAndReflectedInState() =
+        runTest(dispatcher) {
+            val workout = testActiveWorkout()
+            val preferences = FakeUserPreferencesRepository()
+            val viewModel =
+                liveWorkoutViewModel(dispatcher, workouts = FakeWorkoutRepository(listOf(workout)), preferences = preferences)
+
+            viewModel.onIntent(LiveWorkoutIntent.WeightStepChanged(WeightStep.KG_1_25))
+            dispatcher.scheduler.runCurrent()
+
+            assertEquals(WeightStep.KG_1_25, preferences.observePreferences().first().weightStepKg)
+            assertEquals(WeightStep.KG_1_25, viewModel.state.value.weightStep)
         }
 
     @Test

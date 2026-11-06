@@ -40,6 +40,7 @@ internal class LiveWorkoutUiStateMapper(
             isReordering = local.isReordering,
             editingField = local.editingField,
             keypadTarget = local.editingField?.let { toKeypadTargetUi(it, snapshot) },
+            weightStep = snapshot.weightStep,
             discardConfirmation = local.discardConfirmation,
         )
     }
