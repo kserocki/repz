@@ -11,7 +11,7 @@ import com.repz.app.core.sync.workout.WorkoutSyncHandler
 import org.koin.core.annotation.Single
 
 /**
- * Every syncable entity's handler, explicit (ADR-0027 Q3): adding a type means adding a handler
+ * Every syncable entity's handler, explicit (ADR-0027): adding a type means adding a handler
  * class plus one line here, and [com.repz.app.core.sync.engine.SyncEngine] never names an entity
  * type. The three handlers are plain classes, not Koin definitions (they bind nothing, so Konsist
  * D5 sees nothing); this class builds them itself from the DAOs it is given.

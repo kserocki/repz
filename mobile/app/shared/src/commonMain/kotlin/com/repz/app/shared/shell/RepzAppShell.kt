@@ -55,11 +55,9 @@ internal fun RepzAppShell(
         isSignedIn?.let(navigator::syncAuthentication)
     }
 
-    // The one shared foreground/login sync trigger (ARCHITECTURE §5.6, ADR-0027 Q7): CMP's iOS
-    // lifecycle maps `willEnterForeground` to `ON_START`, so this single effect covers both
-    // platforms' "app foreground" row and, since `isSignedIn` flipping to true re-keys it, "just
-    // logged in" too. `SyncEngine.sync()` itself re-checks the session, so a debug-signed-in run
-    // (isSignedIn true with no real session) still sends zero requests.
+    // The one shared foreground/login sync trigger (ARCHITECTURE §5.6, ADR-0027): re-keyed by
+    // `isSignedIn`, so this covers both platforms' foreground case and "just logged in".
+    // `SyncEngine.sync()` re-checks the session, so a debug-signed-in run still sends zero requests.
     val syncScheduler = koinInject<SyncScheduler>()
     LifecycleStartEffect(isSignedIn) {
         if (isSignedIn == true) {
