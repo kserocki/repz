@@ -55,6 +55,7 @@ As ready specs: `RepzMotion.tweens.short()`, `medium()`, `pathDraw()`, `chartDra
 | particleLifeInline / Summary | 600 ms / 1200 ms |
 | celebrationMax | 1500 ms |
 | shimmer | 1200 ms linear |
+| skeletonDelay | 150 ms (`RepzSkeleton`'s own show delay before any bones appear, T10) |
 | reducedMotionFade | 150 ms (reduced-motion crossfade / fade-through) |
 | easing.emphasized | cubic(0.2, 0, 0, 1) |
 | easing.emphasizedDecelerate | cubic(0.05, 0.7, 0.1, 1) |
@@ -252,6 +253,7 @@ Haptics respect the in-app "Haptics" setting (F23) through `RepzTheme(hapticsEna
 - **Haptic:** none (except buttons that act)
 - **Reduced motion:** Ripple/state layer only
 - **Landed (REP-82):** implemented in `RepzButton` (`core:designsystem`) — rest-state radius is `height / 2`, pressed radius is `MaterialTheme.shapes.medium`'s 12 dp, animated together with `scale(0.96f)` on `RepzMotion.springs.pressMorph()`. `LocalReducedMotion` drops the shape/scale animation and keeps only M3's own state layer. Other primary surfaces land with REP-48.
+- **Landed (REP-22):** `RepzButton`'s `Tonal` style and `ExtraSmall`/`Large`/`ExtraLarge` sizes share the same rest/pressed radii and `pressMorph` spring. `RepzConnectedButtonGroup` and `RepzSplitButton` apply the same rule per segment: only the pressed segment's *outer* corners morph to 12 dp (the corners it shares with a neighbour never move). `RepzHeroStartButton`/`RepzHeroStartSplitButton`'s press stage (container pill → 22 dp, disc circle → 16 dp squircle, both scale 0.96) is part of MOT-03's first beat. The FAB's own press-and-hold morph is MOT-30(a), below. Cards and rows still land with REP-48.
 
 ### MOT-23 · Empty states
 - **Trigger:** Empty state shown
@@ -285,12 +287,23 @@ Part of MOT-20: the loaded dumbbell lifts −8 dp and settles (spatialDefault), 
 ### MOT-29 · Empty-state idle
 Part of MOT-23: one outer collar wobbles (rotate ±4°, logoPlate) every few seconds, max 3 loops, then rests.
 
+### MOT-30 · FAB and FAB menu
+- **Trigger:** Press-and-hold on the FAB / extended FAB / FAB-menu toggle; tap the toggle, an item, or system Back to open/close the menu
+- **Animates:** Press (hold): Square(20) → Cookie4Sided + scale 0.96 (pressMorph), release springs back — MOT-22 applied to the FAB, while collapsed. Open: the toggle's 64 dp `largeIncreased` square (primaryContainer) grows into a 56 dp circle (primary/onPrimary) — shape/size on spatialFast, colour on effectsFast; the `+` glyph rotates 45° to read as `×` (no icon swap). Items: enter bottom-up / leave top-down, `stagger.listPerItem` (30 ms) apart, each fading in (effectsFast) while rising 8 dp and scaling 0.8 → 1 (spatialDefault)
+- **Choreography:** Collapsed: press → Cookie4 while held, release springs back to the square. Open: square → circle starts at once; the bottom item (closest to the toggle) starts entering immediately, each item above it 30 ms later. Close: reverses item order, top-down, then the circle shrinks back to the square
+- **Haptic:** none (opening a menu doesn't act)
+- **Reduced motion:** shape and rotation jump instantly; items appear/disappear with the 150 ms reduced-motion crossfade, no movement
+- **Dismiss:** tapping `×`, choosing an item, or system Back closes the menu; no scrim and no outside-tap dismissal
+
+**Landed (REP-22):** `RepzFab`/`RepzExtendedFab` (press-and-hold morph only) and `RepzFabMenu` (full open/close, item stagger and Back dismiss), `core:designsystem`. All three share one `Morph` (`RepzMorphs.roundedSquareToCookie4Sided(20.dp, 64.dp)`, T1) for the press stage; the open/close square ↔ circle transition is a plain `RoundedCornerShape` corner-radius `animateDpAsState`, not a `Morph` (a square-to-circle resize, not a polygon morph). The press-morph state and the open/close state are gated separately (a press only drives Cookie4 while collapsed), so the two never need to cross-fade into each other. Back is wired through `androidx.navigationevent.compose.NavigationBackHandler` (`org.jetbrains.androidx.navigationevent:navigationevent-compose` 1.1.0, ARCHITECTURE §11) — the non-deprecated replacement for `androidx.compose.ui.backhandler.BackHandler` — with no suppression needed.
+
 ## 5. Implementation map (Compose)
 
 | Pattern | API |
 |---|---|
 | Spring values | `Animatable` / `animate*AsState(animationSpec = RepzMotion.springs.x)` |
 | Shape morph | `androidx.graphics.shapes` `Morph` + `MaterialShapes`, progress driven by an `Animatable` |
+| FAB-menu open/close (MOT-30b) | `RoundedCornerShape` size/radius `animateDpAsState` on `spatialFast`, not a `Morph` — the press-and-hold stage (MOT-30a) still uses `RepzMorphShape` |
 | Shared elements / container transform | `SharedTransitionLayout` + `sharedBounds` / `sharedElement`, wired through Nav3 scenes |
 | Particles | one `Canvas` + a frame loop (`withFrameNanos`), plain data arrays, no composable per particle |
 | Logo parts | `RepzLogoSymbol(modifier, color, state, contentDescription)` draws 7 shapes with independent `Animatable`s (`RepzLogoSymbolState`, `RepzLogoPose.BarOnly`/`Assembled`); geometry generated from `brand/LOGO.md` §2 into `RepzLogoGeometry` |
