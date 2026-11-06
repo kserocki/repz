@@ -94,7 +94,7 @@ private val KeypadBufferSaver: Saver<KeypadBuffer, Any> =
  * §3.5): mode segmented control, numeric display + ± with a context line (or the limit message
  * after a refused keystroke, U5), the chip row, the 4x4 key grid, hardware keys and MOT-10.
  * [request] `null` hides it; the exit animation keeps rendering the last non-null request (the
- * `AnimatedVisibility` risk noted in the plan), driven only by [visible].
+ * `AnimatedVisibility` risk noted in the plan), driven only by whether [request] is `null`.
  */
 @Composable
 fun NumberKeypadSheet(
@@ -114,7 +114,7 @@ fun NumberKeypadSheet(
         modifier = modifier,
     ) {
         heldRequest?.let { heldRequestValue ->
-            NumberKeypadSheetBody(
+            NumberKeypadSheetStateful(
                 request = heldRequestValue,
                 onValueChange = onValueChange,
                 onModeSelect = onModeSelect,
@@ -133,9 +133,14 @@ private fun <T> rememberLatestNonNull(value: T?): T? {
     return latest
 }
 
-@Suppress("LongMethod")
+/**
+ * Owns the sheet's only state (the edit buffer and the limit-error flag, both `rememberSaveable`
+ * keyed by target+mode) and all haptics; delegates layout to the stateless
+ * [NumberKeypadSheetStateless] so that composable (and so previews) can force any buffer/error
+ * combination without touching this frozen public entry point (plan T6; Atlas 2026-11-06).
+ */
 @Composable
-private fun NumberKeypadSheetBody(
+private fun NumberKeypadSheetStateful(
     request: NumberKeypadRequest,
     onValueChange: (FixedDecimal?) -> Unit,
     onModeSelect: (KeypadMode) -> Unit,
@@ -143,7 +148,6 @@ private fun NumberKeypadSheetBody(
     onNext: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val symbols = rememberRepzNumberSymbols()
     val haptics = RepzHaptics.current
 
     var buffer by
@@ -181,24 +185,66 @@ private fun NumberKeypadSheetBody(
         }
     }
 
+    NumberKeypadSheetStateless(
+        request = request,
+        buffer = buffer,
+        showLimitError = showLimitError,
+        onInput = ::dispatch,
+        onModeSelect = { mode ->
+            haptics.tick()
+            onModeSelect(mode)
+        },
+        onStepSelect = {
+            haptics.tick()
+            onStepSelect(nextStepOption(request.field.step, request.stepOptions))
+        },
+        onNext = {
+            haptics.tick()
+            onNext()
+        },
+        onDismiss = onDismiss,
+    )
+}
+
+/**
+ * Pure layout: every visual state (the typed buffer, the limit-error context line, the selected
+ * mode/RPE choice) is a function of [request], [buffer] and [showLimitError], never of its own
+ * `remember`ed state. [onInput] is the stateful parent's `dispatch`; previews can instead pass a
+ * no-op (`{ true }`) and drive the exact frame they want through [buffer]/[showLimitError] directly
+ * — this is what makes the mid-type ("82,|") and over-max-error preview states possible without
+ * reopening [NumberKeypadSheet]'s frozen public signature.
+ */
+@Suppress("LongParameterList", "LongMethod")
+@Composable
+internal fun NumberKeypadSheetStateless(
+    request: NumberKeypadRequest,
+    buffer: KeypadBuffer,
+    showLimitError: Boolean,
+    onInput: (KeypadInput) -> Boolean,
+    onModeSelect: (KeypadMode) -> Unit,
+    onStepSelect: () -> Unit,
+    onNext: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val symbols = rememberRepzNumberSymbols()
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(request.targetKey, request.field.mode) { focusRequester.requestFocus() }
 
     Column(
         modifier =
-            Modifier
+            modifier
                 .fillMaxWidth()
                 .focusRequester(focusRequester)
                 .focusable()
                 .onPreviewKeyEvent { event ->
                     val input = event.toKeypadInputOrNull()
                     if (input != null) {
-                        dispatch(input)
+                        onInput(input)
                         return@onPreviewKeyEvent true
                     }
                     when (event.toKeypadHardwareActionOrNull()) {
                         KeypadHardwareAction.Next -> {
-                            haptics.tick()
                             onNext()
                             true
                         }
@@ -227,37 +273,31 @@ private fun NumberKeypadSheetBody(
         KeypadModeRow(
             modes = request.modes,
             selectedMode = request.field.mode,
-            onModeClick = { mode ->
-                haptics.tick()
-                onModeSelect(mode)
-            },
+            onModeClick = onModeSelect,
         )
         KeypadDisplayRow(
             request = request,
             buffer = buffer,
             showLimitError = showLimitError,
             symbols = symbols,
-            onIncrease = { dispatch(KeypadInput.Increase) },
-            onDecrease = { dispatch(KeypadInput.Decrease) },
+            onIncrease = { onInput(KeypadInput.Increase) },
+            onDecrease = { onInput(KeypadInput.Decrease) },
         )
         KeypadChipRow(
             field = request.field,
             showStepChip = request.stepOptions.isNotEmpty(),
             symbols = symbols,
-            onSetValue = { value -> dispatch(KeypadInput.Set(value)) },
-            onStepClick = {
-                haptics.tick()
-                onStepSelect(nextStepOption(request.field.step, request.stepOptions))
-            },
+            onSetValue = { value -> onInput(KeypadInput.Set(value)) },
+            onStepClick = onStepSelect,
         )
         KeypadGrid(
             field = request.field,
             symbols = symbols,
-            onDigit = { digit -> dispatch(KeypadInput.Digit(digit)) },
-            onDecimal = { dispatch(KeypadInput.DecimalSeparator) },
-            onBackspace = { dispatch(KeypadInput.Backspace) },
-            onClear = { dispatch(KeypadInput.Clear) },
-            onSetRpe = { value -> dispatch(KeypadInput.Set(value)) },
+            onDigit = { digit -> onInput(KeypadInput.Digit(digit)) },
+            onDecimal = { onInput(KeypadInput.DecimalSeparator) },
+            onBackspace = { onInput(KeypadInput.Backspace) },
+            onClear = { onInput(KeypadInput.Clear) },
+            onSetRpe = { value -> onInput(KeypadInput.Set(value)) },
             decimalSeparatorDescription = stringResource(Res.string.keypad_decimal_separator),
             backspaceDescription = stringResource(Res.string.keypad_delete_digit),
             clearLabel = stringResource(Res.string.keypad_clear),
@@ -265,10 +305,7 @@ private fun NumberKeypadSheetBody(
             onHide = onDismiss,
             nextLabel = request.nextAction.label(),
             nextDescription = request.nextAction.contentDescription(),
-            onNext = {
-                haptics.tick()
-                onNext()
-            },
+            onNext = onNext,
         )
     }
 }

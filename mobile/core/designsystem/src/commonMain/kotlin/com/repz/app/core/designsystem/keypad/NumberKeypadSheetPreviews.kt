@@ -23,7 +23,6 @@ private val SAMPLE_RPE = FixedDecimal(800)
 // imported) so this production preview file doesn't depend on the debug-only catalog package.
 private const val PREVIEW_CONTEXT_LABEL = "Bench Press · Set 3"
 private val ALL_MODES = listOf(KeypadMode.Weight, KeypadMode.Reps, KeypadMode.Rpe)
-private val WEIGHT_REPS_MODES = listOf(KeypadMode.Weight, KeypadMode.Reps)
 
 internal fun previewWeightRequest(
     value: FixedDecimal? = SAMPLE_WEIGHT,
@@ -117,6 +116,33 @@ internal fun KeypadPreview(
     }
 }
 
+/**
+ * Renders [NumberKeypadSheetStateless] directly with a forced [buffer]/[showLimitError], so a
+ * preview can show a frame [NumberKeypadSheet] itself would only reach through real typing (a
+ * mid-type buffer, or the context line just after a refusal) without touching the public, frozen
+ * §8 signature (Atlas, 2026-11-06).
+ */
+@Composable
+internal fun KeypadPreviewStateless(
+    darkTheme: Boolean,
+    request: NumberKeypadRequest,
+    buffer: KeypadBuffer,
+    showLimitError: Boolean = false,
+) {
+    RepzTheme(darkTheme = darkTheme) {
+        NumberKeypadSheetStateless(
+            request = request,
+            buffer = buffer,
+            showLimitError = showLimitError,
+            onInput = { true },
+            onModeSelect = {},
+            onStepSelect = {},
+            onNext = {},
+            onDismiss = {},
+        )
+    }
+}
+
 /** Weight mode, untouched, with Same as last + quick-value chips + the Step chip all visible. */
 @Preview
 @Composable
@@ -131,21 +157,50 @@ private fun WeightWithChipsDarkPreview() {
 }
 
 /**
- * PL locale symbols (the comma decimal separator, PL mode/chip strings): approximates plan §3.8's
- * "weight editing '82,|'" state. The exact mid-type cursor state ("82," before the fraction digits)
- * lives in the sheet's own `rememberSaveable` buffer (plan T6), which isn't reachable from a
- * `request`-only preview without reopening the frozen §8 signature the workout feature already
- * builds against — flagged to Atlas; Spotter's K2/K3 recordings cover the real mid-type interaction
- * instead.
+ * Weight mode mid-type: the buffer reads "82." (a touched, not-yet-complete fraction), shown as
+ * "82,|" once the PL locale substitutes the decimal separator (plan §3.8). Forced directly through
+ * [KeypadPreviewStateless] since this exact buffer only otherwise arises from real typing (T6).
  */
 @Preview(locale = "pl")
 @Composable
-private fun WeightPlSymbolsLightPreview() {
-    KeypadPreview(darkTheme = false, request = previewWeightRequest())
+private fun WeightPlMidTypeLightPreview() {
+    KeypadPreviewStateless(
+        darkTheme = false,
+        request = previewWeightRequest(),
+        buffer = KeypadBuffer(text = "82.", isUntouched = false),
+    )
 }
 
 @Preview(locale = "pl")
 @Composable
-private fun WeightPlSymbolsDarkPreview() {
-    KeypadPreview(darkTheme = true, request = previewWeightRequest())
+private fun WeightPlMidTypeDarkPreview() {
+    KeypadPreviewStateless(
+        darkTheme = true,
+        request = previewWeightRequest(),
+        buffer = KeypadBuffer(text = "82.", isUntouched = false),
+    )
+}
+
+/** Over-max: the context line swaps to the "Weight must be 0-1000 kg" limit message in `error`
+ * after a refused keystroke (U5); the buffer stays at the last accepted value, 1000. */
+@Preview
+@Composable
+private fun WeightOverMaxErrorLightPreview() {
+    KeypadPreviewStateless(
+        darkTheme = false,
+        request = previewWeightRequest(value = WEIGHT_MAX, last = null),
+        buffer = KeypadRules.bufferFor(WEIGHT_MAX),
+        showLimitError = true,
+    )
+}
+
+@Preview
+@Composable
+private fun WeightOverMaxErrorDarkPreview() {
+    KeypadPreviewStateless(
+        darkTheme = true,
+        request = previewWeightRequest(value = WEIGHT_MAX, last = null),
+        buffer = KeypadRules.bufferFor(WEIGHT_MAX),
+        showLimitError = true,
+    )
 }

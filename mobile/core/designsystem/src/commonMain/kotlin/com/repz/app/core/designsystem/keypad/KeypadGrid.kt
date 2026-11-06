@@ -56,11 +56,13 @@ private fun RpeChoiceRows(
 }
 
 /**
- * The 4x4 key grid (DESIGN_SYSTEM §9, plan §3.5): a 3-column flexible main area plus an
- * [KeypadNextColumnWidth] rail holding Clear/hide/Next. The grid's total height is identical in
- * every mode (U2 option a "nothing jumps"): weight/reps fill the main area with digits, decimal and
- * backspace and the rail with Clear/hide/Next; RPE fills the main area with its 9 choices plus a
- * full-width hide row and the rail with a taller Clear (rows 1-2) and Next (rows 3-4).
+ * The 4x4 key grid (DESIGN_SYSTEM §9, plan §3.5; exact placement per boards 05 §7 and 09 state 11,
+ * row-major: "1 2 3 backspace / 4 5 6 Clear / 7 8 9 Next / . 0 keyboard_hide"): a 3-column flexible
+ * main area plus an [KeypadNextColumnWidth] rail holding Backspace/Clear/Next. The grid's total
+ * height is identical in every mode (U2 option a "nothing jumps"): weight/reps fill the main area
+ * with digits and decimal/0/hide, the rail with Backspace/Clear/Next; RPE fills the main area with
+ * its 9 choices plus a full-width hide row and the rail with a taller Clear (rows 1-2, no Backspace
+ * in RPE mode) and Next (rows 3-4).
  */
 @Composable
 internal fun KeypadGrid(
@@ -106,9 +108,9 @@ internal fun KeypadGrid(
                         modifier = Modifier.weight(1f).height(KeypadKeySize),
                     )
                     DigitKey(0, onClick = { onDigit(0) }, modifier = Modifier.weight(1f).height(KeypadKeySize))
-                    BackspaceKey(
-                        contentDescription = backspaceDescription,
-                        onClick = onBackspace,
+                    HideKey(
+                        contentDescription = hideDescription,
+                        onClick = onHide,
                         modifier = Modifier.weight(1f).height(KeypadKeySize),
                     )
                 }
@@ -121,12 +123,12 @@ internal fun KeypadGrid(
             if (isRpe) {
                 ClearKey(label = clearLabel, onClick = onClear, modifier = Modifier.fillMaxWidth().height(railSpanHeight))
             } else {
-                ClearKey(label = clearLabel, onClick = onClear, modifier = Modifier.fillMaxWidth().height(KeypadKeySize))
-                HideKey(
-                    contentDescription = hideDescription,
-                    onClick = onHide,
+                BackspaceKey(
+                    contentDescription = backspaceDescription,
+                    onClick = onBackspace,
                     modifier = Modifier.fillMaxWidth().height(KeypadKeySize),
                 )
+                ClearKey(label = clearLabel, onClick = onClear, modifier = Modifier.fillMaxWidth().height(KeypadKeySize))
             }
             NextKey(
                 label = nextLabel,
