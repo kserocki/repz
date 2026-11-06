@@ -1,5 +1,8 @@
 package com.repz.app.core.data.auth
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.room3.Room
 import co.touchlab.kermit.Logger
 import com.repz.app.core.data.newTestUserPreferencesDataSource
@@ -41,11 +44,14 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import okio.IOException
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -117,6 +123,13 @@ private class FakeTokenStore : TokenStore {
         clearGate?.await()
         stored = null
     }
+}
+
+/** A [DataStore] whose write always fails, to exercise [OfflineFirstAuthRepository]'s defensive catch (Konsist E1). */
+private class FailingPreferencesDataStore : DataStore<Preferences> {
+    override val data: Flow<Preferences> = flowOf(emptyPreferences())
+
+    override suspend fun updateData(transform: suspend (t: Preferences) -> Preferences): Preferences = throw IOException("disk full")
 }
 
 private fun testLogger(): Logger = Logger.withTag("OfflineFirstAuthRepositoryTest")
@@ -447,6 +460,33 @@ class OfflineFirstAuthRepositoryTest {
             repository.logOut()
             applicationScope.testScheduler.advanceUntilIdle()
 
+            assertEquals(listOf(RefreshToken("the-refresh-token")), authApi.logoutCalls)
+        }
+
+    @Test
+    fun givenTheDeviceUnitPreferenceClearFails_whenLoggingOut_thenTheLocalStateIsStillClearedAndTheRevokeStillRuns() =
+        runTest {
+            val applicationScope = TestScope(testScheduler)
+            val tokenStore = FakeTokenStore()
+            val sessionManager = SessionManager(tokenStore, testLogger())
+            sessionManager.start(AuthTokens(AccessToken("access"), RefreshToken("the-refresh-token")))
+            currentUserDao.replace(sampleUserDto().toCurrentUserEntity())
+            val authApi = FakeAuthApi()
+            val userPreferencesDataSource = UserPreferencesDataSource(FailingPreferencesDataStore())
+            val repository =
+                repository(
+                    authApi,
+                    sessionManager,
+                    userPreferencesDataSource = userPreferencesDataSource,
+                    applicationScope = applicationScope,
+                )
+
+            repository.logOut()
+            applicationScope.testScheduler.advanceUntilIdle()
+
+            assertEquals(SessionStatus.SignedOut(SignOutReason.LoggedOut), sessionManager.status.value)
+            assertNull(tokenStore.load())
+            assertNull(currentUserDao.observe().first())
             assertEquals(listOf(RefreshToken("the-refresh-token")), authApi.logoutCalls)
         }
 

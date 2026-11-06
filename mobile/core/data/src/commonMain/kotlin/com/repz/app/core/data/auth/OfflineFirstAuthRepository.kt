@@ -1,6 +1,7 @@
 package com.repz.app.core.data.auth
 
 import co.touchlab.kermit.Logger
+import com.repz.app.core.common.coroutines.suspendRunCatching
 import com.repz.app.core.data.user.toCurrentUserEntity
 import com.repz.app.core.data.user.toDomain
 import com.repz.app.core.database.account.CurrentUserDao
@@ -35,7 +36,9 @@ import org.koin.core.annotation.Single
  * profile is wiped on this device at once, in [NonCancellable] steps so the auth gate's epoch
  * bump can't cut them short, and the server-side revoke is a best-effort, fire-and-forget call on
  * [applicationScope]. It also clears the device unit preference (Q1/ADR-0026): that preference
- * belongs to the account, so the next account falls back to its own server value.
+ * belongs to the account, so the next account falls back to its own server value. Clearing that
+ * preference is itself best-effort: a DataStore [okio.IOException] there is logged and swallowed
+ * (Konsist E1) rather than thrown, so it can never skip the server-side revoke below it.
  *
  * [logger] defaults to a tagged [Logger] (ADR-0008): with the Koin compiler plugin's default
  * `skipDefaultValues = true`, a non-null, unqualified parameter with a default isn't injected, so
@@ -66,7 +69,7 @@ class OfflineFirstAuthRepository(
             val refreshToken = sessionManager.currentRefreshToken()
             sessionManager.end()
             currentUserDao.clear()
-            userPreferencesDataSource.setUnitSystem(null)
+            clearDeviceUnitPreference()
 
             // Launched while still NonCancellable, so the call is made even if the caller (e.g. a
             // ViewModel cleared by the auth gate's epoch bump) is cancelled the instant this
@@ -80,6 +83,16 @@ class OfflineFirstAuthRepository(
                 }
             }
         }
+    }
+
+    /**
+     * A failed clear (DataStore's documented [okio.IOException], e.g. disk full) is logged and
+     * swallowed instead of thrown, so it can never stop [logOut] from reaching the revoke launch
+     * right after it.
+     */
+    private suspend fun clearDeviceUnitPreference() {
+        suspendRunCatching { userPreferencesDataSource.setUnitSystem(null) }
+            .onFailure { logger.w(it) { "Failed to clear the device unit preference on logout." } }
     }
 
     private suspend fun signIn(call: suspend () -> NetworkResult<AuthSessionDto>): DomainResult<User, AuthError> =
