@@ -58,8 +58,8 @@ repz/
     │   ├── network/             # Ktor client, DTOs, auth plugin, API services, session/token storage (TokenStore, Q3)
     │   ├── sync/                # SyncEngine, SyncHandlerRegistry, SyncStatusTracker, AndroidSyncScheduler/IosSyncScheduler (REP-26)
     │   ├── datastore/           # user preferences: UserPreferencesDataSource over DataStore Preferences (REP-27; TokenStore lives in core:network, Q3)
-    │   ├── designsystem/        # theme, tokens, components, motion primitives
-    │   ├── ui/                  # MVI helpers, shared UI utils, formatters
+    │   ├── designsystem/        # theme, tokens, components, motion primitives; the domain-free number keypad sheet (REP-35)
+    │   ├── ui/                  # MVI helpers, shared UI utils, formatters; the keypad's domain adapter (REP-35, depends on core:domain)
     │   ├── navigation/          # Navigator, top-level destinations, NavKey serialization
     │   └── testing/             # fakes, test dispatchers, fixtures
     └── feature/
@@ -77,7 +77,7 @@ Why two separate app modules? With the current Android Gradle Plugin, the Androi
 
 **Debug-only design-system catalog.** The shells (ADR-0017) can open `core:designsystem`'s `RepzDesignSystemCatalog` instead of the normal root, for manual checks and screenshots. It is a developer tool: not localized and never reachable in release builds.
 - `RepzRoot(modifier, catalogPageKey: String? = null, catalogDynamicColor: Boolean = false, debugReducedMotion: Boolean? = null, debugSignedIn: Boolean = false)`: when `RepzCatalogPage.fromKey(catalogPageKey)` finds a page, it renders `RepzTheme(dynamicColor = catalogDynamicColor, reducedMotion = debugReducedMotion) { RepzDesignSystemCatalog(page) }`. A null or unknown key takes the normal path, which renders `RepzAppShell(debugSignedIn)` — the session-driven auth gate, the launch hand-off (ADR-0025 amendment) and the four-tab shell — otherwise unchanged. **`debugReducedMotion` (renamed from `catalogReducedMotion`) reaches both paths**, not only the catalog: it is forwarded into `RepzTheme` on the normal path too, so it also forces reduced motion on the launch hand-off's MOT-01 without a device/simulator accessibility setting.
-- Page keys (`RepzCatalogPage`): `colors`, `extended-1`, `extended-2`, `extended-3`, `type`, `type-emphasized-1`, `type-emphasized-2`, `numeric-1`, `numeric-2`, `shapes`, `spacing-elevation-1`, `spacing-elevation-2`, `motion-springs-1`, `motion-springs-2`, `motion-tweens`, `motion-morphs`, `haptics`, `components-actions`, `components-inputs` (REP-30/REP-82: `RepzButton`/`RepzTopAppBar`/`RepzPageIndicator`, and `RepzTextField`/`RepzPasswordField`/`RepzBanner`), `logo` (`RepzLogoSymbol`/`RepzLaunchLogo`), `logo-loader` (`RepzLoader` indeterminate + determinate). The motion, haptics and logo pages auto-play, so recordings need no taps. Every page fits one screen on the smallest test device (iPhone Duo simulator), because `simctl` screenshots can't scroll; at 200 % font scale on Android every page except `colors` fits, and `colors` scrolls.
+- Page keys (`RepzCatalogPage`): `colors`, `extended-1`, `extended-2`, `extended-3`, `type`, `type-emphasized-1`, `type-emphasized-2`, `numeric-1`, `numeric-2`, `shapes`, `spacing-elevation-1`, `spacing-elevation-2`, `motion-springs-1`, `motion-springs-2`, `motion-tweens`, `motion-morphs`, `haptics`, `components-actions`, `components-inputs` (REP-30/REP-82: `RepzButton`/`RepzTopAppBar`/`RepzPageIndicator`, and `RepzTextField`/`RepzPasswordField`/`RepzBanner`), `logo` (`RepzLogoSymbol`/`RepzLaunchLogo`), `logo-loader` (`RepzLoader` indeterminate + determinate), `keypad-weight`, `keypad-reps`, `keypad-rpe` (REP-35: `NumberKeypadSheet`, interactive, with an on-page event/haptic log; `keypad-weight` has a kg/lb toggle), `keypad-motion` (REP-35: MOT-10 auto-play — sheet in, key presses and an ± long-press, sheet out). The motion, haptics, logo and `keypad-motion` pages auto-play, so recordings need no taps. Every page fits one screen on the smallest test device (iPhone Duo simulator), because `simctl` screenshots can't scroll; at 200 % font scale on Android every page except `colors` fits, and `colors` scrolls.
 - Android: `adb shell am start -n com.repz.app/.MainActivity --es repz.catalog <page> [--ez repz.dynamicColor true] [--ez repz.reducedMotion true]`. `MainActivity` reads the extras only when `ApplicationInfo.FLAG_DEBUGGABLE` is set; without `repz.reducedMotion` the theme follows the system setting.
 - iOS: launch argument `-RepzCatalogPage <page>` (e.g. `xcrun simctl launch booted com.repz.app -RepzCatalogPage colors`). `ComposeView.swift` reads the `RepzCatalogPage` user default only under `#if DEBUG` and passes it to `mainViewController(catalogPageKey:debugReducedMotion:debugSignedIn:)`. Dynamic colour does not exist on iOS. `-RepzReducedMotion YES` forces reduced motion (read under `#if DEBUG`, passed as `debugReducedMotion`); without it the theme follows the system setting.
 - The Xcode Debug configuration sets `SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG`. It was missing before, so Swift's `#if DEBUG` never fired (`GCC_PREPROCESSOR_DEFINITIONS = DEBUG=1` affects only C and Objective-C).
@@ -97,6 +97,7 @@ graph TD
     FIMPL --> UI[core:ui]
     FIMPL --> NAV[core:navigation]
     FAPI --> NAV
+    UI --> DOMAIN
     DATA --> DOMAIN
     DATA --> DB[core:database]
     DATA --> NET[core:network]
@@ -113,6 +114,8 @@ graph TD
 3. `feature:*:impl` never depends on `core:data`, `core:database` or `core:network`. It sees only domain interfaces.
 4. Only `app:shared` knows about every module. It is the **composition root**: it builds the Koin graph and the navigation.
 5. DTOs (`core:network`) and entities (`core:database`) never leak outside `core:data` / `core:sync`. Mapping is explicit (`toDomain()`, `toEntity()`, `toDto()`).
+
+**`core:ui → core:domain` (REP-35, ADR-0028).** The number keypad (C11) splits across the two UI modules on the diagram: `core:designsystem` owns the non-modal `NumberKeypadSheet` and its editing rules (`KeypadRules`, `KeypadQuickValues`), which work only on a domain-free display number (`FixedDecimal`, two fixed fraction digits) — this keeps `core:designsystem` free of `core:domain` and testable from its own debug catalog. `core:ui` owns the one adapter that knows domain types: `SetValueKeypad` (maps `Weight`/`Rpe`/`UnitSystem` to and from `FixedDecimal`) and the locale-aware set-weight formatter (`WeightFormat`, `formatSetWeight*`). This is the only module, besides `feature:*:impl`, that depends on `core:domain`; `core:ui` otherwise still follows Konsist T1 (no hard-coded dp/sp/colour/spring — those stay in `core:designsystem`).
 
 ### SOLID in practice (what to point at in an interview)
 
@@ -620,7 +623,7 @@ A plain Kotlin/JVM module, not a KMP one: it reads source **text** (via Konsist 
 
 ## 14. Decision log
 
-All decisions live in [`docs/adr/`](adr/) (ADR-0001 … ADR-0024). Add a new ADR for every decision that changes this document.
+All decisions live in [`docs/adr/`](adr/) (ADR-0001 … ADR-0028). Add a new ADR for every decision that changes this document.
 
 ## 15. Risks to verify in the first scaffold spike
 
