@@ -1,25 +1,14 @@
 package com.repz.app.core.designsystem.component.workout
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.repz.app.core.designsystem.generated.resources.Res
-import com.repz.app.core.designsystem.generated.resources.symbol_delete
-import com.repz.app.core.designsystem.theme.RepzIconSize
-import com.repz.app.core.designsystem.theme.RepzSpacing
 import com.repz.app.core.designsystem.theme.RepzTheme
 import kotlinx.collections.immutable.persistentListOf
-import org.jetbrains.compose.resources.painterResource
 
 private val TypeMenuItems =
     persistentListOf(
@@ -81,17 +70,12 @@ private fun RepzSetRowStatesSample() {
 }
 
 // A static mid-swipe look for a design review (board 05's own catalog draws one too): the real
-// gesture lives entirely inside RepzSetRow's own state, so this composes the same errorContainer +
-// delete-icon backdrop from public tokens behind a row shifted left through its public `modifier`.
+// gesture lives entirely inside RepzSetRow's own state, so this reuses the same internal
+// SetRowSwipeBackground behind a row shifted left through its public `modifier`.
 @Composable
 private fun RepzSetRowSwipingSample() {
-    Box(modifier = Modifier.background(MaterialTheme.colorScheme.errorContainer)) {
-        Icon(
-            painter = painterResource(Res.drawable.symbol_delete),
-            contentDescription = null,
-            modifier = Modifier.align(Alignment.CenterEnd).padding(end = RepzSpacing.lg).size(RepzIconSize.default),
-            tint = MaterialTheme.colorScheme.onErrorContainer,
-        )
+    Box {
+        SetRowSwipeBackground(modifier = Modifier.matchParentSize())
         RepzSetRowSample(badgeLabel = "4", modifier = Modifier.offset(x = (-96).dp))
     }
 }

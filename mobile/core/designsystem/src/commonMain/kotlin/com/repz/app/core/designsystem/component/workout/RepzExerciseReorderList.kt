@@ -3,10 +3,11 @@ package com.repz.app.core.designsystem.component.workout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -14,8 +15,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -26,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.customActions
@@ -43,8 +48,12 @@ import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.painterResource
 import kotlin.math.roundToInt
 
-// DESIGN_SYSTEM §9, board 09 §10b: reorder rows collapse to 64 dp.
-private val ReorderRowHeight = 64.dp
+// DESIGN_SYSTEM §9, board 09 §10b: reorder rows collapse to 64 dp; a minimum, not a fixed height,
+// so a row's title/subtitle can still wrap at a large font scale instead of clipping (board 14).
+private val ReorderRowMinHeight = 64.dp
+
+// DESIGN_SYSTEM §6's 48 dp minimum touch target: bigger than the 24 dp drag_indicator glyph itself.
+private val DragHandleTouchTarget = 48.dp
 
 /** One exercise in [RepzExerciseReorderList] (DESIGN_SYSTEM §9, board 09 §10b). [moveUp]/[moveDown]
  * back the "Move up"/"Move down" accessibility actions (`null` at the respective end of the list). */
@@ -59,13 +68,24 @@ data class RepzReorderItem<K : Any>(
 )
 
 /**
- * The reorder-mode list (DESIGN_SYSTEM §9, board 09 §10b; T2): a plain [Column] of fixed 64 dp
- * rows (≤ 50 items, no new drag-and-drop dependency). Long-press-dragging a row's handle offsets it
- * by the finger's movement; the target index is the dragged row's index plus the rounded offset
- * divided by the row height. [onMove] fires once, on drop, if the target differs from the start;
- * [onDragStart]/[onDragEnd] let the caller play the DragStart/DragEnd haptics (MOTION §3). Neighbours
- * reflow instantly as the target index changes (MOT-12's reduced-motion end state, Q11-A): no lift
- * scale, no spring, only the dragged row's own `level4` container and shadow.
+ * The reorder-mode list (DESIGN_SYSTEM §9, board 09 §10b): a plain [Column] of rows (≤ 50 items),
+ * built without pulling in a drag-and-drop library for this single use. Long-press-dragging a row's
+ * handle offsets it by the finger's movement; the target index is found by walking each row's own
+ * *measured* height outward from the dragged row's start index (not a fixed row height, since a
+ * large font scale makes every row taller, board 14). [onMove] fires once, on drop, if the target
+ * differs from the start — never on a cancelled drag (the system interrupting the gesture, e.g. a
+ * parent claiming the touch, resets the row without moving anything). [onDragStart]/[onDragEnd] let
+ * the caller play the DragStart/DragEnd haptics (MOTION §3) on every drop, cancelled or not.
+ * Neighbours reflow instantly as the target index changes (this ships only MOT-12's documented
+ * reduced-motion end state, since this issue adds no MOT-xx animation): no lift scale, no spring,
+ * only the dragged row's own `level4` container and shadow.
+ *
+ * Give every item a [RepzReorderItem.key] that's stable and distinct from every other item's: this
+ * list wraps each row in `key(item.key) { … }`, so Compose disposes (rather than reuses by position)
+ * the composable — and its remembered drag state — for a row that's actually been removed or moved
+ * elsewhere in the list.
+ *
+ * TODO(REP-46): replace the instant reflow with MOT-12's lift scale, shadow and spring.
  */
 @Composable
 fun <K : Any> RepzExerciseReorderList(
@@ -76,42 +96,83 @@ fun <K : Any> RepzExerciseReorderList(
     dragHandleContentDescription: String,
     modifier: Modifier = Modifier,
 ) {
-    val rowHeightPx = with(LocalDensity.current) { ReorderRowHeight.toPx() }
+    val fallbackRowHeightPx = with(LocalDensity.current) { ReorderRowMinHeight.toPx() }
+    val rowHeightsPx = remember { mutableStateMapOf<Int, Int>() }
     var draggingIndex by remember { mutableStateOf<Int?>(null) }
     var dragOffsetPx by remember { mutableFloatStateOf(0f) }
-    val targetIndex =
-        draggingIndex?.let { from -> (from + (dragOffsetPx / rowHeightPx).roundToInt()).coerceIn(0, items.lastIndex) }
+    val targetIndexState =
+        remember {
+            derivedStateOf {
+                draggingIndex?.let { from ->
+                    targetIndexFor(from, dragOffsetPx, rowHeightsPx, fallbackRowHeightPx, items.lastIndex)
+                }
+            }
+        }
+    val targetIndex by targetIndexState
 
     Column(modifier = modifier) {
         items.forEachIndexed { index, item ->
-            val isDragged = index == draggingIndex
-            val displacementRows = reorderDisplacementRows(index, draggingIndex, targetIndex)
-            ReorderRow(
-                item = item,
-                isDragged = isDragged,
-                dragHandleContentDescription = dragHandleContentDescription,
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .zIndex(if (isDragged) 1f else 0f)
-                        .graphicsLayer { translationY = if (isDragged) dragOffsetPx else displacementRows * rowHeightPx },
-                onDragHandlePress = {
-                    draggingIndex = index
-                    dragOffsetPx = 0f
-                    onDragStart()
-                },
-                onDrag = { deltaY -> dragOffsetPx += deltaY },
-                onDragFinish = {
-                    val from = draggingIndex
-                    val to = targetIndex
-                    draggingIndex = null
-                    dragOffsetPx = 0f
-                    if (from != null && to != null && from != to) onMove(from, to)
-                    onDragEnd()
-                },
-            )
+            key(item.key) {
+                val isDragged = index == draggingIndex
+                val rowHeightPx = rowHeightsPx[index] ?: fallbackRowHeightPx.roundToInt()
+                val displacementPx = reorderDisplacementRows(index, draggingIndex, targetIndex) * rowHeightPx
+                ReorderRow(
+                    item = item,
+                    isDragged = isDragged,
+                    dragHandleContentDescription = dragHandleContentDescription,
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .onSizeChanged { size -> rowHeightsPx[index] = size.height }
+                            .zIndex(if (isDragged) 1f else 0f)
+                            .graphicsLayer { translationY = if (isDragged) dragOffsetPx else displacementPx },
+                    onDragHandlePress = {
+                        draggingIndex = index
+                        dragOffsetPx = 0f
+                        onDragStart()
+                    },
+                    onDrag = { deltaY -> dragOffsetPx += deltaY },
+                    onDragFinish = { wasCancelled ->
+                        val from = draggingIndex
+                        // Read fresh here rather than relying on the `targetIndex` captured when this
+                        // lambda was built: rememberUpdatedState only guarantees the latest *lambda*,
+                        // not that a recomposition carrying the latest target already ran first.
+                        val to = targetIndexState.value
+                        draggingIndex = null
+                        dragOffsetPx = 0f
+                        if (!wasCancelled && from != null && to != null) {
+                            if (from != to) onMove(from, to)
+                        }
+                        onDragEnd()
+                    },
+                )
+            }
         }
     }
+}
+
+private fun targetIndexFor(
+    draggingIndex: Int,
+    dragOffsetPx: Float,
+    rowHeightsPx: Map<Int, Int>,
+    fallbackHeightPx: Float,
+    lastIndex: Int,
+): Int {
+    var remaining = dragOffsetPx
+    var index = draggingIndex
+    while (remaining > 0f && index < lastIndex) {
+        val nextHeight = (rowHeightsPx[index + 1] ?: fallbackHeightPx.roundToInt()).toFloat()
+        if (remaining < nextHeight / 2f) break
+        remaining -= nextHeight
+        index++
+    }
+    while (remaining < 0f && index > 0) {
+        val previousHeight = (rowHeightsPx[index - 1] ?: fallbackHeightPx.roundToInt()).toFloat()
+        if (-remaining < previousHeight / 2f) break
+        remaining += previousHeight
+        index--
+    }
+    return index
 }
 
 private fun reorderDisplacementRows(
@@ -134,7 +195,7 @@ private fun <K : Any> ReorderRow(
     dragHandleContentDescription: String,
     onDragHandlePress: () -> Unit,
     onDrag: (Float) -> Unit,
-    onDragFinish: () -> Unit,
+    onDragFinish: (wasCancelled: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val shape = MaterialTheme.shapes.medium
@@ -145,12 +206,14 @@ private fun <K : Any> ReorderRow(
     Row(
         modifier =
             modifier
-                .height(ReorderRowHeight)
+                .heightIn(min = ReorderRowMinHeight)
                 .let { if (elevation?.shadow != null) it.dropShadow(shape, elevation.shadow) else it }
                 .clip(shape)
                 .background(containerColor)
                 .padding(horizontal = RepzSpacing.lg)
-                .semantics { customActions = customActionList },
+                // Merged into one accessible node (title + subtitle become its label) so the custom
+                // Move up/down actions are reachable regardless of which child last had focus (M2).
+                .semantics(mergeDescendants = true) { customActions = customActionList },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(RepzSpacing.md),
     ) {
@@ -159,7 +222,6 @@ private fun <K : Any> ReorderRow(
             onDragHandlePress = onDragHandlePress,
             onDrag = onDrag,
             onDragFinish = onDragFinish,
-            modifier = Modifier.size(RepzIconSize.default),
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(text = item.title, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
@@ -199,28 +261,35 @@ private fun ReorderDragHandle(
     contentDescription: String,
     onDragHandlePress: () -> Unit,
     onDrag: (Float) -> Unit,
-    onDragFinish: () -> Unit,
+    onDragFinish: (wasCancelled: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val currentOnDragHandlePress by rememberUpdatedState(onDragHandlePress)
     val currentOnDrag by rememberUpdatedState(onDrag)
     val currentOnDragFinish by rememberUpdatedState(onDragFinish)
 
-    Icon(
-        painter = painterResource(Res.drawable.symbol_drag_indicator),
-        contentDescription = contentDescription,
+    Box(
         modifier =
-            modifier.pointerInput(Unit) {
-                detectDragGesturesAfterLongPress(
-                    onDragStart = { currentOnDragHandlePress() },
-                    onDrag = { change, dragAmount ->
-                        change.consume()
-                        currentOnDrag(dragAmount.y)
-                    },
-                    onDragEnd = { currentOnDragFinish() },
-                    onDragCancel = { currentOnDragFinish() },
-                )
-            },
-        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
+            modifier
+                .size(DragHandleTouchTarget)
+                .pointerInput(Unit) {
+                    detectDragGesturesAfterLongPress(
+                        onDragStart = { currentOnDragHandlePress() },
+                        onDrag = { change, dragAmount ->
+                            change.consume()
+                            currentOnDrag(dragAmount.y)
+                        },
+                        onDragEnd = { currentOnDragFinish(false) },
+                        onDragCancel = { currentOnDragFinish(true) },
+                    )
+                },
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            painter = painterResource(Res.drawable.symbol_drag_indicator),
+            contentDescription = contentDescription,
+            modifier = Modifier.size(RepzIconSize.default),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
 }

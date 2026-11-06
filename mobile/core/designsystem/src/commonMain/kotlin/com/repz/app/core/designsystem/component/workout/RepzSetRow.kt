@@ -3,19 +3,13 @@ package com.repz.app.core.designsystem.component.workout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,8 +20,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -36,24 +28,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.repz.app.core.designsystem.generated.resources.Res
 import com.repz.app.core.designsystem.generated.resources.symbol_check
-import com.repz.app.core.designsystem.generated.resources.symbol_delete
 import com.repz.app.core.designsystem.theme.RepzIconSize
 import com.repz.app.core.designsystem.theme.RepzSpacing
 import com.repz.app.core.designsystem.theme.RepzTheme
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.painterResource
-import kotlin.math.roundToInt
 
 // DESIGN_SYSTEM §6/§9, board 18: row 56 dp (64 dp at fontScale > 1.3), 2-line reflow at
 // fontScale ≥ 1.5 (≥ 72 dp). Component-internal: not on the §6 spacing scale.
@@ -74,21 +62,31 @@ internal val SetColumnGap = 6.dp
 private val NarrowRowWidthThreshold = 360.dp
 
 private val BadgeVisualSize = 28.dp
-private val CheckboxTouchTarget = 44.dp
+
+// DESIGN_SYSTEM §6's 56 dp logging target, not just the generic 48 dp minimum: these fill the
+// un-reflowed row's own height exactly. The reflowed (2-line) layout grows taller than its nominal
+// 72 dp to fit a 56 dp-tall fields row underneath the badge/"Last: …" line; there was no narrower
+// value that still met the 56 dp target there, so the row is simply allowed to grow.
+private val CheckboxTouchTarget = 56.dp
+private val FieldMinHeight = 56.dp
+
 private val CheckboxVisualSize = 36.dp
 private val CheckedCornerRadius = 10.dp
 private val CheckboxBorderWidth = 2.5.dp
 private val EditingRingWidth = 2.dp
-private val FieldMinHeight = 44.dp
 
 /**
- * One set (DESIGN_SYSTEM §9 `SetRow`, board 05): badge (tap opens [typeMenuItems] when non-empty,
- * Q3), optional Previous column (hidden below [NarrowRowWidthThreshold] or when reflowed), weight
- * and reps fields (tap opens the keypad on that field; [editingField] draws the 2 dp ring), and the
- * completion toggle. End-to-start swipe past 40 % of the row's width calls [onDelete] (MOT-12's
- * reduced-motion end state, Q11-A: the row follows the finger, then is removed instantly — no
- * commit animation here); a start-to-end drag is clamped to 0 and does nothing. At fontScale ≥ 1.5
- * the row reflows to two lines (badge + [lastLineText] on top, fields + check below, board 14).
+ * One set (DESIGN_SYSTEM §9 `SetRow`, board 05): badge (tap opens [typeMenuItems], listing the four
+ * set types, when it's non-empty; an empty list means the badge isn't interactive), optional
+ * Previous column (hidden below [NarrowRowWidthThreshold] or when reflowed), weight and reps fields
+ * (tap opens the keypad on that field; [editingField] draws the 2 dp ring), and the completion
+ * toggle. [accessibilityActions] (e.g. "Delete set", "Mark as warm-up") are exposed on every one of
+ * the row's own focusable elements (badge, weight, reps, check), not merged into one row-level node,
+ * since DESIGN_SYSTEM §12's focus order visits them individually. End-to-start swipe past 40 % of
+ * the row's width calls [onDelete] — see [SwipeToDeleteBox]'s own doc for the exact behaviour and
+ * what it depends on from the caller; a start-to-end drag (or end-to-start in RTL) is clamped to 0
+ * and does nothing. At fontScale ≥ 1.5 the row reflows to two lines (badge + [lastLineText] on top,
+ * fields + check below, board 14).
  */
 @Composable
 fun RepzSetRow(
@@ -125,8 +123,7 @@ fun RepzSetRow(
         modifier =
             modifier
                 .fillMaxWidth()
-                .heightIn(min = setRowMinHeight(fontScale))
-                .semantics { customActions = customActionList },
+                .heightIn(min = setRowMinHeight(fontScale)),
     ) {
         if (isReflowed) {
             SetRowReflowed(
@@ -142,6 +139,7 @@ fun RepzSetRow(
                 onWeightClick = onWeightClick,
                 onRepsClick = onRepsClick,
                 onCompleteClick = onCompleteClick,
+                customActions = customActionList,
                 completeContentDescription = completeContentDescription,
                 weightContentDescription = weightContentDescription,
                 repsContentDescription = repsContentDescription,
@@ -163,6 +161,7 @@ fun RepzSetRow(
                 onWeightClick = onWeightClick,
                 onRepsClick = onRepsClick,
                 onCompleteClick = onCompleteClick,
+                customActions = customActionList,
                 completeContentDescription = completeContentDescription,
                 weightContentDescription = weightContentDescription,
                 repsContentDescription = repsContentDescription,
@@ -208,6 +207,7 @@ private fun SetRowSingleLine(
     onWeightClick: () -> Unit,
     onRepsClick: () -> Unit,
     onCompleteClick: () -> Unit,
+    customActions: List<CustomAccessibilityAction>,
     completeContentDescription: String,
     weightContentDescription: String,
     repsContentDescription: String,
@@ -226,6 +226,7 @@ private fun SetRowSingleLine(
             isCompleted = isCompleted,
             menuItems = typeMenuItems,
             contentDescription = badgeContentDescription,
+            customActions = customActions,
             modifier = Modifier.width(SetBadgeColumnWidth),
         )
         if (isPreviousColumnVisible) {
@@ -243,6 +244,7 @@ private fun SetRowSingleLine(
             isEditing = editingField == RepzSetField.Weight,
             onClick = onWeightClick,
             contentDescription = weightContentDescription,
+            customActions = customActions,
             modifier = Modifier.weight(1f).heightIn(min = FieldMinHeight),
         )
         SetValueField(
@@ -252,12 +254,14 @@ private fun SetRowSingleLine(
             isEditing = editingField == RepzSetField.Reps,
             onClick = onRepsClick,
             contentDescription = repsContentDescription,
+            customActions = customActions,
             modifier = Modifier.weight(1f).heightIn(min = FieldMinHeight),
         )
         SetCompleteCheckbox(
             isCompleted = isCompleted,
             onClick = onCompleteClick,
             contentDescription = completeContentDescription,
+            customActions = customActions,
             modifier = Modifier.width(SetCheckColumnWidth),
         )
     }
@@ -278,6 +282,7 @@ private fun SetRowReflowed(
     onWeightClick: () -> Unit,
     onRepsClick: () -> Unit,
     onCompleteClick: () -> Unit,
+    customActions: List<CustomAccessibilityAction>,
     completeContentDescription: String,
     weightContentDescription: String,
     repsContentDescription: String,
@@ -295,6 +300,7 @@ private fun SetRowReflowed(
                 isCompleted = isCompleted,
                 menuItems = typeMenuItems,
                 contentDescription = badgeContentDescription,
+                customActions = customActions,
                 modifier = Modifier.width(SetBadgeColumnWidth),
             )
             if (lastLineText != null) {
@@ -309,6 +315,7 @@ private fun SetRowReflowed(
                 isEditing = editingField == RepzSetField.Weight,
                 onClick = onWeightClick,
                 contentDescription = weightContentDescription,
+                customActions = customActions,
                 modifier = Modifier.weight(1f).heightIn(min = FieldMinHeight),
             )
             SetValueField(
@@ -318,12 +325,14 @@ private fun SetRowReflowed(
                 isEditing = editingField == RepzSetField.Reps,
                 onClick = onRepsClick,
                 contentDescription = repsContentDescription,
+                customActions = customActions,
                 modifier = Modifier.weight(1f).heightIn(min = FieldMinHeight),
             )
             SetCompleteCheckbox(
                 isCompleted = isCompleted,
                 onClick = onCompleteClick,
                 contentDescription = completeContentDescription,
+                customActions = customActions,
                 modifier = Modifier.width(SetCheckColumnWidth),
             )
         }
@@ -337,6 +346,7 @@ private fun SetBadge(
     isCompleted: Boolean,
     menuItems: ImmutableList<RepzMenuItem>,
     contentDescription: String,
+    customActions: List<CustomAccessibilityAction>,
     modifier: Modifier = Modifier,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -350,7 +360,10 @@ private fun SetBadge(
                     .clip(CircleShape)
                     .background(type.badgeContainerColor(isCompleted))
                     .then(if (isClickable) Modifier.clickable { isExpanded = true } else Modifier)
-                    .semantics { this.contentDescription = contentDescription },
+                    .semantics {
+                        this.contentDescription = contentDescription
+                        this.customActions = customActions
+                    },
             contentAlignment = Alignment.Center,
         ) {
             Text(text = label, style = MaterialTheme.typography.labelLarge, color = type.badgeContentColor(isCompleted))
@@ -392,6 +405,7 @@ private fun SetValueField(
     isEditing: Boolean,
     onClick: () -> Unit,
     contentDescription: String,
+    customActions: List<CustomAccessibilityAction>,
     modifier: Modifier = Modifier,
 ) {
     val shape = MaterialTheme.shapes.small
@@ -410,7 +424,10 @@ private fun SetValueField(
                 .background(backgroundColor)
                 .then(if (isEditing) Modifier.border(EditingRingWidth, MaterialTheme.colorScheme.primary, shape) else Modifier)
                 .clickable(onClick = onClick)
-                .semantics { this.contentDescription = contentDescription },
+                .semantics {
+                    this.contentDescription = contentDescription
+                    this.customActions = customActions
+                },
         contentAlignment = Alignment.Center,
     ) {
         Text(text = text, style = RepzTheme.typography.numericLarge, color = textColor)
@@ -422,6 +439,7 @@ private fun SetCompleteCheckbox(
     isCompleted: Boolean,
     onClick: () -> Unit,
     contentDescription: String,
+    customActions: List<CustomAccessibilityAction>,
     modifier: Modifier = Modifier,
 ) {
     val shape: Shape = if (isCompleted) RoundedCornerShape(CheckedCornerRadius) else CircleShape
@@ -430,7 +448,10 @@ private fun SetCompleteCheckbox(
             modifier
                 .size(CheckboxTouchTarget)
                 .clickable(onClick = onClick)
-                .semantics { this.contentDescription = contentDescription },
+                .semantics {
+                    this.contentDescription = contentDescription
+                    this.customActions = customActions
+                },
         contentAlignment = Alignment.Center,
     ) {
         Box(

@@ -48,11 +48,12 @@ private const val DISABLED_CONTENT_ALPHA = 0.38f
 /**
  * One exercise's card in the live workout (DESIGN_SYSTEM §9 `ExerciseCard`, board 05/09):
  * `shapes.large` (16 dp), `surfaceContainer` (level2) container. [name]/[subtitle] and the overflow
- * menu ([menuItems], Q7: Reorder · Notes · Remove) sit in the header; a long press anywhere on the
+ * menu ([menuItems]: Reorder · Notes · Remove) sit in the header; a long press anywhere on the
  * header calls [onHeaderLongClick] to enter reorder mode (board 09 §10b). [notes] is `null` to hide
  * the notes row entirely, or a (possibly empty, while [isEditingNotes]) string to show it inline
- * under the header (Q9). [columnLabels] labels the columns above [sets], which are [RepzSetRow]s
- * supplied by the caller.
+ * under the header — these are the exercise's own notes, not workout-level notes, which this card
+ * has no UI for. [columnLabels] labels the columns above [sets], which are [RepzSetRow]s supplied
+ * by the caller.
  */
 @Composable
 fun RepzExerciseCard(
