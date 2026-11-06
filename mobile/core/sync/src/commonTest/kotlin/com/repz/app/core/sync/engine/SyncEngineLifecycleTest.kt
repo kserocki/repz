@@ -1,9 +1,11 @@
 package com.repz.app.core.sync.engine
 
+import app.cash.turbine.test
 import com.repz.app.core.database.sync.OutboxOperation
 import com.repz.app.core.database.sync.SyncEntityType
 import com.repz.app.core.domain.session.SessionState
 import com.repz.app.core.domain.session.SignOutReason
+import com.repz.app.core.domain.sync.SyncStatus
 import com.repz.app.core.network.dto.sync.PullResponseDto
 import com.repz.app.core.network.dto.sync.TotalEstimateDto
 import com.repz.app.core.network.result.NetworkResult
@@ -19,6 +21,7 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 import kotlin.time.Instant
 
@@ -112,5 +115,32 @@ class SyncEngineLifecycleTest {
                     .pullCursor,
             )
             assertEquals(2, syncApi.pullCalls.size)
+        }
+
+    @Test
+    fun givenTheSyncJobIsCancelled_whenCancelledMidPull_thenStatusIsNoLongerSyncing() =
+        runTest {
+            val syncApi =
+                FakeSyncApi().apply {
+                    pullGate = CompletableDeferred()
+                    reachedPullGate = CompletableDeferred()
+                }
+            val harness = testSyncEngine(backgroundScope, syncApi = syncApi)
+
+            // `status` combines Room's invalidation-tracker flows, which run on a real dispatcher
+            // (see testSyncEngine's doc), so each transition is awaited through Turbine rather than
+            // read off `.value`, which could still hold the initial value at that instant.
+            harness.statusTracker.status.test {
+                assertEquals(SyncStatus.Idle(null), awaitItem())
+
+                val sync = launch { harness.engine.sync() }
+                syncApi.reachedPullGate!!.await()
+                assertEquals(SyncStatus.Syncing, awaitItem())
+
+                sync.cancel()
+                sync.join()
+
+                assertNotEquals(SyncStatus.Syncing, awaitItem())
+            }
         }
 }

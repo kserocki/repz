@@ -50,19 +50,30 @@ class SyncEngine(
     private val changePuller =
         ChangePuller(database, syncMetaDao, outboxDao, syncApi, handlers, recordsRefresher, statusTracker, clock, logger)
 
-    /** Serialised by a Mutex: concurrent callers run one after another; idempotent. */
+    /**
+     * Serialised by a Mutex: concurrent callers run one after another; idempotent. [statusTracker]'s
+     * [SyncStatusTracker.onRunFinished] always runs in a `finally`, so a cancelled or throwing run
+     * (logout's `cancelAll()`, an iOS background-task expiry, an unexpected DAO/handler exception)
+     * still leaves [statusTracker] out of `Syncing` - the cancellation itself still propagates, since
+     * nothing here catches it.
+     */
     suspend fun sync(): SyncOutcome =
         mutex.withLock {
             stopRequested.value = false
             if (sessionRepository.restore() !is SessionState.SignedIn) {
+                logger.i { "sync: skipped, not signed in" }
                 return@withLock SyncOutcome.SkippedSignedOut
             }
 
             statusTracker.onRunStarted()
             logger.i { "sync: run started" }
-            val outcome = runCycle()
-            logger.i { "sync: run finished with $outcome" }
-            statusTracker.onRunFinished(outcome)
+            var outcome: SyncOutcome = SyncOutcome.Stopped
+            try {
+                outcome = runCycle()
+            } finally {
+                logger.i { "sync: run finished with $outcome" }
+                statusTracker.onRunFinished(outcome)
+            }
             outcome
         }
 
