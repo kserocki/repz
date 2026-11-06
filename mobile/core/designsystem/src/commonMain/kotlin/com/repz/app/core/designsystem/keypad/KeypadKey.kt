@@ -69,6 +69,8 @@ private const val DISABLED_KEY_ALPHA = 0.38f
  * flashes `primaryContainer`/`onPrimaryContainer` on `effectsFast` (MOT-10 U4a); both fall back
  * automatically under reduced motion (radius snaps, flash becomes a 150 ms crossfade), since both
  * tokens already encode that behaviour. [onClickLabel] feeds the key's accessible action name.
+ * [interactionSource] defaults to a private one; the `keypad-motion` catalog page passes its own so
+ * it can drive a real press (`PressInteraction`) on this exact composable without `simctl` taps.
  */
 @Composable
 internal fun KeypadKeyButton(
@@ -78,9 +80,9 @@ internal fun KeypadKeyButton(
     restContainerColor: Color = MaterialTheme.colorScheme.surfaceContainerHighest,
     restContentColor: Color = MaterialTheme.colorScheme.onSurface,
     onClickLabel: String? = null,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     content: @Composable () -> Unit,
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val morphed = isPressed && enabled
 
@@ -124,8 +126,9 @@ internal fun DigitKey(
     digit: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
-    KeypadKeyButton(onClick = onClick, modifier = modifier) {
+    KeypadKeyButton(onClick = onClick, modifier = modifier, interactionSource = interactionSource) {
         Text(digit.toString(), style = RepzTheme.typography.numericMedium)
     }
 }
@@ -253,6 +256,8 @@ internal fun RpeChoiceKey(
  * repeat loop has already taken over, so a long hold never double-counts its final step.
  * [contentDescription] replaces the merged announcement of [label] with the fuller "Increase/
  * decrease by …" text (U1); `clickable`'s own accessibility action reuses the same [onStep].
+ * [interactionSource] defaults to a private one; the `keypad-motion` catalog page passes its own so
+ * holding a real `PressInteraction.Press` drives this exact composable's repeat loop.
  */
 @Composable
 internal fun PlusMinusButton(
@@ -261,8 +266,8 @@ internal fun PlusMinusButton(
     enabled: Boolean,
     onStep: () -> Boolean,
     modifier: Modifier = Modifier,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val morphed = isPressed && enabled
     var didRepeatFire by remember { mutableStateOf(false) }
