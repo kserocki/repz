@@ -17,6 +17,10 @@ kotlin {
             // ImmutableList parameters on components such as RepzConnectedButtonGroup and
             // RepzFabMenu; exposed as api so callers can pass their own lists.
             api(libs.kotlinx.collections.immutable)
+            // material3-android's Gradle module metadata has no dependency on this artifact,
+            // so compileAndroidMain fails without it even though commonMain/iOS resolve
+            // BackHandler transitively through material3 (MOT-30).
+            implementation(libs.compose.ui.backhandler)
         }
         androidMain.dependencies {
             // Android haptics actual: ViewCompat/HapticFeedbackConstantsCompat (MOTION.md §3).
