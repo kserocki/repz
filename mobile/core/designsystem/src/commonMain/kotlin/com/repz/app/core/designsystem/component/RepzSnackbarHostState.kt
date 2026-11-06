@@ -29,6 +29,12 @@ class RepzSnackbarHostState internal constructor(
         return result == SnackbarResult.ActionPerformed
     }
 
+    /** Shows a plain, action-less [message] (M3's own default duration and dismiss behaviour
+     * apply); for a generic failure notice that has no follow-up action, unlike [showWithAction]. */
+    suspend fun show(message: String) {
+        delegate.showSnackbar(message = message)
+    }
+
     /** Dismisses the currently shown snackbar, if any, without waiting for its
      * [showWithAction] call to return. Callers use this so a stale message (e.g. a previous
      * error) never survives a fresh resubmit. */
