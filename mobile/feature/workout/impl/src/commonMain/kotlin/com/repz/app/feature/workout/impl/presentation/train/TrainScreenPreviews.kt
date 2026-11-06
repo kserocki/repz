@@ -30,8 +30,16 @@ internal val TrainWithTemplatesState =
         today = DayOfWeek.WEDNESDAY,
         templates =
             persistentListOf(
-                TemplateItemUi(id = WorkoutTemplateId(Uuid.parse("00000000-0000-0000-0000-000000000001")), name = "Push A", exerciseCount = 5),
-                TemplateItemUi(id = WorkoutTemplateId(Uuid.parse("00000000-0000-0000-0000-000000000002")), name = "Pull A", exerciseCount = 1),
+                TemplateItemUi(
+                    id = WorkoutTemplateId(Uuid.parse("00000000-0000-0000-0000-000000000001")),
+                    name = "Push A",
+                    exerciseCount = 5,
+                ),
+                TemplateItemUi(
+                    id = WorkoutTemplateId(Uuid.parse("00000000-0000-0000-0000-000000000002")),
+                    name = "Pull A",
+                    exerciseCount = 1,
+                ),
             ),
     )
 

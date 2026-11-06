@@ -76,6 +76,10 @@ private fun PickerExerciseRow(
         verticalArrangement = Arrangement.spacedBy(RepzSpacing.xxs),
     ) {
         Text(text = exercise.name, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
-        Text(text = exercise.primaryMuscle.label(), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(
+            text = exercise.primaryMuscle.label(),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }

@@ -25,13 +25,21 @@ internal val ExercisePickerListState =
         isLoading = false,
         exercises =
             persistentListOf(
-                PickerExerciseUi(id = ExerciseId(Uuid.parse("00000000-0000-0000-0000-000000000001")), name = "Bench Press", primaryMuscle = Muscle.CHEST),
+                PickerExerciseUi(
+                    id = ExerciseId(Uuid.parse("00000000-0000-0000-0000-000000000001")),
+                    name = "Bench Press",
+                    primaryMuscle = Muscle.CHEST,
+                ),
                 PickerExerciseUi(
                     id = ExerciseId(Uuid.parse("00000000-0000-0000-0000-000000000002")),
                     name = "Overhead Press",
                     primaryMuscle = Muscle.SHOULDERS,
                 ),
-                PickerExerciseUi(id = ExerciseId(Uuid.parse("00000000-0000-0000-0000-000000000003")), name = "Leg Press", primaryMuscle = Muscle.QUADRICEPS),
+                PickerExerciseUi(
+                    id = ExerciseId(Uuid.parse("00000000-0000-0000-0000-000000000003")),
+                    name = "Leg Press",
+                    primaryMuscle = Muscle.QUADRICEPS,
+                ),
             ),
     )
 
