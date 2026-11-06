@@ -1,0 +1,36 @@
+# ADR-0029: Live workout editing model
+
+- **Status:** Accepted (2026-11-06, REP-34).
+
+## Context
+The live workout (C10) is the first screen that edits an aggregate the user is actively building, offline, one field at a time, while it is still a local-only draft (ADR-0023: `finished_at IS NULL`, never validated, never synced). REP-34 needed a model for: how an edit reaches Room without losing a concurrent one, what state is cosmetic enough to skip Room entirely, how a newly added exercise or set gets its starting values, how "Finish" turns a draft into a real history row, and which screens the app shows full-screen with no nav bar.
+
+## Decision
+
+### Pure edit functions, one write path
+Every edit — rename, add/remove/reorder an exercise, add/remove/update a set, exercise notes — is a pure, total function on `Workout` in `core:domain` (`ActiveWorkoutEdits.kt`): `renamed`, `withExercisesAppended`, `withExerciseInserted`/`withoutExercise`, `withExerciseMoved`, `withExerciseNotes`, `withSetAppended`/`withSetInserted`/`withoutSet`, `withSetUpdated`, plus `findSet` (owning exercise + index, for undo) and the `completedSetCount` property. An edit against an id the workout doesn't have is a no-op, not a failure: by the time a UI edit reaches here, the ViewModel's own copy of the workout can only be a step behind the latest Room emission, never pointing at something that was never there. Index arguments are clamped into range instead of throwing, so a stale index from an undo still lands somewhere sane.
+
+`feature:workout:impl`'s `EditActiveWorkoutUseCase(edit: (Workout) -> Workout): Boolean` is the **one** write path every feature-local use case and every `LiveWorkoutViewModel` intent handler goes through: read the latest active workout, apply `edit`, save the whole aggregate back (`saveActiveWorkout`, ADR-0023's replace-all-children write), under one app-scoped `ActiveWorkoutWriteLock` (`@Single`, wraps a `Mutex`). The lock exists because two edits racing a read-modify-write of the same aggregate would otherwise let the second write silently discard the first's change; serializing the whole read-modify-write under one mutex is simpler and safer than field-level merging. `AddExerciseToActiveWorkoutUseCase` takes the same lock directly (it needs to read-modify-write too, from a last-performance lookup to the appended exercise). Measured cost: a worst-case 50-exercise × 50-set workout rewrites 2 550 rows per edit; fine for SQLite at this scale. A granular DAO is a follow-up only if manual testing shows lag.
+
+### Prefill rules (Q4)
+Three pure functions in `core:domain` (`Prefill.kt`) share one rule: a new set is uncompleted, with no RPE, and its weight/reps come from the matching position of the exercise's **last performance** (its sets in the most recent finished workout containing it, first occurrence if it appears twice, computed by `FindLastPerformanceUseCase`) when one exists.
+- `prefilledSetsForAddedExercise`: copies the last performance position by position; no history gives one empty Normal set.
+- `prefilledSetsForTemplateExercise`: one Normal set per the template's `targetSets`; a position past the last performance's length falls back to a blank weight and reps at the bottom of the template's `targetReps` range (or blank with no range).
+- `prefilledSetToAppend`: Add Set copies the last performance's set at the exercise's next position when one exists, else the exercise's own current last set, else blank.
+
+Whether a value is still "prefilled" (and so shown muted) rather than a value the user touched is **not** stored on the entity: it is a `Set<WorkoutSetId>` the ViewModel keeps in memory only (`LocalState.touchedSetIds`, below), because adding a local-only Room column would touch `core:database`/`core:data`/the domain model for a cosmetic flag. A completed set is never shown muted even if untouched. Accepted consequence: a process death loses the distinction, and a prefilled-but-untouched value just reads as a normal one on restore.
+
+### One active workout, started and finished through shared use cases
+`StartEmptyWorkoutUseCase`/`StartWorkoutFromTemplateUseCase` (`core:domain`, shared with Train home, the template screens and the mini bar, all of which can start or finish a workout) both check `WorkoutRepository.observeActiveWorkout()` first and return `StartWorkoutError.WorkoutAlreadyActive(activeWorkoutId)` instead of creating a second one; the UI never needs to show that error because Train only ever offers Resume once one exists. `FinishActiveWorkoutUseCase` drops every uncompleted set, then every exercise left with no sets, stamps `finishedAt = now` and saves through the existing `SaveFinishedWorkoutUseCase` (validation + entity-and-outbox-in-one-transaction + PR recompute, unchanged). This is deliberately the whole "Finish" behaviour before REP-38 ships the confirmation dialog and the summary screen: no confirmation, immediate finish, `FinishActiveWorkoutUseCase` is reused as-is once REP-38 adds a dialog in front of it.
+
+### In-memory UI state and the keypad target
+Beyond `touchedSetIds`, `LiveWorkoutViewModel` keeps the editing field, reorder mode, the workout-name and exercise-notes drafts, and the single pending undo entirely in memory (`LocalState`, never a Room column): a newer delete (set or exercise) replaces whatever undo was already pending, and `Close` (minimize, discard, finish, or no active workout) drops it. The keypad's target (`LiveKeypadTargetUi`, including "same as last": the previous set of the same exercise in this workout, or the Previous-column set for the first one) is derived from `LocalState.editingField` and the latest workout snapshot on every recompute, never stored itself.
+
+### Full-screen destinations
+`LiveWorkoutRoute` and `ExercisePickerRoute` (`feature:workout:api`) carry no nav bar: `app:shared`'s `FullScreenNavKeys: Set<NavKey>` names them, and `AppShellScaffold` gained an `isNavigationBarVisible: Boolean = true` parameter that `SignedInAppShellScaffold` sets from `navigator.visibleBackStack.lastOrNull() !in FullScreenNavKeys`. `false` hides the whole bottom bar (nav bar and mini bar both), not just the nav bar, since a full-screen destination has no mini bar either.
+
+## Consequences
+- Every write to the active workout, from any screen or use case, goes through `EditActiveWorkoutUseCase`/`AddExerciseToActiveWorkoutUseCase` and therefore through `ActiveWorkoutWriteLock`; a future feature touching the active workout must do the same rather than calling `WorkoutRepository.saveActiveWorkout` directly.
+- `StartEmptyWorkoutUseCase`, `StartWorkoutFromTemplateUseCase`, `FindLastPerformanceUseCase` and `FinishActiveWorkoutUseCase` live in `core:domain` and are provided by `app:shared`'s `DomainModule` (Koin-free `core:domain`, ADR-0008 reason 4), the same way the REP-27 use cases are, since Train home, the template screens and REP-39's mini bar all need them too.
+- `LocalState`'s cosmetic fields reset on process death; this is accepted, not a bug, and is covered by the manual test plan rather than a schema change.
+- A later feature that needs a true full-screen destination (no nav bar) adds its `NavKey` to `FullScreenNavKeys` instead of inventing a second mechanism.

@@ -126,6 +126,7 @@ private fun SignedInAppShellScaffold(navigator: Navigator) {
     AppShellScaffold(
         selectedDestination = if (navigator.isAuthenticated) navigator.selectedDestination else null,
         onDestinationClick = navigator::selectTopLevel,
+        isNavigationBarVisible = navigator.visibleBackStack.lastOrNull() !in FullScreenNavKeys,
     ) { paddingValues ->
         RepzNavDisplay(
             navigator = navigator,

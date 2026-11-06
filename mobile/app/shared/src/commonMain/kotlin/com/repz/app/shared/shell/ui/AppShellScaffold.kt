@@ -21,20 +21,23 @@ import org.jetbrains.compose.resources.stringResource
  * `WindowInsets.navigationBars` defaults.
  *
  * [selectedDestination] `null` is the signed-out auth flow: no nav bar, no mini bar. The gate in
- * `app:shared` decides which; this scaffold only renders what it is told.
+ * `app:shared` decides which; this scaffold only renders what it is told. [isNavigationBarVisible]
+ * `false` hides the whole bottom bar (nav bar and mini bar both) even with a destination selected,
+ * for a full-screen destination like the live workout (T1, ADR-0029).
  */
 @Composable
 internal fun AppShellScaffold(
     selectedDestination: TopLevelDestination?,
     onDestinationClick: (TopLevelDestination) -> Unit,
     modifier: Modifier = Modifier,
+    isNavigationBarVisible: Boolean = true,
     miniBar: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
         modifier = modifier,
         bottomBar = {
-            if (selectedDestination != null) {
+            if (selectedDestination != null && isNavigationBarVisible) {
                 Column {
                     if (selectedDestination != TopLevelDestination.Train) {
                         miniBar()
