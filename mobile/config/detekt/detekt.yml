@@ -33,7 +33,7 @@ complexity:
     ignoreSimpleWhenEntries: true
   TooManyFunctions:
     active: true
-    # `WorkoutRepository` (REP-27, ADR-0023/0026) has 12 methods: 6 reads plus the save, delete,
+    # `WorkoutRepository` (ADR-0023/0026) has 12 methods: 6 reads plus the save, delete,
     # undo and confirm lifecycle for both the active and the finished workout, one method per
     # operation on purpose (no WorkoutReader/WorkoutWriter split, ARCH §3's SOLID table). Its
     # `OfflineFirstWorkoutRepository` implementation and `FakeWorkoutRepository` fake both implement
