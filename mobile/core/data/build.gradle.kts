@@ -15,6 +15,7 @@ kotlin {
             implementation(libs.kermit)
         }
         commonTest.dependencies {
+            implementation(projects.core.testing)
             implementation(libs.kermit)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)

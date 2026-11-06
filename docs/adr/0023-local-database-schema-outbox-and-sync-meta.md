@@ -1,6 +1,6 @@
 # ADR-0023: Local database schema, outbox and sync meta
 
-- **Status:** Accepted (2026-11-03, REP-24). Amended 2026-11-05 (REP-87): added the `current_user` table; `RepzDatabase` was wired into Koin by REP-87, not REP-27.
+- **Status:** Accepted (2026-11-03, REP-24). Amended 2026-11-05 (REP-87): added the `current_user` table; `RepzDatabase` was wired into Koin by REP-87, not REP-27. Amended 2026-11-06 (REP-27): two DAO methods added, and an `ExerciseDao` KDoc fix; no schema change.
 
 ## Context
 The UI reads only from Room, and every write is entity + outbox in one transaction (ARCHITECTURE §5.1). `core:database` (Room 3, ADR-0007) needs a local schema that mirrors the server (ADR-0019, ADR-0020), an outbox that coalesces edits and supports undo, and a place for sync progress and permanent rejections. The sync engine (REP-26) and the repositories (REP-27) build on it.
@@ -58,6 +58,13 @@ The UI reads only from Room, and every write is entity + outbox in one transacti
 - Schema v1 was edited in place to add it (still true today: no build has been distributed, ADR-0023's own rule above), and the schema JSON (`mobile/core/database/schemas/com.repz.app.core.database.RepzDatabase/1.json`) was regenerated and committed.
 - Written from the `user` in the login/register response, before `SessionManager.start()`, so the Profile tab never observes a signed-in session without a cached row; refreshed best-effort by `GET /me` (`OfflineFirstUserRepository.refreshCurrentUser()`) when the Profile `ViewModel` is created, with a failed refresh leaving the stored row untouched; cleared by `AuthRepository.logOut()` (ADR-0011 amendment).
 - **Koin wiring of `RepzDatabase` landed with REP-87, not REP-27 as this ADR originally said**, because Profile (REP-87) became its first consumer before the sync engine (REP-26/27) did. It uses the S1 `expect`/`actual` `PlatformModule` pattern (ADR-0008's REP-25 amendment), which that amendment already anticipated for this exact binding: `@Single fun repzDatabase(context: Context, dispatchers: AppDispatchers): RepzDatabase = repzDatabaseBuilder(context).buildRepzDatabase(dispatchers.io)` on Android, dropping `context` on iOS. `app:shared` depends on `core:database` from this issue on. The platform file builders themselves (`repzDatabaseBuilder`) are unchanged from this ADR's original decision.
+
+## Amendment (REP-27, 2026-11-06): two DAO methods, no schema change
+
+- **`WorkoutDao.findFinishedWorkouts(): List<WorkoutAggregate>`** (`@Transaction`, the same filter as `observeFinishedWorkouts`): a one-shot read for `RecalculateAllPersonalRecordsUseCase`'s one-off initial-restore recompute (ADR-0026).
+- **`PersonalRecordDao.replaceAll(records)`** (`@Transaction`: an internal `deleteAll()` plus `insertAll`): the same use case's whole-table replace.
+- **`ExerciseDao.observeExercises`'s KDoc** now reads "order unspecified; callers sort by localised name" (it previously said sorting happens in `core:data`), matching `ExerciseRepository.observeExercises`'s own wording.
+- No column, table or schema-version change; schema v1's JSON is untouched.
 
 ## Consequences
 - REP-26 and REP-27 follow these write paths:

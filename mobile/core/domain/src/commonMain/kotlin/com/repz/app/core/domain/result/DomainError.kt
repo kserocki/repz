@@ -1,6 +1,7 @@
 package com.repz.app.core.domain.result
 
 import com.repz.app.core.domain.model.Weight
+import kotlin.time.Duration
 
 /**
  * Marker for every typed failure a domain operation can return (no exceptions across layers).
@@ -11,7 +12,7 @@ import com.repz.app.core.domain.model.Weight
  */
 interface DomainError
 
-/** A validation failure for a name, notes, a set weight, reps or an RPE value. */
+/** A validation failure for an aggregate field, an account field, or a preference. */
 sealed interface ValidationError : DomainError {
     data object NameBlank : ValidationError
 
@@ -32,6 +33,36 @@ sealed interface ValidationError : DomainError {
     ) : ValidationError
 
     data object InvalidRpe : ValidationError
+
+    data class TooManyExercises(
+        val max: Int,
+    ) : ValidationError
+
+    data class TooManySets(
+        val max: Int,
+    ) : ValidationError
+
+    /** A finished workout's `finishedAt` is before its `startedAt`. */
+    data object FinishedBeforeStarted : ValidationError
+
+    data class TargetSetsOutOfRange(
+        val range: IntRange,
+    ) : ValidationError
+
+    data class TargetRepsOutOfRange(
+        val range: IntRange,
+    ) : ValidationError
+
+    data class RestOutOfRange(
+        val max: Duration,
+    ) : ValidationError
+
+    /** A custom exercise lists its own primary muscle again among its secondary muscles. */
+    data object SecondaryMusclesIncludePrimary : ValidationError
+
+    data class WeeklyWorkoutGoalOutOfRange(
+        val range: IntRange,
+    ) : ValidationError
 
     data object EmailInvalid : ValidationError
 
