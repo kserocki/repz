@@ -10,8 +10,7 @@ struct RepzIOSApp: App {
     init() {
         let koinApplication = RepzAppKt.startRepzKoin(platformDeclaration: { _ in })
         // Synchronous and right after Koin starts, before `init` returns: `BGTaskScheduler`
-        // requires `register(forTaskWithIdentifier:)` to happen before the app finishes launching
-        // (REP-26 plan §3.8).
+        // requires `register(forTaskWithIdentifier:)` to happen before the app finishes launching.
         RepzSyncKt.startRepzSync(koinApplication: koinApplication)
     }
 
