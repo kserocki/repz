@@ -24,9 +24,11 @@ import kotlin.coroutines.EmptyCoroutineContext
  * these fakes are ever asked to do real work: [SyncWorker] only reads [WorkerParameters.inputData]
  * and the other getters.
  */
+private val FAKE_WORKER_ID: UUID = UUID.fromString("00000000-0000-0000-0000-000000000001")
+
 internal fun fakeWorkerParameters(): WorkerParameters =
     WorkerParameters(
-        UUID.randomUUID(),
+        FAKE_WORKER_ID,
         Data.EMPTY,
         emptyList(),
         WorkerParameters.RuntimeExtras(),
