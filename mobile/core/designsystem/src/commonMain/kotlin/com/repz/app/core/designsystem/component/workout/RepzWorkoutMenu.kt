@@ -35,6 +35,7 @@ internal fun RepzWorkoutDropdownMenu(
                     onDismissRequest()
                     item.onClick()
                 },
+                modifier = item.modifier,
                 trailingIcon =
                     if (item.isChecked) {
                         { RepzWorkoutMenuCheckIcon() }

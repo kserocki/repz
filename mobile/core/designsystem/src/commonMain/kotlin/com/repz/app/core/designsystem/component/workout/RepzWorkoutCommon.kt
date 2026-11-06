@@ -1,6 +1,7 @@
 package com.repz.app.core.designsystem.component.workout
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.Modifier
 
 /**
  * A set's type (DESIGN_SYSTEM §9, board 05): badge letters W / numbered / D / F. Colours come from
@@ -14,7 +15,8 @@ enum class RepzSetField { Weight, Reps }
 /**
  * One row of a menu internal to a live-workout component (the set-type badge menu, a card's
  * overflow menu, the header's overflow menu): these components own their menus, so this isn't a
- * generic `core:designsystem` menu API (DESIGN_SYSTEM §9 "Landed" note).
+ * generic `core:designsystem` menu API (DESIGN_SYSTEM §9 "Landed" note). [modifier] tags this one
+ * row (e.g. a test tag), since the menu itself has no per-row slot a caller could reach otherwise.
  */
 @Immutable
 data class RepzMenuItem(
@@ -22,6 +24,7 @@ data class RepzMenuItem(
     val onClick: () -> Unit,
     val isDestructive: Boolean = false,
     val isChecked: Boolean = false,
+    val modifier: Modifier = Modifier,
 )
 
 /**
