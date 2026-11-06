@@ -15,7 +15,7 @@ import org.koin.plugin.module.dsl.startKoin
  */
 @org.koin.core.annotation.KoinApplication(
     modules = [
-        AppModule::class, AuthModule::class, CommonModule::class, DataModule::class,
+        AppModule::class, AuthModule::class, CommonModule::class, DataModule::class, DomainModule::class,
         NetworkModule::class, PlatformModule::class, SettingsModule::class,
     ],
 )

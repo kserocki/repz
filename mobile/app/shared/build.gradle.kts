@@ -35,6 +35,7 @@ kotlin {
             implementation(projects.feature.settings.impl)
             implementation(projects.core.data)
             implementation(projects.core.database)
+            implementation(projects.core.datastore)
             implementation(projects.core.sync)
             implementation(projects.core.navigation)
             implementation(projects.core.designsystem)
