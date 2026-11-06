@@ -3,7 +3,6 @@ package com.repz.app.core.sync.schedule
 import co.touchlab.kermit.Logger
 import com.repz.app.core.sync.engine.SyncOutcome
 import com.repz.app.core.sync.logging.SYNC_LOG_TAG
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
@@ -19,13 +18,13 @@ internal const val SYNC_REFRESH_TASK_IDENTIFIER = "com.repz.app.sync.refresh"
 
 /**
  * Drives [BackgroundSyncScheduler] on iOS from one in-process conflated trigger — local writes,
- * the shared foreground trigger (ARCH §5.6 plan Q7) and a regained network path — plus the
- * system's periodic `BGAppRefreshTask`. [runSync] is `SyncEngine::sync`, injected so this class
- * never sees the engine's internals (plan §3.4).
+ * the shared foreground trigger (`docs/ARCHITECTURE.md` §5.6) and a regained network path — plus
+ * the system's periodic `BGAppRefreshTask`. [runSync] is `SyncEngine::sync`, injected so this
+ * class never sees the engine's internals.
  *
  * The constructor stays side-effect free, as [BackgroundSyncScheduler] requires: nothing starts
- * until [start] runs. The public constructor matches the frozen two-parameter shape (plan §3.4);
- * the `internal` one below lets tests substitute fakes for every system collaborator.
+ * until [start] runs. The public two-parameter constructor is what callers use; the `internal`
+ * one below lets tests substitute fakes for every system collaborator.
  */
 class IosSyncScheduler internal constructor(
     private val runSync: suspend () -> SyncOutcome,
@@ -48,7 +47,9 @@ class IosSyncScheduler internal constructor(
 
     /** Capacity 1: a burst of requests while a run is in flight coalesces into at most one more. */
     private val requestChannel = Channel<Unit>(Channel.CONFLATED)
-    private var pathSatisfied = false
+
+    /** Null until the first [onPathUpdate]: that call only reports the current path, not a regain. */
+    private var pathSatisfied: Boolean? = null
 
     override fun requestSync() {
         requestChannel.trySend(Unit)
@@ -76,11 +77,12 @@ class IosSyncScheduler internal constructor(
     }
 
     private fun onPathUpdate(satisfied: Boolean) {
-        if (satisfied && !pathSatisfied) {
+        val wasSatisfied = pathSatisfied
+        pathSatisfied = satisfied
+        if (satisfied && wasSatisfied == false) {
             logger.i { "Network path regained, requesting a sync" }
             requestSync()
         }
-        pathSatisfied = satisfied
     }
 
     private fun onBackgroundRefresh(run: BackgroundRefreshTaskRun) {
@@ -95,7 +97,9 @@ class IosSyncScheduler internal constructor(
             logger.w { "Background refresh expired before completing" }
             job.cancel()
         }
-        job.invokeOnCompletion { cause -> if (cause is CancellationException) run.complete(false) }
+        // Any non-null cause (cancellation or an unhandled exception from runSync) still owes the
+        // system a completion; a never-completed refresh task is penalised by BGTaskScheduler.
+        job.invokeOnCompletion { cause -> if (cause != null) run.complete(false) }
     }
 
     /**

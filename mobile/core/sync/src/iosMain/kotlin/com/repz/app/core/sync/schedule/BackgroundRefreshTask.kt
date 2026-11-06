@@ -19,7 +19,7 @@ import kotlin.time.Duration
 
 /**
  * Wraps `BGTaskScheduler` behind a seam [IosSyncScheduler] can drive with a fake: `submit` always
- * fails with `.unavailable` on the iOS Simulator (plan Q2), so a real run is only checkable
+ * fails with `.unavailable` on the iOS Simulator (ADR-0027), so a real run is only checkable
  * manually, on a device.
  */
 internal interface BackgroundRefreshTask {

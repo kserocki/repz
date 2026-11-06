@@ -159,6 +159,32 @@ class IosSyncSchedulerTest {
         }
 
     @Test
+    fun givenTheFirstNetworkPathUpdateIsSatisfied_whenConsumed_thenNoSyncIsRequested() =
+        runTest {
+            var runCount = 0
+            val connectivity = FakeNetworkPathConnectivity()
+            val scheduler =
+                IosSyncScheduler(
+                    runSync = {
+                        runCount++
+                        SyncOutcome.Completed
+                    },
+                    applicationScope = backgroundScope,
+                    backgroundRefreshTask = FakeBackgroundRefreshTask(),
+                    connectivity = connectivity,
+                    foregroundRunAssertion = NoOpForegroundRunAssertion,
+                )
+            scheduler.start()
+
+            // The monitor's first callback only reports the path it finds at start(), already
+            // satisfied on most launches; it must not be mistaken for a regained transition.
+            connectivity.simulate(satisfied = true)
+            testScheduler.advanceUntilIdle()
+
+            assertEquals(0, runCount)
+        }
+
+    @Test
     fun givenCancelAll_whenARequestWasBufferedDuringARun_thenNoFurtherRunStartsForIt() =
         runTest {
             var runCount = 0
