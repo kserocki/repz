@@ -4,6 +4,7 @@ import co.touchlab.kermit.Logger
 import com.repz.app.core.data.user.toCurrentUserEntity
 import com.repz.app.core.data.user.toDomain
 import com.repz.app.core.database.account.CurrentUserDao
+import com.repz.app.core.datastore.UserPreferencesDataSource
 import com.repz.app.core.domain.auth.AuthError
 import com.repz.app.core.domain.auth.AuthRepository
 import com.repz.app.core.domain.model.User
@@ -33,7 +34,8 @@ import org.koin.core.annotation.Single
  * [logOut] is offline-first by design (ADR-0011 amendment): the session ends and the cached
  * profile is wiped on this device at once, in [NonCancellable] steps so the auth gate's epoch
  * bump can't cut them short, and the server-side revoke is a best-effort, fire-and-forget call on
- * [applicationScope].
+ * [applicationScope]. It also clears the device unit preference (Q1/ADR-0026): that preference
+ * belongs to the account, so the next account falls back to its own server value.
  *
  * [logger] defaults to a tagged [Logger] (ADR-0008): with the Koin compiler plugin's default
  * `skipDefaultValues = true`, a non-null, unqualified parameter with a default isn't injected, so
@@ -44,6 +46,7 @@ class OfflineFirstAuthRepository(
     private val authApi: AuthApi,
     private val sessionManager: SessionManager,
     private val currentUserDao: CurrentUserDao,
+    private val userPreferencesDataSource: UserPreferencesDataSource,
     private val applicationScope: CoroutineScope,
     private val logger: Logger = Logger.withTag(AUTH_LOG_TAG),
 ) : AuthRepository {
@@ -63,6 +66,7 @@ class OfflineFirstAuthRepository(
             val refreshToken = sessionManager.currentRefreshToken()
             sessionManager.end()
             currentUserDao.clear()
+            userPreferencesDataSource.setUnitSystem(null)
 
             // Launched while still NonCancellable, so the call is made even if the caller (e.g. a
             // ViewModel cleared by the auth gate's epoch bump) is cancelled the instant this

@@ -2,11 +2,13 @@ package com.repz.app.core.data.auth
 
 import androidx.room3.Room
 import co.touchlab.kermit.Logger
+import com.repz.app.core.data.newTestUserPreferencesDataSource
 import com.repz.app.core.data.user.toCurrentUserEntity
 import com.repz.app.core.data.user.toDomain
 import com.repz.app.core.database.RepzDatabase
 import com.repz.app.core.database.account.CurrentUserDao
 import com.repz.app.core.database.buildRepzDatabase
+import com.repz.app.core.datastore.UserPreferencesDataSource
 import com.repz.app.core.domain.auth.AccountField
 import com.repz.app.core.domain.auth.AuthError
 import com.repz.app.core.domain.model.UnitSystem
@@ -161,8 +163,9 @@ class OfflineFirstAuthRepositoryTest {
         authApi: AuthApi,
         sessionManager: SessionManager,
         dao: CurrentUserDao = currentUserDao,
+        userPreferencesDataSource: UserPreferencesDataSource = newTestUserPreferencesDataSource(),
         applicationScope: CoroutineScope = TestScope(),
-    ) = OfflineFirstAuthRepository(authApi, sessionManager, dao, applicationScope, testLogger())
+    ) = OfflineFirstAuthRepository(authApi, sessionManager, dao, userPreferencesDataSource, applicationScope, testLogger())
 
     @Test
     fun givenASuccessfulLogin_whenLoggingIn_thenTheSessionStartsAndTheDomainUserIsReturned() =
@@ -382,6 +385,20 @@ class OfflineFirstAuthRepositoryTest {
             assertEquals(SessionStatus.SignedOut(SignOutReason.LoggedOut), sessionManager.status.value)
             assertNull(tokenStore.load())
             assertNull(currentUserDao.observe().first())
+        }
+
+    @Test
+    fun givenAStoredDeviceUnitPreference_whenLoggingOut_thenItIsCleared() =
+        runTest {
+            val sessionManager = SessionManager(FakeTokenStore(), testLogger())
+            sessionManager.start(AuthTokens(AccessToken("access"), RefreshToken("refresh")))
+            val userPreferencesDataSource = newTestUserPreferencesDataSource()
+            userPreferencesDataSource.setUnitSystem("lb")
+            val repository = repository(FakeAuthApi(), sessionManager, userPreferencesDataSource = userPreferencesDataSource)
+
+            repository.logOut()
+
+            assertNull(userPreferencesDataSource.preferences.first().unitSystem)
         }
 
     @Test
