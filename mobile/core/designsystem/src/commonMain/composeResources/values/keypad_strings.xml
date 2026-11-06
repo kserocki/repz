@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keypad_mode_weight">Weight</string>
+    <string name="keypad_mode_reps">Reps</string>
+    <string name="keypad_mode_rpe">RPE</string>
+    <string name="keypad_clear">Clear</string>
+    <string name="keypad_delete_digit">Delete digit</string>
+    <string name="keypad_hide">Hide keypad</string>
+    <string name="keypad_decimal_separator">Decimal separator</string>
+    <string name="keypad_same_as_last">Same as last · %1$s</string>
+    <string name="keypad_step">Step %1$s</string>
+    <string name="keypad_step_change">Change step</string>
+    <string name="keypad_decrease_label">−%1$s</string>
+    <string name="keypad_increase_label">+%1$s</string>
+    <string name="keypad_decrease_description">Decrease by %1$s</string>
+    <string name="keypad_increase_description">Increase by %1$s</string>
+    <string name="keypad_next_reps">Reps</string>
+    <string name="keypad_next_rpe">RPE</string>
+    <string name="keypad_next_next_set">Next set</string>
+    <string name="keypad_next_done">Done</string>
+    <string name="keypad_next_description_reps">Next: repetitions</string>
+    <string name="keypad_next_description_rpe">Next: RPE</string>
+    <string name="keypad_next_description_next_set">Next: next set</string>
+    <string name="keypad_context_line">%1$s · %2$s</string>
+    <string name="keypad_value_description">%1$s %2$s</string>
+    <string name="keypad_empty_value">—</string>
+    <string name="keypad_weight_limit">Weight must be %1$s–%2$s %3$s</string>
+    <string name="keypad_reps_limit">Reps must be %1$d–%2$d</string>
+</resources>

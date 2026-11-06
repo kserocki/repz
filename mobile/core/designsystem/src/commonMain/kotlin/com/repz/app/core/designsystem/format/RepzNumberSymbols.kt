@@ -1,6 +1,9 @@
 package com.repz.app.core.designsystem.format
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.text.intl.Locale
 
 /**
  * The locale's decimal separator for formatting [FixedDecimal] values (ADR-0028). Set weights have
@@ -22,3 +25,10 @@ data class RepzNumberSymbols(
  * sheet, re-reads this when the composition's locale changes.
  */
 internal expect fun platformNumberSymbols(): RepzNumberSymbols
+
+/** Re-reads [platformNumberSymbols] whenever the composition's locale ([Locale.current]) changes. */
+@Composable
+fun rememberRepzNumberSymbols(): RepzNumberSymbols {
+    val locale = Locale.current
+    return remember(locale) { platformNumberSymbols() }
+}
