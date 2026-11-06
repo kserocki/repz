@@ -8,7 +8,7 @@ import com.repz.app.feature.auth.impl.navigation.authEntries
 import com.repz.app.feature.exercises.api.ExercisesRoute
 import com.repz.app.feature.history.api.HistoryRoute
 import com.repz.app.feature.settings.impl.navigation.settingsEntries
-import com.repz.app.feature.workout.api.TrainRoute
+import com.repz.app.feature.workout.impl.navigation.workoutEntries
 import com.repz.app.shared.shell.ui.TabRootPlaceholder
 
 /**
@@ -17,8 +17,7 @@ import com.repz.app.shared.shell.ui.TabRootPlaceholder
  */
 internal fun EntryProviderScope<NavKey>.repzEntries(navigator: Navigator) {
     authEntries(navigator)
-    // TODO(REP-32): replace with the real Train home
-    entry<TrainRoute> { TabRootPlaceholder(TopLevelDestination.Train) }
+    workoutEntries(navigator)
     // TODO(REP-40): replace with the real History root
     entry<HistoryRoute> { TabRootPlaceholder(TopLevelDestination.History) }
     // TODO(REP-42): replace with the real Exercises root
