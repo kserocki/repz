@@ -14,6 +14,9 @@ kotlin {
         commonMain.dependencies {
             // The only module allowed to depend on Material3 (ADR-0006).
             api(libs.compose.material3)
+            // ImmutableList parameters on components such as RepzConnectedButtonGroup and
+            // RepzFabMenu; exposed as api so callers can pass their own lists.
+            api(libs.kotlinx.collections.immutable)
         }
         androidMain.dependencies {
             // Android haptics actual: ViewCompat/HapticFeedbackConstantsCompat (MOTION.md §3).
