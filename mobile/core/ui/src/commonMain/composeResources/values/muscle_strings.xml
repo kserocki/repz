@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Muscle group labels (DESIGN_SYSTEM §9 Q8, ADR-0021's 12-muscle vocabulary): the exercise card
+     subtitle's "<primary muscle> · n of m done" and anywhere else a Muscle needs a display label.
+     Keys mirror core:domain's Muscle enum constant names (com.repz.app.core.domain.model.Muscle). -->
+<resources>
+    <string name="muscle_chest">Chest</string>
+    <string name="muscle_back">Back</string>
+    <string name="muscle_shoulders">Shoulders</string>
+    <string name="muscle_biceps">Biceps</string>
+    <string name="muscle_triceps">Triceps</string>
+    <string name="muscle_forearms">Forearms</string>
+    <string name="muscle_abs">Abs</string>
+    <string name="muscle_glutes">Glutes</string>
+    <string name="muscle_quadriceps">Quads</string>
+    <string name="muscle_hamstrings">Hamstrings</string>
+    <string name="muscle_calves">Calves</string>
+    <string name="muscle_full_body">Full body</string>
+</resources>

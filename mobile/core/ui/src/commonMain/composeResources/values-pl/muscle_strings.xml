@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="muscle_chest">Klatka</string>
+    <string name="muscle_back">Plecy</string>
+    <string name="muscle_shoulders">Barki</string>
+    <string name="muscle_biceps">Biceps</string>
+    <string name="muscle_triceps">Triceps</string>
+    <string name="muscle_forearms">Przedramiona</string>
+    <string name="muscle_abs">Brzuch</string>
+    <string name="muscle_glutes">Pośladki</string>
+    <string name="muscle_quadriceps">Przód uda</string>
+    <string name="muscle_hamstrings">Tył uda</string>
+    <string name="muscle_calves">Łydki</string>
+    <string name="muscle_full_body">Całe ciało</string>
+</resources>
