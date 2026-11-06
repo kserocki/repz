@@ -14,6 +14,10 @@ kotlin {
         commonMain.dependencies {
             // The only module allowed to depend on Material3 (ADR-0006).
             api(libs.compose.material3)
+            // The live-workout components (component/workout/**) take ImmutableList parameters
+            // (menu items, accessibility actions, reorder items) in their public API, so this needs
+            // to be `api`, not `implementation`.
+            api(libs.kotlinx.collections.immutable)
         }
         androidMain.dependencies {
             // Android haptics actual: ViewCompat/HapticFeedbackConstantsCompat (MOTION.md §3).
