@@ -48,7 +48,7 @@ kotlin {
             implementation(libs.compose.material3)
         }
         androidMain.dependencies {
-            // RepzWorkManagerConfiguration.kt: androidx.work.Configuration (SY-6).
+            // RepzWorkManagerConfiguration.kt: androidx.work.Configuration.
             implementation(libs.androidx.work.runtime.ktx)
         }
         commonTest.dependencies {

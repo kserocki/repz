@@ -9,7 +9,7 @@ import kotlin.time.Duration.Companion.seconds
 
 /**
  * Builds the [androidx.work.WorkRequest]s directly and reads their [androidx.work.impl.model.WorkSpec],
- * with no [androidx.work.WorkManager] instance involved (plan §4, SY-3).
+ * with no [androidx.work.WorkManager] instance involved, so these run on the host JVM.
  */
 class AndroidSyncWorkRequestsTest {
     @Test

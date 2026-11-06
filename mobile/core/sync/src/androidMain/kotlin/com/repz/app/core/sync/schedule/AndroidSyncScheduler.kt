@@ -30,7 +30,7 @@ private fun syncConstraints(): Constraints =
         .setRequiredNetworkType(NetworkType.CONNECTED)
         .build()
 
-/** Built without a [WorkManager] instance, so this is host-JVM testable (plan §4, SY-3). */
+/** Built without a [WorkManager] instance, so this is host-JVM testable. */
 internal fun buildSyncWorkRequest(): OneTimeWorkRequest =
     OneTimeWorkRequestBuilder<SyncWorker>()
         .setConstraints(syncConstraints())
