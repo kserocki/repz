@@ -8,6 +8,7 @@ import com.repz.app.core.database.sync.SyncRejectionEntity
 import com.repz.app.core.database.workout.WorkoutEntity
 import com.repz.app.core.database.workout.WorkoutExerciseEntity
 import com.repz.app.core.database.workout.WorkoutSetEntity
+import com.repz.app.core.domain.sync.SyncFailureReason
 import com.repz.app.core.network.dto.EquipmentDto
 import com.repz.app.core.network.dto.MuscleDto
 import com.repz.app.core.network.dto.SyncTypeDto
@@ -373,5 +374,76 @@ class SyncEnginePushTest {
                 CustomExercisePayloadDto("My curl", MuscleDto.BICEPS, listOf(MuscleDto.FOREARMS), EquipmentDto.DUMBBELL),
                 sentPayload,
             )
+        }
+
+    @Test
+    fun givenAWholeRequest4xxOnPush_whenSyncing_thenFailsBumpsAttemptsOnEveryRowAndNeverPulls() =
+        runTest {
+            val syncApi = FakeSyncApi()
+            val harness = testSyncEngine(backgroundScope, syncApi = syncApi)
+            val ids = (1..2).map { testUuid(it.toString()) }
+            ids.forEach { harness.database.outboxDao().enqueue(SyncEntityType.WORKOUT, it, OutboxOperation.DELETE, FINISHED_AT) }
+            syncApi.enqueuePushResponse(NetworkResult.Failure(NetworkError.Api(422, null)))
+
+            val outcome = harness.engine.sync()
+
+            assertEquals(SyncOutcome.Failed(SyncFailureReason.Unexpected), outcome)
+            assertTrue(syncApi.pullCalls.isEmpty())
+            val entries = harness.database.outboxDao().findReadyToPush(FINISHED_AT, limit = 10)
+            assertEquals(ids.toSet(), entries.map { it.entityId }.toSet())
+            assertTrue(entries.all { it.attempts == 1 })
+        }
+
+    @Test
+    fun givenOfflineOnPush_whenSyncing_thenReturnsRetryLaterWithoutBumpingAttemptsOrPulling() =
+        runTest {
+            val syncApi = FakeSyncApi()
+            val harness = testSyncEngine(backgroundScope, syncApi = syncApi)
+            val workoutId = testUuid("1")
+            harness.database.outboxDao().enqueue(SyncEntityType.WORKOUT, workoutId, OutboxOperation.DELETE, FINISHED_AT)
+            syncApi.enqueuePushResponse(NetworkResult.Failure(NetworkError.Offline))
+
+            val outcome = harness.engine.sync()
+
+            assertEquals(SyncOutcome.RetryLater(null), outcome)
+            assertTrue(syncApi.pullCalls.isEmpty())
+            val entry =
+                harness.database
+                    .outboxDao()
+                    .findReadyToPush(FINISHED_AT, limit = 10)
+                    .single()
+            assertEquals(0, entry.attempts)
+        }
+
+    @Test
+    fun givenASingleChangeStillTooLargeAfterSplitting_whenSyncing_thenBumpsItsAttemptsAndStillPushesTheRest() =
+        runTest {
+            val syncApi = FakeSyncApi()
+            val harness = testSyncEngine(backgroundScope, syncApi = syncApi)
+            val acceptedId = testUuid("1")
+            val tooLargeId = testUuid("2")
+            harness.database.outboxDao().enqueue(SyncEntityType.WORKOUT, acceptedId, OutboxOperation.DELETE, FINISHED_AT)
+            harness.database.outboxDao().enqueue(SyncEntityType.WORKOUT, tooLargeId, OutboxOperation.DELETE, FINISHED_AT)
+            // tooLargeId is scripted to always come back as 413, however small the batch it ends up
+            // in (a real body never shrinks on retry either), so every attempt at it keeps failing.
+            syncApi.pushHandler = { request ->
+                if (request.changes.any { it.id == tooLargeId }) {
+                    NetworkResult.Failure(NetworkError.Api(413, null))
+                } else {
+                    NetworkResult.Success(
+                        PushResponseDto(
+                            request.changes.map { AcceptedChangeDto(SyncTypeDto.WORKOUT, it.id, 1, deleted = true) },
+                            emptyList(),
+                        ),
+                    )
+                }
+            }
+
+            val outcome = harness.engine.sync()
+
+            assertEquals(SyncOutcome.Completed, outcome)
+            val remaining = harness.database.outboxDao().findReadyToPush(FINISHED_AT, limit = 10)
+            assertEquals(listOf(tooLargeId), remaining.map { it.entityId })
+            assertTrue(remaining.single().attempts >= 1)
         }
 }
