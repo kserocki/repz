@@ -41,6 +41,9 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import com.repz.app.core.designsystem.generated.resources.Res
 import com.repz.app.core.designsystem.generated.resources.designsystem_close_menu
 import com.repz.app.core.designsystem.motion.LocalReducedMotion
@@ -83,12 +86,18 @@ data class RepzFabMenuItem(
  * [items] render end-aligned above the toggle, top item first, each entering/leaving
  * [RepzMotion.stagger.listPerItem] apart — bottom-up on open, top-down on close (MOT-30c).
  * [collapsedContentDescription] names the toggle while collapsed (e.g. "New workout"); once
- * [expanded], it reads `designsystem_close_menu` instead. The menu closes on the toggle or on an
- * item — there is no scrim and no outside-tap dismissal. T7: closing on system Back is not wired up
- * here. `androidx.compose.ui.backhandler.BackHandler` resolves for commonMain/iOS (pulled in
- * transitively through `material3`'s common and iOS targets) but not for `compileAndroidMain` —
- * `material3-android`'s own Gradle module metadata doesn't depend on `ui-backhandler` for Android,
- * so it isn't already on this module's classpath on every target as T7 requires. Follow-up F-2.
+ * [expanded], it reads `designsystem_close_menu` instead. The menu closes on the toggle, on an
+ * item, or on system Back while [expanded] (MOT-30f) — there is no scrim and no outside-tap
+ * dismissal.
+ *
+ * Back uses the non-deprecated `androidx.navigationevent.compose.NavigationBackHandler`, not
+ * `androidx.compose.ui.backhandler.BackHandler` (deprecated upstream in favour of this). On
+ * Android, `androidx.navigationevent:navigationevent-compose-android` reads the dispatcher from
+ * the `ComponentActivity`'s own `NavigationEventDispatcherOwner` via the view tree — `androidx
+ * .activity` 1.13+ sets this up automatically in `ComponentActivity.onCreate()`, no app wiring
+ * needed. On iOS it resolves through the JetBrains Compose Multiplatform port of the same library.
+ * `rememberNavigationEventState` needs a `NavigationEventInfo`; [NavigationEventInfo.None] is the
+ * library's own "no information needed" default, since this handler only cares about the gesture.
  */
 @Composable
 fun RepzFabMenu(
@@ -101,6 +110,9 @@ fun RepzFabMenu(
     val closeMenuDescription = stringResource(Res.string.designsystem_close_menu)
     val density = LocalDensity.current
     val riseOffsetPx = with(density) { FabMenuItemRise.roundToPx() }
+    val backHandlerState = rememberNavigationEventState(currentInfo = NavigationEventInfo.None)
+
+    NavigationBackHandler(state = backHandlerState, isBackEnabled = expanded, onBackCompleted = { onExpandedChange(false) })
 
     Column(modifier = modifier, horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(RepzSpacing.sm)) {
         items.forEachIndexed { index, item ->
