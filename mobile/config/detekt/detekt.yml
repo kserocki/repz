@@ -31,6 +31,15 @@ complexity:
     # `ignoreSimpleWhenEntries` flag exists for exactly that shape. The `when` only grows as later
     # issues add catalog pages, so this is a standing exception, not a one-off bump.
     ignoreSimpleWhenEntries: true
+  TooManyFunctions:
+    active: true
+    # `WorkoutRepository` (REP-27, ADR-0023/0026) has 12 methods: 6 reads plus the save, delete,
+    # undo and confirm lifecycle for both the active and the finished workout, one method per
+    # operation on purpose (no WorkoutReader/WorkoutWriter split, ARCH §3's SOLID table). Its
+    # `OfflineFirstWorkoutRepository` implementation and `FakeWorkoutRepository` fake both implement
+    # every method, so they need the same threshold. A standing exception, not a one-off bump.
+    allowedFunctionsPerInterface: 12
+    allowedFunctionsPerClass: 12
 
 naming:
   TopLevelPropertyNaming:
