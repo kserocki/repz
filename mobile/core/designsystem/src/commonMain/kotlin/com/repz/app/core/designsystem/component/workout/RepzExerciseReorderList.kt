@@ -85,6 +85,9 @@ data class RepzReorderItem<K : Any>(
  * the composable — and its remembered drag state — for a row that's actually been removed or moved
  * elsewhere in the list.
  *
+ * [rowModifier] tags each row individually by its index (the same precedent as `RepzTopAppBar`'s
+ * `backButtonModifier`), since [modifier] lands on the whole list.
+ *
  * TODO(REP-46): replace the instant reflow with MOT-12's lift scale, shadow and spring.
  */
 @Composable
@@ -95,6 +98,7 @@ fun <K : Any> RepzExerciseReorderList(
     onDragEnd: () -> Unit,
     dragHandleContentDescription: String,
     modifier: Modifier = Modifier,
+    rowModifier: (index: Int) -> Modifier = { Modifier },
 ) {
     val fallbackRowHeightPx = with(LocalDensity.current) { ReorderRowMinHeight.toPx() }
     val rowHeightsPx = remember { mutableStateMapOf<Int, Int>() }
@@ -123,6 +127,7 @@ fun <K : Any> RepzExerciseReorderList(
                     modifier =
                         Modifier
                             .fillMaxWidth()
+                            .then(rowModifier(index))
                             .onSizeChanged { size -> rowHeightsPx[index] = size.height }
                             .zIndex(if (isDragged) 1f else 0f)
                             .graphicsLayer { translationY = if (isDragged) dragOffsetPx else displacementPx },

@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -87,6 +88,11 @@ private val EditingRingWidth = 2.dp
  * what it depends on from the caller; a start-to-end drag (or end-to-start in RTL) is clamped to 0
  * and does nothing. At fontScale ≥ 1.5 the row reflows to two lines (badge + [lastLineText] on top,
  * fields + check below, board 14).
+ *
+ * [badgeModifier], [weightModifier], [repsModifier] and [completeModifier] tag those four elements
+ * individually (the same precedent as `RepzTopAppBar`'s `backButtonModifier`), since [modifier]
+ * lands on the whole row; both the single-line and reflowed layouts apply them to the same
+ * logical element.
  */
 @Composable
 fun RepzSetRow(
@@ -111,6 +117,10 @@ fun RepzSetRow(
     repsContentDescription: String,
     badgeContentDescription: String,
     modifier: Modifier = Modifier,
+    badgeModifier: Modifier = Modifier,
+    weightModifier: Modifier = Modifier,
+    repsModifier: Modifier = Modifier,
+    completeModifier: Modifier = Modifier,
 ) {
     val fontScale = LocalDensity.current.fontScale
     val isReflowed = fontScale >= REFLOW_FONT_SCALE_THRESHOLD
@@ -125,51 +135,115 @@ fun RepzSetRow(
                 .fillMaxWidth()
                 .heightIn(min = setRowMinHeight(fontScale)),
     ) {
-        if (isReflowed) {
-            SetRowReflowed(
-                badgeLabel = badgeLabel,
-                type = type,
-                lastLineText = lastLineText,
-                weightText = weightText,
-                repsText = repsText,
-                isPrefilled = isPrefilled,
-                editingField = editingField,
-                isCompleted = isCompleted,
-                typeMenuItems = typeMenuItems,
-                onWeightClick = onWeightClick,
-                onRepsClick = onRepsClick,
-                onCompleteClick = onCompleteClick,
-                customActions = customActionList,
-                completeContentDescription = completeContentDescription,
-                weightContentDescription = weightContentDescription,
-                repsContentDescription = repsContentDescription,
-                badgeContentDescription = badgeContentDescription,
-                modifier = Modifier.fillMaxSize(),
-            )
-        } else {
-            SetRowSingleLine(
-                badgeLabel = badgeLabel,
-                type = type,
-                previousText = previousText,
-                noPreviousText = noPreviousText,
-                weightText = weightText,
-                repsText = repsText,
-                isPrefilled = isPrefilled,
-                editingField = editingField,
-                isCompleted = isCompleted,
-                typeMenuItems = typeMenuItems,
-                onWeightClick = onWeightClick,
-                onRepsClick = onRepsClick,
-                onCompleteClick = onCompleteClick,
-                customActions = customActionList,
-                completeContentDescription = completeContentDescription,
-                weightContentDescription = weightContentDescription,
-                repsContentDescription = repsContentDescription,
-                badgeContentDescription = badgeContentDescription,
-                isPreviousColumnVisible = maxWidth >= NarrowRowWidthThreshold,
-                modifier = Modifier.fillMaxSize(),
-            )
-        }
+        SetRowLayout(
+            isReflowed = isReflowed,
+            badgeLabel = badgeLabel,
+            type = type,
+            previousText = previousText,
+            noPreviousText = noPreviousText,
+            lastLineText = lastLineText,
+            weightText = weightText,
+            repsText = repsText,
+            isPrefilled = isPrefilled,
+            editingField = editingField,
+            isCompleted = isCompleted,
+            typeMenuItems = typeMenuItems,
+            onWeightClick = onWeightClick,
+            onRepsClick = onRepsClick,
+            onCompleteClick = onCompleteClick,
+            customActions = customActionList,
+            completeContentDescription = completeContentDescription,
+            weightContentDescription = weightContentDescription,
+            repsContentDescription = repsContentDescription,
+            badgeContentDescription = badgeContentDescription,
+            badgeModifier = badgeModifier,
+            weightModifier = weightModifier,
+            repsModifier = repsModifier,
+            completeModifier = completeModifier,
+        )
+    }
+}
+
+@Suppress("LongParameterList")
+@Composable
+private fun BoxWithConstraintsScope.SetRowLayout(
+    isReflowed: Boolean,
+    badgeLabel: String,
+    type: RepzSetType,
+    previousText: String?,
+    noPreviousText: String,
+    lastLineText: String?,
+    weightText: String,
+    repsText: String,
+    isPrefilled: Boolean,
+    editingField: RepzSetField?,
+    isCompleted: Boolean,
+    typeMenuItems: ImmutableList<RepzMenuItem>,
+    onWeightClick: () -> Unit,
+    onRepsClick: () -> Unit,
+    onCompleteClick: () -> Unit,
+    customActions: List<CustomAccessibilityAction>,
+    completeContentDescription: String,
+    weightContentDescription: String,
+    repsContentDescription: String,
+    badgeContentDescription: String,
+    badgeModifier: Modifier = Modifier,
+    weightModifier: Modifier = Modifier,
+    repsModifier: Modifier = Modifier,
+    completeModifier: Modifier = Modifier,
+) {
+    if (isReflowed) {
+        SetRowReflowed(
+            badgeLabel = badgeLabel,
+            type = type,
+            lastLineText = lastLineText,
+            weightText = weightText,
+            repsText = repsText,
+            isPrefilled = isPrefilled,
+            editingField = editingField,
+            isCompleted = isCompleted,
+            typeMenuItems = typeMenuItems,
+            onWeightClick = onWeightClick,
+            onRepsClick = onRepsClick,
+            onCompleteClick = onCompleteClick,
+            customActions = customActions,
+            completeContentDescription = completeContentDescription,
+            weightContentDescription = weightContentDescription,
+            repsContentDescription = repsContentDescription,
+            badgeContentDescription = badgeContentDescription,
+            modifier = Modifier.fillMaxSize(),
+            badgeModifier = badgeModifier,
+            weightModifier = weightModifier,
+            repsModifier = repsModifier,
+            completeModifier = completeModifier,
+        )
+    } else {
+        SetRowSingleLine(
+            badgeLabel = badgeLabel,
+            type = type,
+            previousText = previousText,
+            noPreviousText = noPreviousText,
+            weightText = weightText,
+            repsText = repsText,
+            isPrefilled = isPrefilled,
+            editingField = editingField,
+            isCompleted = isCompleted,
+            typeMenuItems = typeMenuItems,
+            onWeightClick = onWeightClick,
+            onRepsClick = onRepsClick,
+            onCompleteClick = onCompleteClick,
+            customActions = customActions,
+            completeContentDescription = completeContentDescription,
+            weightContentDescription = weightContentDescription,
+            repsContentDescription = repsContentDescription,
+            badgeContentDescription = badgeContentDescription,
+            isPreviousColumnVisible = maxWidth >= NarrowRowWidthThreshold,
+            modifier = Modifier.fillMaxSize(),
+            badgeModifier = badgeModifier,
+            weightModifier = weightModifier,
+            repsModifier = repsModifier,
+            completeModifier = completeModifier,
+        )
     }
 }
 
@@ -214,6 +288,10 @@ private fun SetRowSingleLine(
     badgeContentDescription: String,
     isPreviousColumnVisible: Boolean,
     modifier: Modifier = Modifier,
+    badgeModifier: Modifier = Modifier,
+    weightModifier: Modifier = Modifier,
+    repsModifier: Modifier = Modifier,
+    completeModifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier.padding(start = SetRowStartPadding, end = RepzSpacing.sm),
@@ -227,7 +305,7 @@ private fun SetRowSingleLine(
             menuItems = typeMenuItems,
             contentDescription = badgeContentDescription,
             customActions = customActions,
-            modifier = Modifier.width(SetBadgeColumnWidth),
+            modifier = Modifier.width(SetBadgeColumnWidth).then(badgeModifier),
         )
         if (isPreviousColumnVisible) {
             Text(
@@ -245,7 +323,7 @@ private fun SetRowSingleLine(
             onClick = onWeightClick,
             contentDescription = weightContentDescription,
             customActions = customActions,
-            modifier = Modifier.weight(1f).heightIn(min = FieldMinHeight),
+            modifier = Modifier.weight(1f).heightIn(min = FieldMinHeight).then(weightModifier),
         )
         SetValueField(
             text = repsText,
@@ -255,14 +333,14 @@ private fun SetRowSingleLine(
             onClick = onRepsClick,
             contentDescription = repsContentDescription,
             customActions = customActions,
-            modifier = Modifier.weight(1f).heightIn(min = FieldMinHeight),
+            modifier = Modifier.weight(1f).heightIn(min = FieldMinHeight).then(repsModifier),
         )
         SetCompleteCheckbox(
             isCompleted = isCompleted,
             onClick = onCompleteClick,
             contentDescription = completeContentDescription,
             customActions = customActions,
-            modifier = Modifier.width(SetCheckColumnWidth),
+            modifier = Modifier.width(SetCheckColumnWidth).then(completeModifier),
         )
     }
 }
@@ -288,6 +366,10 @@ private fun SetRowReflowed(
     repsContentDescription: String,
     badgeContentDescription: String,
     modifier: Modifier = Modifier,
+    badgeModifier: Modifier = Modifier,
+    weightModifier: Modifier = Modifier,
+    repsModifier: Modifier = Modifier,
+    completeModifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier.padding(horizontal = SetRowStartPadding, vertical = RepzSpacing.xs),
@@ -301,7 +383,7 @@ private fun SetRowReflowed(
                 menuItems = typeMenuItems,
                 contentDescription = badgeContentDescription,
                 customActions = customActions,
-                modifier = Modifier.width(SetBadgeColumnWidth),
+                modifier = Modifier.width(SetBadgeColumnWidth).then(badgeModifier),
             )
             if (lastLineText != null) {
                 Text(lastLineText, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -316,7 +398,7 @@ private fun SetRowReflowed(
                 onClick = onWeightClick,
                 contentDescription = weightContentDescription,
                 customActions = customActions,
-                modifier = Modifier.weight(1f).heightIn(min = FieldMinHeight),
+                modifier = Modifier.weight(1f).heightIn(min = FieldMinHeight).then(weightModifier),
             )
             SetValueField(
                 text = repsText,
@@ -326,14 +408,14 @@ private fun SetRowReflowed(
                 onClick = onRepsClick,
                 contentDescription = repsContentDescription,
                 customActions = customActions,
-                modifier = Modifier.weight(1f).heightIn(min = FieldMinHeight),
+                modifier = Modifier.weight(1f).heightIn(min = FieldMinHeight).then(repsModifier),
             )
             SetCompleteCheckbox(
                 isCompleted = isCompleted,
                 onClick = onCompleteClick,
                 contentDescription = completeContentDescription,
                 customActions = customActions,
-                modifier = Modifier.width(SetCheckColumnWidth),
+                modifier = Modifier.width(SetCheckColumnWidth).then(completeModifier),
             )
         }
     }

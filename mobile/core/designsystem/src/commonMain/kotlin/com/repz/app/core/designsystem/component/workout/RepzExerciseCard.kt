@@ -54,6 +54,10 @@ private const val DISABLED_CONTENT_ALPHA = 0.38f
  * under the header — these are the exercise's own notes, not workout-level notes, which this card
  * has no UI for. [columnLabels] labels the columns above [sets], which are [RepzSetRow]s supplied
  * by the caller.
+ *
+ * [menuButtonModifier], [notesModifier] and [addSetModifier] tag those three elements individually
+ * (the same precedent as `RepzTopAppBar`'s `backButtonModifier`), since [modifier] lands on the
+ * whole card.
  */
 @Composable
 fun RepzExerciseCard(
@@ -73,6 +77,9 @@ fun RepzExerciseCard(
     isAddSetEnabled: Boolean,
     onAddSetClick: () -> Unit,
     modifier: Modifier = Modifier,
+    menuButtonModifier: Modifier = Modifier,
+    notesModifier: Modifier = Modifier,
+    addSetModifier: Modifier = Modifier,
     sets: @Composable ColumnScope.() -> Unit,
 ) {
     Column(
@@ -90,6 +97,7 @@ fun RepzExerciseCard(
             menuItems = menuItems,
             menuContentDescription = menuContentDescription,
             onHeaderLongClick = onHeaderLongClick,
+            menuButtonModifier = menuButtonModifier,
         )
         if (notes != null) {
             ExerciseCardNotes(
@@ -99,11 +107,12 @@ fun RepzExerciseCard(
                 onNotesClick = onNotesClick,
                 onNotesChange = onNotesChange,
                 onNotesEditingFinish = onNotesEditingFinish,
+                notesModifier = notesModifier,
             )
         }
         ExerciseCardColumnHeader(columnLabels)
         Column(verticalArrangement = Arrangement.spacedBy(RepzSpacing.xs), content = sets)
-        ExerciseCardAddSet(label = addSetLabel, isEnabled = isAddSetEnabled, onClick = onAddSetClick)
+        ExerciseCardAddSet(label = addSetLabel, isEnabled = isAddSetEnabled, onClick = onAddSetClick, modifier = addSetModifier)
     }
 }
 
@@ -115,6 +124,7 @@ private fun ExerciseCardHeader(
     menuContentDescription: String,
     onHeaderLongClick: () -> Unit,
     modifier: Modifier = Modifier,
+    menuButtonModifier: Modifier = Modifier,
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
     Row(
@@ -129,7 +139,7 @@ private fun ExerciseCardHeader(
             Text(text = subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Box {
-            IconButton(onClick = { isMenuExpanded = true }) {
+            IconButton(onClick = { isMenuExpanded = true }, modifier = menuButtonModifier) {
                 Icon(painter = painterResource(Res.drawable.symbol_more_vert), contentDescription = menuContentDescription)
             }
             RepzWorkoutDropdownMenu(expanded = isMenuExpanded, onDismissRequest = { isMenuExpanded = false }, items = menuItems)
@@ -146,6 +156,7 @@ private fun ExerciseCardNotes(
     onNotesChange: (String) -> Unit,
     onNotesEditingFinish: () -> Unit,
     modifier: Modifier = Modifier,
+    notesModifier: Modifier = Modifier,
 ) {
     Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(RepzSpacing.sm)) {
         Icon(
@@ -155,11 +166,17 @@ private fun ExerciseCardNotes(
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         if (isEditingNotes) {
-            ExerciseCardNotesField(notes, notesLabel, onNotesChange, onNotesEditingFinish, modifier = Modifier.weight(1f))
+            ExerciseCardNotesField(
+                notes,
+                notesLabel,
+                onNotesChange,
+                onNotesEditingFinish,
+                modifier = Modifier.weight(1f).then(notesModifier),
+            )
         } else {
             Text(
                 text = notes,
-                modifier = Modifier.weight(1f).clickable(onClick = onNotesClick),
+                modifier = Modifier.weight(1f).then(notesModifier).clickable(onClick = onNotesClick),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

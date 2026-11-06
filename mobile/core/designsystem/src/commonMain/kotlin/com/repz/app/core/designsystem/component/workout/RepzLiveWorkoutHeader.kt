@@ -60,6 +60,10 @@ private const val WIDE_FINISH_ROW_FONT_SCALE_THRESHOLD = 1.5f
  * [finishLabel] action and an overflow menu ([overflowItems], e.g. "Discard workout"). [elapsedText]
  * renders in `RepzTheme.typography.numericLarge` and is never announced per-tick (DESIGN_SYSTEM
  * §12): the caller is responsible for not wrapping it in a live region.
+ *
+ * [minimizeButtonModifier], [nameModifier], [finishButtonModifier] and [overflowButtonModifier]
+ * tag these four elements individually (the same precedent as `RepzTopAppBar`'s
+ * `backButtonModifier`), since [modifier] lands on the whole header.
  */
 @Composable
 fun RepzLiveWorkoutHeader(
@@ -78,6 +82,10 @@ fun RepzLiveWorkoutHeader(
     editNameContentDescription: String,
     moreOptionsContentDescription: String,
     modifier: Modifier = Modifier,
+    minimizeButtonModifier: Modifier = Modifier,
+    nameModifier: Modifier = Modifier,
+    finishButtonModifier: Modifier = Modifier,
+    overflowButtonModifier: Modifier = Modifier,
 ) {
     val isWideFinishRow = LocalDensity.current.fontScale >= WIDE_FINISH_ROW_FONT_SCALE_THRESHOLD
 
@@ -94,7 +102,7 @@ fun RepzLiveWorkoutHeader(
             horizontalArrangement = Arrangement.spacedBy(RepzSpacing.sm),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            IconButton(onClick = onMinimizeClick) {
+            IconButton(onClick = onMinimizeClick, modifier = minimizeButtonModifier) {
                 Icon(
                     painter = painterResource(Res.drawable.symbol_keyboard_arrow_down),
                     contentDescription = minimizeContentDescription,
@@ -109,18 +117,23 @@ fun RepzLiveWorkoutHeader(
                 onNameEditingFinish = onNameEditingFinish,
                 editNameContentDescription = editNameContentDescription,
                 modifier = Modifier.weight(1f),
+                nameModifier = nameModifier,
             )
             if (!isWideFinishRow) {
-                RepzLiveWorkoutFinishButton(finishLabel, isFinishEnabled, onFinishClick)
+                RepzLiveWorkoutFinishButton(finishLabel, isFinishEnabled, onFinishClick, modifier = finishButtonModifier)
             }
-            RepzLiveWorkoutHeaderOverflow(items = overflowItems, contentDescription = moreOptionsContentDescription)
+            RepzLiveWorkoutHeaderOverflow(
+                items = overflowItems,
+                contentDescription = moreOptionsContentDescription,
+                buttonModifier = overflowButtonModifier,
+            )
         }
         if (isWideFinishRow) {
             RepzLiveWorkoutFinishButton(
                 finishLabel,
                 isFinishEnabled,
                 onFinishClick,
-                modifier = Modifier.fillMaxWidth().padding(top = RepzSpacing.sm),
+                modifier = Modifier.fillMaxWidth().padding(top = RepzSpacing.sm).then(finishButtonModifier),
             )
         }
     }
@@ -153,15 +166,16 @@ private fun RepzLiveWorkoutHeaderTitle(
     onNameEditingFinish: () -> Unit,
     editNameContentDescription: String,
     modifier: Modifier = Modifier,
+    nameModifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
         if (isEditingName) {
-            RepzLiveWorkoutNameField(name, onNameChange, onNameEditingFinish)
+            RepzLiveWorkoutNameField(name, onNameChange, onNameEditingFinish, modifier = nameModifier)
         } else {
             val nameRowDescription = nameRowContentDescription(name, editNameContentDescription)
             Row(
                 modifier =
-                    Modifier
+                    nameModifier
                         .clickable(onClick = onNameClick)
                         .semantics(mergeDescendants = true) { contentDescription = nameRowDescription },
                 verticalAlignment = Alignment.CenterVertically,
@@ -193,6 +207,7 @@ private fun RepzLiveWorkoutNameField(
     name: String,
     onNameChange: (String) -> Unit,
     onNameEditingFinish: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val focusRequester = remember { FocusRequester() }
     val textColor = MaterialTheme.colorScheme.onSurface
@@ -200,7 +215,7 @@ private fun RepzLiveWorkoutNameField(
         value = name,
         onValueChange = onNameChange,
         modifier =
-            Modifier
+            modifier
                 .fillMaxWidth()
                 .focusRequester(focusRequester)
                 .onFocusChanged { focusState -> if (!focusState.isFocused) onNameEditingFinish() },
@@ -217,10 +232,12 @@ private fun RepzLiveWorkoutNameField(
 private fun RepzLiveWorkoutHeaderOverflow(
     items: ImmutableList<RepzMenuItem>,
     contentDescription: String,
+    modifier: Modifier = Modifier,
+    buttonModifier: Modifier = Modifier,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
-    Box {
-        IconButton(onClick = { isExpanded = true }) {
+    Box(modifier = modifier) {
+        IconButton(onClick = { isExpanded = true }, modifier = buttonModifier) {
             Icon(painter = painterResource(Res.drawable.symbol_more_vert), contentDescription = contentDescription)
         }
         RepzWorkoutDropdownMenu(expanded = isExpanded, onDismissRequest = { isExpanded = false }, items = items)
