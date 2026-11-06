@@ -1,6 +1,14 @@
 package com.repz.app.core.designsystem.format
 
-// TODO(REP-35): placeholder actual so core:designsystem compiles for iOS ahead of group 2.
-// Swift's S1 (plan §3.3) replaces this with NSLocale.currentLocale.decimalSeparator's first
-// character, falling back to '.'.
-internal actual fun platformNumberSymbols(): RepzNumberSymbols = RepzNumberSymbols('.')
+import platform.Foundation.NSLocale
+import platform.Foundation.currentLocale
+import platform.Foundation.decimalSeparator
+
+/**
+ * The current locale's decimal separator (ADR-0028), read from `NSLocale.currentLocale`. Falls
+ * back to `.` if the locale reports an empty separator.
+ */
+internal actual fun platformNumberSymbols(): RepzNumberSymbols {
+    val separator = NSLocale.currentLocale.decimalSeparator.firstOrNull() ?: '.'
+    return RepzNumberSymbols(separator)
+}
