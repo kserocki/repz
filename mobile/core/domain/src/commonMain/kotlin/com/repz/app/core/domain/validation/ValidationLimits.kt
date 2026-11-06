@@ -7,8 +7,10 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * The server's limits (ADR-0020), plus the validators shared by two or more features. Validators
- * for a single feature's own fields (template target reps range, rest) live with that feature.
+ * The server's limits (ADR-0020), plus the validators shared by two or more call sites
+ * (`validateRest`, by workout templates and preferences) or with no aggregate-validator file of
+ * their own (the preferences setters). A single aggregate's own fields validate inside that
+ * aggregate's own validator instead (e.g. a template's target reps range).
  */
 object ValidationLimits {
     const val NAME_MAX_LENGTH = 100
@@ -20,6 +22,7 @@ object ValidationLimits {
     val REPS_RANGE: IntRange = 0..999
     val REST_MAX: Duration = 3600.seconds
     val SET_WEIGHT_MAX: Weight = Weight(1_000_000)
+    val WEEKLY_WORKOUT_GOAL_RANGE: IntRange = 1..7
 
     /** Trims [raw] and validates the result; the trimmed name is the success value. */
     fun validateName(raw: String): DomainResult<String, ValidationError> {
@@ -47,4 +50,19 @@ object ValidationLimits {
 
     fun validateReps(reps: Int): DomainResult<Int, ValidationError.RepsOutOfRange> =
         if (reps in REPS_RANGE) DomainResult.Success(reps) else DomainResult.Failure(ValidationError.RepsOutOfRange(REPS_RANGE))
+
+    /** Whole seconds in `0.seconds..REST_MAX`; shared by a workout template's rest field and the preferences' default rest. */
+    fun validateRest(rest: Duration): DomainResult<Duration, ValidationError.RestOutOfRange> =
+        if (rest.inWholeSeconds.seconds == rest && rest in Duration.ZERO..REST_MAX) {
+            DomainResult.Success(rest)
+        } else {
+            DomainResult.Failure(ValidationError.RestOutOfRange(REST_MAX))
+        }
+
+    fun validateWeeklyWorkoutGoal(goal: Int): DomainResult<Int, ValidationError.WeeklyWorkoutGoalOutOfRange> =
+        if (goal in WEEKLY_WORKOUT_GOAL_RANGE) {
+            DomainResult.Success(goal)
+        } else {
+            DomainResult.Failure(ValidationError.WeeklyWorkoutGoalOutOfRange(WEEKLY_WORKOUT_GOAL_RANGE))
+        }
 }

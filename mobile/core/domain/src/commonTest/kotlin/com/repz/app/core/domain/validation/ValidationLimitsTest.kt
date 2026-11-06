@@ -5,6 +5,7 @@ import com.repz.app.core.domain.result.DomainResult
 import com.repz.app.core.domain.result.ValidationError
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 class ValidationLimitsTest {
@@ -113,5 +114,70 @@ class ValidationLimitsTest {
         assertEquals(0..999, ValidationLimits.REPS_RANGE)
         assertEquals(3600.seconds, ValidationLimits.REST_MAX)
         assertEquals(Weight(1_000_000), ValidationLimits.SET_WEIGHT_MAX)
+        assertEquals(1..7, ValidationLimits.WEEKLY_WORKOUT_GOAL_RANGE)
+    }
+
+    @Test
+    fun givenZeroSecondsRest_whenValidated_thenItPasses() {
+        assertEquals(DomainResult.Success(Duration.ZERO), ValidationLimits.validateRest(Duration.ZERO))
+    }
+
+    @Test
+    fun givenTheMaximumRest_whenValidated_thenItPasses() {
+        val max = ValidationLimits.REST_MAX
+
+        assertEquals(DomainResult.Success(max), ValidationLimits.validateRest(max))
+    }
+
+    @Test
+    fun givenRestOneSecondOverTheMaximum_whenValidated_thenFailsWithRestOutOfRange() {
+        val overMax = ValidationLimits.REST_MAX + 1.seconds
+
+        assertEquals(
+            DomainResult.Failure(ValidationError.RestOutOfRange(ValidationLimits.REST_MAX)),
+            ValidationLimits.validateRest(overMax),
+        )
+    }
+
+    @Test
+    fun givenANegativeRest_whenValidated_thenFailsWithRestOutOfRange() {
+        assertEquals(
+            DomainResult.Failure(ValidationError.RestOutOfRange(ValidationLimits.REST_MAX)),
+            ValidationLimits.validateRest((-1).seconds),
+        )
+    }
+
+    @Test
+    fun givenRestWithASubSecondComponent_whenValidated_thenFailsWithRestOutOfRange() {
+        assertEquals(
+            DomainResult.Failure(ValidationError.RestOutOfRange(ValidationLimits.REST_MAX)),
+            ValidationLimits.validateRest(90.5.seconds),
+        )
+    }
+
+    @Test
+    fun givenTheMinimumWeeklyWorkoutGoal_whenValidated_thenItPasses() {
+        assertEquals(DomainResult.Success(1), ValidationLimits.validateWeeklyWorkoutGoal(1))
+    }
+
+    @Test
+    fun givenTheMaximumWeeklyWorkoutGoal_whenValidated_thenItPasses() {
+        assertEquals(DomainResult.Success(7), ValidationLimits.validateWeeklyWorkoutGoal(7))
+    }
+
+    @Test
+    fun givenAWeeklyWorkoutGoalOfZero_whenValidated_thenFailsWithWeeklyWorkoutGoalOutOfRange() {
+        assertEquals(
+            DomainResult.Failure(ValidationError.WeeklyWorkoutGoalOutOfRange(ValidationLimits.WEEKLY_WORKOUT_GOAL_RANGE)),
+            ValidationLimits.validateWeeklyWorkoutGoal(0),
+        )
+    }
+
+    @Test
+    fun givenAWeeklyWorkoutGoalOfEight_whenValidated_thenFailsWithWeeklyWorkoutGoalOutOfRange() {
+        assertEquals(
+            DomainResult.Failure(ValidationError.WeeklyWorkoutGoalOutOfRange(ValidationLimits.WEEKLY_WORKOUT_GOAL_RANGE)),
+            ValidationLimits.validateWeeklyWorkoutGoal(8),
+        )
     }
 }
