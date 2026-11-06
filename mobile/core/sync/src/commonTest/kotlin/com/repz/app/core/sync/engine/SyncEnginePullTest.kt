@@ -191,9 +191,10 @@ class SyncEnginePullTest {
                     .copy(initialPullCompletedAt = UPDATED_AT),
             )
             val pendingId = testUuid("1")
-            // Held, so the push pass never looks at it (and, since REP-26's deleteIfUnchanged-on-null
-            // fix, never has a chance to drop it either): it stays pending for findPendingEntityIds
-            // throughout the whole run, which is the only thing this test cares about.
+            // Held, so the push pass never looks at it (and, since a null `buildUpsert` now always
+            // drops the row via `deleteIfUnchanged`, never has a chance to drop it either): it stays
+            // pending for findPendingEntityIds throughout the whole run, which is the only thing this
+            // test cares about.
             harness.database.outboxDao().enqueue(
                 SyncEntityType.WORKOUT,
                 pendingId,
