@@ -8,7 +8,10 @@ import SwiftUI
 @main
 struct RepzIOSApp: App {
     init() {
-        RepzAppKt.startRepzKoin(platformDeclaration: { _ in })
+        let koinApplication = RepzAppKt.startRepzKoin(platformDeclaration: { _ in })
+        // Synchronous and right after Koin starts, before `init` returns: `BGTaskScheduler`
+        // requires `register(forTaskWithIdentifier:)` to happen before the app finishes launching.
+        RepzSyncKt.startRepzSync(koinApplication: koinApplication)
     }
 
     var body: some Scene {

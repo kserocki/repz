@@ -3,14 +3,12 @@ package com.repz.app.shared.di
 import com.repz.app.core.data.exercise.OfflineFirstExerciseRepository
 import com.repz.app.core.data.preferences.OfflineFirstUserPreferencesRepository
 import com.repz.app.core.data.record.OfflineFirstPersonalRecordRepository
-import com.repz.app.core.data.sync.NoOpSyncScheduler
 import com.repz.app.core.data.template.OfflineFirstWorkoutTemplateRepository
 import com.repz.app.core.data.transaction.RoomTransactionRunner
 import com.repz.app.core.data.workout.OfflineFirstWorkoutRepository
 import com.repz.app.core.domain.exercise.ExerciseRepository
 import com.repz.app.core.domain.preferences.UserPreferencesRepository
 import com.repz.app.core.domain.record.PersonalRecordRepository
-import com.repz.app.core.domain.sync.SyncScheduler
 import com.repz.app.core.domain.template.WorkoutTemplateRepository
 import com.repz.app.core.domain.transaction.TransactionRunner
 import com.repz.app.core.domain.workout.WorkoutRepository
@@ -22,10 +20,11 @@ import kotlin.test.Test
 import kotlin.test.assertSame
 
 /**
- * Regression test: every offline-first repository, plus [TransactionRunner] and [SyncScheduler], is
- * a singleton bound to the same instance as its `OfflineFirst*`/impl class (ADR-0008), resolving
- * from the real `RepzApp` graph on every target, the same way [DataModuleGraphTest] does for
- * `SessionRepository`.
+ * Regression test: every offline-first repository, plus [TransactionRunner], is a singleton bound
+ * to the same instance as its `OfflineFirst*`/impl class (ADR-0008), resolving from the real
+ * `RepzApp` graph on every target, the same way [DataModuleGraphTest] does for `SessionRepository`.
+ * `SyncScheduler`'s own singleton/same-instance assertions moved to [SyncGraphTest], since it is
+ * now bound by the platform `PlatformModule`s, not `core:data`'s (deleted) `NoOpSyncScheduler`.
  */
 class RepositoryGraphTest {
     @AfterTest
@@ -127,21 +126,5 @@ class RepositoryGraphTest {
         val koin = KoinPlatformTools.defaultContext().get()
 
         assertSame(koin.get<TransactionRunner>(), koin.get<RoomTransactionRunner>())
-    }
-
-    @Test
-    fun givenRepzApp_whenStarted_thenSyncSchedulerIsASingleton() {
-        startKoin<RepzApp> { platformTestDeclaration() }
-        val koin = KoinPlatformTools.defaultContext().get()
-
-        assertSame(koin.get<SyncScheduler>(), koin.get<SyncScheduler>())
-    }
-
-    @Test
-    fun givenRepzApp_whenStarted_thenSyncSchedulerIsTheSameInstanceAsNoOpSyncScheduler() {
-        startKoin<RepzApp> { platformTestDeclaration() }
-        val koin = KoinPlatformTools.defaultContext().get()
-
-        assertSame(koin.get<SyncScheduler>(), koin.get<NoOpSyncScheduler>())
     }
 }

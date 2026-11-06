@@ -49,14 +49,14 @@ repz/
     ├── app/
     │   ├── android/             # com.android.application – thin Android entry (MainActivity, Application)
     │   └── shared/              # KMP umbrella: RepzRoot(), root navigation, Koin graph, iOS framework export
-    ├── iosApp/                  # Xcode project – thin SwiftUI host; BGTaskScheduler registration later (REP-26)
+    ├── iosApp/                  # Xcode project – thin SwiftUI host; BGTaskScheduler registered at launch (REP-26)
     ├── core/
     │   ├── common/              # IdGenerator (UuidV7IdGenerator), AppDispatchers (pure Kotlin, Koin-free)
     │   ├── domain/              # models + value types (Weight, Rpe, ids), DomainResult/DomainError, ValidationLimits, PR calculator; repository interfaces (Workout/WorkoutTemplate/Exercise/PersonalRecord/UserPreferences), SyncScheduler/TransactionRunner ports and their shared use cases (REP-27, pure Kotlin)
-    │   ├── data/                # repository implementations (Room + outbox): OfflineFirstWorkout/WorkoutTemplate/Exercise/PersonalRecord/UserPreferencesRepository, RoomTransactionRunner, a temporary NoOpSyncScheduler (REP-27); OfflineFirstAuthRepository (REP-30) is online-only
+    │   ├── data/                # repository implementations (Room + outbox): OfflineFirstWorkout/WorkoutTemplate/Exercise/PersonalRecord/UserPreferencesRepository, RoomTransactionRunner (REP-27); OfflineFirstAuthRepository (REP-30) is online-only
     │   ├── database/            # Room KMP: entities, DAOs, migrations
     │   ├── network/             # Ktor client, DTOs, auth plugin, API services, session/token storage (TokenStore, Q3)
-    │   ├── sync/                # SyncEngine, outbox processing, platform schedulers
+    │   ├── sync/                # SyncEngine, SyncHandlerRegistry, SyncStatusTracker, AndroidSyncScheduler/IosSyncScheduler (REP-26)
     │   ├── datastore/           # user preferences: UserPreferencesDataSource over DataStore Preferences (REP-27; TokenStore lives in core:network, Q3)
     │   ├── designsystem/        # theme, tokens, components, motion primitives
     │   ├── ui/                  # MVI helpers, shared UI utils, formatters
@@ -208,9 +208,12 @@ sequenceDiagram
     API-->>Engine: changes (version > N), nextCursor, hasMore
     Engine->>DB: tx { apply changes; save cursor }
     Engine->>DB: recalculate PRs for touched exercises
+    Engine->>Engine: final push pass (a row may have become ready during the pull)
 ```
 
-**Push first, then pull.** The client never loses its own pending changes.
+**Push first, then pull, then push once more.** The client never loses its own pending changes, and the final pass picks up a row that became ready (e.g. coalesced from a write during a long restore) before the run ends; the next trigger would otherwise have to catch it.
+
+**Personal-record refresh timing (REP-26).** Per non-restore pull page, after that page's transaction commits, PRs are recalculated for the union of the touched exercises' before/after state — one recompute per page, not per change. A push response with `deleted: true` for a workout recomputes that workout's stored exercise ids the same way. During the **initial restore** (§5.5), no per-page recompute runs; `refreshAll()` runs once, **before** `initial_pull_completed_at` is saved — the reverse of saving the flag first — so a kill between the two steps leaves the flag unset and the next run's `hasMore == false` check re-runs `refreshAll()` again, which is idempotent (it replaces the whole table) and needs no separate "done" marker.
 
 ### 5.4 Conflict resolution: last write wins per record (aggregate)
 
@@ -235,22 +238,22 @@ The device keeps a **full local replica** of the user's data. Personal workout d
 
 | Trigger | Android | iOS |
 |---|---|---|
-| After a local write | `WorkManager` unique one-time work (`KEEP`), `NetworkType.CONNECTED`, exponential backoff | Run immediately if online; otherwise wait for the next trigger |
-| App foreground | one-time work | `SyncEngine.sync()` from `scenePhase == .active` |
-| Periodic | `PeriodicWorkRequest` every 1 h with network constraint | `BGAppRefreshTask` (best effort, system decides) |
-| Connectivity regained | covered by the WorkManager constraint | `NWPathMonitor` → sync |
+| After a local write | `WorkManager` unique one-time work `repz-sync` (`KEEP`), `NetworkType.CONNECTED`, 30 s exponential backoff | `requestSync()` → a `Channel.CONFLATED` queue → one consumer loop on the app-lifetime scope, each run wrapped in a `UIApplication` background-task assertion |
+| App foreground and login | the shared `LifecycleStartEffect(isSignedIn)` in `app:shared`'s `RepzAppShell` → `SyncScheduler.requestSync()` (CMP's iOS lifecycle maps `willEnterForeground` to `ON_START`, so one effect covers both platforms and "just logged in") | same |
+| Periodic | `PeriodicWorkRequest` `repz-sync-periodic` every 1 h with the `CONNECTED` constraint | `BGAppRefreshTaskRequest` (`com.repz.app.sync.refresh`) re-submitted at the start of every refresh run; registered at launch, before the app finishes launching |
+| Connectivity regained | covered by the WorkManager constraint | `NWPathMonitor`: an unsatisfied → satisfied transition calls `requestSync()` |
 
-`SyncScheduler` is an interface in `core:domain` (REP-27), called after every local write's transaction commits so the engine never runs before the row is visible. `core:sync` (REP-26) has `AndroidSyncScheduler` (WorkManager) and `IosSyncScheduler` (BGTaskScheduler), both calling the same `SyncEngine`; until that binding lands, `core:data`'s `NoOpSyncScheduler` is a temporary no-op (ADR-0026).
+`SyncScheduler` is an interface in `core:domain` (REP-27), called after every local write's transaction commits so the engine never runs before the row is visible. `core:sync` (REP-26) has `AndroidSyncScheduler` (WorkManager) and `IosSyncScheduler` (the conflated trigger plus `BGTaskScheduler`/`NWPathMonitor`), both calling the same `SyncEngine`; each platform's `PlatformModule` binds its scheduler to both `SyncScheduler` and `BackgroundSyncScheduler` (ADR-0027). `BGTaskScheduler.submitTaskRequest` always fails on the iOS Simulator (logged at `warn`, swallowed); a real scheduled run only checks out on a device (REP-92, follow-up).
 
 ### 5.6 Sync status in the UI
 
-`SyncEngine` exposes `StateFlow<SyncStatus>` (`Idle(lastSyncedAt) | Syncing | Offline(pendingCount) | Error(reason)`). The design system has an animated **sync indicator** component for it.
+`SyncMonitor` (`core:domain`, implemented by `core:sync`'s `SyncStatusTracker`) exposes `status: StateFlow<SyncStatus>` (`Idle(lastSyncedAt) | Syncing | Offline(pendingCount) | Error(reason)`) and `restoreState: Flow<RestoreState>` (`InProgress(RestoreProgress?) | Completed`) as two separate flows, so the status shape doesn't carry restore-only fields (ADR-0027). The design system has an animated **sync indicator** component for the former; REP-31's Restoring screen reads the latter.
 
 ### 5.7 Logout
 
-**Today (REP-87):** the Profile tab's Log out row opens a confirmation dialog (F25 normal variant, no unsynced-changes count yet). On confirm the session ends **locally first** — tokens cleared from Keystore/Keychain, the cached `current_user` row deleted — so the auth gate (ADR-0025) shows Welcome at once, offline included; the server-side refresh-token revoke (`POST /auth/logout`) is a fire-and-forget best effort on the app-lifetime scope (ADR-0011 amendment). This is everything the local DB holds today, so there is nothing else to clear.
+**Today (REP-87, REP-26):** the Profile tab's Log out row opens a confirmation dialog (F25 normal variant, no unsynced-changes count yet). On confirm the session ends **locally first** — tokens cleared from Keystore/Keychain, the cached `current_user` row deleted — so the auth gate (ADR-0025) shows Welcome at once, offline included; the server-side refresh-token revoke (`POST /auth/logout`) is a fire-and-forget best effort on the app-lifetime scope (ADR-0011 amendment). `SyncCoordinator` reacts to the same session change: it cancels every scheduled run (`BackgroundSyncScheduler.cancelAll()`) and stops any sync in flight (`SyncEngine.stop()`, which waits for the current transactional unit of work to finish, leaving the database consistent). **Nothing in the local database is wiped yet**: user A's rows, outbox and `sync_meta` survive logout, so a different user B logging in on the same device pushes A's pending rows (rejected as conflicts) and restores from A's cursor. Multi-account use on one device is unsupported until REP-45 ships; only dev devices run this build today (ADR-0023).
 
-**Deferred (REP-45, needs REP-26/27):** once the sync engine and the first synced writers exist, logout must **wipe the rest of the local database** (data belongs to a user) sparing the exercise catalog snapshot, and the F25 **unsynced** variant warns first when the outbox isn't empty: *"N changes haven't been synced yet."*
+**Deferred (REP-45):** logout must **wipe the rest of the local database** (data belongs to a user) sparing the exercise catalog snapshot, and the F25 **unsynced** variant warns first when the outbox isn't empty: *"N changes haven't been synced yet."* The wipe must call `SyncEngine.stop()` through a domain-facing seam before deleting rows, then reset `sync_meta`.
 
 ---
 
@@ -347,9 +350,9 @@ class HistoryViewModel(
 - A dependency that only needs a sensible default, such as a tagged Kermit `Logger`, is a constructor parameter with a default value (`logger: Logger = Logger.withTag(...)`): with the compiler plugin's default `skipDefaultValues = true`, a non-null, unqualified parameter with a default isn't injected, so the class stays a plain class-level definition (e.g. `SessionManager`, `OfflineFirstAuthRepository`) instead of needing a provider just for the tag.
 - **Reading a binding.** A `*Screen` gets its `XViewModel` with `koinViewModel()`; nothing else in `feature:x:impl` may call it (Konsist N4). A plain, app-scoped value that isn't a screen's `ViewModel` — e.g. `app:shared`'s `AuthGate` (ADR-0025) — is read with `koinInject()` instead, since it has no `*Screen` to call `koinViewModel()` from and no `XUiState`/`XIntent`/`XEffect` shape (Konsist N1).
 - Shared `core:domain` use cases and `core:common` platform primitives (`Clock`, `IdGenerator`, dispatchers) are provided from `app:shared`, not from `core:domain`/`core:common` themselves (which stay Koin-free, reason 4 above): a `DomainModule` for the former (REP-27: `RecalculatePersonalRecordsUseCase`, `RecalculateAllPersonalRecordsUseCase`, `SaveFinishedWorkoutUseCase`, `DeleteWorkoutUseCase`, `UndoWorkoutDeletionUseCase`), a `CommonModule` for the latter (REP-23: `Clock`, `IdGenerator` = `UuidV7IdGenerator`, `AppDispatchers`). Features provide only their own feature-local use cases. **Each definition has exactly one owner** (Konsist rule D5): a class-level definition's owner key is its own name plus every type it auto-binds to (or its explicit `binds` list), so an annotated class and a leftover provider for the same interface still collide — Koin itself resolves a duplicate last-wins at runtime without reporting it (ADR-0008's negative proof N3).
-- Platform-specific bindings (WorkManager, Keychain, Room builder, the preferences `DataStore`) are provided through `expect`/`actual` classes in the module's platform source sets: `PlatformModule` lists `SecureStringStorage`, `RepzDatabase` and, since REP-27, `UserPreferencesDataSource` (`UserPreferencesDataSource(repzPreferencesDataStore(...))`, `core:datastore`).
-- `app:shared` is the only entry point: `@KoinApplication(modules = [AppModule::class, ...]) object RepzApp`, started via `startRepzKoin()` (wraps `startKoin<RepzApp>()`). New `@Module` classes are added to `RepzApp`'s explicit `modules` list, never auto-discovered (no `@Configuration`). Android calls `startRepzKoin` from `Application`, iOS from the SwiftUI `App` init (REP-11).
-- **The full graph is verified at compile time** (missing bindings, cycles, qualifier clashes) by `app:shared`'s per-platform main and test compile tasks — not its common-metadata compile — so a broken graph does not compile and no runtime `verify()` test is needed. Leaf modules without an entry point get no compile-time diagnostics. Those per-platform tasks cache normally (UP-TO-DATE on an unchanged rebuild). This also auto-enables `strictSafety`, which keeps `app:shared`'s common-metadata compile task from ever reporting up-to-date; that task itself runs no graph check (verified in REP-7).
+- Platform-specific bindings (WorkManager, Keychain, Room builder, the preferences `DataStore`) are provided through `expect`/`actual` classes in the module's platform source sets: `PlatformModule` lists `SecureStringStorage`, `RepzDatabase`, `UserPreferencesDataSource` (`UserPreferencesDataSource(repzPreferencesDataStore(...))`, `core:datastore`, REP-27) and, since REP-26, `AndroidSyncScheduler`/`IosSyncScheduler`, each bound with `@Single(binds = [SyncScheduler::class, BackgroundSyncScheduler::class])` so the platform's one scheduler instance answers both the domain-facing and `core:sync`-facing interfaces.
+- `app:shared` is the only entry point: `@KoinApplication(modules = [AppModule::class, ..., SyncModule::class]) object RepzApp`, started via `startRepzKoin()` (wraps `startKoin<RepzApp>()`). New `@Module` classes are added to `RepzApp`'s explicit `modules` list, never auto-discovered (no `@Configuration`). Android calls `startRepzKoin` from `Application`, iOS from the SwiftUI `App` init (REP-11); both then call `startRepzSync(koinApplication)` (`app:shared`, REP-26) to start `SyncCoordinator`, never from `startRepzKoin` itself, so Koin graph tests stay free of real background work.
+- **The full graph is verified at compile time** (missing bindings, cycles, qualifier clashes) by `app:shared`'s per-platform main and test compile tasks — not its common-metadata compile — so a broken graph does not compile and no runtime `verify()` test is needed. Leaf modules without an entry point get no compile-time diagnostics. Those per-platform tasks cache normally (UP-TO-DATE on an unchanged rebuild). This also auto-enables `strictSafety`, which keeps `app:shared`'s common-metadata compile task from ever reporting up-to-date; that task itself runs no graph check (verified in REP-7). A real example (REP-26, ADR-0027): wiring `core:sync`'s `PersonalRecordsRefresher` adapter closed a genuine cycle back through a repository's `SyncScheduler` dependency into iOS's own scheduler provider; the compiler plugin caught it (`KOIN-D004`) and the fix is a `Lazy<T>` constructor parameter on the one provider that doesn't need its dependency before the graph finishes building.
 - `core:testing`'s `KoinProbeDependency`/`KoinProbeContract`/`KoinProbeProvidedDependency` are a permanent cross-module regression probe, not a throwaway spike: `app:shared`'s `KoinMultiModuleGraphTest` resolves all three from a different Gradle module on every target, so a future regression in cross-module scanning or auto-binding fails this test before it fails anything else.
 
 ---

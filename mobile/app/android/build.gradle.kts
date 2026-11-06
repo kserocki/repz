@@ -24,6 +24,8 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.koin.android)
+    // RepzApplication implements Configuration.Provider for the Koin-built SyncWorkerFactory.
+    implementation(libs.androidx.work.runtime.ktx)
 }
 
 registerGenerateAndroidAppNameResources()

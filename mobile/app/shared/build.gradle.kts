@@ -47,6 +47,10 @@ kotlin {
             implementation(libs.koin.core.viewmodel)
             implementation(libs.compose.material3)
         }
+        androidMain.dependencies {
+            // RepzWorkManagerConfiguration.kt: androidx.work.Configuration.
+            implementation(libs.androidx.work.runtime.ktx)
+        }
         commonTest.dependencies {
             implementation(projects.core.testing)
             implementation(libs.kotlinx.coroutines.test)

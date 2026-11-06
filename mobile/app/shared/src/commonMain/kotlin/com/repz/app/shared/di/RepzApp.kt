@@ -2,6 +2,7 @@ package com.repz.app.shared.di
 
 import com.repz.app.core.data.DataModule
 import com.repz.app.core.network.NetworkModule
+import com.repz.app.core.sync.SyncModule
 import com.repz.app.feature.auth.impl.di.AuthModule
 import com.repz.app.feature.settings.impl.di.SettingsModule
 import org.koin.core.KoinApplication
@@ -16,7 +17,7 @@ import org.koin.plugin.module.dsl.startKoin
 @org.koin.core.annotation.KoinApplication(
     modules = [
         AppModule::class, AuthModule::class, CommonModule::class, DataModule::class, DomainModule::class,
-        NetworkModule::class, PlatformModule::class, SettingsModule::class,
+        NetworkModule::class, PlatformModule::class, SettingsModule::class, SyncModule::class,
     ],
 )
 object RepzApp
