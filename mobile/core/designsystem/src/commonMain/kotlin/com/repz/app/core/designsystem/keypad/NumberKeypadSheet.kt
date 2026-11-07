@@ -20,6 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -113,9 +114,101 @@ private fun <T> rememberLatestNonNull(value: T?): T? {
     return holder.value
 }
 
+/** A new value means a different field is now being edited: [NumberKeypadSheetStateful] resets its
+ * buffer whenever this changes, instead of recreating the buffer's own state object (review-1
+ * round-2, Bug B). Internal (not private) so [retargetKeyOf] is directly unit-testable. */
+internal fun retargetKeyOf(request: NumberKeypadRequest): String = "${request.targetKey}\u0000${request.field.mode.name}"
+
+/** Everything [NumberKeypadSheetStateful] needs from its buffer/dispatch machinery, handed back as
+ * plain values so that composable's own body stays a short wiring assembly. */
+private class KeypadDispatchState(
+    val buffer: KeypadBuffer,
+    val showLimitError: Boolean,
+    val dispatch: (KeypadInput) -> Boolean,
+)
+
 /**
- * Owns the sheet's only state (the edit buffer and the limit-error flag, both `rememberSaveable`
- * keyed by target+mode) and all haptics; delegates layout to the stateless
+ * The buffer and [KeypadDispatchState.dispatch] both keep one stable identity for the lifetime of
+ * the call site (review-1 round-2, Bug B): the previous design recreated the buffer's
+ * `MutableState` itself via `rememberSaveable(targetKey, mode)`, so retargeting could leave any
+ * button whose click handler a skipped recomposition hadn't refreshed yet bound to the discarded,
+ * orphaned state object — the display (fed `buffer` as a plain parameter every recomposition)
+ * showed the new target correctly, while a stale button kept mutating the old one silently.
+ * Retargeting now resets the *value* of an ever-persistent buffer instead, and `dispatch` is
+ * `remember`ed once and reads [request]/[onValueChange] through [rememberUpdatedState], so a click
+ * handler can never go stale: however old its captured `dispatch` reference, it always reads the
+ * one true buffer and the latest callbacks.
+ */
+@Composable
+private fun rememberKeypadDispatchState(
+    request: NumberKeypadRequest,
+    onValueChange: (FixedDecimal?) -> Unit,
+): KeypadDispatchState {
+    val haptics = RepzHaptics.current
+    val currentRequest = rememberUpdatedState(request)
+    val currentOnValueChange = rememberUpdatedState(onValueChange)
+
+    var buffer by rememberSaveable(stateSaver = KeypadBufferSaver) {
+        mutableStateOf(KeypadRules.bufferFor(request.field.value))
+    }
+    var showLimitError by rememberSaveable { mutableStateOf(false) }
+    var retargetKey by rememberSaveable { mutableStateOf(retargetKeyOf(request)) }
+
+    val currentRetargetKey = retargetKeyOf(request)
+    if (currentRetargetKey != retargetKey) {
+        retargetKey = currentRetargetKey
+        buffer = KeypadRules.bufferFor(request.field.value)
+        showLimitError = false
+    }
+
+    // Returns whether the input was accepted (`false` on a refusal), so the ± long-press repeat
+    // (KeypadKey.kt) knows to stop instead of hammering Reject. Remembered once (no keys): its own
+    // reference never changes, so no downstream skip can ever leave a button bound to a stale copy.
+    val dispatch: (KeypadInput) -> Boolean =
+        remember {
+            { input ->
+                val field = currentRequest.value.field
+                val previousValue = KeypadRules.valueOf(buffer)
+                val edit = KeypadRules.apply(buffer, input, field)
+                val changed = edit.buffer != buffer
+                buffer = edit.buffer
+                when (edit.rejection) {
+                    // Only an out-of-range refusal shows the limit message (review-1 F7, U5); a
+                    // malformed keystroke (an extra fraction digit, a second separator, Backspace on
+                    // empty) still rejects and fires the same haptic, but was never out of range.
+                    KeypadRejection.OutOfRange -> {
+                        haptics.reject()
+                        showLimitError = true
+                        false
+                    }
+
+                    KeypadRejection.Format -> {
+                        haptics.reject()
+                        false
+                    }
+
+                    null -> {
+                        if (changed) {
+                            haptics.tick()
+                            showLimitError = false
+                            val newValue = KeypadRules.valueOf(buffer)
+                            if (newValue != previousValue) currentOnValueChange.value(newValue)
+                            true
+                        } else {
+                            // Ignored (e.g. a hardware digit in RPE mode, plan §3.4): no haptic, no change.
+                            true
+                        }
+                    }
+                }
+            }
+        }
+
+    return KeypadDispatchState(buffer, showLimitError, dispatch)
+}
+
+/**
+ * Owns the sheet's only state (the edit buffer and the limit-error flag, built by
+ * [rememberKeypadDispatchState]) and all haptics; delegates layout to the stateless
  * [NumberKeypadSheetStateless] so that composable (and so previews) can force any buffer/error
  * combination without touching this frozen public entry point (plan T6; Atlas 2026-11-06).
  */
@@ -129,55 +222,13 @@ private fun NumberKeypadSheetStateful(
     onDismiss: () -> Unit,
 ) {
     val haptics = RepzHaptics.current
-
-    var buffer by
-        rememberSaveable(request.targetKey, request.field.mode, stateSaver = KeypadBufferSaver) {
-            mutableStateOf(KeypadRules.bufferFor(request.field.value))
-        }
-    var showLimitError by rememberSaveable(request.targetKey, request.field.mode) { mutableStateOf(false) }
-
-    // Returns whether the input was accepted (`false` on a refusal), so the ± long-press repeat
-    // (KeypadKey.kt) knows to stop instead of hammering Reject.
-    fun dispatch(input: KeypadInput): Boolean {
-        val previousValue = KeypadRules.valueOf(buffer)
-        val edit = KeypadRules.apply(buffer, input, request.field)
-        val changed = edit.buffer != buffer
-        buffer = edit.buffer
-        return when (edit.rejection) {
-            // Only an out-of-range refusal shows the limit message (review-1 F7, U5); a malformed
-            // keystroke (an extra fraction digit, a second separator, Backspace on empty) still
-            // rejects and fires the same haptic, but the value was never actually out of range.
-            KeypadRejection.OutOfRange -> {
-                haptics.reject()
-                showLimitError = true
-                false
-            }
-
-            KeypadRejection.Format -> {
-                haptics.reject()
-                false
-            }
-
-            null -> {
-                if (changed) {
-                    haptics.tick()
-                    showLimitError = false
-                    val newValue = KeypadRules.valueOf(buffer)
-                    if (newValue != previousValue) onValueChange(newValue)
-                    true
-                } else {
-                    // Ignored (e.g. a hardware digit while in RPE mode, plan §3.4): no haptic, no change.
-                    true
-                }
-            }
-        }
-    }
+    val dispatchState = rememberKeypadDispatchState(request, onValueChange)
 
     NumberKeypadSheetStateless(
         request = request,
-        buffer = buffer,
-        showLimitError = showLimitError,
-        onInput = ::dispatch,
+        buffer = dispatchState.buffer,
+        showLimitError = dispatchState.showLimitError,
+        onInput = dispatchState.dispatch,
         onModeSelect = { mode ->
             haptics.tick()
             onModeSelect(mode)
