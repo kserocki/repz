@@ -3,10 +3,14 @@ package com.repz.app.core.designsystem.component
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.repz.app.core.designsystem.theme.RepzSpacing
 import com.repz.app.core.designsystem.theme.RepzTheme
 
@@ -45,4 +49,45 @@ private fun RepzHeroStartButtonLightPreview() {
 @Composable
 private fun RepzHeroStartButtonDarkPreview() {
     RepzTheme(darkTheme = true) { RepzHeroStartButtonShowcase() }
+}
+
+// Required change 1 (Coach review-1): the real bug only showed up under an unbounded-height parent
+// (the catalog's own verticalScroll), where heightIn(min = HeroHeight) + fillMaxHeight() used to be
+// a no-op. This preview reproduces that exact parent shape so a regression here renders visibly.
+@Composable
+private fun RepzHeroStartSplitButtonInScrollingColumnShowcase() {
+    val startWorkoutLabel = "Start workout"
+    val wrappingLabel = "Start a very long workout name that wraps onto two lines"
+    val fromTemplateDescription = "Start from template"
+    Column(
+        modifier = Modifier.height(240.dp).verticalScroll(rememberScrollState()).padding(RepzSpacing.lg),
+        verticalArrangement = Arrangement.spacedBy(RepzSpacing.lg),
+    ) {
+        RepzHeroStartSplitButton(
+            text = startWorkoutLabel,
+            onClick = {},
+            secondaryContentDescription = fromTemplateDescription,
+            onSecondaryClick = {},
+            modifier = Modifier.fillMaxWidth(),
+        )
+        RepzHeroStartSplitButton(
+            text = wrappingLabel,
+            onClick = {},
+            secondaryContentDescription = fromTemplateDescription,
+            onSecondaryClick = {},
+            modifier = Modifier.fillMaxWidth(),
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun RepzHeroStartSplitButtonInScrollingColumnLightPreview() {
+    RepzTheme(darkTheme = false) { RepzHeroStartSplitButtonInScrollingColumnShowcase() }
+}
+
+@Preview
+@Composable
+private fun RepzHeroStartSplitButtonInScrollingColumnDarkPreview() {
+    RepzTheme(darkTheme = true) { RepzHeroStartSplitButtonInScrollingColumnShowcase() }
 }

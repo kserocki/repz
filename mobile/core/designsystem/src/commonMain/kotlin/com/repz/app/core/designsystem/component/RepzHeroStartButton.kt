@@ -7,14 +7,17 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -72,10 +75,12 @@ private const val DISC_BACKGROUND_ALPHA = 0.12f
  * row with the disc via `weight(1f)`, so it reads as centred when the button is wider than its
  * natural content and still wraps, never truncates, when it isn't.
  *
- * MOT-22/MOT-03, press stage only: the container morphs from the rest pill to
- * [HeroPressedRadius] (22 dp) and the disc's circle morphs to a [HeroDiscPressedRadius] (16 dp)
- * squircle, both scaling to 0.96 on [RepzMotion.springs.pressMorph]. Reduced motion: state layer
- * only. No haptic here — the caller fires Confirm only when the workout actually starts.
+ * MOT-22/MOT-03, press stage only: the container morphs from the rest pill — half of its own
+ * *measured* height via [PressMorphCornerSize], so it stays a true pill even when [text] wraps
+ * past [HeroHeight] — to [HeroPressedRadius] (22 dp), and the disc's circle morphs to a
+ * [HeroDiscPressedRadius] (16 dp) squircle, both scaling to 0.96 on [RepzMotion.springs.pressMorph].
+ * Reduced motion: state layer only. No haptic here — the caller fires Confirm only when the
+ * workout actually starts.
  *
  * TODO(REP-48): the container-transform-into-the-live-screen stage of MOT-03 (icon swap to a
  * loading dumbbell, container growing into the live workout screen) is not built here.
@@ -91,9 +96,9 @@ fun RepzHeroStartButton(
     val isPressed by interactionSource.collectIsPressedAsState()
     val morphed = isPressed && !LocalReducedMotion.current
 
-    val containerRadius by
-        animateDpAsState(
-            targetValue = if (morphed) HeroPressedRadius else HeroHeight / 2,
+    val pressFraction by
+        animateFloatAsState(
+            targetValue = if (morphed) 1f else 0f,
             animationSpec = RepzMotion.springs.pressMorph(),
         )
     val discRadius by
@@ -110,7 +115,7 @@ fun RepzHeroStartButton(
     Surface(
         onClick = onClick,
         enabled = enabled,
-        shape = RoundedCornerShape(containerRadius),
+        shape = RoundedCornerShape(PressMorphCornerSize(HeroPressedRadius, pressFraction)),
         color = heroContainerColor(enabled),
         contentColor = heroContentColor(enabled),
         interactionSource = interactionSource,
@@ -135,6 +140,9 @@ fun RepzHeroStartButton(
  *
  * U2(g): only the pressed segment morphs — its outer corners go full → [HeroPressedRadius] and it
  * scales to 0.96; the [HeroSplitInnerRadius] corners shared between the two segments never move.
+ * Both segments are at least [HeroHeight] tall and share the Row's `IntrinsicSize.Min`-measured
+ * height, so a wrapped label grows both segments together instead of leaving one stunted (required
+ * change 1, same fix pattern as [RepzConnectedButtonGroup]/[RepzSplitButton]).
  */
 @Composable
 fun RepzHeroStartSplitButton(
@@ -147,10 +155,9 @@ fun RepzHeroStartSplitButton(
 ) {
     val mainInteractionSource = remember { MutableInteractionSource() }
     val secondaryInteractionSource = remember { MutableInteractionSource() }
-    val restOuterRadius = HeroHeight / 2
 
     Row(
-        modifier = modifier.heightIn(min = HeroHeight),
+        modifier = modifier.height(IntrinsicSize.Min),
         horizontalArrangement = Arrangement.spacedBy(HeroSplitSegmentGap),
     ) {
         RepzHeroMainSegment(
@@ -158,16 +165,14 @@ fun RepzHeroStartSplitButton(
             onClick = onClick,
             enabled = enabled,
             interactionSource = mainInteractionSource,
-            restOuterRadius = restOuterRadius,
-            modifier = Modifier.weight(1f).fillMaxHeight(),
+            modifier = Modifier.weight(1f).fillMaxHeight().heightIn(min = HeroHeight),
         )
         RepzHeroSecondarySegment(
             secondaryContentDescription = secondaryContentDescription,
             onClick = onSecondaryClick,
             enabled = enabled,
             interactionSource = secondaryInteractionSource,
-            restOuterRadius = restOuterRadius,
-            modifier = Modifier.width(HeroSplitTrailingWidth).fillMaxHeight(),
+            modifier = Modifier.width(HeroSplitTrailingWidth).fillMaxHeight().heightIn(min = HeroHeight),
         )
     }
 }
@@ -178,15 +183,14 @@ private fun RepzHeroMainSegment(
     onClick: () -> Unit,
     enabled: Boolean,
     interactionSource: MutableInteractionSource,
-    restOuterRadius: Dp,
     modifier: Modifier = Modifier,
 ) {
     val isPressed by interactionSource.collectIsPressedAsState()
     val morphed = isPressed && !LocalReducedMotion.current
 
-    val outerRadius by
-        animateDpAsState(
-            targetValue = if (morphed) HeroPressedRadius else restOuterRadius,
+    val pressFraction by
+        animateFloatAsState(
+            targetValue = if (morphed) 1f else 0f,
             animationSpec = RepzMotion.springs.pressMorph(),
         )
     val discRadius by
@@ -201,7 +205,12 @@ private fun RepzHeroMainSegment(
         )
 
     val corners =
-        connectedGroupSegmentCorners(isFirst = true, isLast = false, outerRadius = outerRadius, innerRadius = HeroSplitInnerRadius)
+        connectedGroupSegmentCorners(
+            isFirst = true,
+            isLast = false,
+            outerRadius = PressMorphCornerSize(HeroPressedRadius, pressFraction),
+            innerRadius = CornerSize(HeroSplitInnerRadius),
+        )
     val shape = RoundedCornerShape(corners.topStart, corners.topEnd, corners.bottomEnd, corners.bottomStart)
 
     Surface(
@@ -230,15 +239,14 @@ private fun RepzHeroSecondarySegment(
     onClick: () -> Unit,
     enabled: Boolean,
     interactionSource: MutableInteractionSource,
-    restOuterRadius: Dp,
     modifier: Modifier = Modifier,
 ) {
     val isPressed by interactionSource.collectIsPressedAsState()
     val morphed = isPressed && !LocalReducedMotion.current
 
-    val outerRadius by
-        animateDpAsState(
-            targetValue = if (morphed) HeroPressedRadius else restOuterRadius,
+    val pressFraction by
+        animateFloatAsState(
+            targetValue = if (morphed) 1f else 0f,
             animationSpec = RepzMotion.springs.pressMorph(),
         )
     val scale by
@@ -248,7 +256,12 @@ private fun RepzHeroSecondarySegment(
         )
 
     val corners =
-        connectedGroupSegmentCorners(isFirst = false, isLast = true, outerRadius = outerRadius, innerRadius = HeroSplitInnerRadius)
+        connectedGroupSegmentCorners(
+            isFirst = false,
+            isLast = true,
+            outerRadius = PressMorphCornerSize(HeroPressedRadius, pressFraction),
+            innerRadius = CornerSize(HeroSplitInnerRadius),
+        )
     val shape = RoundedCornerShape(corners.topStart, corners.topEnd, corners.bottomEnd, corners.bottomStart)
 
     Surface(
