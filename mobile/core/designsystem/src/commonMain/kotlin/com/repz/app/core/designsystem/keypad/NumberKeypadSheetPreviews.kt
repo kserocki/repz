@@ -28,6 +28,10 @@ internal fun previewWeightRequest(
     value: FixedDecimal? = SAMPLE_WEIGHT,
     last: FixedDecimal? = SAMPLE_WEIGHT,
     modes: List<KeypadMode> = ALL_MODES,
+    max: FixedDecimal = WEIGHT_MAX,
+    step: FixedDecimal = WEIGHT_STEP,
+    weightUnitLabel: String = "kg",
+    stepOptions: List<FixedDecimal> = WEIGHT_STEP_OPTIONS,
 ): NumberKeypadRequest =
     NumberKeypadRequest(
         targetKey = "preview-weight",
@@ -36,18 +40,18 @@ internal fun previewWeightRequest(
                 mode = KeypadMode.Weight,
                 value = value,
                 min = FixedDecimal.ZERO,
-                max = WEIGHT_MAX,
-                step = WEIGHT_STEP,
+                max = max,
+                step = step,
                 fractionDigits = 2,
                 sameAsLast = last,
-                quickValues = KeypadQuickValues.weightSuggestions(last ?: value, WEIGHT_STEP, FixedDecimal.ZERO, WEIGHT_MAX),
+                quickValues = KeypadQuickValues.weightSuggestions(last ?: value, step, FixedDecimal.ZERO, max),
                 choices = emptyList(),
             ),
         modes = modes,
-        weightUnitLabel = "kg",
+        weightUnitLabel = weightUnitLabel,
         contextLabel = PREVIEW_CONTEXT_LABEL,
         nextAction = KeypadNextAction.Reps,
-        stepOptions = WEIGHT_STEP_OPTIONS,
+        stepOptions = stepOptions,
     )
 
 internal fun previewRepsRequest(

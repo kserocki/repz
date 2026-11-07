@@ -23,3 +23,18 @@ private fun RpePlDarkPreview() {
 private fun ReducedMotionPreview() {
     KeypadPreview(darkTheme = false, request = previewWeightRequest(), reducedMotion = true)
 }
+
+/** Q1 (review-1): at 200% PL font the Reps segment's full label ("Powtórzenia") no longer fits the
+ * segment on one line, so it falls back to the short label ("Powt."); the accessible name stays
+ * the full word. */
+@Preview(locale = "pl", fontScale = 2f)
+@Composable
+private fun ModeShortLabelLightPreview() {
+    KeypadPreview(darkTheme = false, request = previewWeightRequest())
+}
+
+@Preview(locale = "pl", fontScale = 2f)
+@Composable
+private fun ModeShortLabelDarkPreview() {
+    KeypadPreview(darkTheme = true, request = previewWeightRequest())
+}
