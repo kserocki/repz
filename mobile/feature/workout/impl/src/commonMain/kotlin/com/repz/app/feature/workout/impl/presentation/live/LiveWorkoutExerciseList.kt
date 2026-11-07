@@ -68,6 +68,11 @@ internal fun LiveWorkoutExerciseList(
         contentPadding = contentPadding,
         verticalArrangement = Arrangement.spacedBy(RepzSpacing.md),
     ) {
+        // Unconditional, keyed one-to-one mapping: every exercise gets its own "card_$index" tag
+        // the moment it's composed (see LiveWorkoutExerciseCard). A card that's only partially
+        // scrolled into view can still report clipped/missing accessibility bounds on iOS — that's
+        // Compose Multiplatform's iOS semantics bridge intersecting a LazyColumn item with the
+        // scroll viewport, not a gap here; a UI test on such a card should scroll it into view first.
         itemsIndexed(items = exercises, key = { _, exercise -> exercise.id.value }) { index, exercise ->
             LiveWorkoutExerciseCard(
                 index = index,
