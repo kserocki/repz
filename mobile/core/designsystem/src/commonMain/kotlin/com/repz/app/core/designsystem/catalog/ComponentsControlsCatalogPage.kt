@@ -8,7 +8,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -16,8 +15,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import com.repz.app.core.designsystem.component.RepzSlider
 import com.repz.app.core.designsystem.component.RepzSwitch
 import com.repz.app.core.designsystem.component.RepzTextField
@@ -42,16 +39,15 @@ private fun formatMinutesSeconds(totalSeconds: Float): String {
 }
 
 /** `components-controls` (DESIGN_SYSTEM §9 filled `RepzTextField`/`RepzSwitch`/`RepzSlider`): the
- * filled field focused and in error, the switch on/off/disabled, the slider from 0 to 5:00 in 15 s
- * steps, and the catalog haptic log proving each step crossed fires Tick (MOTION.md §3). */
+ * filled field (unfocused, since an auto-focus previously raised the soft keyboard and hid the
+ * slider/haptic log below it, round-1 review required change 9) and in error, the switch
+ * on/off/disabled, the slider from 0 to 5:00 in 15 s steps, and the catalog haptic log proving each
+ * step crossed fires Tick (MOTION.md §3). */
 @Composable
 internal fun ComponentsControlsCatalogPage() {
     val platformPerformer = rememberPlatformHapticPerformer()
     val log = remember(platformPerformer) { CatalogHapticLog(platformPerformer) }
     val loggedHaptics = remember(log) { RepzHaptics(log, enabled = true) }
-
-    val emailFocusRequester = remember { FocusRequester() }
-    LaunchedEffect(Unit) { emailFocusRequester.requestFocus() }
 
     var dynamicColorEnabled by remember { mutableStateOf(true) }
     var hapticsEnabled by remember { mutableStateOf(false) }
@@ -65,7 +61,7 @@ internal fun ComponentsControlsCatalogPage() {
                 onValueChange = {},
                 label = "Email",
                 style = RepzTextFieldStyle.Filled,
-                modifier = Modifier.fillMaxWidth().focusRequester(emailFocusRequester),
+                modifier = Modifier.fillMaxWidth(),
             )
             RepzTextField(
                 value = "not-an-email",
@@ -120,10 +116,13 @@ private fun SwitchRow(
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.spacedBy(RepzSpacing.sm),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(label, style = MaterialTheme.typography.bodyLarge)
+        // Required change 9 (Coach review-1, Bug 3): without weight(1f) the label took the Row's
+        // whole width, pushing the switch out past the screen edge where a long or 200 % label
+        // overlapped it instead of wrapping.
+        Text(label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
         RepzSwitch(checked = checked, onCheckedChange = onCheckedChange, enabled = enabled)
     }
 }
