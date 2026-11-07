@@ -1,6 +1,5 @@
 package com.repz.app.core.designsystem.component
 
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -9,11 +8,13 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -49,12 +50,14 @@ private const val DISABLED_CONTENT_ALPHA = 0.38f
 private const val PRESSED_SEGMENT_SCALE = 0.96f
 
 /** One option's 4 corner radii (top-start, top-end, bottom-end, bottom-start), as a plain value
- * class so the first/last/middle → outer/inner mapping is testable without a composition. */
-internal data class RepzSegmentCornerRadii(
-    val topStart: Dp,
-    val topEnd: Dp,
-    val bottomEnd: Dp,
-    val bottomStart: Dp,
+ * class so the first/last/middle → outer/inner mapping is testable without a composition. Generic
+ * so the same mapping serves both a precomputed [Dp] (tests) and a measured-size-aware [CornerSize]
+ * (actual shapes, required change 4). */
+internal data class RepzSegmentCornerRadii<T>(
+    val topStart: T,
+    val topEnd: T,
+    val bottomEnd: T,
+    val bottomStart: T,
 )
 
 /**
@@ -62,12 +65,12 @@ internal data class RepzSegmentCornerRadii(
  * neighbour on that side) ever show [outerRadius]; every corner shared with a neighbour stays at
  * [innerRadius], pressed or not. A single-option group (`isFirst && isLast`) is outer on both sides.
  */
-internal fun connectedGroupSegmentCorners(
+internal fun <T> connectedGroupSegmentCorners(
     isFirst: Boolean,
     isLast: Boolean,
-    outerRadius: Dp,
-    innerRadius: Dp = InnerCornerRadius,
-): RepzSegmentCornerRadii {
+    outerRadius: T,
+    innerRadius: T,
+): RepzSegmentCornerRadii<T> {
     val startRadius = if (isFirst) outerRadius else innerRadius
     val endRadius = if (isLast) outerRadius else innerRadius
     return RepzSegmentCornerRadii(topStart = startRadius, topEnd = endRadius, bottomEnd = endRadius, bottomStart = startRadius)
@@ -83,6 +86,11 @@ internal fun connectedGroupSegmentCorners(
  *
  * MOT-22: only the pressed option's outer corners morph to [PressedOuterCornerRadius] and it scales
  * to 0.96; its inner (shared) corners never move. Reduced motion: state layer only.
+ *
+ * The row measures its height from `IntrinsicSize.Min` and each option declares its own
+ * `heightIn(min = GroupHeight)`, so every option shares the tallest option's height even under an
+ * unbounded-height parent (a scrolling column/`LazyColumn`, required change 2) — a plain
+ * `heightIn(min = GroupHeight)` on the row alone leaves `fillMaxHeight()` a no-op there.
  */
 @Composable
 fun RepzConnectedButtonGroup(
@@ -95,7 +103,7 @@ fun RepzConnectedButtonGroup(
     val interactionSources = remember(options.size) { List(options.size) { MutableInteractionSource() } }
 
     Row(
-        modifier = modifier.heightIn(min = GroupHeight).width(IntrinsicSize.Min).selectableGroup(),
+        modifier = modifier.height(IntrinsicSize.Min).width(IntrinsicSize.Min).selectableGroup(),
         horizontalArrangement = Arrangement.spacedBy(GroupGap),
     ) {
         options.forEachIndexed { index, option ->
@@ -106,7 +114,7 @@ fun RepzConnectedButtonGroup(
                 enabled = enabled,
                 interactionSource = interactionSources[index],
                 onClick = { onSelectedIndexChange(index) },
-                modifier = Modifier.weight(1f).fillMaxHeight(),
+                modifier = Modifier.weight(1f).fillMaxHeight().heightIn(min = GroupHeight),
             )
         }
     }
@@ -131,11 +139,10 @@ private fun RepzConnectedButtonGroupOption(
 ) {
     val isPressed by interactionSource.collectIsPressedAsState()
     val morphed = isPressed && !LocalReducedMotion.current
-    val outerRestRadius = GroupHeight / 2
 
-    val outerRadius by
-        animateDpAsState(
-            targetValue = if (morphed) PressedOuterCornerRadius else outerRestRadius,
+    val pressFraction by
+        animateFloatAsState(
+            targetValue = if (morphed) 1f else 0f,
             animationSpec = RepzMotion.springs.pressMorph(),
         )
     val scale by
@@ -144,7 +151,13 @@ private fun RepzConnectedButtonGroupOption(
             animationSpec = RepzMotion.springs.pressMorph(),
         )
 
-    val corners = connectedGroupSegmentCorners(position.isFirst, position.isLast, outerRadius)
+    val corners =
+        connectedGroupSegmentCorners(
+            isFirst = position.isFirst,
+            isLast = position.isLast,
+            outerRadius = PressMorphCornerSize(PressedOuterCornerRadius, pressFraction),
+            innerRadius = CornerSize(InnerCornerRadius),
+        )
     val shape = RoundedCornerShape(corners.topStart, corners.topEnd, corners.bottomEnd, corners.bottomStart)
     val colors = connectedGroupOptionColors(enabled, selected)
 
