@@ -8,6 +8,7 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -48,15 +49,20 @@ class RepzSnackbarHostState internal constructor(
     /**
      * Board 06/DESIGN_SYSTEM §9: shows [message] with an [undoLabel] action. M3 only offers 4 s/
      * 10 s/indefinite durations, none of which is the 6 s DESIGN_SYSTEM §9 specifies (T4), so this
-     * shows with [SnackbarDuration.Indefinite] and lets [RepzSnackbarHost] itself auto-dismiss it
-     * after the accessibility-adjusted timeout ([undoSnackbarTimeoutMillis]). Returns `true` only if
-     * [undoLabel] was tapped before that.
+     * shows with [RepzUndoSnackbarVisuals] ([SnackbarDuration.Indefinite]) and lets
+     * [RepzSnackbarHost] itself auto-dismiss it after the accessibility-adjusted timeout
+     * ([undoSnackbarTimeoutMillis]). Returns `true` only if [undoLabel] was tapped before that.
+     *
+     * [showWithAction] also shows `Indefinite` whenever M3's own default applies (any action label),
+     * so [RepzSnackbarHost] tells the two apart by the visuals' type (`is RepzUndoSnackbarVisuals`),
+     * not by [SnackbarDuration] — otherwise every `showWithAction` caller (e.g. the auth screens'
+     * Retry snackbar) would also auto-dismiss after 6 s, which M3's own behaviour never does.
      */
     suspend fun showUndo(
         message: String,
         undoLabel: String,
     ): Boolean {
-        val result = delegate.showSnackbar(message = message, actionLabel = undoLabel, duration = SnackbarDuration.Indefinite)
+        val result = delegate.showSnackbar(RepzUndoSnackbarVisuals(message = message, actionLabel = undoLabel))
         return result == SnackbarResult.ActionPerformed
     }
 
@@ -89,12 +95,28 @@ internal fun undoSnackbarTimeoutMillis(recommendedTimeoutMillis: (Long) -> Long)
     recommendedTimeoutMillis(UNDO_SNACKBAR_BASE_TIMEOUT_MILLIS)
 
 /**
+ * Marks a snackbar as [RepzSnackbarHostState.showUndo]'s own kind, so [RepzSnackbarHost] knows which
+ * [SnackbarDuration.Indefinite] snackbars to auto-dismiss on a timeout. Duration alone can't tell the
+ * two apart: M3's own `showSnackbar(message, actionLabel)` (the path [RepzSnackbarHostState
+ * .showWithAction] uses) already defaults to `Indefinite` whenever an action label is set, without
+ * [RepzSnackbarHost] auto-dismissing it.
+ */
+internal class RepzUndoSnackbarVisuals(
+    override val message: String,
+    override val actionLabel: String,
+) : SnackbarVisuals {
+    override val withDismissAction: Boolean = false
+    override val duration: SnackbarDuration = SnackbarDuration.Indefinite
+}
+
+/**
  * Board 06: 48 dp min height, `shapes.small`, M3's own `inverseSurface`/`inverseOnSurface`, the
  * action in `inversePrimary` at `labelLargeEmphasized` (M3's own action style defaults to the
- * unemphasized `labelLarge`). A [SnackbarDuration.Indefinite] snackbar (only
- * [RepzSnackbarHostState.showUndo] shows one) auto-dismisses itself after
- * [undoSnackbarTimeoutMillis]'s accessibility-adjusted timeout, since M3 never times one out on its
- * own.
+ * unemphasized `labelLarge`). Only a [RepzUndoSnackbarVisuals] snackbar (shown by
+ * [RepzSnackbarHostState.showUndo]) auto-dismisses itself after [undoSnackbarTimeoutMillis]'s
+ * accessibility-adjusted timeout; every other snackbar (including an `Indefinite`
+ * [RepzSnackbarHostState.showWithAction] one) keeps M3's own behaviour, since M3 never times one out
+ * on its own.
  */
 @Composable
 fun RepzSnackbarHost(
@@ -102,7 +124,7 @@ fun RepzSnackbarHost(
     modifier: Modifier = Modifier,
 ) {
     SnackbarHost(hostState = state.delegate, modifier = modifier) { data ->
-        if (data.visuals.duration == SnackbarDuration.Indefinite) {
+        if (data.visuals is RepzUndoSnackbarVisuals) {
             val accessibilityManager = LocalAccessibilityManager.current
             LaunchedEffect(data) {
                 val timeoutMillis =
