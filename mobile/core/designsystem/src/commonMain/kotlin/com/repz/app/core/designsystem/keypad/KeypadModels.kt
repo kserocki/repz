@@ -80,8 +80,17 @@ sealed interface KeypadInput {
     ) : KeypadInput
 }
 
-/** The result of applying one [KeypadInput]: the (possibly unchanged) buffer, and whether it was refused. */
+/**
+ * Why [KeypadRules.apply] refused an input (review-1 F7, U5): [OutOfRange] is the only reason the
+ * limit message replaces the context line; [Format] (an extra fraction digit, a second separator,
+ * Backspace on empty, a reps separator reachable only from a hardware keyboard) just stops the
+ * keystroke and its haptic without implying the value left `min..max`.
+ */
+enum class KeypadRejection { OutOfRange, Format }
+
+/** The result of applying one [KeypadInput]: the (possibly unchanged) buffer, and why it was
+ * refused (`null` = accepted). */
 data class KeypadEdit(
     val buffer: KeypadBuffer,
-    val isRejected: Boolean,
+    val rejection: KeypadRejection?,
 )

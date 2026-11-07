@@ -1,18 +1,19 @@
 package com.repz.app.core.designsystem.keypad
 
 import com.repz.app.core.designsystem.format.FixedDecimal
+import com.repz.app.core.designsystem.format.FixedDecimal.Companion.HUNDREDTHS_PER_UNIT
 import com.repz.app.core.designsystem.format.RepzNumberSymbols
 
-private const val HUNDREDTHS_PER_UNIT = 100L
 private const val LEADING_ZERO = "0"
 
 /**
  * The pure editing rules behind `NumberKeypadSheet` (plan §3.4, no Compose): untouched-replace /
  * touched-append typing, the U5 "refuse past the limit" rule, and ± stepping without snapping
  * (ADR-0022). [apply] never throws; an input that can't be accepted comes back with the buffer
- * unchanged and `isRejected` set — except a key that doesn't apply to the field's mode at all
- * (digits/separator/backspace in RPE mode), which is silently ignored (`isRejected = false`): it
- * can only be reached through a hardware keyboard, since the sheet hides those keys in RPE mode.
+ * unchanged and [KeypadEdit.rejection] set (review-1 F7: [KeypadRejection.OutOfRange] vs
+ * [KeypadRejection.Format]) — except a key that doesn't apply to the field's mode at all
+ * (digits/separator/backspace in RPE mode), which is silently ignored (`rejection = null`): it can
+ * only be reached through a hardware keyboard, since the sheet hides those keys in RPE mode.
  */
 object KeypadRules {
     /** An untouched buffer showing [value] (or empty for `null`), e.g. just opened or retargeted. */
@@ -28,10 +29,10 @@ object KeypadRules {
             is KeypadInput.Digit -> applyDigit(buffer, input.digit, field)
             KeypadInput.DecimalSeparator -> applyDecimalSeparator(buffer, field)
             KeypadInput.Backspace -> applyBackspace(buffer, field)
-            KeypadInput.Clear -> KeypadEdit(KeypadBuffer("", isUntouched = true), isRejected = false)
+            KeypadInput.Clear -> KeypadEdit(KeypadBuffer("", isUntouched = true), rejection = null)
             KeypadInput.Increase -> applyStep(buffer, field, increase = true)
             KeypadInput.Decrease -> applyStep(buffer, field, increase = false)
-            is KeypadInput.Set -> KeypadEdit(bufferFor(input.value), isRejected = false)
+            is KeypadInput.Set -> KeypadEdit(bufferFor(input.value), rejection = null)
         }
 
     /** `"82."` -> 82.00, `""` -> `null`. A missing fraction digit is treated as `0`. */
@@ -59,21 +60,25 @@ object KeypadRules {
         digit: Int,
         field: KeypadField,
     ): KeypadEdit {
-        if (field.mode == KeypadMode.Rpe) return KeypadEdit(buffer, isRejected = false)
+        if (field.mode == KeypadMode.Rpe) return KeypadEdit(buffer, rejection = null)
         val base = if (buffer.isUntouched) "" else buffer.text
         val appended = appendDigit(base, digit, field.fractionDigits)
-        return if (appended == null) KeypadEdit(buffer, isRejected = true) else acceptIfWithinMax(appended, field, buffer)
+        return if (appended == null) {
+            KeypadEdit(buffer, rejection = KeypadRejection.Format)
+        } else {
+            acceptIfWithinMax(appended, field, buffer)
+        }
     }
 
     private fun applyDecimalSeparator(
         buffer: KeypadBuffer,
         field: KeypadField,
     ): KeypadEdit {
-        if (field.mode == KeypadMode.Rpe) return KeypadEdit(buffer, isRejected = false)
+        if (field.mode == KeypadMode.Rpe) return KeypadEdit(buffer, rejection = null)
         val base = if (buffer.isUntouched) "" else buffer.text
         val canType = field.fractionDigits > 0 && !base.contains('.')
         return if (!canType) {
-            KeypadEdit(buffer, isRejected = true)
+            KeypadEdit(buffer, rejection = KeypadRejection.Format)
         } else {
             acceptIfWithinMax(if (base.isEmpty()) "$LEADING_ZERO." else "$base.", field, buffer)
         }
@@ -83,11 +88,11 @@ object KeypadRules {
         buffer: KeypadBuffer,
         field: KeypadField,
     ): KeypadEdit {
-        if (field.mode == KeypadMode.Rpe) return KeypadEdit(buffer, isRejected = false)
+        if (field.mode == KeypadMode.Rpe) return KeypadEdit(buffer, rejection = null)
         return if (buffer.text.isEmpty()) {
-            KeypadEdit(buffer, isRejected = true)
+            KeypadEdit(buffer, rejection = KeypadRejection.Format)
         } else {
-            KeypadEdit(KeypadBuffer(buffer.text.dropLast(1), isUntouched = false), isRejected = false)
+            KeypadEdit(KeypadBuffer(buffer.text.dropLast(1), isUntouched = false), rejection = null)
         }
     }
 
@@ -98,7 +103,11 @@ object KeypadRules {
     ): KeypadEdit {
         val current = valueOf(buffer)
         val stepped = if (increase) stepIncrease(current, field) else stepDecrease(current, field)
-        return if (stepped == null) KeypadEdit(buffer, isRejected = true) else KeypadEdit(bufferFor(stepped), isRejected = false)
+        return if (stepped == null) {
+            KeypadEdit(buffer, rejection = KeypadRejection.OutOfRange)
+        } else {
+            KeypadEdit(bufferFor(stepped), rejection = null)
+        }
     }
 
     /** Clamped to [KeypadField.max]; refused only when [current] is already there. From empty: `min + step` (RPE: `min`). */
@@ -148,5 +157,9 @@ private fun acceptIfWithinMax(
 ): KeypadEdit {
     val candidate = KeypadBuffer(text, isUntouched = false)
     val value = KeypadRules.valueOf(candidate)
-    return if (value != null && value > field.max) KeypadEdit(previous, isRejected = true) else KeypadEdit(candidate, isRejected = false)
+    return if (value != null && value > field.max) {
+        KeypadEdit(previous, rejection = KeypadRejection.OutOfRange)
+    } else {
+        KeypadEdit(candidate, rejection = null)
+    }
 }

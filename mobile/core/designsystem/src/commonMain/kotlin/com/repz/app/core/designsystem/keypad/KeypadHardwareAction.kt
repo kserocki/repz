@@ -1,9 +1,11 @@
 package com.repz.app.core.designsystem.keypad
 
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 
 /** A sheet-level action a hardware key can trigger, as opposed to a [KeypadInput] edit (plan §3.5). */
@@ -64,3 +66,38 @@ internal fun KeyEvent.toKeypadHardwareActionOrNull(): KeypadHardwareAction? {
         else -> null
     }
 }
+
+/**
+ * Routes a hardware key-down to [onInput] (an edit, [KeypadInput]) or to [onNext]/[onDismiss] (a
+ * sheet-level [KeypadHardwareAction]), per plan §3.5 (K11: digits, the decimal separator,
+ * Backspace, Delete → Clear, Enter → Next, Escape → dismiss, DPad Up/Down → ±). Extracted out of
+ * `NumberKeypadSheetStateless` (review-1 F5) so that composable's body stays a plain layout
+ * assembly.
+ */
+internal fun Modifier.keypadHardwareKeys(
+    onInput: (KeypadInput) -> Boolean,
+    onNext: () -> Unit,
+    onDismiss: () -> Unit,
+): Modifier =
+    onPreviewKeyEvent { event ->
+        val input = event.toKeypadInputOrNull()
+        if (input != null) {
+            onInput(input)
+            return@onPreviewKeyEvent true
+        }
+        when (event.toKeypadHardwareActionOrNull()) {
+            KeypadHardwareAction.Next -> {
+                onNext()
+                true
+            }
+
+            KeypadHardwareAction.Dismiss -> {
+                onDismiss()
+                true
+            }
+
+            null -> {
+                false
+            }
+        }
+    }

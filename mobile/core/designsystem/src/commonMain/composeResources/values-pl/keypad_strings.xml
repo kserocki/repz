@@ -3,6 +3,9 @@
     <string name="keypad_mode_weight">Ciężar</string>
     <string name="keypad_mode_reps">Powtórzenia</string>
     <string name="keypad_mode_rpe">RPE</string>
+    <string name="keypad_mode_weight_short">Ciężar</string>
+    <string name="keypad_mode_reps_short">Powt.</string>
+    <string name="keypad_mode_rpe_short">RPE</string>
     <string name="keypad_clear">Wyczyść</string>
     <string name="keypad_delete_digit">Usuń cyfrę</string>
     <string name="keypad_hide">Ukryj klawiaturę</string>

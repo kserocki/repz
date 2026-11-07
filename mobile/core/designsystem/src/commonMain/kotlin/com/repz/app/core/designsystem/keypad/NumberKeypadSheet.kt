@@ -4,20 +4,18 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,31 +29,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.semantics.CustomAccessibilityAction
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.customActions
-import androidx.compose.ui.semantics.selected
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.repz.app.core.designsystem.format.FixedDecimal
-import com.repz.app.core.designsystem.format.RepzNumberSymbols
 import com.repz.app.core.designsystem.format.rememberRepzNumberSymbols
 import com.repz.app.core.designsystem.generated.resources.Res
 import com.repz.app.core.designsystem.generated.resources.keypad_clear
-import com.repz.app.core.designsystem.generated.resources.keypad_context_line
 import com.repz.app.core.designsystem.generated.resources.keypad_decimal_separator
-import com.repz.app.core.designsystem.generated.resources.keypad_decrease_description
-import com.repz.app.core.designsystem.generated.resources.keypad_decrease_label
 import com.repz.app.core.designsystem.generated.resources.keypad_delete_digit
-import com.repz.app.core.designsystem.generated.resources.keypad_empty_value
 import com.repz.app.core.designsystem.generated.resources.keypad_hide
-import com.repz.app.core.designsystem.generated.resources.keypad_increase_description
-import com.repz.app.core.designsystem.generated.resources.keypad_increase_label
-import com.repz.app.core.designsystem.generated.resources.keypad_mode_reps
-import com.repz.app.core.designsystem.generated.resources.keypad_mode_rpe
-import com.repz.app.core.designsystem.generated.resources.keypad_mode_weight
 import com.repz.app.core.designsystem.generated.resources.keypad_next_description_next_set
 import com.repz.app.core.designsystem.generated.resources.keypad_next_description_reps
 import com.repz.app.core.designsystem.generated.resources.keypad_next_description_rpe
@@ -63,25 +44,17 @@ import com.repz.app.core.designsystem.generated.resources.keypad_next_done
 import com.repz.app.core.designsystem.generated.resources.keypad_next_next_set
 import com.repz.app.core.designsystem.generated.resources.keypad_next_reps
 import com.repz.app.core.designsystem.generated.resources.keypad_next_rpe
-import com.repz.app.core.designsystem.generated.resources.keypad_reps_limit
-import com.repz.app.core.designsystem.generated.resources.keypad_value_description
-import com.repz.app.core.designsystem.generated.resources.keypad_weight_limit
 import com.repz.app.core.designsystem.haptics.RepzHaptics
 import com.repz.app.core.designsystem.motion.RepzMotion
 import com.repz.app.core.designsystem.theme.RepzSpacing
-import com.repz.app.core.designsystem.theme.RepzTheme
 import org.jetbrains.compose.resources.stringResource
 
-private const val HUNDREDTHS_PER_UNIT = 100L
 private val SheetTopCornerRadius = 28.dp
 private val SheetShape =
     RoundedCornerShape(topStart = SheetTopCornerRadius, topEnd = SheetTopCornerRadius, bottomStart = 0.dp, bottomEnd = 0.dp)
 private val DragHandleWidth = 32.dp
 private val DragHandleHeight = 4.dp
 private val DragHandleRadius = 2.dp
-private val ModeSegmentHeight = 36.dp
-private val ModeSegmentTouchTarget = 48.dp
-private val ModeSegmentEndRadius = ModeSegmentHeight / 2
 
 private val KeypadBufferSaver: Saver<KeypadBuffer, Any> =
     listSaver(
@@ -126,11 +99,18 @@ fun NumberKeypadSheet(
     }
 }
 
+/** A plain (non-state) holder: [rememberLatestNonNull] only needs to return a fresh value within
+ * the same composition pass that updates it, never to react to a later, independent state read
+ * (nit, review-1), so a `mutableStateOf` write during composition isn't needed here. */
+private class LatestValueHolder<T>(
+    var value: T,
+)
+
 @Composable
 private fun <T> rememberLatestNonNull(value: T?): T? {
-    var latest by remember { mutableStateOf(value) }
-    if (value != null) latest = value
-    return latest
+    val holder = remember { LatestValueHolder(value) }
+    if (value != null) holder.value = value
+    return holder.value
 }
 
 /**
@@ -163,24 +143,32 @@ private fun NumberKeypadSheetStateful(
         val edit = KeypadRules.apply(buffer, input, request.field)
         val changed = edit.buffer != buffer
         buffer = edit.buffer
-        return when {
-            edit.isRejected -> {
+        return when (edit.rejection) {
+            // Only an out-of-range refusal shows the limit message (review-1 F7, U5); a malformed
+            // keystroke (an extra fraction digit, a second separator, Backspace on empty) still
+            // rejects and fires the same haptic, but the value was never actually out of range.
+            KeypadRejection.OutOfRange -> {
                 haptics.reject()
-                if (request.field.mode != KeypadMode.Rpe) showLimitError = true
+                showLimitError = true
                 false
             }
 
-            changed -> {
-                haptics.tick()
-                showLimitError = false
-                val newValue = KeypadRules.valueOf(buffer)
-                if (newValue != previousValue) onValueChange(newValue)
-                true
+            KeypadRejection.Format -> {
+                haptics.reject()
+                false
             }
 
-            // Ignored (e.g. a hardware digit while in RPE mode, plan §3.4): no haptic, no change.
-            else -> {
-                true
+            null -> {
+                if (changed) {
+                    haptics.tick()
+                    showLimitError = false
+                    val newValue = KeypadRules.valueOf(buffer)
+                    if (newValue != previousValue) onValueChange(newValue)
+                    true
+                } else {
+                    // Ignored (e.g. a hardware digit while in RPE mode, plan §3.4): no haptic, no change.
+                    true
+                }
             }
         }
     }
@@ -212,9 +200,10 @@ private fun NumberKeypadSheetStateful(
  * `remember`ed state. [onInput] is the stateful parent's `dispatch`; previews can instead pass a
  * no-op (`{ true }`) and drive the exact frame they want through [buffer]/[showLimitError] directly
  * — this is what makes the mid-type ("82,|") and over-max-error preview states possible without
- * reopening [NumberKeypadSheet]'s frozen public signature.
+ * reopening [NumberKeypadSheet]'s frozen public signature. The body provides `onSurface` as
+ * [LocalContentColor] once here, so every child text/icon reads correctly in dark mode by default
+ * without a `Surface` (review-1 F1): the sheet itself stays a plain `Column` + `background`.
  */
-@Suppress("LongParameterList", "LongMethod")
 @Composable
 internal fun NumberKeypadSheetStateless(
     request: NumberKeypadRequest,
@@ -237,77 +226,64 @@ internal fun NumberKeypadSheetStateless(
                 .fillMaxWidth()
                 .focusRequester(focusRequester)
                 .focusable()
-                .onPreviewKeyEvent { event ->
-                    val input = event.toKeypadInputOrNull()
-                    if (input != null) {
-                        onInput(input)
-                        return@onPreviewKeyEvent true
-                    }
-                    when (event.toKeypadHardwareActionOrNull()) {
-                        KeypadHardwareAction.Next -> {
-                            onNext()
-                            true
-                        }
-
-                        KeypadHardwareAction.Dismiss -> {
-                            onDismiss()
-                            true
-                        }
-
-                        null -> {
-                            false
-                        }
-                    }
-                }.clip(SheetShape)
+                .keypadHardwareKeys(onInput = onInput, onNext = onNext, onDismiss = onDismiss)
+                .clip(SheetShape)
                 .background(MaterialTheme.colorScheme.surfaceContainerLow)
                 .padding(horizontal = RepzSpacing.lg, vertical = RepzSpacing.lg),
         verticalArrangement = Arrangement.spacedBy(RepzSpacing.lg),
     ) {
-        Box(
-            modifier =
-                Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .size(width = DragHandleWidth, height = DragHandleHeight)
-                    .background(MaterialTheme.colorScheme.outline, RoundedCornerShape(DragHandleRadius)),
-        )
-        KeypadModeRow(
-            modes = request.modes,
-            selectedMode = request.field.mode,
-            onModeClick = onModeSelect,
-        )
-        KeypadDisplayRow(
-            request = request,
-            buffer = buffer,
-            showLimitError = showLimitError,
-            symbols = symbols,
-            onIncrease = { onInput(KeypadInput.Increase) },
-            onDecrease = { onInput(KeypadInput.Decrease) },
-        )
-        KeypadChipRow(
-            field = request.field,
-            showStepChip = request.stepOptions.isNotEmpty(),
-            symbols = symbols,
-            onSetValue = { value -> onInput(KeypadInput.Set(value)) },
-            onStepClick = onStepSelect,
-        )
-        KeypadGrid(
-            field = request.field,
-            symbols = symbols,
-            onDigit = { digit -> onInput(KeypadInput.Digit(digit)) },
-            onDecimal = { onInput(KeypadInput.DecimalSeparator) },
-            onBackspace = { onInput(KeypadInput.Backspace) },
-            onClear = { onInput(KeypadInput.Clear) },
-            onSetRpe = { value -> onInput(KeypadInput.Set(value)) },
-            decimalSeparatorDescription = stringResource(Res.string.keypad_decimal_separator),
-            backspaceDescription = stringResource(Res.string.keypad_delete_digit),
-            clearLabel = stringResource(Res.string.keypad_clear),
-            hideDescription = stringResource(Res.string.keypad_hide),
-            onHide = onDismiss,
-            nextLabel = request.nextAction.label(),
-            nextDescription = request.nextAction.contentDescription(),
-            onNext = onNext,
-        )
+        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
+            KeypadDragHandle(modifier = Modifier.align(Alignment.CenterHorizontally))
+            KeypadModeRow(
+                modes = request.modes,
+                selectedMode = request.field.mode,
+                onModeClick = onModeSelect,
+            )
+            KeypadDisplayRow(
+                request = request,
+                buffer = buffer,
+                showLimitError = showLimitError,
+                symbols = symbols,
+                onIncrease = { onInput(KeypadInput.Increase) },
+                onDecrease = { onInput(KeypadInput.Decrease) },
+            )
+            KeypadChipRow(
+                field = request.field,
+                showStepChip = request.stepOptions.isNotEmpty(),
+                symbols = symbols,
+                onSetValue = { value -> onInput(KeypadInput.Set(value)) },
+                onStepClick = onStepSelect,
+            )
+            KeypadGrid(
+                field = request.field,
+                symbols = symbols,
+                onDigit = { digit -> onInput(KeypadInput.Digit(digit)) },
+                onDecimal = { onInput(KeypadInput.DecimalSeparator) },
+                onBackspace = { onInput(KeypadInput.Backspace) },
+                onClear = { onInput(KeypadInput.Clear) },
+                onSetRpe = { value -> onInput(KeypadInput.Set(value)) },
+                decimalSeparatorDescription = stringResource(Res.string.keypad_decimal_separator),
+                backspaceDescription = stringResource(Res.string.keypad_delete_digit),
+                clearLabel = stringResource(Res.string.keypad_clear),
+                hideDescription = stringResource(Res.string.keypad_hide),
+                onHide = onDismiss,
+                nextLabel = request.nextAction.label(),
+                nextDescription = request.nextAction.contentDescription(),
+                onNext = onNext,
+            )
+        }
     }
+}
+
+/** The 32×4 `outline` drag handle (visual only, no drag-to-dismiss in v1, plan T16). */
+@Composable
+private fun KeypadDragHandle(modifier: Modifier = Modifier) {
+    Box(
+        modifier =
+            modifier
+                .size(width = DragHandleWidth, height = DragHandleHeight)
+                .background(MaterialTheme.colorScheme.outline, RoundedCornerShape(DragHandleRadius)),
+    )
 }
 
 private fun nextStepOption(
@@ -318,14 +294,6 @@ private fun nextStepOption(
     val index = options.indexOf(current)
     return if (index == -1) options.first() else options[(index + 1) % options.size]
 }
-
-@Composable
-private fun KeypadMode.label(): String =
-    when (this) {
-        KeypadMode.Weight -> stringResource(Res.string.keypad_mode_weight)
-        KeypadMode.Reps -> stringResource(Res.string.keypad_mode_reps)
-        KeypadMode.Rpe -> stringResource(Res.string.keypad_mode_rpe)
-    }
 
 @Composable
 private fun KeypadNextAction.label(): String =
@@ -348,56 +316,3 @@ private fun KeypadNextAction.contentDescription(): String =
         // "Done" is already self-descriptive; there is no destination to name (plan U1).
         KeypadNextAction.Done -> stringResource(Res.string.keypad_next_done)
     }
-
-/** The Weight/Reps/[RPE] segmented control (DESIGN_SYSTEM §9); hidden when there is only one mode. */
-@Composable
-private fun KeypadModeRow(
-    modes: List<KeypadMode>,
-    selectedMode: KeypadMode,
-    onModeClick: (KeypadMode) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    if (modes.size <= 1) return
-
-    Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(RepzSpacing.xxs)) {
-        for ((index, mode) in modes.withIndex()) {
-            val isSelected = mode == selectedMode
-            val shape =
-                RoundedCornerShape(
-                    topStart = if (index == 0) ModeSegmentEndRadius else 0.dp,
-                    bottomStart = if (index == 0) ModeSegmentEndRadius else 0.dp,
-                    topEnd = if (index == modes.lastIndex) ModeSegmentEndRadius else 0.dp,
-                    bottomEnd = if (index == modes.lastIndex) ModeSegmentEndRadius else 0.dp,
-                )
-            val segmentContainerColor =
-                if (isSelected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceContainerHighest
-            Box(
-                modifier = Modifier.weight(1f).heightIn(min = ModeSegmentTouchTarget),
-                contentAlignment = Alignment.Center,
-            ) {
-                Box(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .heightIn(min = ModeSegmentHeight)
-                            .clip(shape)
-                            .background(segmentContainerColor)
-                            .clickable(role = Role.Button, onClick = { onModeClick(mode) })
-                            .semantics { selected = isSelected },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = mode.label(),
-                        style = MaterialTheme.typography.labelLarge,
-                        color =
-                            if (isSelected) {
-                                MaterialTheme.colorScheme.onSecondaryContainer
-                            } else {
-                                MaterialTheme.colorScheme.onSurfaceVariant
-                            },
-                    )
-                }
-            }
-        }
-    }
-}

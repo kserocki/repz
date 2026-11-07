@@ -3,7 +3,6 @@ package com.repz.app.core.designsystem.format
 import androidx.compose.runtime.Immutable
 import kotlin.jvm.JvmInline
 
-private const val HUNDREDTHS_PER_UNIT = 100L
 private const val SINGLE_FRACTION_DIGIT_DIVISOR = 10L
 
 /**
@@ -49,6 +48,10 @@ value class FixedDecimal(
 
     companion object {
         val ZERO: FixedDecimal = FixedDecimal(0)
+
+        /** How many hundredths make one whole unit (2 fraction digits); shared with [KeypadRules]
+         * and the display row instead of each repeating its own copy (nit, review-1). */
+        const val HUNDREDTHS_PER_UNIT = 100L
 
         fun ofWhole(value: Long): FixedDecimal = FixedDecimal(value * HUNDREDTHS_PER_UNIT)
     }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,6 +14,12 @@ import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
+import com.repz.app.core.designsystem.format.FixedDecimal.Companion.HUNDREDTHS_PER_UNIT
 import com.repz.app.core.designsystem.format.RepzNumberSymbols
 import com.repz.app.core.designsystem.generated.resources.Res
 import com.repz.app.core.designsystem.generated.resources.keypad_context_line
@@ -30,7 +37,15 @@ import com.repz.app.core.designsystem.theme.RepzSpacing
 import com.repz.app.core.designsystem.theme.RepzTheme
 import org.jetbrains.compose.resources.stringResource
 
-private const val HUNDREDTHS_PER_UNIT = 100L
+// review-1 F2/Q2: the hero stays on one line from "" to "2204.62", at up to 200% font, on a
+// 360 dp-wide screen, so the ±/chips/grid never move while typing. `numericHero`'s own wdth 112
+// and tabular figures are kept (DESIGN_SYSTEM §13); only size/line-height/tracking are resized to
+// 52/56, shrinking in 1 sp steps down to 22 sp (Q2) so the longest value always fits one line.
+private val HeroMaxFontSize = 52.sp
+private val HeroMinFontSize = 22.sp
+private val HeroStepSize = 1.sp
+private val HeroLineHeight = 56.sp
+private val HeroLetterSpacing = (-2f / 52f).em
 
 /** Every string [KeypadDisplayRow] shows or announces, computed once per recomposition so the row
  * composable itself stays a plain layout assembly. */
@@ -162,11 +177,22 @@ internal fun KeypadDisplayRow(
             onStep = onDecrease,
         )
         Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+            val heroStyle =
+                RepzTheme.typography.numericHero.copy(
+                    fontSize = HeroMaxFontSize,
+                    lineHeight = HeroLineHeight,
+                    letterSpacing = HeroLetterSpacing,
+                    lineHeightStyle = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.None),
+                )
             Text(
                 text = strings.displayText,
-                style = RepzTheme.typography.numericHero,
+                style = heroStyle,
+                autoSize = TextAutoSize.StepBased(minFontSize = HeroMinFontSize, maxFontSize = HeroMaxFontSize, stepSize = HeroStepSize),
+                maxLines = 1,
+                overflow = TextOverflow.Clip,
+                textAlign = TextAlign.Center,
                 modifier =
-                    Modifier.semantics(mergeDescendants = true) {
+                    Modifier.fillMaxWidth().semantics(mergeDescendants = true) {
                         contentDescription = strings.valueDescription
                         customActions =
                             listOf(

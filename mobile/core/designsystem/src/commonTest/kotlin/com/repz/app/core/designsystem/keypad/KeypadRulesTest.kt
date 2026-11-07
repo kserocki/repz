@@ -81,7 +81,7 @@ class KeypadRulesTest {
 
         val edit = KeypadRules.apply(buffer, KeypadInput.Digit(5), weightField())
 
-        assertFalse(edit.isRejected)
+        assertNull(edit.rejection)
         assertEquals("5", edit.buffer.text)
         assertFalse(edit.buffer.isUntouched)
     }
@@ -92,38 +92,48 @@ class KeypadRulesTest {
 
         val edit = KeypadRules.apply(buffer, KeypadInput.Backspace, weightField())
 
-        assertFalse(edit.isRejected)
+        assertNull(edit.rejection)
         assertEquals("82.", edit.buffer.text)
         assertFalse(edit.buffer.isUntouched)
     }
 
     @Test
-    fun givenABufferWithASeparator_whenAnotherSeparatorIsPressed_thenItIsRejected() {
+    fun givenABufferWithASeparator_whenAnotherSeparatorIsPressed_thenItIsRejectedAsFormat() {
         val buffer = KeypadBuffer("82.", isUntouched = false)
 
         val edit = KeypadRules.apply(buffer, KeypadInput.DecimalSeparator, weightField())
 
-        assertTrue(edit.isRejected)
+        assertEquals(KeypadRejection.Format, edit.rejection)
         assertEquals(buffer, edit.buffer)
     }
 
     @Test
-    fun givenTwoFractionDigitsAlready_whenAThirdDigitIsPressed_thenItIsRejected() {
+    fun givenTwoFractionDigitsAlready_whenAThirdDigitIsPressed_thenItIsRejectedAsFormat() {
         val buffer = KeypadBuffer("82.50", isUntouched = false)
 
         val edit = KeypadRules.apply(buffer, KeypadInput.Digit(5), weightField())
 
-        assertTrue(edit.isRejected)
+        assertEquals(KeypadRejection.Format, edit.rejection)
         assertEquals(buffer, edit.buffer)
     }
 
     @Test
-    fun givenRepsMode_whenTheSeparatorIsPressed_thenItIsRejected() {
+    fun givenRepsMode_whenTheSeparatorIsPressed_thenItIsRejectedAsFormat() {
         val buffer = KeypadBuffer("12", isUntouched = false)
 
         val edit = KeypadRules.apply(buffer, KeypadInput.DecimalSeparator, repsField())
 
-        assertTrue(edit.isRejected)
+        assertEquals(KeypadRejection.Format, edit.rejection)
+        assertEquals(buffer, edit.buffer)
+    }
+
+    @Test
+    fun givenAnEmptyBuffer_whenBackspaceIsPressed_thenItIsRejectedAsFormat() {
+        val buffer = KeypadBuffer("", isUntouched = true)
+
+        val edit = KeypadRules.apply(buffer, KeypadInput.Backspace, weightField())
+
+        assertEquals(KeypadRejection.Format, edit.rejection)
         assertEquals(buffer, edit.buffer)
     }
 
@@ -133,17 +143,17 @@ class KeypadRulesTest {
 
         val edit = KeypadRules.apply(buffer, KeypadInput.Digit(5), weightField())
 
-        assertFalse(edit.isRejected)
+        assertNull(edit.rejection)
         assertEquals("5", edit.buffer.text)
     }
 
     @Test
-    fun givenAValueNearTheLimit_whenADigitWouldExceedTheMaximum_thenItIsRejected() {
+    fun givenAValueNearTheLimit_whenADigitWouldExceedTheMaximum_thenItIsRejectedAsOutOfRange() {
         val buffer = KeypadBuffer("100", isUntouched = false) // max is 1000.00; "1001" would be 1001.00
 
         val edit = KeypadRules.apply(buffer, KeypadInput.Digit(1), weightField())
 
-        assertTrue(edit.isRejected)
+        assertEquals(KeypadRejection.OutOfRange, edit.rejection)
         assertEquals(buffer, edit.buffer)
     }
 
@@ -153,7 +163,7 @@ class KeypadRulesTest {
 
         val edit = KeypadRules.apply(buffer, KeypadInput.Increase, weightField())
 
-        assertFalse(edit.isRejected)
+        assertNull(edit.rejection)
         assertEquals(FixedDecimal(8_550), KeypadRules.valueOf(edit.buffer))
         assertTrue(edit.buffer.isUntouched)
     }
@@ -164,44 +174,44 @@ class KeypadRulesTest {
 
         val edit = KeypadRules.apply(buffer, KeypadInput.Increase, weightField())
 
-        assertFalse(edit.isRejected)
+        assertNull(edit.rejection)
         assertEquals(FixedDecimal(100_000), KeypadRules.valueOf(edit.buffer))
     }
 
     @Test
-    fun givenAValueAtTheMaximum_whenIncreasedAgain_thenItIsRejected() {
+    fun givenAValueAtTheMaximum_whenIncreasedAgain_thenItIsRejectedAsOutOfRange() {
         val buffer = KeypadBuffer("1000", isUntouched = false)
 
         val edit = KeypadRules.apply(buffer, KeypadInput.Increase, weightField())
 
-        assertTrue(edit.isRejected)
+        assertEquals(KeypadRejection.OutOfRange, edit.rejection)
         assertEquals(buffer, edit.buffer)
     }
 
     @Test
-    fun givenAValueAtTheMinimum_whenDecreased_thenItIsRejected() {
+    fun givenAValueAtTheMinimum_whenDecreased_thenItIsRejectedAsOutOfRange() {
         val buffer = KeypadBuffer("0", isUntouched = false)
 
         val edit = KeypadRules.apply(buffer, KeypadInput.Decrease, weightField())
 
-        assertTrue(edit.isRejected)
+        assertEquals(KeypadRejection.OutOfRange, edit.rejection)
         assertEquals(buffer, edit.buffer)
     }
 
     @Test
-    fun givenRpeAtItsMinimum_whenDecreased_thenItIsRejected() {
+    fun givenRpeAtItsMinimum_whenDecreased_thenItIsRejectedAsOutOfRange() {
         val buffer = KeypadRules.bufferFor(FixedDecimal(600)) // "6"
 
         val edit = KeypadRules.apply(buffer, KeypadInput.Decrease, rpeField())
 
-        assertTrue(edit.isRejected)
+        assertEquals(KeypadRejection.OutOfRange, edit.rejection)
     }
 
     @Test
     fun givenAnEmptyBuffer_whenIncreased_thenItGivesTheMinimumPlusTheStep() {
         val edit = KeypadRules.apply(KeypadBuffer("", isUntouched = true), KeypadInput.Increase, weightField())
 
-        assertFalse(edit.isRejected)
+        assertNull(edit.rejection)
         assertEquals(FixedDecimal(250), KeypadRules.valueOf(edit.buffer))
     }
 
@@ -209,22 +219,22 @@ class KeypadRulesTest {
     fun givenAnEmptyRpeBuffer_whenIncreased_thenItGivesTheMinimum() {
         val edit = KeypadRules.apply(KeypadBuffer("", isUntouched = true), KeypadInput.Increase, rpeField())
 
-        assertFalse(edit.isRejected)
+        assertNull(edit.rejection)
         assertEquals(FixedDecimal(600), KeypadRules.valueOf(edit.buffer))
     }
 
     @Test
-    fun givenAnEmptyBuffer_whenDecreased_thenItIsRejected() {
+    fun givenAnEmptyBuffer_whenDecreased_thenItIsRejectedAsOutOfRange() {
         val edit = KeypadRules.apply(KeypadBuffer("", isUntouched = true), KeypadInput.Decrease, weightField())
 
-        assertTrue(edit.isRejected)
+        assertEquals(KeypadRejection.OutOfRange, edit.rejection)
     }
 
     @Test
     fun givenASetInput_whenApplied_thenTheBufferIsReplacedAndMarkedUntouched() {
         val edit = KeypadRules.apply(KeypadBuffer("12", isUntouched = false), KeypadInput.Set(FixedDecimal(8_250)), weightField())
 
-        assertFalse(edit.isRejected)
+        assertNull(edit.rejection)
         assertTrue(edit.buffer.isUntouched)
         assertEquals(FixedDecimal(8_250), KeypadRules.valueOf(edit.buffer))
     }
@@ -235,7 +245,7 @@ class KeypadRulesTest {
 
         val edit = KeypadRules.apply(buffer, KeypadInput.Digit(5), rpeField())
 
-        assertFalse(edit.isRejected)
+        assertNull(edit.rejection)
         assertEquals(buffer, edit.buffer)
     }
 
@@ -245,7 +255,7 @@ class KeypadRulesTest {
 
         val edit = KeypadRules.apply(buffer, KeypadInput.DecimalSeparator, rpeField())
 
-        assertFalse(edit.isRejected)
+        assertNull(edit.rejection)
         assertEquals(buffer, edit.buffer)
     }
 
@@ -255,7 +265,7 @@ class KeypadRulesTest {
 
         val edit = KeypadRules.apply(buffer, KeypadInput.Backspace, rpeField())
 
-        assertFalse(edit.isRejected)
+        assertNull(edit.rejection)
         assertEquals(buffer, edit.buffer)
     }
 
@@ -263,7 +273,7 @@ class KeypadRulesTest {
     fun givenAnyValue_whenCleared_thenItBecomesEmptyAndUntouched() {
         val edit = KeypadRules.apply(KeypadBuffer("82.5", isUntouched = false), KeypadInput.Clear, weightField())
 
-        assertFalse(edit.isRejected)
+        assertNull(edit.rejection)
         assertEquals(KeypadBuffer("", isUntouched = true), edit.buffer)
     }
 
@@ -273,7 +283,7 @@ class KeypadRulesTest {
 
         val edit = KeypadRules.apply(buffer, KeypadInput.Clear, rpeField())
 
-        assertFalse(edit.isRejected)
+        assertNull(edit.rejection)
         assertEquals(KeypadBuffer("", isUntouched = true), edit.buffer)
     }
 }

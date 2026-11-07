@@ -3,6 +3,9 @@
     <string name="keypad_mode_weight">Weight</string>
     <string name="keypad_mode_reps">Reps</string>
     <string name="keypad_mode_rpe">RPE</string>
+    <string name="keypad_mode_weight_short">Weight</string>
+    <string name="keypad_mode_reps_short">Reps</string>
+    <string name="keypad_mode_rpe_short">RPE</string>
     <string name="keypad_clear">Clear</string>
     <string name="keypad_delete_digit">Delete digit</string>
     <string name="keypad_hide">Hide keypad</string>
