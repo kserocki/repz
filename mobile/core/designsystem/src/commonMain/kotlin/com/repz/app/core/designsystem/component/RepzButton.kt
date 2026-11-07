@@ -1,6 +1,5 @@
 package com.repz.app.core.designsystem.component
 
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -79,11 +78,6 @@ internal val RepzButtonSize.height: Dp
             RepzButtonSize.Large -> LargeHeight
             RepzButtonSize.ExtraLarge -> ExtraLargeHeight
         }
-
-// A rest-state corner radius of half the height renders the same stadium (pill) shape as
-// RepzShapes.full (CircleShape), but as a Dp so it can animate smoothly toward PressedCornerRadius.
-internal val RepzButtonSize.restCornerRadius: Dp
-    get() = height / 2
 
 /** The M3 token this size's label resolves to (DESIGN_SYSTEM §9 U6c), kept as a plain enum so the
  * size → style mapping is testable without a composition. */
@@ -199,9 +193,11 @@ private fun RepzButtonColorRole.resolve(): Color =
  * decorative (the label already carries the meaning) and sized/spaced per
  * [ButtonDefaults.iconSizeFor]/[ButtonDefaults.iconSpacingFor] for [size]'s height.
  *
- * MOT-22 press feedback: the shape morphs from the rest pill to [PressedCornerRadius] and scales to
- * 0.96, both on [RepzMotion.springs.pressMorph]. With reduced motion, neither animates: only the
- * default state layer (ripple) shows, per MOTION.md's "Reduced motion: Ripple/state layer only".
+ * MOT-22 press feedback: the shape morphs from the rest pill — half of the button's own *measured*
+ * height via [PressMorphCornerSize], so it stays a true pill even when [text] wraps past [size]'s
+ * minimum — to [PressedCornerRadius] and scales to 0.96, both on [RepzMotion.springs.pressMorph].
+ * With reduced motion, neither animates: only the default state layer (ripple) shows, per
+ * MOTION.md's "Reduced motion: Ripple/state layer only".
  *
  * [isLoading] keeps the button's measured size and ignores clicks, but keeps the enabled colours so
  * it never looks disabled; [loadingContentDescription] becomes the accessible description while the
@@ -224,9 +220,9 @@ fun RepzButton(
     val isPressed by interactionSource.collectIsPressedAsState()
     val morphed = isPressed && !isLoading && !LocalReducedMotion.current
 
-    val cornerRadius by
-        animateDpAsState(
-            targetValue = if (morphed) PressedCornerRadius else size.restCornerRadius,
+    val pressFraction by
+        animateFloatAsState(
+            targetValue = if (morphed) 1f else 0f,
             animationSpec = RepzMotion.springs.pressMorph(),
         )
     val scale by
@@ -246,7 +242,7 @@ fun RepzButton(
         // truncate").
         modifier = modifier.heightIn(min = size.height).scale(scale),
         enabled = enabled && !isLoading,
-        shape = RoundedCornerShape(cornerRadius),
+        shape = RoundedCornerShape(PressMorphCornerSize(PressedCornerRadius, pressFraction)),
         colors = style.colors(disabled = isVisuallyDisabled),
         elevation = null,
         border = style.border(disabled = isVisuallyDisabled),

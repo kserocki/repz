@@ -15,13 +15,6 @@ class RepzButtonSpecTest {
     }
 
     @Test
-    fun given_everySize_whenReadingRestCornerRadius_thenItIsHalfTheHeight() {
-        for (size in RepzButtonSize.entries) {
-            assertEquals(size.height / 2, size.restCornerRadius, "${size.name}.restCornerRadius")
-        }
-    }
-
-    @Test
     fun given_everySizeAndStyle_whenPressed_thenMorphsToTheSharedPressedRadius() {
         // T13: every non-Hero-component size/style shares one pressed radius (12 dp), DESIGN_SYSTEM §5.
         assertEquals(12.dp, PressedCornerRadius)
