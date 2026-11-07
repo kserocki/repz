@@ -1,17 +1,19 @@
 package com.repz.app.core.designsystem.component
 
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -27,7 +29,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.repz.app.core.designsystem.motion.LocalReducedMotion
 import com.repz.app.core.designsystem.motion.RepzMotion
@@ -55,6 +56,11 @@ private const val PRESSED_SEGMENT_SCALE = 0.96f
  *
  * MOT-22/U2(g): only the pressed segment's outer corners morph to [SplitButtonPressedOuterRadius]
  * and it scales to 0.96; the shared inner corners never move. Reduced motion: state layer only.
+ *
+ * The row measures its height from `IntrinsicSize.Min` and each segment declares its own
+ * `heightIn(min = SplitButtonHeight)`, so a wrapped label (PL or a 200 % font scale) grows the
+ * button instead of being clipped by a fixed height (required change 3, AGENTS.md §4 "buttons wrap,
+ * never truncate").
  */
 @Composable
 fun RepzSplitButton(
@@ -67,30 +73,27 @@ fun RepzSplitButton(
 ) {
     val leadingInteractionSource = remember { MutableInteractionSource() }
     val trailingInteractionSource = remember { MutableInteractionSource() }
-    val restOuterRadius = SplitButtonHeight / 2
 
     Row(
-        modifier = modifier.height(SplitButtonHeight),
+        modifier = modifier.height(IntrinsicSize.Min),
         horizontalArrangement = Arrangement.spacedBy(SplitButtonGap),
     ) {
         RepzSplitButtonSegment(
             interactionSource = leadingInteractionSource,
-            outerRestRadius = restOuterRadius,
             outerOnStart = true,
             enabled = enabled,
             onClick = onClick,
-            modifier = Modifier.weight(1f).fillMaxHeight(),
+            modifier = Modifier.weight(1f).fillMaxHeight().heightIn(min = SplitButtonHeight),
         ) {
             Text(text, style = MaterialTheme.typography.labelLarge)
         }
 
         RepzSplitButtonSegment(
             interactionSource = trailingInteractionSource,
-            outerRestRadius = restOuterRadius,
             outerOnStart = false,
             enabled = enabled,
             onClick = onTrailingClick,
-            modifier = Modifier.width(TrailingSegmentWidth).fillMaxHeight(),
+            modifier = Modifier.width(TrailingSegmentWidth).fillMaxHeight().heightIn(min = SplitButtonHeight),
             contentDescription = trailingContentDescription,
         ) {
             RepzIcon(RepzIcon.KeyboardArrowDown, contentDescription = null, modifier = Modifier.size(TrailingIconSize))
@@ -101,7 +104,6 @@ fun RepzSplitButton(
 @Composable
 private fun RepzSplitButtonSegment(
     interactionSource: MutableInteractionSource,
-    outerRestRadius: Dp,
     outerOnStart: Boolean,
     enabled: Boolean,
     onClick: () -> Unit,
@@ -112,9 +114,9 @@ private fun RepzSplitButtonSegment(
     val isPressed by interactionSource.collectIsPressedAsState()
     val morphed = isPressed && !LocalReducedMotion.current
 
-    val outerRadius by
-        animateDpAsState(
-            targetValue = if (morphed) SplitButtonPressedOuterRadius else outerRestRadius,
+    val pressFraction by
+        animateFloatAsState(
+            targetValue = if (morphed) 1f else 0f,
             animationSpec = RepzMotion.springs.pressMorph(),
         )
     val scale by
@@ -123,7 +125,13 @@ private fun RepzSplitButtonSegment(
             animationSpec = RepzMotion.springs.pressMorph(),
         )
 
-    val corners = connectedGroupSegmentCorners(outerOnStart, !outerOnStart, outerRadius, SplitButtonInnerRadius)
+    val corners =
+        connectedGroupSegmentCorners(
+            isFirst = outerOnStart,
+            isLast = !outerOnStart,
+            outerRadius = PressMorphCornerSize(SplitButtonPressedOuterRadius, pressFraction),
+            innerRadius = CornerSize(SplitButtonInnerRadius),
+        )
     val shape = RoundedCornerShape(corners.topStart, corners.topEnd, corners.bottomEnd, corners.bottomStart)
 
     val containerColor: Color
