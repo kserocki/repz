@@ -57,6 +57,26 @@ private fun RowScope.RpeChoiceCells(
 }
 
 /**
+ * A two-row block next to a spanning rail key (Next or RPE's Clear), sized by [IntrinsicSize.Min]
+ * and split evenly between its two rows via `weight(1f)` (review-1 round-2, Bug A). Without the
+ * rows' own `weight(1f)`, each row independently claimed the whole block's `fillMaxHeight()` budget
+ * passed down by the outer [KeyRow], so the first row consumed it all and the second collapsed to
+ * 0×0 — invisible and untappable (uiautomator `bounds=0,0,0,0`), confirmed on both the digit grid's
+ * decimal/0/hide row and RPE's second choice row. Splitting the resolved intrinsic height evenly
+ * between exactly two weighted rows removes that ambiguity entirely.
+ */
+@Composable
+private fun RowScope.TwoRowKeyColumn(
+    topRow: @Composable RowScope.() -> Unit,
+    bottomRow: @Composable RowScope.() -> Unit,
+) {
+    Column(modifier = Modifier.weight(1f).height(IntrinsicSize.Min), verticalArrangement = Arrangement.spacedBy(KeypadGridGap)) {
+        Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(KeypadGridGap), content = topRow)
+        Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(KeypadGridGap), content = bottomRow)
+    }
+}
+
+/**
  * Weight/reps rows (DESIGN_SYSTEM §9, plan §3.5; row-major "1 2 3 backspace / 4 5 6 Clear / 7 8 9
  * Next / . 0 keyboard_hide"): rows 1-2 each share one [KeyRow] height with their rail key
  * (Backspace, then Clear); row 3-4 sit in a two-row column next to Next, inside one more [KeyRow]
@@ -98,13 +118,13 @@ private fun DigitKeyRows(
             ClearKey(label = clearLabel, onClick = onClear, modifier = Modifier.width(KeypadNextColumnWidth).gridKeyHeight())
         }
         KeyRow {
-            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(KeypadGridGap)) {
-                Row(horizontalArrangement = Arrangement.spacedBy(KeypadGridGap)) {
+            TwoRowKeyColumn(
+                topRow = {
                     for (digit in DIGIT_ROWS[2]) {
                         DigitKey(digit, onClick = { onDigit(digit) }, modifier = Modifier.weight(1f).gridKeyHeight())
                     }
-                }
-                Row(horizontalArrangement = Arrangement.spacedBy(KeypadGridGap)) {
+                },
+                bottomRow = {
                     DecimalKey(
                         separator = symbols.decimalSeparator,
                         enabled = field.fractionDigits > 0,
@@ -114,8 +134,8 @@ private fun DigitKeyRows(
                     )
                     DigitKey(0, onClick = { onDigit(0) }, modifier = Modifier.weight(1f).gridKeyHeight())
                     HideKey(contentDescription = hideDescription, onClick = onHide, modifier = Modifier.weight(1f).gridKeyHeight())
-                }
-            }
+                },
+            )
             NextKey(
                 label = nextLabel,
                 contentDescription = nextDescription,
@@ -150,22 +170,19 @@ private fun RpeKeyRows(
 
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(KeypadGridGap)) {
         KeyRow {
-            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(KeypadGridGap)) {
-                for (row in choiceRows.take(2)) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(KeypadGridGap)) {
-                        RpeChoiceCells(row, field, symbols, onSetRpe)
-                    }
-                }
-            }
+            TwoRowKeyColumn(
+                topRow = { RpeChoiceCells(choiceRows.getOrElse(0) { emptyList() }, field, symbols, onSetRpe) },
+                bottomRow = { RpeChoiceCells(choiceRows.getOrElse(1) { emptyList() }, field, symbols, onSetRpe) },
+            )
             ClearKey(label = clearLabel, onClick = onClear, modifier = Modifier.width(KeypadNextColumnWidth).fillMaxHeight())
         }
         KeyRow {
-            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(KeypadGridGap)) {
-                Row(horizontalArrangement = Arrangement.spacedBy(KeypadGridGap)) {
-                    RpeChoiceCells(choiceRows.getOrElse(2) { emptyList() }, field, symbols, onSetRpe)
-                }
-                HideKey(contentDescription = hideDescription, onClick = onHide, modifier = Modifier.fillMaxWidth().gridKeyHeight())
-            }
+            TwoRowKeyColumn(
+                topRow = { RpeChoiceCells(choiceRows.getOrElse(2) { emptyList() }, field, symbols, onSetRpe) },
+                bottomRow = {
+                    HideKey(contentDescription = hideDescription, onClick = onHide, modifier = Modifier.fillMaxWidth().gridKeyHeight())
+                },
+            )
             NextKey(
                 label = nextLabel,
                 contentDescription = nextDescription,
