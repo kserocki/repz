@@ -181,6 +181,8 @@ fun RepzInputChip(
             horizontalArrangement = Arrangement.spacedBy(RepzSpacing.xs),
         ) {
             Text(label, style = MaterialTheme.typography.labelLarge, color = contentColor)
+            // The 24 dp visual size is smaller than the touch target: IconButton's own
+            // minimumInteractiveComponentSize() still expands the tappable area to 48 dp around it.
             IconButton(onClick = onRemove, enabled = enabled, modifier = Modifier.size(ChipCloseButtonSize)) {
                 RepzIcon(
                     icon = RepzIcon.Close,
