@@ -99,7 +99,10 @@ private fun TopAppBarScrollDemo(topAppBar: @Composable (RepzTopAppBarScrollState
     Box(modifier = Modifier.fillMaxWidth().height(TopAppBarDemoHeight).repzTopAppBarScroll(scrollState)) {
         Column {
             topAppBar(scrollState)
-            LazyColumn {
+            // Required change 8 (Coach review-1, Bug 2): without an explicit size, this LazyColumn
+            // wraps its content to the "Row N" text width instead of filling the demo's width, so a
+            // swipe anywhere but that narrow column misses the list and never collapses the bar.
+            LazyColumn(modifier = Modifier.fillMaxWidth().weight(1f)) {
                 items(DEMO_LIST_ITEM_COUNT) { index ->
                     val rowLabel = "$DEMO_LIST_ITEM_PREFIX${index + 1}"
                     Text(
