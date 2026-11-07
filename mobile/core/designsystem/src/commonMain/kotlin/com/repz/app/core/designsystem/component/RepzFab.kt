@@ -1,5 +1,6 @@
 package com.repz.app.core.designsystem.component
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -47,9 +49,11 @@ private val ExtendedFabStartPadding = 18.dp
 private val ExtendedFabEndPadding = 24.dp
 private val ExtendedFabGap = 10.dp
 
-/** The shared Square(20) → Cookie4Sided morph behind every FAB's press feedback (MOT-30a):
- * [RepzFab], [RepzExtendedFab] and the [RepzFabMenu] toggle button all drive the same shape family,
- * stretched to each control's own measured bounds by [RepzMorphShape]. */
+/** The shared Square(20) → Cookie4Sided morph behind a square FAB's press feedback (MOT-30a):
+ * [RepzFab] and the [RepzFabMenu] toggle button both drive the same shape family, stretched to each
+ * control's own measured bounds by [RepzMorphShape]. [RepzExtendedFab] does **not** use this morph
+ * (DESIGN_SYSTEM §13): its wide bounds would stretch Cookie4Sided into an unreadable blob, so its
+ * press feedback is the plain MOT-22 corner morph instead. */
 @Composable
 internal fun rememberFabCookie4Morph(): Morph = remember { RepzMorphs.roundedSquareToCookie4Sided(FabRestCornerRadius, FabSize) }
 
@@ -97,7 +101,10 @@ fun RepzFab(
 /**
  * The labelled floating action button (DESIGN_SYSTEM §9, board 04 "New workout"): a minimum height
  * of 64 dp (so a long or PL label wraps instead of clipping, AGENTS.md §4), same `largeIncreased`
- * corner radius, elevation and MOT-30(a) press morph as [RepzFab].
+ * corner radius and elevation as [RepzFab]. Its press feedback is the plain `RepzButton` MOT-22
+ * corner morph (20 → 12 dp + scale 0.96), **not** MOT-30(a)'s Cookie4 morph: a Cookie4 polygon
+ * stretched across this control's wide, non-square bounds renders as an unreadable blob rather than
+ * the intended shape (Coach review-1 round, DESIGN_SYSTEM §13, MOTION.md MOT-30/MOT-22).
  */
 @Composable
 fun RepzExtendedFab(
@@ -109,10 +116,13 @@ fun RepzExtendedFab(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val morphed = isPressed && !LocalReducedMotion.current
-    val morph = rememberFabCookie4Morph()
-    val progress by animateFloatAsState(targetValue = if (morphed) 1f else 0f, animationSpec = RepzMotion.springs.pressMorph())
+    val cornerRadius by
+        animateDpAsState(
+            targetValue = if (morphed) PressedCornerRadius else FabRestCornerRadius,
+            animationSpec = RepzMotion.springs.pressMorph(),
+        )
     val scale by animateFloatAsState(targetValue = if (morphed) FAB_PRESSED_SCALE else 1f, animationSpec = RepzMotion.springs.pressMorph())
-    val shape = RepzMorphShape(morph, progress)
+    val shape = RoundedCornerShape(cornerRadius)
     val elevation = RepzElevation.fab
 
     Surface(
