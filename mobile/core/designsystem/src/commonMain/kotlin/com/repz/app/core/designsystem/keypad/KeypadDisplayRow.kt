@@ -8,8 +8,11 @@ import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.customActions
@@ -17,6 +20,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.repz.app.core.designsystem.format.FixedDecimal.Companion.HUNDREDTHS_PER_UNIT
@@ -46,6 +50,11 @@ private val HeroMinFontSize = 22.sp
 private val HeroStepSize = 1.sp
 private val HeroLineHeight = 56.sp
 private val HeroLetterSpacing = (-2f / 52f).em
+
+// User decision (round-2): cap the hero's own font scale at 2.0x (iOS AX5 is roughly 3.1x), so it
+// never grows past what the 52/56 sizing was designed for, while the mode labels and every other
+// text in the sheet keep following the real system font scale. DESIGN_SYSTEM §13, ADR-0028 amendment.
+private const val HERO_MAX_FONT_SCALE = 2f
 
 /** Every string [KeypadDisplayRow] shows or announces, computed once per recomposition so the row
  * composable itself stays a plain layout assembly. */
@@ -184,23 +193,31 @@ internal fun KeypadDisplayRow(
                     letterSpacing = HeroLetterSpacing,
                     lineHeightStyle = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.None),
                 )
-            Text(
-                text = strings.displayText,
-                style = heroStyle,
-                autoSize = TextAutoSize.StepBased(minFontSize = HeroMinFontSize, maxFontSize = HeroMaxFontSize, stepSize = HeroStepSize),
-                maxLines = 1,
-                overflow = TextOverflow.Clip,
-                textAlign = TextAlign.Center,
-                modifier =
-                    Modifier.fillMaxWidth().semantics(mergeDescendants = true) {
-                        contentDescription = strings.valueDescription
-                        customActions =
-                            listOf(
-                                CustomAccessibilityAction(strings.increaseDescription) { onIncrease() },
-                                CustomAccessibilityAction(strings.decreaseDescription) { onDecrease() },
-                            )
-                    },
-            )
+            val ambientDensity = LocalDensity.current
+            val heroDensity =
+                remember(ambientDensity) {
+                    Density(density = ambientDensity.density, fontScale = ambientDensity.fontScale.coerceAtMost(HERO_MAX_FONT_SCALE))
+                }
+            CompositionLocalProvider(LocalDensity provides heroDensity) {
+                Text(
+                    text = strings.displayText,
+                    style = heroStyle,
+                    autoSize =
+                        TextAutoSize.StepBased(minFontSize = HeroMinFontSize, maxFontSize = HeroMaxFontSize, stepSize = HeroStepSize),
+                    maxLines = 1,
+                    overflow = TextOverflow.Clip,
+                    textAlign = TextAlign.Center,
+                    modifier =
+                        Modifier.fillMaxWidth().semantics(mergeDescendants = true) {
+                            contentDescription = strings.valueDescription
+                            customActions =
+                                listOf(
+                                    CustomAccessibilityAction(strings.increaseDescription) { onIncrease() },
+                                    CustomAccessibilityAction(strings.decreaseDescription) { onDecrease() },
+                                )
+                        },
+                )
+            }
             Text(
                 text = strings.contextLine,
                 style = MaterialTheme.typography.bodySmall,
