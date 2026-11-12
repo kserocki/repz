@@ -58,7 +58,7 @@ Default routing for implementers: technical → their consultant; plan intent �
 2. Create the worktree and branch. Set Linear status to **In Progress**.
 
 ### 1 · Plan (Atlas) → user approval
-1. Spawn `atlas` with the issue, the worktree path and the work-folder path. Atlas writes `plan.md` (scope, open questions, design, **work packages with owner / paths / depends_on / parallel group**, manual test plan with required recordings, acceptance criteria).
+1. Spawn `atlas` with the issue, the worktree path and the work-folder path. Atlas writes `plan.md` (scope, open questions, design, **work packages with owner / paths / depends_on / parallel group**, manual test plan (Android, dark mode; one review recording), acceptance criteria).
 2. Resolve open questions (routing above).
 3. Show the user a short plan summary (packages and owners, what runs in parallel, the test plan) and the path. Post the plan as a comment on the Linear issue.
 4. **Wait for explicit approval.** If the user requests changes, Atlas revises. No implementation before an "ok".
@@ -69,11 +69,11 @@ Default routing for implementers: technical → their consultant; plan intent �
 3. When all packages are done: run the `verify` gates once more on the whole branch (or ask the relevant implementer to). Every gate must be green before QA.
 
 ### 3 · Manual test (Spotter)
-Spawn `spotter` with the worktree path and the work folder. It follows the plan's manual test plan, saves media to `media/` (**recordings for every animation in scope**) and writes `test-report.md`. Failing scenarios don't go back to implementers directly: Coach decides in stage 4.
+Spawn `spotter` with the worktree path and the work folder. It follows the plan's manual test plan, saves media to `media/` (**one Android dark-mode review recording covering every animation in scope, plus a few dark-mode screenshots**; iOS only for iOS-only behaviour) and writes `test-report.md`. Failing scenarios don't go back to implementers directly: Coach decides in stage 4.
 
 ### 4 · Review (Coach)
 Spawn `coach` (fresh) with the worktree path and the work folder. It writes `review-N.md`: `APPROVED` or `CHANGES_REQUESTED`, with changes per **owner**.
-- `CHANGES_REQUESTED`: back to stage 2 only for the owners listed. Then stage 3 (re-test what changed, re-record touched animations), then stage 4 with N+1.
+- `CHANGES_REQUESTED`: back to stage 2 only for the owners listed. Then stage 3 (re-test **only** what changed, one short `r2-android-review.mp4`), then stage 4 with N+1.
 - **Max 3 rounds.** If round 3 still requests changes, stop and bring the open points to the user.
 
 ### 5 · Pull request
