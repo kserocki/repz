@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -52,8 +53,8 @@ private fun KeypadMode.label(): String =
         KeypadMode.Rpe -> stringResource(Res.string.keypad_mode_rpe)
     }
 
-/** Q1 (review-1): shown instead of the full label when that doesn't fit the segment on one line
- * (PL's "Powtórzenia"); EN/RPE are already short, so their value equals [label]. */
+/** Shown instead of the full label when that doesn't fit the segment on one line (PL's
+ * "Powtórzenia"); EN/RPE are already short, so their value equals [label]. */
 @Composable
 private fun KeypadMode.shortLabel(): String =
     when (this) {
@@ -64,11 +65,10 @@ private fun KeypadMode.shortLabel(): String =
 
 /**
  * The Weight/Reps/[RPE] segmented control (DESIGN_SYSTEM §9); hidden when there is only one mode.
- * Every segment shares one [IntrinsicSize.Min] height (review-1 F4): a segment whose label wraps
- * (at 200% font) grows the whole row instead of clipping. The outer [BoxWithConstraints] computes
- * each segment's width once, outside that intrinsic-height row, so [ModeSegmentLabel]'s own width
- * measurement (`BoxWithConstraints`/`SubcomposeLayout`, which doesn't support intrinsic queries)
- * never sits inside a subtree the row needs to query intrinsically.
+ * Every segment shares one [IntrinsicSize.Min] height, so a segment whose label wraps (at 200%
+ * font) grows the whole row instead of clipping. The outer [BoxWithConstraints] computes each
+ * segment's width once, outside that intrinsic-height row, so [ModeSegmentLabel]'s own width
+ * measurement never sits inside a subtree the row needs to query intrinsically.
  */
 @Composable
 internal fun KeypadModeRow(
@@ -82,7 +82,7 @@ internal fun KeypadModeRow(
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
         val segmentWidth = (maxWidth - ModeSegmentGap * (modes.size - 1)) / modes.size
         Row(
-            modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min),
+            modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min).selectableGroup(),
             horizontalArrangement = Arrangement.spacedBy(ModeSegmentGap),
         ) {
             for ((index, mode) in modes.withIndex()) {
@@ -108,7 +108,7 @@ internal fun KeypadModeRow(
                                 .heightIn(min = ModeSegmentHeight)
                                 .clip(shape)
                                 .background(segmentContainerColor)
-                                .clickable(role = Role.Button, onClick = { onModeClick(mode) })
+                                .clickable(role = Role.Tab, onClick = { onModeClick(mode) })
                                 .semantics { selected = isSelected },
                         contentAlignment = Alignment.Center,
                     ) {
@@ -131,9 +131,9 @@ internal fun KeypadModeRow(
 }
 
 /**
- * A mode segment's label (Q1, review-1): measures [fullLabel] at `labelLarge` on one line
- * (`softWrap = false`); if that's wider than [availableWidth], shows [shortLabel] instead, so a
- * single word is never split mid-word (AGENTS §4). The accessible name is always [fullLabel].
+ * A mode segment's label: measures [fullLabel] at `labelLarge` on one line (`softWrap = false`);
+ * if that's wider than [availableWidth], shows [shortLabel] instead, so a single word is never
+ * split mid-word. The accessible name is always [fullLabel].
  */
 @Composable
 private fun ModeSegmentLabel(
