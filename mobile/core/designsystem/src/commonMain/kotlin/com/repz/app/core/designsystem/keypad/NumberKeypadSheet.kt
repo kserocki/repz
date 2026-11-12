@@ -100,9 +100,9 @@ fun NumberKeypadSheet(
     }
 }
 
-/** A plain (non-state) holder: [rememberLatestNonNull] only needs to return a fresh value within
- * the same composition pass that updates it, never to react to a later, independent state read
- * (nit, review-1), so a `mutableStateOf` write during composition isn't needed here. */
+/** A plain (non-state) holder for the latest non-null value seen so far: [rememberLatestNonNull]
+ * only needs a fresh value within the same composition pass that updates it, so a `mutableStateOf`
+ * isn't needed here. */
 private class LatestValueHolder<T>(
     var value: T,
 )
@@ -114,9 +114,9 @@ private fun <T> rememberLatestNonNull(value: T?): T? {
     return holder.value
 }
 
-/** A new value means a different field is now being edited: [NumberKeypadSheetStateful] resets its
- * buffer whenever this changes, instead of recreating the buffer's own state object (review-1
- * round-2, Bug B). Internal (not private) so [retargetKeyOf] is directly unit-testable. */
+/** Identifies which field is being edited, combining the target and the mode: switching either
+ * means a different value is now being typed. [NumberKeypadSheetStateful] resets its buffer
+ * whenever this key changes. Internal (not private) so it's directly unit-testable. */
 internal fun retargetKeyOf(request: NumberKeypadRequest): String = "${request.targetKey}\u0000${request.field.mode.name}"
 
 /** Everything [NumberKeypadSheetStateful] needs from its buffer/dispatch machinery, handed back as
@@ -128,23 +128,17 @@ private class KeypadDispatchState(
 )
 
 /**
- * The buffer and [KeypadDispatchState.dispatch] both keep one stable identity for the lifetime of
- * the call site (review-1 round-2, Bug B): the previous design recreated the buffer's
- * `MutableState` itself via `rememberSaveable(targetKey, mode)`, so retargeting could leave any
- * button whose click handler a skipped recomposition hadn't refreshed yet bound to the discarded,
- * orphaned state object — the display (fed `buffer` as a plain parameter every recomposition)
- * showed the new target correctly, while a stale button kept mutating the old one silently.
- * Retargeting now resets the *value* of an ever-persistent buffer instead, and `dispatch` is
- * `remember`ed once and reads [request]/[onValueChange] through [rememberUpdatedState], so a click
- * handler can never go stale: however old its captured `dispatch` reference, it always reads the
- * one true buffer and the latest callbacks.
+ * Builds the edit buffer and [KeypadDispatchState.dispatch] with one stable identity for the
+ * lifetime of the call site: retargeting resets the buffer's value in place instead of recreating
+ * its `MutableState`, and `dispatch` reads [request], [onValueChange] and the current haptics
+ * through [rememberUpdatedState], so it never closes over a stale instance (ADR-0028).
  */
 @Composable
 private fun rememberKeypadDispatchState(
     request: NumberKeypadRequest,
     onValueChange: (FixedDecimal?) -> Unit,
 ): KeypadDispatchState {
-    val haptics = RepzHaptics.current
+    val currentHaptics = rememberUpdatedState(RepzHaptics.current)
     val currentRequest = rememberUpdatedState(request)
     val currentOnValueChange = rememberUpdatedState(onValueChange)
 
@@ -152,11 +146,14 @@ private fun rememberKeypadDispatchState(
         mutableStateOf(KeypadRules.bufferFor(request.field.value))
     }
     var showLimitError by rememberSaveable { mutableStateOf(false) }
-    var retargetKey by rememberSaveable { mutableStateOf(retargetKeyOf(request)) }
 
+    // A plain (non-state) holder, not a MutableState: retargetKey is pure bookkeeping, always
+    // re-derivable from `request`, so comparing and updating it here doesn't read-then-write a
+    // snapshot state the same composition depends on.
+    val retargetKey = remember { LatestValueHolder(retargetKeyOf(request)) }
     val currentRetargetKey = retargetKeyOf(request)
-    if (currentRetargetKey != retargetKey) {
-        retargetKey = currentRetargetKey
+    if (currentRetargetKey != retargetKey.value) {
+        retargetKey.value = currentRetargetKey
         buffer = KeypadRules.bufferFor(request.field.value)
         showLimitError = false
     }
@@ -173,23 +170,23 @@ private fun rememberKeypadDispatchState(
                 val changed = edit.buffer != buffer
                 buffer = edit.buffer
                 when (edit.rejection) {
-                    // Only an out-of-range refusal shows the limit message (review-1 F7, U5); a
-                    // malformed keystroke (an extra fraction digit, a second separator, Backspace on
-                    // empty) still rejects and fires the same haptic, but was never out of range.
+                    // Only an out-of-range refusal shows the limit message (DESIGN_SYSTEM §13, U5).
+                    // A malformed keystroke (an extra fraction digit, a second separator, backspace
+                    // on empty) still rejects and fires the same haptic, but was never out of range.
                     KeypadRejection.OutOfRange -> {
-                        haptics.reject()
+                        currentHaptics.value.reject()
                         showLimitError = true
                         false
                     }
 
                     KeypadRejection.Format -> {
-                        haptics.reject()
+                        currentHaptics.value.reject()
                         false
                     }
 
                     null -> {
                         if (changed) {
-                            haptics.tick()
+                            currentHaptics.value.tick()
                             showLimitError = false
                             val newValue = KeypadRules.valueOf(buffer)
                             if (newValue != previousValue) currentOnValueChange.value(newValue)
@@ -208,9 +205,9 @@ private fun rememberKeypadDispatchState(
 
 /**
  * Owns the sheet's only state (the edit buffer and the limit-error flag, built by
- * [rememberKeypadDispatchState]) and all haptics; delegates layout to the stateless
- * [NumberKeypadSheetStateless] so that composable (and so previews) can force any buffer/error
- * combination without touching this frozen public entry point (plan T6; Atlas 2026-11-06).
+ * [rememberKeypadDispatchState]) and all haptics. Delegates layout to the stateless
+ * [NumberKeypadSheetStateless], so that composable (and its previews) can render any buffer/error
+ * combination directly, without going through this public entry point's own state.
  */
 @Composable
 private fun NumberKeypadSheetStateful(
@@ -246,14 +243,11 @@ private fun NumberKeypadSheetStateful(
 }
 
 /**
- * Pure layout: every visual state (the typed buffer, the limit-error context line, the selected
- * mode/RPE choice) is a function of [request], [buffer] and [showLimitError], never of its own
- * `remember`ed state. [onInput] is the stateful parent's `dispatch`; previews can instead pass a
- * no-op (`{ true }`) and drive the exact frame they want through [buffer]/[showLimitError] directly
- * — this is what makes the mid-type ("82,|") and over-max-error preview states possible without
- * reopening [NumberKeypadSheet]'s frozen public signature. The body provides `onSurface` as
- * [LocalContentColor] once here, so every child text/icon reads correctly in dark mode by default
- * without a `Surface` (review-1 F1): the sheet itself stays a plain `Column` + `background`.
+ * Pure layout: every visual state is a function of [request], [buffer] and [showLimitError], never
+ * of its own `remember`ed state, so previews can render any buffer/error combination directly by
+ * passing them in. [onInput] is the stateful parent's `dispatch`. Provides `onSurface` as
+ * [LocalContentColor] once here, so every child text/icon reads correctly in dark mode by default,
+ * without a `Surface`.
  */
 @Composable
 internal fun NumberKeypadSheetStateless(
