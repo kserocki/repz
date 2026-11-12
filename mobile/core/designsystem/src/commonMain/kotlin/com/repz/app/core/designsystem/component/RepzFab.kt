@@ -104,7 +104,7 @@ fun RepzFab(
  * corner radius and elevation as [RepzFab]. Its press feedback is the plain `RepzButton` MOT-22
  * corner morph (20 → 12 dp + scale 0.96), **not** MOT-30(a)'s Cookie4 morph: a Cookie4 polygon
  * stretched across this control's wide, non-square bounds renders as an unreadable blob rather than
- * the intended shape (Coach review-1 round, DESIGN_SYSTEM §13, MOTION.md MOT-30/MOT-22).
+ * the intended shape (DESIGN_SYSTEM §13, MOTION.md MOT-30/MOT-22).
  */
 @Composable
 fun RepzExtendedFab(

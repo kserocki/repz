@@ -52,7 +52,7 @@ private const val PRESSED_SEGMENT_SCALE = 0.96f
 /** One option's 4 corner radii (top-start, top-end, bottom-end, bottom-start), as a plain value
  * class so the first/last/middle → outer/inner mapping is testable without a composition. Generic
  * so the same mapping serves both a precomputed [Dp] (tests) and a measured-size-aware [CornerSize]
- * (actual shapes, required change 4). */
+ * (actual shapes). */
 internal data class RepzSegmentCornerRadii<T>(
     val topStart: T,
     val topEnd: T,
@@ -89,8 +89,8 @@ internal fun <T> connectedGroupSegmentCorners(
  *
  * The row measures its height from `IntrinsicSize.Min` and each option declares its own
  * `heightIn(min = GroupHeight)`, so every option shares the tallest option's height even under an
- * unbounded-height parent (a scrolling column/`LazyColumn`, required change 2) — a plain
- * `heightIn(min = GroupHeight)` on the row alone leaves `fillMaxHeight()` a no-op there.
+ * unbounded-height parent (a scrolling column/`LazyColumn`) — a plain `heightIn(min = GroupHeight)`
+ * on the row alone leaves `fillMaxHeight()` a no-op there.
  */
 @Composable
 fun RepzConnectedButtonGroup(

@@ -24,10 +24,10 @@ internal fun pressMorphCornerRadiusPx(
 }
 
 /**
- * A [CornerSize] that reads the shape's real measured size at draw time (Coach review-1, required
- * change 4): the rest radius is half of the *actual* `shapeSize.minDimension`, not a precomputed
- * `height / 2` token, so a button/hero/connected-group/split-button segment stays a true pill even
- * when its label wraps or the font scale grows it past its minimum height.
+ * A [CornerSize] that reads the shape's real measured size at draw time: the rest radius is half of
+ * the *actual* `shapeSize.minDimension`, not a precomputed `height / 2` token, so a
+ * button/hero/connected-group/split-button segment stays a true pill even when its label wraps or
+ * the font scale grows it past its minimum height.
  */
 internal class PressMorphCornerSize(
     private val pressedRadius: Dp,

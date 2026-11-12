@@ -51,9 +51,8 @@ private fun RepzHeroStartButtonDarkPreview() {
     RepzTheme(darkTheme = true) { RepzHeroStartButtonShowcase() }
 }
 
-// Required change 1 (Coach review-1): the real bug only showed up under an unbounded-height parent
-// (the catalog's own verticalScroll), where heightIn(min = HeroHeight) + fillMaxHeight() used to be
-// a no-op. This preview reproduces that exact parent shape so a regression here renders visibly.
+// Reproduces the split button's unbounded-height parent (the catalog's own verticalScroll), so a
+// regression in heightIn(min = HeroHeight) + fillMaxHeight() renders visibly here.
 @Composable
 private fun RepzHeroStartSplitButtonInScrollingColumnShowcase() {
     val startWorkoutLabel = "Start workout"

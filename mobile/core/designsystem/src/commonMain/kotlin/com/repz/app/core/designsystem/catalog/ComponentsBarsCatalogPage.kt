@@ -93,24 +93,15 @@ internal fun ComponentsBarsCatalogPage() {
     }
 }
 
-// Round-2 QA re-reported R12 (bar never collapses) after the Bug-2 width fix above. Re-verified by
-// hand on a clean emulator (swipe, fling and stepped `input motionevent`, both bars, both
-// directions): the connection below is correct and the bars do collapse/re-expand. The failure was
-// environmental (a wedged shared QA emulator plus a leftover background process from an earlier
-// session's "offline" scenario still issuing force-stops/touches mid-test), not this wiring. Kept
-// here as the load-bearing contract so a future edit doesn't accidentally break it: [scrollState]'s
-// `nestedScroll` modifier must sit on an ancestor Box/Column of *both* the top app bar and its
-// scrolling content (the same placement M3's own `Scaffold` sample uses), and the drag must start on
-// the scrolling content itself — a touch that starts only on the bar has nothing to scroll.
+// [scrollState]'s `nestedScroll` modifier must sit on an ancestor Box/Column of both the top app bar
+// and its scrolling content (the same placement M3's own `Scaffold` sample uses), and the drag must
+// start on the scrolling content itself — a touch that starts only on the bar has nothing to scroll.
 @Composable
 private fun TopAppBarScrollDemo(topAppBar: @Composable (RepzTopAppBarScrollState) -> Unit) {
     val scrollState = rememberRepzTopAppBarScrollState()
     Box(modifier = Modifier.fillMaxWidth().height(TopAppBarDemoHeight).repzTopAppBarScroll(scrollState)) {
         Column {
             topAppBar(scrollState)
-            // Required change 8 (Coach review-1, Bug 2): without an explicit size, this LazyColumn
-            // wraps its content to the "Row N" text width instead of filling the demo's width, so a
-            // swipe anywhere but that narrow column misses the list and never collapses the bar.
             LazyColumn(modifier = Modifier.fillMaxWidth().weight(1f)) {
                 items(DEMO_LIST_ITEM_COUNT) { index ->
                     val rowLabel = "$DEMO_LIST_ITEM_PREFIX${index + 1}"

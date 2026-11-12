@@ -197,13 +197,12 @@ private fun RepzFabMenuItemRow(
  * press still morphs the square into Cookie4Sided and scales to 0.96 (MOT-30a); the two motions
  * never overlap in practice since a completed tap always releases the press before the menu opens.
  *
- * Close snap fix (Coach review-1): [cornerRadius] keeps driving the rendered shape — not just the
- * toggle's own size — for as long as it is still animating back down to [FabRestCornerRadius], even
- * after [expanded] has already flipped to `false`. Switching straight to [RepzMorphShape] the
- * instant [expanded] goes false would render that morph's `progress = 0f` start shape (a plain 20 dp
- * square) immediately, throwing away the circle → square animation in one frame. Once [cornerRadius]
- * actually reaches [FabRestCornerRadius], the two shapes coincide exactly, so the handover is
- * seamless.
+ * [cornerRadius] keeps driving the rendered shape — not just the toggle's own size — for as long as
+ * it is still animating back down to [FabRestCornerRadius], even after [expanded] has already
+ * flipped to `false`. Switching straight to [RepzMorphShape] the instant [expanded] goes false would
+ * render that morph's `progress = 0f` start shape (a plain 20 dp square) immediately, throwing away
+ * the circle → square animation in one frame. Once [cornerRadius] actually reaches
+ * [FabRestCornerRadius], the two shapes coincide exactly, so the handover is seamless.
  */
 @Composable
 private fun RepzFabMenuToggle(

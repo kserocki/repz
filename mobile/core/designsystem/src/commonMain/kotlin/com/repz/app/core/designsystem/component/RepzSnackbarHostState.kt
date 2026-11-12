@@ -54,9 +54,9 @@ class RepzSnackbarHostState internal constructor(
      * ([undoSnackbarTimeoutMillis]). Returns `true` only if [undoLabel] was tapped before that.
      *
      * [showWithAction] also shows `Indefinite` whenever M3's own default applies (any action label),
-     * so [RepzSnackbarHost] tells the two apart by the visuals' type (`is RepzUndoSnackbarVisuals`),
-     * not by [SnackbarDuration] — otherwise every `showWithAction` caller (e.g. the auth screens'
-     * Retry snackbar) would also auto-dismiss after 6 s, which M3's own behaviour never does.
+     * so [RepzSnackbarHost] tells the two apart with [autoDismissesAfterUndoTimeout], not by
+     * [SnackbarDuration] — otherwise every `showWithAction` caller (e.g. the auth screens' Retry
+     * snackbar) would also auto-dismiss after 6 s, which M3's own behaviour never does.
      */
     suspend fun showUndo(
         message: String,
@@ -109,6 +109,10 @@ internal class RepzUndoSnackbarVisuals(
     override val duration: SnackbarDuration = SnackbarDuration.Indefinite
 }
 
+/** True only for a snackbar shown by [RepzSnackbarHostState.showUndo] — the one kind
+ * [RepzSnackbarHost] auto-dismisses on a timeout. */
+internal fun SnackbarVisuals.autoDismissesAfterUndoTimeout(): Boolean = this is RepzUndoSnackbarVisuals
+
 /**
  * Board 06: 48 dp min height, `shapes.small`, M3's own `inverseSurface`/`inverseOnSurface`, the
  * action in `inversePrimary` at `labelLargeEmphasized` (M3's own action style defaults to the
@@ -124,7 +128,7 @@ fun RepzSnackbarHost(
     modifier: Modifier = Modifier,
 ) {
     SnackbarHost(hostState = state.delegate, modifier = modifier) { data ->
-        if (data.visuals is RepzUndoSnackbarVisuals) {
+        if (data.visuals.autoDismissesAfterUndoTimeout()) {
             val accessibilityManager = LocalAccessibilityManager.current
             LaunchedEffect(data) {
                 val timeoutMillis =

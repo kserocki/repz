@@ -39,10 +39,9 @@ private fun formatMinutesSeconds(totalSeconds: Float): String {
 }
 
 /** `components-controls` (DESIGN_SYSTEM §9 filled `RepzTextField`/`RepzSwitch`/`RepzSlider`): the
- * filled field (unfocused, since an auto-focus previously raised the soft keyboard and hid the
- * slider/haptic log below it, round-1 review required change 9) and in error, the switch
- * on/off/disabled, the slider from 0 to 5:00 in 15 s steps, and the catalog haptic log proving each
- * step crossed fires Tick (MOTION.md §3). */
+ * filled field (unfocused, so the soft keyboard doesn't hide the slider/haptic log below it) and in
+ * error, the switch on/off/disabled, the slider from 0 to 5:00 in 15 s steps, and the catalog haptic
+ * log proving each step crossed fires Tick (MOTION.md §3). */
 @Composable
 internal fun ComponentsControlsCatalogPage() {
     val platformPerformer = rememberPlatformHapticPerformer()
@@ -119,9 +118,6 @@ private fun SwitchRow(
         horizontalArrangement = Arrangement.spacedBy(RepzSpacing.sm),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        // Required change 9 (Coach review-1, Bug 3): without weight(1f) the label took the Row's
-        // whole width, pushing the switch out past the screen edge where a long or 200 % label
-        // overlapped it instead of wrapping.
         Text(label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
         RepzSwitch(checked = checked, onCheckedChange = onCheckedChange, enabled = enabled)
     }

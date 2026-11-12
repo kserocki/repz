@@ -5,6 +5,7 @@ import androidx.compose.material3.SnackbarVisuals
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class RepzUndoSnackbarVisualsTest {
     @Test
@@ -18,16 +19,22 @@ class RepzUndoSnackbarVisualsTest {
     }
 
     @Test
-    fun given_aShowWithActionStyleIndefiniteSnackbar_whenCheckingUndoType_thenItIsNotAnUndoSnackbar() {
-        // Reproduces `showWithAction`'s regression (Coach review-1, required change 7): M3's own
-        // showSnackbar(message, actionLabel) defaults to Indefinite whenever an action label is set,
-        // so RepzSnackbarHost must tell this apart from showUndo's snackbar by type, not duration.
-        // Declared as the common SnackbarVisuals supertype so the `is` check below is a real runtime
-        // check, not a statically-impossible one between two unrelated final classes.
+    fun given_anUndoSnackbar_whenCheckingAutoDismiss_thenTrue() {
+        val visuals = RepzUndoSnackbarVisuals(message = "Set removed", actionLabel = "Undo")
+
+        assertTrue(visuals.autoDismissesAfterUndoTimeout())
+    }
+
+    @Test
+    fun given_aShowWithActionStyleIndefiniteSnackbar_whenCheckingAutoDismiss_thenFalse() {
+        // M3's own showSnackbar(message, actionLabel) defaults to Indefinite whenever an action
+        // label is set, so duration alone can't tell a showWithAction snackbar apart from an undo
+        // one. Declared as the common SnackbarVisuals supertype so the check below is a real
+        // runtime check, not a statically-impossible one between two unrelated final classes.
         val retrySnackbar: SnackbarVisuals = FakeIndefiniteActionVisuals(message = "Couldn't save", actionLabel = "Retry")
 
         assertEquals(SnackbarDuration.Indefinite, retrySnackbar.duration)
-        assertFalse(retrySnackbar is RepzUndoSnackbarVisuals)
+        assertFalse(retrySnackbar.autoDismissesAfterUndoTimeout())
     }
 }
 

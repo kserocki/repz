@@ -141,8 +141,8 @@ fun RepzHeroStartButton(
  * U2(g): only the pressed segment morphs — its outer corners go full → [HeroPressedRadius] and it
  * scales to 0.96; the [HeroSplitInnerRadius] corners shared between the two segments never move.
  * Both segments are at least [HeroHeight] tall and share the Row's `IntrinsicSize.Min`-measured
- * height, so a wrapped label grows both segments together instead of leaving one stunted (required
- * change 1, same fix pattern as [RepzConnectedButtonGroup]/[RepzSplitButton]).
+ * height, so a wrapped label grows both segments together instead of leaving one stunted (same fix
+ * pattern as [RepzConnectedButtonGroup]/[RepzSplitButton]).
  */
 @Composable
 fun RepzHeroStartSplitButton(

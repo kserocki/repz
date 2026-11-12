@@ -59,8 +59,7 @@ private const val PRESSED_SEGMENT_SCALE = 0.96f
  *
  * The row measures its height from `IntrinsicSize.Min` and each segment declares its own
  * `heightIn(min = SplitButtonHeight)`, so a wrapped label (PL or a 200 % font scale) grows the
- * button instead of being clipped by a fixed height (required change 3, AGENTS.md §4 "buttons wrap,
- * never truncate").
+ * button instead of being clipped by a fixed height (AGENTS.md §4 "buttons wrap, never truncate").
  */
 @Composable
 fun RepzSplitButton(
