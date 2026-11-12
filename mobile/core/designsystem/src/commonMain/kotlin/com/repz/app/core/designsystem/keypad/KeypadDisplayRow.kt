@@ -41,20 +41,24 @@ import com.repz.app.core.designsystem.theme.RepzSpacing
 import com.repz.app.core.designsystem.theme.RepzTheme
 import org.jetbrains.compose.resources.stringResource
 
-// review-1 F2/Q2: the hero stays on one line from "" to "2204.62", at up to 200% font, on a
-// 360 dp-wide screen, so the ±/chips/grid never move while typing. `numericHero`'s own wdth 112
-// and tabular figures are kept (DESIGN_SYSTEM §13); only size/line-height/tracking are resized to
-// 52/56, shrinking in 1 sp steps down to 22 sp (Q2) so the longest value always fits one line.
+// The hero stays on one line from "" to "2204.62", at up to 200% font, on a 360 dp-wide screen, so
+// the ±/chips/grid never move while typing. `numericHero`'s own wdth 112 and tabular figures are
+// kept (DESIGN_SYSTEM §13); only size/line-height/tracking are resized to 52/56, shrinking in 1 sp
+// steps down to 22 sp so the longest value always fits one line.
 private val HeroMaxFontSize = 52.sp
 private val HeroMinFontSize = 22.sp
 private val HeroStepSize = 1.sp
 private val HeroLineHeight = 56.sp
 private val HeroLetterSpacing = (-2f / 52f).em
 
-// User decision (round-2): cap the hero's own font scale at 2.0x (iOS AX5 is roughly 3.1x), so it
-// never grows past what the 52/56 sizing was designed for, while the mode labels and every other
-// text in the sheet keep following the real system font scale. DESIGN_SYSTEM §13, ADR-0028 amendment.
+// Caps the hero's own font scale at 2.0x (iOS AX5 is roughly 3.1x), so it never grows past what the
+// 52/56 sizing was designed for, while the mode labels and every other text in the sheet keep
+// following the real system font scale (DESIGN_SYSTEM §13, ADR-0028).
 private const val HERO_MAX_FONT_SCALE = 2f
+
+/** The context line always reserves this many lines, so it keeps a fixed height whether it's
+ * showing the normal context text or the (differently sized) limit message. */
+private const val CONTEXT_LINE_LINES = 2
 
 /** Every string [KeypadDisplayRow] shows or announces, computed once per recomposition so the row
  * composable itself stays a plain layout assembly. */
@@ -160,6 +164,15 @@ private fun rememberKeypadDisplayStrings(
     )
 }
 
+/** Caps the hero's own font scale at [HERO_MAX_FONT_SCALE] without affecting any other text. */
+@Composable
+private fun rememberHeroDensity(): Density {
+    val ambientDensity = LocalDensity.current
+    return remember(ambientDensity) {
+        Density(density = ambientDensity.density, fontScale = ambientDensity.fontScale.coerceAtMost(HERO_MAX_FONT_SCALE))
+    }
+}
+
 /** ± (60 dp) either side of the numeric display (`numericHero` 52 sp); the display never animates
  * (MOTION.md §1). The context line swaps to the limit message in `error` after a refusal (U5). */
 @Composable
@@ -193,12 +206,7 @@ internal fun KeypadDisplayRow(
                     letterSpacing = HeroLetterSpacing,
                     lineHeightStyle = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.None),
                 )
-            val ambientDensity = LocalDensity.current
-            val heroDensity =
-                remember(ambientDensity) {
-                    Density(density = ambientDensity.density, fontScale = ambientDensity.fontScale.coerceAtMost(HERO_MAX_FONT_SCALE))
-                }
-            CompositionLocalProvider(LocalDensity provides heroDensity) {
+            CompositionLocalProvider(LocalDensity provides rememberHeroDensity()) {
                 Text(
                     text = strings.displayText,
                     style = heroStyle,
@@ -222,6 +230,11 @@ internal fun KeypadDisplayRow(
                 text = strings.contextLine,
                 style = MaterialTheme.typography.bodySmall,
                 color = if (showLimitError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
+                // Reserves 2 lines always, so the grid below never moves when the limit message
+                // (a different length than the normal context line) appears or clears at large
+                // font scales, where either line can wrap.
+                minLines = CONTEXT_LINE_LINES,
+                maxLines = CONTEXT_LINE_LINES,
             )
         }
         PlusMinusButton(
