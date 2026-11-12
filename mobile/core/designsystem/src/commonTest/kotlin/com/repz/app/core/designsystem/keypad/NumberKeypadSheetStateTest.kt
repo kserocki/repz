@@ -32,9 +32,8 @@ private fun requestFor(
 
 /**
  * [retargetKeyOf] is what [NumberKeypadSheetStateful] compares every recomposition to decide
- * whether to reset its buffer (review-1 round-2, Bug B: a stale, orphaned buffer object silently
- * kept mutating after a mode/unit switch). These tests cover the detection half of the fix: the
- * key must change whenever either component of the target changes, and stay identical otherwise.
+ * whether to reset its buffer. These tests cover the key's detection logic: it must change
+ * whenever either component of the target changes, and stay identical otherwise.
  */
 class NumberKeypadSheetStateTest {
     @Test

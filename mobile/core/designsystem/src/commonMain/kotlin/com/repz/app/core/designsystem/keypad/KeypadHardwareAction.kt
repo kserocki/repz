@@ -70,9 +70,8 @@ internal fun KeyEvent.toKeypadHardwareActionOrNull(): KeypadHardwareAction? {
 /**
  * Routes a hardware key-down to [onInput] (an edit, [KeypadInput]) or to [onNext]/[onDismiss] (a
  * sheet-level [KeypadHardwareAction]), per plan §3.5 (K11: digits, the decimal separator,
- * Backspace, Delete → Clear, Enter → Next, Escape → dismiss, DPad Up/Down → ±). Extracted out of
- * `NumberKeypadSheetStateless` (review-1 F5) so that composable's body stays a plain layout
- * assembly.
+ * Backspace, Delete → Clear, Enter → Next, Escape → dismiss, DPad Up/Down → ±). Kept outside
+ * `NumberKeypadSheetStateless` so that composable's body stays a plain layout assembly.
  */
 internal fun Modifier.keypadHardwareKeys(
     onInput: (KeypadInput) -> Boolean,

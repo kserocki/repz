@@ -9,11 +9,11 @@ import com.repz.app.core.designsystem.format.RepzNumberSymbols
 import com.repz.app.core.designsystem.theme.RepzTheme
 
 /**
- * Isolates [KeypadGrid] from the rest of the sheet (review-1 round-2, Bug A): a layout regression
- * that collapses a row to 0×0 (the decimal/0/hide row, or RPE's middle choice row and hide key) is
- * immediately, unambiguously visible here. Every key position — all 12 main-area keys plus
- * Backspace/Clear/Next across both rail spans in Weight/Reps mode, or the 9 RPE choices plus hide/
- * Clear/Next in RPE mode — must render with a visible, non-zero, tappable size.
+ * Isolates [KeypadGrid] from the rest of the sheet, so a layout regression that collapses a row to
+ * 0×0 (the decimal/0/hide row, or RPE's middle choice row and hide key) is immediately,
+ * unambiguously visible here. Every key position — all 12 main-area keys plus Backspace/Clear/Next
+ * across both rail spans in Weight/Reps mode, or the 9 RPE choices plus hide/Clear/Next in RPE
+ * mode — must render with a visible, non-zero, tappable size.
  */
 @Composable
 private fun KeypadGridPreview(

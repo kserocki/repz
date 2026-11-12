@@ -81,10 +81,10 @@ sealed interface KeypadInput {
 }
 
 /**
- * Why [KeypadRules.apply] refused an input (review-1 F7, U5): [OutOfRange] is the only reason the
- * limit message replaces the context line; [Format] (an extra fraction digit, a second separator,
- * Backspace on empty, a reps separator reachable only from a hardware keyboard) just stops the
- * keystroke and its haptic without implying the value left `min..max`.
+ * Why [KeypadRules.apply] refused an input (DESIGN_SYSTEM §13, U5): [OutOfRange] is the only
+ * reason the limit message replaces the context line; [Format] (an extra fraction digit, a second
+ * separator, Backspace on empty, a reps separator reachable only from a hardware keyboard) just
+ * stops the keystroke and its haptic without implying the value left `min..max`.
  */
 enum class KeypadRejection { OutOfRange, Format }
 

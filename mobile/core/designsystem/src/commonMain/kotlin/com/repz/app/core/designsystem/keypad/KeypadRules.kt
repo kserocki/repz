@@ -10,8 +10,8 @@ private const val LEADING_ZERO = "0"
  * The pure editing rules behind `NumberKeypadSheet` (plan §3.4, no Compose): untouched-replace /
  * touched-append typing, the U5 "refuse past the limit" rule, and ± stepping without snapping
  * (ADR-0022). [apply] never throws; an input that can't be accepted comes back with the buffer
- * unchanged and [KeypadEdit.rejection] set (review-1 F7: [KeypadRejection.OutOfRange] vs
- * [KeypadRejection.Format]) — except a key that doesn't apply to the field's mode at all
+ * unchanged and [KeypadEdit.rejection] set to [KeypadRejection.OutOfRange] or
+ * [KeypadRejection.Format] — except a key that doesn't apply to the field's mode at all
  * (digits/separator/backspace in RPE mode), which is silently ignored (`rejection = null`): it can
  * only be reached through a hardware keyboard, since the sheet hides those keys in RPE mode.
  */

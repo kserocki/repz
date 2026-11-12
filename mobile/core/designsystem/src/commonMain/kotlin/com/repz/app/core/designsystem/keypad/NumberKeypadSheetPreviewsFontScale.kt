@@ -32,9 +32,9 @@ private fun FontScale200DarkPreview() {
     KeypadPreview(darkTheme = true, request = previewWeightRequest())
 }
 
-// review-1 F2/Q2: the longest possible value ("2204.62" lb) on a 360 dp-wide phone, at 200% and
-// 150% font — the hero must still render on one line (auto-shrinking down to 22 sp) and the row's
-// height must stay fixed, so the ±/chips/grid below it never move.
+// The longest possible value ("2204.62" lb) on a 360 dp-wide phone, at 200% and 150% font — the
+// hero must still render on one line (auto-shrinking down to 22 sp) and the row's height must stay
+// fixed, so the ±/chips/grid below it never move.
 private val HERO_MAX_LB = FixedDecimal(220_462)
 private val HERO_MAX_LB_STEP = FixedDecimal(500)
 

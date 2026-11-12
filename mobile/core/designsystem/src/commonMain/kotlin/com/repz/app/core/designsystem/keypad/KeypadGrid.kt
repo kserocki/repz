@@ -20,12 +20,12 @@ import com.repz.app.core.designsystem.format.RepzNumberSymbols
 private val DIGIT_ROWS: List<List<Int>> = listOf(listOf(1, 2, 3), listOf(4, 5, 6), listOf(7, 8, 9))
 private const val RPE_CHOICES_PER_ROW = 3
 
-/** A floor of [KeypadKeySize], stretched to match whichever key its [KeyRow] grows to (review-1
- * F3: a wrapped "Wyczyść" at 200% PL, plan §3.5 "keys keep 52 dp minimum and grow"). */
+/** A floor of [KeypadKeySize], stretched to match whichever key its [KeyRow] grows to, e.g. a
+ * wrapped "Wyczyść" at 200% PL (plan §3.5 "keys keep 52 dp minimum and grow"). */
 private fun Modifier.gridKeyHeight(): Modifier = heightIn(min = KeypadKeySize).fillMaxHeight()
 
-/** A row whose own height is the tallest of its keys' min-intrinsic heights (review-1 F3), so a
- * key that needs more room (its rail key included) grows the whole row instead of clipping. */
+/** A row whose own height is the tallest of its keys' min-intrinsic heights, so a key that needs
+ * more room (its rail key included) grows the whole row instead of clipping. */
 @Composable
 private fun KeyRow(
     modifier: Modifier = Modifier,
@@ -57,13 +57,9 @@ private fun RowScope.RpeChoiceCells(
 }
 
 /**
- * A two-row block next to a spanning rail key (Next or RPE's Clear), sized by [IntrinsicSize.Min]
- * and split evenly between its two rows via `weight(1f)` (review-1 round-2, Bug A). Without the
- * rows' own `weight(1f)`, each row independently claimed the whole block's `fillMaxHeight()` budget
- * passed down by the outer [KeyRow], so the first row consumed it all and the second collapsed to
- * 0×0 — invisible and untappable (uiautomator `bounds=0,0,0,0`), confirmed on both the digit grid's
- * decimal/0/hide row and RPE's second choice row. Splitting the resolved intrinsic height evenly
- * between exactly two weighted rows removes that ambiguity entirely.
+ * Two rows next to a spanning rail key (Next or RPE's Clear), sized by [IntrinsicSize.Min] and
+ * split evenly between the two rows via `weight(1f)`, so the rail key beside them always matches
+ * their combined height (ADR-0028).
  */
 @Composable
 private fun RowScope.TwoRowKeyColumn(
@@ -80,7 +76,7 @@ private fun RowScope.TwoRowKeyColumn(
  * Weight/reps rows (DESIGN_SYSTEM §9, plan §3.5; row-major "1 2 3 backspace / 4 5 6 Clear / 7 8 9
  * Next / . 0 keyboard_hide"): rows 1-2 each share one [KeyRow] height with their rail key
  * (Backspace, then Clear); row 3-4 sit in a two-row column next to Next, inside one more [KeyRow]
- * so Next's height always matches that column's (review-1 F3).
+ * so Next's height always matches that column's.
  */
 @Composable
 private fun DigitKeyRows(
@@ -150,7 +146,7 @@ private fun DigitKeyRows(
  * RPE mode's rows (U2 option a): the 9 [KeypadField.choices] replace digits 1-9 in the same 3x3
  * positions; row 4 becomes a full-width hide key. The rail is a taller Clear (rows 1-2, no
  * Backspace in RPE mode) and Next (row 3 + the hide row), each matching its own two-row column's
- * height the same way [DigitKeyRows] does (review-1 F3).
+ * height the same way [DigitKeyRows] does.
  */
 @Composable
 private fun RpeKeyRows(

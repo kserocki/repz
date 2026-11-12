@@ -33,9 +33,8 @@ import com.repz.app.core.designsystem.keypad.NumberKeypadRequest
 import com.repz.app.core.designsystem.keypad.NumberKeypadSheet
 import com.repz.app.core.designsystem.theme.RepzSpacing
 
-/** A real selectable kg/lb control (review-1 F8): both options stay enabled, the current unit is
- * drawn selected and exposed as `selected`, the same pattern as the sheet's own mode row — instead
- * of reading the current unit from which button is *disabled*, which reads inverted. */
+/** A selectable kg/lb control: both options stay enabled, and the current unit is drawn selected
+ * and exposed as `selected`, the same pattern as the sheet's own mode row. */
 @Composable
 private fun CatalogWeightUnitToggle(
     selected: CatalogWeightUnit,
@@ -64,7 +63,7 @@ private fun CatalogWeightUnitToggle(
     }
 }
 
-/** The matching field for [mode], from each mode's own remembered value (review-1 F9). */
+/** The matching field for [mode], from each mode's own remembered value. */
 private fun catalogFieldFor(
     mode: KeypadMode,
     unit: CatalogWeightUnit,
@@ -88,10 +87,9 @@ private fun catalogNextActionFor(mode: KeypadMode): KeypadNextAction =
     }
 
 /**
- * Shared body for the three interactive catalog pages (review-1 F9): keeps the selected mode in
- * state and builds the matching field, the way a real ViewModel will — a mode tap re-renders the
- * sheet in that mode (and resets the buffer, proving the `targetKey + mode` keying), rather than
- * always showing [initialMode]'s field regardless of which segment is tapped.
+ * Shared body for the three interactive catalog pages: keeps the selected mode in state and
+ * builds the matching field, the way a real ViewModel will. A mode tap re-renders the sheet in
+ * that mode and resets the buffer (the `targetKey + mode` keying).
  */
 @Composable
 private fun InteractiveKeypadCatalogPage(
