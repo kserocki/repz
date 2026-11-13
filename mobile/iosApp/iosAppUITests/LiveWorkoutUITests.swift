@@ -1,8 +1,8 @@
 import XCTest
 
-/// Live workout (C10) end-to-end flows (REP-34 plan §6.2, W1): starting an empty workout and from
-/// a template, adding exercises, the keypad entry/Next flow, completing sets (incl. the Q5
-/// reps-zero rule), swipe-to-delete with Undo, notes, reorder, discard and Finish.
+/// Live workout end-to-end flows: starting an empty workout and from a template, adding
+/// exercises, the keypad entry/Next flow, completing sets (incl. the reps-zero rule),
+/// swipe-to-delete with Undo, notes, renaming, reorder, discard and Finish.
 ///
 /// Needs the API reachable at `localhost:3000` (`pnpm dev`, migrated DB). `testStartEmptyAddExerciseCompleteDeleteUndo`
 /// registers a brand-new account, like `AuthFlowUITests`. The other two tests need a pre-seeded
@@ -13,7 +13,7 @@ import XCTest
 /// `-only-testing:iosAppUITests/LiveWorkoutUITests/<method>`.
 ///
 /// Every element below is found the same way `AuthFlowUITests` does: by `accessibilityIdentifier`
-/// (Compose `Modifier.testTag`, per §3.10) where the live-workout components expose one, by visible
+/// (Compose `Modifier.testTag`) where the live-workout components expose one, by visible
 /// label text otherwise (card-menu rows, the keypad's digit/decimal/Next keys, snackbar actions).
 /// Every tap waits for its element first (`tap(identifier:)`/`tap(label:)`): the live workout's
 /// screens have their own loading states and sheet slide-in animations, so an element that will
@@ -39,16 +39,17 @@ final class LiveWorkoutUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
-        // Forced regardless of the host Mac's own region, so "82.5 kg"/"Decimal separator" (AC5,
-        // EN default) are deterministic; Spotter's own PL pass (A20/I6) is a separate concern.
+        // Forced regardless of the host Mac's own region, so "82.5 kg"/"Decimal separator"
+        // (EN default) are deterministic; Spotter's own PL pass is a separate concern.
         app.launchArguments += ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
     }
 
-    /// I1 (A2-A5 incl. keypad entry, A8, A10 equivalents): start an empty workout, add one exercise
-    /// from the picker, add a second set, exercise the Q5 "reps 0" rule on it, complete it, then
-    /// run the full keypad entry + Next flow (typed digits, the decimal separator, retargeting,
-    /// tap-outside dismissal) on the first set, complete both, and finally swipe-delete a third set
-    /// with Undo (restore, then let the snackbar expire) and confirm a start-to-end swipe is a no-op.
+    /// Start an empty workout, add one exercise from the picker, add a second set, exercise the
+    /// "reps 0" rule on it (completing an untouched set opens the keypad instead of completing it),
+    /// complete it, then run the full keypad entry + Next flow (typed digits, the decimal separator,
+    /// retargeting, tap-outside dismissal) on the first set, complete both, and finally swipe-delete
+    /// a third set with Undo (restore, then let the snackbar expire) and confirm a start-to-end
+    /// swipe is a no-op.
     func testStartEmptyAddExerciseCompleteDeleteUndo() throws {
         ensureSignedOut()
         registerNewAccount()
@@ -76,26 +77,26 @@ final class LiveWorkoutUITests: XCTestCase {
         scrollToElement(identifier: "card_0_add_set", reason: "card_0_add_set not found").tap()
         let set01Check = scrollToElement(identifier: "set_0_1_check", reason: "set_0_1 was not added")
 
-        // Q5: completing an untouched (reps 0) set doesn't complete it, it opens the keypad on reps.
+        // Completing an untouched (reps 0) set doesn't complete it, it opens the keypad on reps.
         assertLabel(set01Check, contains: "Complete set 2")
         set01Check.tap()
         XCTAssertFalse(
             element(identifier: "live_add_exercise").exists,
             "Tapping check on a reps-0 set should open the keypad (bottom bar hidden), not complete it"
         )
-        assertLabel(set01Check, contains: "for 0 reps", "Q5 should not complete the set")
+        assertLabel(set01Check, contains: "for 0 reps", "Completing a reps-0 set should not complete it")
 
         tap(label: "5")
         tap(label: "Done")
         XCTAssertTrue(element(identifier: "live_add_exercise").waitForExistence(timeout: 5), "Keypad did not close after Done")
-        assertLabel(set01Check, contains: "for 5 reps", "Reps typed via Q5's keypad were not saved")
+        assertLabel(set01Check, contains: "for 5 reps", "Reps typed via the keypad were not saved")
 
         set01Check.tap()
         assertLabel(set01Check, contains: "Mark set 2 as not done", "set_0_1 should complete now that reps > 0")
         XCTAssertTrue(liveFinish.isEnabled, "Finish should enable once a set is completed")
 
-        // A5: full keypad entry on set 0 - digits, the decimal separator, Next (Weight -> Reps),
-        // then dismiss by tapping outside the sheet instead of following Next into the other set.
+        // Full keypad entry on set 0 - digits, the decimal separator, Next (Weight -> Reps), then
+        // dismiss by tapping outside the sheet instead of following Next into the other set.
         scrollToElement(identifier: "set_0_0_weight", reason: "set_0_0_weight not found").tap()
         XCTAssertFalse(element(identifier: "live_add_exercise").exists, "Keypad should hide the bottom bar")
         tap(label: "8")
@@ -124,7 +125,7 @@ final class LiveWorkoutUITests: XCTestCase {
         )
         attach("ios-complete-sets")
 
-        // A10: swipe-to-delete + Undo on a third, untouched set.
+        // Swipe-to-delete + Undo on a third, untouched set.
         scrollToElement(identifier: "card_0_add_set", reason: "card_0_add_set not found").tap()
         let set02 = scrollToElement(identifier: "set_0_2", reason: "set_0_2 was not added")
 
@@ -150,9 +151,10 @@ final class LiveWorkoutUITests: XCTestCase {
         XCTAssertTrue(element(identifier: "set_0_1_check").waitForExistence(timeout: 3), "A start-to-end swipe must not delete the row")
     }
 
-    /// I2 (A7, A11, A13, A17 equivalents): start the seeded "Push A" template (confirming the Q4
-    /// prefill), add exercise notes and confirm they survive a minimize/resume round trip, attempt
-    /// the reorder-mode drag, then walk the discard dialog both ways (Keep training, then Discard).
+    /// Start the seeded "Push A" template (confirming the no-history prefill), add exercise notes
+    /// and confirm they survive a minimize/resume round trip, rename the workout (including
+    /// restoring the last name when the new one is left blank), attempt the reorder-mode drag,
+    /// then walk the discard dialog both ways (Keep training, then Discard).
     func testTemplateReorderNotesDiscard() throws {
         try signInToSeededAccount()
         ensureNoActiveWorkout()
@@ -165,19 +167,10 @@ final class LiveWorkoutUITests: XCTestCase {
         assertLabel(element(identifier: "live_name"), contains: "Push A", "Workout name should be the template's name")
 
         let set00Check = scrollToElement(identifier: "set_0_0_check", direction: .up, reason: "set_0_0_check not found")
-        assertLabel(set00Check, contains: "for 6 reps", "Q4: a template row with no history should prefill reps to the bottom of its range")
+        assertLabel(set00Check, contains: "for 6 reps", "A template row with no history should prefill reps to the bottom of its range")
         attach("ios-live-template")
 
-        // A11: exercise notes persist across minimize/resume.
-        //
-        // KNOWN APP BUG (not test-fixable, see impl-log.md "Swift · round 2 · W1 finish"): tapping
-        // "Notes" here never produces a `card_1_notes` tag or a visible notes row, confirmed with a
-        // full, unscrolled accessibility-tree dump (every other element of all 3 cards present and
-        // correctly tagged) and a screenshot taken immediately after the tap (no extra row rendered
-        // between the subtitle and the column headers either). The real assertion below is left
-        // unweakened for when the bug is fixed; skipped here (not failed) so the suite stays honest
-        // about a known, already-reported finding instead of reporting a fresh regression every run.
-        try XCTSkip("Notes row not rendered on iOS after menu tap — see impl-log W1 finish")
+        // Exercise notes persist across minimize/resume.
         scrollToElement(identifier: "card_1_menu", reason: "card_1_menu not found").tap()
         tap(label: "Notes")
         let notesField = scrollToElement(identifier: "card_1_notes", reason: "card_1_notes field did not appear")
@@ -185,7 +178,14 @@ final class LiveWorkoutUITests: XCTestCase {
         notesField.typeText("Pause on chest")
         Thread.sleep(forTimeInterval: 1) // outlasts the 500 ms notes debounce so the draft is saved before we navigate away
 
-        tap(identifier: "live_minimize")
+        // While the notes field's on-screen keyboard is up, `live_minimize` (the fixed header's own
+        // button, no app code applies any ime/keyboard inset here) is reported at a corrupted,
+        // off-screen frame - the same accessibility-bridge limitation documented in the class doc,
+        // now affecting a pinned header element instead of a scrolled LazyColumn item. A raw
+        // coordinate tap at its known on-screen position (same technique as tapOutsideKeypad())
+        // reaches the real, correctly-rendered button instead of going through the broken lookup.
+        tapRawCoordinate(dx: 0.086, dy: 0.093)
+
         let trainResume = element(identifier: "train_resume")
         XCTAssertTrue(trainResume.waitForExistence(timeout: 10), "Minimize did not return to Train")
         trainResume.tap()
@@ -194,8 +194,28 @@ final class LiveWorkoutUITests: XCTestCase {
         XCTAssertEqual(notesAfterResume.label, "Pause on chest", "Notes text did not survive minimize/resume")
         attach("ios-notes")
 
-        // A13: reorder mode; the drag itself is a best-effort XCUITest gesture (noted in the impl
-        // log either way, per the task's gesture fallback instruction).
+        // Rename: tap the name to edit it, clear the old value and type a new one, then finish with
+        // the keyboard's Done key (the field's own `KeyboardActions(onDone = …)`, more reliable than
+        // tapping elsewhere since it's wired for exactly this). A blank name on Done restores the
+        // last non-empty name rather than saving blank.
+        tap(identifier: "live_name")
+        let nameField = element(identifier: "live_name")
+        XCTAssertTrue(nameField.waitForExistence(timeout: 5), "live_name field did not appear in edit mode")
+        clearText(nameField)
+        nameField.typeText("Push A heavy")
+        nameField.typeText("\n")
+        assertLabel(element(identifier: "live_name"), contains: "Push A heavy", "Renaming the workout did not save the new name")
+        attach("ios-rename")
+
+        tap(identifier: "live_name")
+        let nameFieldAgain = element(identifier: "live_name")
+        XCTAssertTrue(nameFieldAgain.waitForExistence(timeout: 5), "live_name field did not reappear in edit mode")
+        clearText(nameFieldAgain)
+        nameFieldAgain.typeText("\n")
+        assertLabel(element(identifier: "live_name"), contains: "Push A heavy", "A blank rename should restore the last name, not save blank")
+
+        // Reorder mode; the drag itself is a best-effort XCUITest gesture (noted in the impl log
+        // either way).
         scrollToElement(identifier: "card_0_menu", reason: "card_0_menu not found").tap()
         tap(label: "Reorder")
         let row0 = scrollToElement(identifier: "reorder_row_0", reason: "Reorder mode did not open")
@@ -211,15 +231,15 @@ final class LiveWorkoutUITests: XCTestCase {
             attach("ios-reorder-drag-moved")
         } else {
             // The long-press-drag gesture isn't reliably drivable through XCUITest/Compose's pointer
-            // input bridge on this host (noted in the impl log for Spotter's manual A13/I2 pass);
-            // reorder mode's own entry/exit and the Move up/down accessibility actions (VoiceOver,
-            // I7) are Spotter's job, not re-asserted here as a hard failure.
+            // input bridge on this host (noted in the impl log for Spotter's manual pass); reorder
+            // mode's own entry/exit and the Move up/down accessibility actions (VoiceOver) are
+            // Spotter's job, not re-asserted here as a hard failure.
             add(XCTAttachment(string: "Reorder drag did not change row order; see impl-log.md deviations."))
         }
         tap(identifier: "reorder_done")
         scrollToElement(identifier: "card_2", reason: "Done did not return to the normal card list")
 
-        // A17: discard, first cancelled, then confirmed, with at least one completed set.
+        // Discard, first cancelled, then confirmed, with at least one completed set.
         scrollToElement(identifier: "set_0_0_check", direction: .up, reason: "set_0_0_check not found before discard flow").tap()
         assertLabel(element(identifier: "set_0_0_check"), contains: "Mark set", "Completing set_0_0 failed")
 
@@ -239,9 +259,9 @@ final class LiveWorkoutUITests: XCTestCase {
         XCTAssertTrue(element(identifier: "train_start_empty").waitForExistence(timeout: 10), "Discard did not return to Train")
     }
 
-    /// I3 (A18 equivalent): start Push A, complete two sets, leave the rest untouched, Finish, and
-    /// confirm the live workout closes back to Train with "Start workout" available again (the
-    /// finished workout's own row content is Spotter's `psql` check, not this UI test's job).
+    /// Start Push A, complete two sets, leave the rest untouched, Finish, and confirm the live
+    /// workout closes back to Train with "Start workout" available again (the finished workout's
+    /// own row content is Spotter's `psql` check, not this UI test's job).
     func testFinishWorkout() throws {
         try signInToSeededAccount()
         ensureNoActiveWorkout()
@@ -267,7 +287,7 @@ final class LiveWorkoutUITests: XCTestCase {
 
     /// Launches the app and leaves it on a signed-out, interactive Welcome screen, regardless of
     /// whichever account a previous test method (or a previous, interrupted run) left signed in:
-    /// the app persists its session in the Keychain across launches (ADR-0025 Q6), so a plain
+    /// the app persists its session in the Keychain across launches (ADR-0025), so a plain
     /// `launch()` alone isn't enough to guarantee Welcome actually shows.
     private func ensureSignedOut() {
         app.launch()
@@ -290,7 +310,7 @@ final class LiveWorkoutUITests: XCTestCase {
 
     /// Logs into the seeded account (impl log's seed commands) from a signed-out Welcome screen.
     /// Skips (doesn't fail) the test when the env vars aren't set, since the pipeline that runs this
-    /// suite is expected to set them explicitly (plan §6.2).
+    /// suite is expected to set them explicitly.
     private func signInToSeededAccount() throws {
         let environment = ProcessInfo.processInfo.environment
         let email = environment["REPZ_UITEST_EMAIL"]
@@ -318,7 +338,7 @@ final class LiveWorkoutUITests: XCTestCase {
     }
 
     /// A leftover active workout (a previous run of this suite stopping mid-test) would make
-    /// `train_template_0_start` fail with `WorkoutAlreadyActive` (T7), so every template-based test
+    /// `train_template_0_start` fail with `WorkoutAlreadyActive`, so every template-based test
     /// starts by resuming and discarding whatever is there, leaving Train in its "Start" state.
     private func ensureNoActiveWorkout() {
         let trainResume = element(identifier: "train_resume")
@@ -340,6 +360,24 @@ final class LiveWorkoutUITests: XCTestCase {
     /// (`LiveWorkoutIntent.KeypadDismissed`).
     private func tapOutsideKeypad() {
         app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.12)).tap()
+    }
+
+    /// Taps a point by its normalized position in the app's own window instead of by
+    /// accessibility identifier - bypasses XCUITest's identifier-based hit-testing entirely, for the
+    /// rare element whose accessibility frame is reported wrong while the real, rendered pixel is
+    /// unaffected (see the call sites for the specific, confirmed case each one works around).
+    private func tapRawCoordinate(dx: Double, dy: Double) {
+        app.coordinate(withNormalizedOffset: CGVector(dx: dx, dy: dy)).tap()
+    }
+
+    /// Clears a focused text field by sending one delete keystroke per existing character (plus a
+    /// margin), rather than assuming a starting value: `typeText` only appends, it never replaces,
+    /// and a trailing delete past an empty field is a no-op, so this is safe even if the field is
+    /// already blank.
+    private func clearText(_ element: XCUIElement) {
+        let currentValue = (element.value as? String) ?? ""
+        let deleteCount = currentValue.count + 30
+        element.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: deleteCount))
     }
 
     /// Which way to scroll the exercise list in [scrollToElement]: `.down` (a `swipeUp()` gesture)
