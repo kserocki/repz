@@ -56,10 +56,6 @@ private val HeroLetterSpacing = (-2f / 52f).em
 // following the real system font scale (DESIGN_SYSTEM §13, ADR-0028).
 private const val HERO_MAX_FONT_SCALE = 2f
 
-/** The context line always reserves this many lines, so it keeps a fixed height whether it's
- * showing the normal context text or the (differently sized) limit message. */
-private const val CONTEXT_LINE_LINES = 2
-
 /** Every string [KeypadDisplayRow] shows or announces, computed once per recomposition so the row
  * composable itself stays a plain layout assembly. */
 private data class KeypadDisplayStrings(
@@ -88,8 +84,8 @@ private fun contextLineModeLabel(
         KeypadMode.Rpe -> stringResource(Res.string.keypad_mode_rpe)
     }
 
-/** The limit message after a refusal (U5); `null` for RPE, which has none defined (plan §2.1 lists
- * weight/reps only) — a refused RPE ± still fires Reject without replacing the context line. */
+/** The limit message shown after a refusal; `null` for RPE, which has no limit message defined —
+ * a refused RPE ± still fires Reject without replacing the context line. */
 @Composable
 private fun limitText(
     field: KeypadField,
@@ -174,7 +170,7 @@ private fun rememberHeroDensity(): Density {
 }
 
 /** ± (60 dp) either side of the numeric display (`numericHero` 52 sp); the display never animates
- * (MOTION.md §1). The context line swaps to the limit message in `error` after a refusal (U5). */
+ * (MOTION.md §1). The context line swaps to the limit message in `error` after a refusal. */
 @Composable
 internal fun KeypadDisplayRow(
     request: NumberKeypadRequest,
@@ -230,11 +226,6 @@ internal fun KeypadDisplayRow(
                 text = strings.contextLine,
                 style = MaterialTheme.typography.bodySmall,
                 color = if (showLimitError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
-                // Reserves 2 lines always, so the grid below never moves when the limit message
-                // (a different length than the normal context line) appears or clears at large
-                // font scales, where either line can wrap.
-                minLines = CONTEXT_LINE_LINES,
-                maxLines = CONTEXT_LINE_LINES,
             )
         }
         PlusMinusButton(
