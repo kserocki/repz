@@ -67,7 +67,7 @@ fun prefilledSetToAppend(
     )
 }
 
-private fun WorkoutSet.asPrefilledCopy(id: WorkoutSetId): WorkoutSet = copy(id = id, completedAt = null)
+private fun WorkoutSet.asPrefilledCopy(id: WorkoutSetId): WorkoutSet = copy(id = id, completedAt = null, rpe = null)
 
 private fun emptyNormalSet(id: WorkoutSetId): WorkoutSet =
     WorkoutSet(id = id, type = SetType.NORMAL, weight = Weight.ZERO, reps = 0, rpe = null, completedAt = null)

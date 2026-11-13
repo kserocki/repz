@@ -1,5 +1,6 @@
 package com.repz.app.core.domain.workout
 
+import com.repz.app.core.domain.model.Rpe
 import com.repz.app.core.domain.model.SetType
 import com.repz.app.core.domain.model.Weight
 import com.repz.app.core.domain.model.WorkoutSetId
@@ -107,5 +108,24 @@ class PrefillTest {
 
         assertEquals(Weight.ZERO, appended.weight)
         assertEquals(0, appended.reps)
+    }
+
+    @Test
+    fun givenLastPerformanceHasAnRpe_whenPrefillingAnAddedExercise_thenTheRpeIsDropped() {
+        val lastPerformance = listOf(testWorkoutSet(seed = 1).copy(rpe = Rpe.ALL.first()))
+
+        val sets = prefilledSetsForAddedExercise(lastPerformance = lastPerformance, newSetId = { testSetId(1) })
+
+        assertNull(sets.single().rpe)
+    }
+
+    @Test
+    fun givenLastPerformanceHasAnRpe_whenPrefillingATemplateExercise_thenTheRpeIsDropped() {
+        val target = testTemplateExercise(targetSets = 1, targetReps = 6..8)
+        val lastPerformance = listOf(testWorkoutSet(seed = 1).copy(rpe = Rpe.ALL.first()))
+
+        val sets = prefilledSetsForTemplateExercise(target, lastPerformance) { testSetId(1) }
+
+        assertNull(sets.single().rpe)
     }
 }
