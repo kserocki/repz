@@ -174,10 +174,11 @@ Axes per style: Archivo uses `wght` and `wdth` (100 unless stated). Inter uses `
 | **numericLarge** | Archivo 32/36 · 700 · wdth 100 · −0.5 · `tnum` |
 | **numericMedium** | Archivo 22/28 · 650 · wdth 100 · 0 · `tnum` |
 | **numericSmall** | Archivo 14/20 · 600 · wdth 100 · +0.1 · `tnum` |
+| **heroLabel** | Archivo 22/28 · 750 · wdth 105 · 0 (the `RepzHeroStartButton` label; user decision 2026-11-06, §13) |
 
 Archivo's digits are already near-tabular in the pinned file (advances 585–587/1000 for 0–9), so `tnum` mostly guarantees alignment rather than changing it visibly. The feature string reaches the font on Android (verified with `zero`); iOS has not been checked for font features yet.
 
-Numeric styles live in `RepzTheme.typography`; the 30 others in `MaterialTheme.typography`. The wdth 100 and the tracking 0 of `numericMedium` are taken from board 02 (decided 2026-11-02).
+Numeric styles and `heroLabel` live in `RepzTheme.typography`; the 30 others in `MaterialTheme.typography`. The wdth 100 and the tracking 0 of `numericMedium` are taken from board 02 (decided 2026-11-02).
 
 **Emphasized styles** (rule decided 2026-11-02, from board 02): same size and line height as the baseline style, and
 - display: Archivo 850, wdth 112, tracking = baseline − 0.5;

@@ -18,7 +18,7 @@ You are independent: judge only the artefacts, not the implementers' intentions.
 - **Code style:** English, names over comments, comments only for non-obvious logic (1–3 lines), no ticket numbers in comments except `TODO(REP-xx)`, no dead code.
 - **Tests:** meaningful unit tests for new behaviour, fakes rather than mocks, deterministic time.
 - **Design:** tokens and `Repz*` components only, light/dark, PL, 200 % font scale, accessibility (§12).
-- **Media:** open **every** screenshot and recording. Compare them with `docs/DESIGN_SYSTEM.md`, `design/boards/*.txt` and each MOT-xx in `docs/MOTION.md` (timing, springs, choreography, reduced motion). **Missing recordings for animations in scope = CHANGES_REQUESTED.**
+- **Media:** open **every** screenshot and recording. Compare them with `docs/DESIGN_SYSTEM.md`, `design/boards/*.txt` and each MOT-xx in `docs/MOTION.md` (timing, springs, choreography, reduced motion). QA media is Android dark mode only: one review video per round plus a few screenshots (iOS only for iOS-only behaviour). **An animation in scope that the review video doesn't show = CHANGES_REQUESTED.** Don't ask for light-mode, iOS or per-animation clips.
 
 ## Output
 Write `.claude/work/REP-xx/review-N.md`:
