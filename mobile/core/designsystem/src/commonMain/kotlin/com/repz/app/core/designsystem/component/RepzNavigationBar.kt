@@ -14,12 +14,15 @@ import androidx.compose.ui.graphics.painter.Painter
 import com.repz.app.core.designsystem.theme.RepzIconSize
 
 /**
- * The 4-tab bottom navigation bar (DESIGN_SYSTEM §9 `RepzNavigationBar`): an M3 `NavigationBar`
- * with the [MaterialTheme.colorScheme.surfaceContainerLow] container the design calls for
- * (DESIGN_SYSTEM §7 "nav bar, header"). Height and the selection indicator stay at the M3 default.
+ * The 4-tab bottom navigation bar (DESIGN_SYSTEM §9 `RepzNavigationBar`, board 04): an M3
+ * `NavigationBar` with the [MaterialTheme.colorScheme.surfaceContainerLow] container the design
+ * calls for (DESIGN_SYSTEM §7 "nav bar, header", U6a: board 04 draws `surfaceContainer`, kept as
+ * `surfaceContainerLow` instead). Height (80 dp) stays the M3 default, which already matches
+ * `RepzLayout.navigationBarHeight`.
  *
- * No selection animation here: the M3 default indicator and transitions apply as-is.
- * TODO(REP-48): MOT-02 (indicator stretch to 64×32, icon FILL 0→1, label weight 500→700, haptic).
+ * No selection animation here: the M3 default indicator transition applies as-is.
+ * TODO(REP-48): MOT-02 (indicator leading edge spatialFast / trailing edge spatialDefault stretch to
+ * 64×32, icon FILL 0→1 on effectsFast, Confirm haptic; reduced motion: indicator and icon jump).
  */
 @Composable
 fun RepzNavigationBar(
@@ -35,8 +38,10 @@ fun RepzNavigationBar(
 
 /**
  * One [RepzNavigationBar] tab: [selectedIcon] (FILL 1) while selected, [icon] (FILL 0) otherwise
- * (DESIGN_SYSTEM §8), [label] always shown below it. The icon is decorative
- * (`contentDescription = null`); [label] is the item's accessible name.
+ * (DESIGN_SYSTEM §8), [label] always shown below it in `labelMediumEmphasized` when selected or
+ * `labelMedium` otherwise (U6b). The icon is decorative (`contentDescription = null`); [label] is
+ * the item's accessible name. Colours (board 04): indicator `secondaryContainer`, selected icon
+ * `onSecondaryContainer`, selected label `onSurface`, unselected icon/label `onSurfaceVariant`.
  */
 @Composable
 fun RowScope.RepzNavigationBarItem(
@@ -58,8 +63,17 @@ fun RowScope.RepzNavigationBarItem(
             )
         },
         modifier = modifier,
-        label = { Text(label) },
+        label = {
+            Text(label, style = if (selected) MaterialTheme.typography.labelMediumEmphasized else MaterialTheme.typography.labelMedium)
+        },
         alwaysShowLabel = true,
-        colors = NavigationBarItemDefaults.colors(),
+        colors =
+            NavigationBarItemDefaults.colors(
+                selectedIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                selectedTextColor = MaterialTheme.colorScheme.onSurface,
+                indicatorColor = MaterialTheme.colorScheme.secondaryContainer,
+                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            ),
     )
 }

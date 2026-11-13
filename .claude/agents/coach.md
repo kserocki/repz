@@ -18,7 +18,13 @@ You are independent: judge only the artefacts, not the implementers' intentions.
 - **Code style:** English, names over comments, comments only for non-obvious logic (1–3 lines), no ticket numbers in comments except `TODO(REP-xx)`, no dead code.
 - **Tests:** meaningful unit tests for new behaviour, fakes rather than mocks, deterministic time.
 - **Design:** tokens and `Repz*` components only, light/dark, PL, 200 % font scale, accessibility (§12).
-- **Media:** open **every** screenshot and recording. Compare them with `docs/DESIGN_SYSTEM.md`, `design/boards/*.txt` and each MOT-xx in `docs/MOTION.md` (timing, springs, choreography, reduced motion). **Missing recordings for animations in scope = CHANGES_REQUESTED.**
+- **Media:** open **every** screenshot and recording. Compare them with `docs/DESIGN_SYSTEM.md`, `design/boards/*.txt` and each MOT-xx in `docs/MOTION.md` (timing, springs, choreography, reduced motion). QA media is Android dark mode only: one review video per round plus a few screenshots (iOS only for iOS-only behaviour). **An animation in scope that the review video doesn't show = CHANGES_REQUESTED.** Don't ask for light-mode, iOS or per-animation clips.
+
+## Rounds (user rule, 2026-11-13)
+- Round 1 is the full review. In later rounds review **only the changes** made since your last review, and check that your required changes are resolved.
+- Decide whether a fix needs QA: trivial fixes (comments, docs, copy, a constant, a test-only change) need none, just say "no QA needed". Larger fixes get a re-test of only the fixed behaviour.
+- Run the full `./gradlew check build` and the xcodebuild build only in the round you expect to approve; otherwise rely on the narrow gates and verify.txt.
+- Comments: flag process references (plan IDs, review/QA rounds, history) only once, as one required change listing every file, so they never cost a second round.
 
 ## Output
 Write `.claude/work/REP-xx/review-N.md`:

@@ -1,6 +1,6 @@
 ---
 name: animation
-description: Implement Repz animations, shape morphs, particles, logo motion and haptics exactly as specified in docs/MOTION.md (MOT-01…MOT-29) using RepzMotion tokens. Use for any animation, transition, shared element, celebration, loader or haptic feedback.
+description: Implement Repz animations, shape morphs, particles, logo motion and haptics exactly as specified in docs/MOTION.md (MOT-01…MOT-30) using RepzMotion tokens. Use for any animation, transition, shared element, celebration, loader or haptic feedback.
 ---
 
 # Animation & haptics
@@ -29,7 +29,7 @@ If anything is unclear (naming, behaviour, UX copy, a token value, which module 
    - nothing blocks input on the live-workout screen;
    - set completion done at 220 ms.
 7. Add a preview (normal and `reducedMotion = true`) and a demo page in the design-system catalog (`RepzCatalogPage`, key listed in ARCHITECTURE §2). The page auto-plays and fits one iPhone Duo screen without scrolling. Add a unit test for any state machine (e.g. rest-timer phases computed from `restEndsAt` + `Clock`).
-8. **Recordings are mandatory** for every animation: record its catalog page (ARCHITECTURE §2 has the launch commands; `--ez repz.reducedMotion true` / `-RepzReducedMotion YES` force the reduced-motion fallback).
+8. **Every animation must appear in Spotter's review video**: one Android dark-mode recording per QA round that walks through each animation's catalog page (ARCHITECTURE §2 has the launch commands; `--ez repz.reducedMotion true` forces the reduced-motion fallback). No per-animation clip sets, no light or iOS media unless the behaviour is iOS-only.
 
 ## Don'ts
 - No celebration springs or particles outside PR, workout finished, streak milestone and rest-done.

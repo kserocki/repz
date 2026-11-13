@@ -14,6 +14,15 @@ kotlin {
         commonMain.dependencies {
             // The only module allowed to depend on Material3 (ADR-0006).
             api(libs.compose.material3)
+            // ImmutableList parameters on components such as RepzConnectedButtonGroup and
+            // RepzFabMenu; exposed as api so callers can pass their own lists.
+            api(libs.kotlinx.collections.immutable)
+            // RepzFabMenu's NavigationBackHandler (MOT-30f): the same coordinates/version
+            // ui-backhandler's own common/iOS Gradle module metadata already resolves, added
+            // explicitly here because ui-backhandler-android's module depends only on
+            // androidx.activity:activity-compose, not on this artifact, so compileAndroidMain
+            // doesn't see it transitively.
+            implementation(libs.androidx.navigationevent.compose)
         }
         androidMain.dependencies {
             // Android haptics actual: ViewCompat/HapticFeedbackConstantsCompat (MOTION.md §3).

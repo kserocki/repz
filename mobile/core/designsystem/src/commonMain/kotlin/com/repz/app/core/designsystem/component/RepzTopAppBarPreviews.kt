@@ -17,6 +17,20 @@ private fun RepzTopAppBarShowcase() {
     }
 }
 
+/** Expanded (non-collapsing, `scrollState = null`), with and without a back action, for both the
+ * medium and the large bar: T5's one-off "fits over a short scrollable list" collapsing behaviour
+ * needs a real scroll gesture, shown instead in `components-bars` (R12). */
+@Composable
+private fun RepzMediumLargeTopAppBarShowcase() {
+    val sampleTitle = "Templates"
+    Column(verticalArrangement = Arrangement.spacedBy(RepzSpacing.sm)) {
+        RepzMediumTopAppBar(title = sampleTitle)
+        RepzMediumTopAppBar(title = sampleTitle, onBackClick = {})
+        RepzLargeTopAppBar(title = sampleTitle)
+        RepzLargeTopAppBar(title = sampleTitle, onBackClick = {})
+    }
+}
+
 @Preview
 @Composable
 private fun RepzTopAppBarLightPreview() {
@@ -27,4 +41,16 @@ private fun RepzTopAppBarLightPreview() {
 @Composable
 private fun RepzTopAppBarDarkPreview() {
     RepzTheme(darkTheme = true) { RepzTopAppBarShowcase() }
+}
+
+@Preview
+@Composable
+private fun RepzMediumLargeTopAppBarLightPreview() {
+    RepzTheme(darkTheme = false) { RepzMediumLargeTopAppBarShowcase() }
+}
+
+@Preview
+@Composable
+private fun RepzMediumLargeTopAppBarDarkPreview() {
+    RepzTheme(darkTheme = true) { RepzMediumLargeTopAppBarShowcase() }
 }
