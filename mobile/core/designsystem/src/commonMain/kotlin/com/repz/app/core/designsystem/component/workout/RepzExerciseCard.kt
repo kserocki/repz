@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +36,9 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import com.repz.app.core.designsystem.generated.resources.Res
 import com.repz.app.core.designsystem.generated.resources.symbol_add
 import com.repz.app.core.designsystem.generated.resources.symbol_more_vert
@@ -50,8 +55,10 @@ private const val DISABLED_CONTENT_ALPHA = 0.38f
  * One exercise's card (DESIGN_SYSTEM §9 `ExerciseCard`, board 05/09): header with an overflow menu
  * (Reorder · Notes · Remove, a header long-press also calls [onHeaderLongClick] to reorder), an
  * optional notes row ([notes] `null` hides it; a non-null, possibly empty, string shows it,
- * editable while [isEditingNotes]), the column header and [sets]. [menuButtonModifier]/
- * [notesModifier]/[addSetModifier] tag those elements individually since [modifier] lands on the card.
+ * editable while [isEditingNotes]), the column header and [sets], which receives the same
+ * Previous-column visibility the header just used, so a caller's rows never disagree with it.
+ * [menuButtonModifier]/[notesModifier]/[addSetModifier] tag those elements individually since
+ * [modifier] lands on the card.
  */
 @Composable
 fun RepzExerciseCard(
@@ -74,8 +81,10 @@ fun RepzExerciseCard(
     menuButtonModifier: Modifier = Modifier,
     notesModifier: Modifier = Modifier,
     addSetModifier: Modifier = Modifier,
-    sets: @Composable ColumnScope.() -> Unit,
+    sets: @Composable ColumnScope.(isPreviousColumnVisible: Boolean) -> Unit,
 ) {
+    val isPreviousColumnVisible = rememberIsSetPreviousColumnVisible()
+
     Column(
         modifier =
             modifier
@@ -104,8 +113,8 @@ fun RepzExerciseCard(
                 notesModifier = notesModifier,
             )
         }
-        ExerciseCardColumnHeader(columnLabels)
-        Column(verticalArrangement = Arrangement.spacedBy(RepzSpacing.xs), content = sets)
+        ExerciseCardColumnHeader(labels = columnLabels, isPreviousColumnVisible = isPreviousColumnVisible)
+        Column(verticalArrangement = Arrangement.spacedBy(RepzSpacing.xs)) { sets(isPreviousColumnVisible) }
         ExerciseCardAddSet(label = addSetLabel, isEnabled = isAddSetEnabled, onClick = onAddSetClick, modifier = addSetModifier)
     }
 }
@@ -187,6 +196,8 @@ private fun ExerciseCardNotesField(
     modifier: Modifier = Modifier,
 ) {
     val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
     var hasBeenFocused by remember { mutableStateOf(false) }
     BasicTextField(
         value = notes,
@@ -204,7 +215,18 @@ private fun ExerciseCardNotesField(
                     }
                 },
         textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface),
+        singleLine = true,
         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        // Clearing focus (not calling onNotesEditingFinish directly) routes Done through the same
+        // focused-to-unfocused path above, so editing ends exactly once however it happens.
+        keyboardActions =
+            KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus(force = true)
+                    keyboardController?.hide()
+                },
+            ),
         decorationBox = { innerTextField ->
             if (notes.isEmpty()) {
                 Text(text = notesLabel, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -216,23 +238,26 @@ private fun ExerciseCardNotesField(
 }
 
 /** Mirrors [RepzSetRow]'s own reflow at [REFLOW_FONT_SCALE_THRESHOLD] (board 14): below it, the
- * single-line Set/Prev/weight/Reps header; at or above it, Prev drops (merged into each row's own
- * last-line text) and the badge column's label drops too, matching the reflowed row's bare badge. */
+ * single-line header shows "Prev" exactly when [isPreviousColumnVisible] is `true` (the same
+ * decision every row below it gets); at or above it, Prev and the badge column's label both drop,
+ * matching the reflowed row's bare badge. */
 @Composable
 private fun ExerciseCardColumnHeader(
     labels: RepzSetColumnLabels,
+    isPreviousColumnVisible: Boolean,
     modifier: Modifier = Modifier,
 ) {
     if (LocalDensity.current.fontScale >= REFLOW_FONT_SCALE_THRESHOLD) {
         ExerciseCardColumnHeaderReflowed(labels, modifier)
     } else {
-        ExerciseCardColumnHeaderSingleLine(labels, modifier)
+        ExerciseCardColumnHeaderSingleLine(labels, isPreviousColumnVisible, modifier)
     }
 }
 
 @Composable
 private fun ExerciseCardColumnHeaderSingleLine(
     labels: RepzSetColumnLabels,
+    isPreviousColumnVisible: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -240,7 +265,9 @@ private fun ExerciseCardColumnHeaderSingleLine(
         horizontalArrangement = Arrangement.spacedBy(SetColumnGap),
     ) {
         ColumnHeaderLabel(text = labels.set, modifier = Modifier.width(SetBadgeColumnWidth))
-        ColumnHeaderLabel(text = labels.previous, modifier = Modifier.width(SetPreviousColumnWidth))
+        if (isPreviousColumnVisible) {
+            ColumnHeaderLabel(text = labels.previous, modifier = Modifier.width(SetPreviousColumnWidth))
+        }
         ColumnHeaderLabel(text = labels.weight, modifier = Modifier.weight(1f))
         ColumnHeaderLabel(text = labels.reps, modifier = Modifier.weight(1f))
         Spacer(modifier = Modifier.width(SetCheckColumnWidth))

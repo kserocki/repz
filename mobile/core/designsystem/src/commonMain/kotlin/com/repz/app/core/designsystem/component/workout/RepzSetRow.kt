@@ -5,7 +5,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,10 +15,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,13 +35,16 @@ import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.repz.app.core.designsystem.generated.resources.Res
 import com.repz.app.core.designsystem.generated.resources.symbol_check
 import com.repz.app.core.designsystem.theme.RepzIconSize
 import com.repz.app.core.designsystem.theme.RepzSpacing
 import com.repz.app.core.designsystem.theme.RepzTheme
+import com.repz.app.core.designsystem.theme.rememberCappedFontScaleDensity
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.painterResource
 
@@ -63,8 +67,6 @@ internal val SetCheckColumnWidth = 50.dp
 internal val SetRowStartPadding = 8.dp
 internal val SetColumnGap = 6.dp
 
-private val NarrowRowWidthThreshold = 360.dp
-
 private val BadgeVisualSize = 28.dp
 
 // DESIGN_SYSTEM §6's 56 dp logging target, not just the generic 48 dp minimum: these fill the
@@ -79,10 +81,19 @@ private val CheckedCornerRadius = 10.dp
 private val CheckboxBorderWidth = 2.5.dp
 private val EditingRingWidth = 2.dp
 
+// DESIGN_SYSTEM §9 SetRow: a value field stays on one line from "8" to the longest lb conversion of
+// the domain's 1000 kg max ("2204.62"), from a 320 dp window up. `numericLarge` (32 sp) is kept
+// wherever it fits; TextAutoSize.StepBased only steps it down, in the same technique (and the same
+// font-scale ceiling) as the keypad's hero value.
+private val SetValueMaxFontSize = 32.sp
+private val SetValueMinFontSize = 14.sp
+private val SetValueStepSize = 1.sp
+private const val SET_VALUE_MAX_FONT_SCALE = 2f
+
 /**
  * One set (DESIGN_SYSTEM §9 `SetRow`, board 05): badge (tap opens [typeMenuItems], listing the four
  * set types, when it's non-empty; an empty list means the badge isn't interactive), optional
- * Previous column (hidden below [NarrowRowWidthThreshold] or when reflowed), weight and reps fields
+ * Previous column ([isPreviousColumnVisible], hidden when reflowed), weight and reps fields
  * (tap opens the keypad on that field; [editingField] draws the 2 dp ring), and the completion
  * toggle. [accessibilityActions] (e.g. "Delete set", "Mark as warm-up") are exposed on every one of
  * the row's own focusable elements (badge, weight, reps, check), not merged into one row-level node,
@@ -95,7 +106,8 @@ private val EditingRingWidth = 2.dp
  * [badgeModifier], [weightModifier], [repsModifier] and [completeModifier] tag those four elements
  * individually (the same precedent as `RepzTopAppBar`'s `backButtonModifier`), since [modifier]
  * lands on the whole row; both the single-line and reflowed layouts apply them to the same
- * logical element.
+ * logical element. [isPreviousColumnVisible] is the caller's decision (e.g. [RepzExerciseCard]'s
+ * [rememberIsSetPreviousColumnVisible]), not measured from this row's own, possibly narrower, width.
  */
 @Composable
 fun RepzSetRow(
@@ -109,6 +121,7 @@ fun RepzSetRow(
     isPrefilled: Boolean,
     editingField: RepzSetField?,
     isCompleted: Boolean,
+    isPreviousColumnVisible: Boolean,
     typeMenuItems: ImmutableList<RepzMenuItem>,
     onWeightClick: () -> Unit,
     onRepsClick: () -> Unit,
@@ -150,6 +163,7 @@ fun RepzSetRow(
             isPrefilled = isPrefilled,
             editingField = editingField,
             isCompleted = isCompleted,
+            isPreviousColumnVisible = isPreviousColumnVisible,
             typeMenuItems = typeMenuItems,
             onWeightClick = onWeightClick,
             onRepsClick = onRepsClick,
@@ -168,7 +182,7 @@ fun RepzSetRow(
 }
 
 @Composable
-private fun BoxWithConstraintsScope.SetRowLayout(
+private fun SetRowLayout(
     isReflowed: Boolean,
     badgeLabel: String,
     type: RepzSetType,
@@ -180,6 +194,7 @@ private fun BoxWithConstraintsScope.SetRowLayout(
     isPrefilled: Boolean,
     editingField: RepzSetField?,
     isCompleted: Boolean,
+    isPreviousColumnVisible: Boolean,
     typeMenuItems: ImmutableList<RepzMenuItem>,
     onWeightClick: () -> Unit,
     onRepsClick: () -> Unit,
@@ -239,7 +254,7 @@ private fun BoxWithConstraintsScope.SetRowLayout(
             weightContentDescription = weightContentDescription,
             repsContentDescription = repsContentDescription,
             badgeContentDescription = badgeContentDescription,
-            isPreviousColumnVisible = maxWidth >= NarrowRowWidthThreshold,
+            isPreviousColumnVisible = isPreviousColumnVisible,
             modifier = Modifier.fillMaxSize(),
             badgeModifier = badgeModifier,
             weightModifier = weightModifier,
@@ -512,7 +527,22 @@ private fun SetValueField(
                 },
         contentAlignment = Alignment.Center,
     ) {
-        Text(text = text, style = RepzTheme.typography.numericLarge, color = textColor)
+        CompositionLocalProvider(LocalDensity provides rememberCappedFontScaleDensity(SET_VALUE_MAX_FONT_SCALE)) {
+            Text(
+                text = text,
+                style = RepzTheme.typography.numericLarge,
+                color = textColor,
+                autoSize =
+                    TextAutoSize.StepBased(
+                        minFontSize = SetValueMinFontSize,
+                        maxFontSize = SetValueMaxFontSize,
+                        stepSize = SetValueStepSize,
+                    ),
+                maxLines = 1,
+                softWrap = false,
+                overflow = TextOverflow.Clip,
+            )
+        }
     }
 }
 

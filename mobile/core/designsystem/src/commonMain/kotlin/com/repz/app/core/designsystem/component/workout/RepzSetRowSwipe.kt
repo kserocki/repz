@@ -5,8 +5,6 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -53,7 +51,7 @@ internal fun SwipeToDeleteBox(
     onDelete: () -> Unit,
     containerColor: Color,
     modifier: Modifier = Modifier,
-    content: @Composable BoxWithConstraintsScope.() -> Unit,
+    content: @Composable () -> Unit,
 ) {
     val shape = MaterialTheme.shapes.medium
     val haptics = RepzHaptics.current
@@ -72,7 +70,7 @@ internal fun SwipeToDeleteBox(
             SetRowSwipeBackground(modifier = Modifier.matchParentSize().clip(shape))
         }
 
-        BoxWithConstraints(
+        Box(
             modifier =
                 Modifier
                     .offset { IntOffset(dragOffsetPx.roundToInt(), 0) }
@@ -103,8 +101,9 @@ internal fun SwipeToDeleteBox(
                         },
                     ).clip(shape)
                     .background(containerColor),
-            content = content,
-        )
+        ) {
+            content()
+        }
     }
 }
 

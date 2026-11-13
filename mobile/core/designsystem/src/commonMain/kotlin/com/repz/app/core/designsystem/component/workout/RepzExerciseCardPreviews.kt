@@ -32,7 +32,7 @@ private fun RepzExerciseCardSample(notes: String? = null) {
         addSetLabel = "Add set",
         isAddSetEnabled = true,
         onAddSetClick = {},
-    ) {
+    ) { isPreviousColumnVisible ->
         CardSetRow(
             badgeLabel = "W",
             type = RepzSetType.Warmup,
@@ -40,10 +40,32 @@ private fun RepzExerciseCardSample(notes: String? = null) {
             weightText = "60",
             repsText = "10",
             isCompleted = true,
+            isPreviousColumnVisible = isPreviousColumnVisible,
         )
-        CardSetRow(badgeLabel = "1", previousText = "80 × 8", weightText = "80", repsText = "8", isCompleted = true)
-        CardSetRow(badgeLabel = "2", previousText = "80 × 8", weightText = "82.5", repsText = "8", isCompleted = true)
-        CardSetRow(badgeLabel = "3", previousText = "80 × 7", weightText = "82.5", repsText = "7", isPrefilled = true)
+        CardSetRow(
+            badgeLabel = "1",
+            previousText = "80 × 8",
+            weightText = "80",
+            repsText = "8",
+            isCompleted = true,
+            isPreviousColumnVisible = isPreviousColumnVisible,
+        )
+        CardSetRow(
+            badgeLabel = "2",
+            previousText = "80 × 8",
+            weightText = "82.5",
+            repsText = "8",
+            isCompleted = true,
+            isPreviousColumnVisible = isPreviousColumnVisible,
+        )
+        CardSetRow(
+            badgeLabel = "3",
+            previousText = "80 × 7",
+            weightText = "82.5",
+            repsText = "7",
+            isPrefilled = true,
+            isPreviousColumnVisible = isPreviousColumnVisible,
+        )
     }
 }
 
@@ -53,6 +75,7 @@ private fun CardSetRow(
     previousText: String?,
     weightText: String,
     repsText: String,
+    isPreviousColumnVisible: Boolean,
     type: RepzSetType = RepzSetType.Normal,
     isPrefilled: Boolean = false,
     isCompleted: Boolean = false,
@@ -68,6 +91,7 @@ private fun CardSetRow(
         isPrefilled = isPrefilled,
         editingField = null,
         isCompleted = isCompleted,
+        isPreviousColumnVisible = isPreviousColumnVisible,
         typeMenuItems = TypeMenuItemsForCard,
         onWeightClick = {},
         onRepsClick = {},
@@ -107,6 +131,12 @@ private fun RepzExerciseCardWithNotesDarkPreview() {
 
 @Preview(fontScale = 2f)
 @Composable
-private fun RepzExerciseCardFontScale2Preview() {
+private fun RepzExerciseCardFontScale2LightPreview() {
     RepzTheme(darkTheme = false) { RepzExerciseCardSample() }
+}
+
+@Preview(fontScale = 2f)
+@Composable
+private fun RepzExerciseCardFontScale2DarkPreview() {
+    RepzTheme(darkTheme = true) { RepzExerciseCardSample() }
 }

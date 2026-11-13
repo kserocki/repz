@@ -29,6 +29,7 @@ private fun RepzSetRowSample(
     isPrefilled: Boolean = false,
     editingField: RepzSetField? = null,
     isCompleted: Boolean = false,
+    isPreviousColumnVisible: Boolean = true,
 ) {
     RepzSetRow(
         badgeLabel = badgeLabel,
@@ -41,6 +42,7 @@ private fun RepzSetRowSample(
         isPrefilled = isPrefilled,
         editingField = editingField,
         isCompleted = isCompleted,
+        isPreviousColumnVisible = isPreviousColumnVisible,
         typeMenuItems = TypeMenuItems,
         onWeightClick = {},
         onRepsClick = {},
@@ -65,6 +67,7 @@ private fun RepzSetRowStatesSample() {
         RepzSetRowSample(badgeLabel = "W", type = RepzSetType.Warmup, previousText = "60 × 10", weightText = "60", repsText = "10")
         RepzSetRowSample(badgeLabel = "D", type = RepzSetType.Drop, previousText = null, weightText = "60", repsText = "12")
         RepzSetRowSample(badgeLabel = "F", type = RepzSetType.Failure, previousText = "70 × 9", weightText = "70", repsText = "10")
+        RepzSetRowSample(badgeLabel = "2", previousText = "80 × 8", weightText = "82.5", repsText = "8", isPreviousColumnVisible = false)
     }
 }
 
