@@ -20,10 +20,10 @@ import XCTest
 /// exist a moment later often doesn't exist yet the instant the previous action returns.
 /// Every card/set lookup that can sit outside the exercise list's initial viewport goes through
 /// `scrollToElement` instead of a plain wait: CMP's iOS accessibility bridge only reports a
-/// `LazyColumn` item once it has actually scrolled into the container's visible bounds (confirmed a
-/// viewport/accessibility-bridge limit, not a `commonMain` layout bug - impl-log.md, "Flex · round 3
-/// · W1 card bug" - the identical shared layout renders every card correctly on Android at the same
-/// scroll position), so a longer timeout alone would never find one that hasn't been scrolled to.
+/// `LazyColumn` item once it has actually scrolled into the container's visible bounds - a
+/// viewport/accessibility-bridge limit, not a `commonMain` layout bug, since the identical shared
+/// layout renders every card correctly on Android at the same scroll position - so a longer
+/// timeout alone would never find one that hasn't been scrolled to.
 /// Several assertions read a set row's complete-checkbox `label`: its content description is built
 /// from the set's own badge/weight/reps (`set_complete`/`set_uncomplete`, `LiveWorkoutSetMapping.kt`)
 /// and is the one place the exact typed values are exposed as plain, stable text; `RepzSetRow`'s
@@ -175,17 +175,11 @@ final class LiveWorkoutUITests: XCTestCase {
         tap(label: "Notes")
         let notesField = scrollToElement(identifier: "card_1_notes", reason: "card_1_notes field did not appear")
         notesField.tap()
-        notesField.typeText("Pause on chest")
-        Thread.sleep(forTimeInterval: 1) // outlasts the 500 ms notes debounce so the draft is saved before we navigate away
+        typeSlowly("Pause on chest", into: notesField)
+        notesField.typeText("\n") // the field's own KeyboardActions(onDone = …) ends editing and hides the keyboard
+        Thread.sleep(forTimeInterval: 1) // outlasts the editActiveWorkout call Done launches, before we navigate away
 
-        // While the notes field's on-screen keyboard is up, `live_minimize` (the fixed header's own
-        // button, no app code applies any ime/keyboard inset here) is reported at a corrupted,
-        // off-screen frame - the same accessibility-bridge limitation documented in the class doc,
-        // now affecting a pinned header element instead of a scrolled LazyColumn item. A raw
-        // coordinate tap at its known on-screen position (same technique as tapOutsideKeypad())
-        // reaches the real, correctly-rendered button instead of going through the broken lookup.
-        tapRawCoordinate(dx: 0.086, dy: 0.093)
-
+        tap(identifier: "live_minimize")
         let trainResume = element(identifier: "train_resume")
         XCTAssertTrue(trainResume.waitForExistence(timeout: 10), "Minimize did not return to Train")
         trainResume.tap()
@@ -202,7 +196,7 @@ final class LiveWorkoutUITests: XCTestCase {
         let nameField = element(identifier: "live_name")
         XCTAssertTrue(nameField.waitForExistence(timeout: 5), "live_name field did not appear in edit mode")
         clearText(nameField)
-        nameField.typeText("Push A heavy")
+        typeSlowly("Push A heavy", into: nameField)
         nameField.typeText("\n")
         assertLabel(element(identifier: "live_name"), contains: "Push A heavy", "Renaming the workout did not save the new name")
         attach("ios-rename")
@@ -362,14 +356,6 @@ final class LiveWorkoutUITests: XCTestCase {
         app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.12)).tap()
     }
 
-    /// Taps a point by its normalized position in the app's own window instead of by
-    /// accessibility identifier - bypasses XCUITest's identifier-based hit-testing entirely, for the
-    /// rare element whose accessibility frame is reported wrong while the real, rendered pixel is
-    /// unaffected (see the call sites for the specific, confirmed case each one works around).
-    private func tapRawCoordinate(dx: Double, dy: Double) {
-        app.coordinate(withNormalizedOffset: CGVector(dx: dx, dy: dy)).tap()
-    }
-
     /// Clears a focused text field by sending one delete keystroke per existing character (plus a
     /// margin), rather than assuming a starting value: `typeText` only appends, it never replaces,
     /// and a trailing delete past an empty field is a no-op, so this is safe even if the field is
@@ -378,6 +364,18 @@ final class LiveWorkoutUITests: XCTestCase {
         let currentValue = (element.value as? String) ?? ""
         let deleteCount = currentValue.count + 30
         element.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: deleteCount))
+    }
+
+    /// Types `text` one character at a time with a short pause between each, instead of a single
+    /// `typeText(_:)` call: notes and the workout name recompose and restart a debounce job on
+    /// every keystroke, and typing the whole string at once dropped a couple of characters under
+    /// load, identically across repeated runs ("Pause on chest" -> "Pae on cst") - the field's own
+    /// recomposition occasionally wins the race against the simulator's next synthesized keystroke.
+    private func typeSlowly(_ text: String, into element: XCUIElement) {
+        for character in text {
+            element.typeText(String(character))
+            usleep(60_000)
+        }
     }
 
     /// Which way to scroll the exercise list in [scrollToElement]: `.down` (a `swipeUp()` gesture)
