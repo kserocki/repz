@@ -24,7 +24,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.Duration.Companion.seconds
 
-/** TODO(REP-22): switch to the real undo-snackbar API once it exists; this is T6's own stand-in
+/** TODO(REP-22): switch to the real undo-snackbar API once it exists; this is a stand-in
  * (6 s, matching MOT-24's undo window). */
 private val UndoSnackbarDuration = 6.seconds
 
@@ -100,7 +100,7 @@ fun LiveWorkoutScreen(
     )
 }
 
-/** T6: [com.repz.app.core.designsystem.component.RepzSnackbarHostState.showWithAction] bounded to
+/** [com.repz.app.core.designsystem.component.RepzSnackbarHostState.showWithAction] bounded to
  * [UndoSnackbarDuration], then dismissed; `onUndo` fires only if the action was tapped within that
  * window. */
 private suspend fun showUndoSnackbar(

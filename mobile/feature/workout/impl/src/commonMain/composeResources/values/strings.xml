@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Live workout, Train v0 and exercise picker v0 strings (REP-34 plan §3.11, Q6 approved). -->
+<!-- Live workout, Train v0 and exercise picker v0 strings. -->
 <resources>
     <string name="train_start_workout">Start workout</string>
     <string name="train_templates_title">Your templates</string>

@@ -16,8 +16,8 @@ import org.jetbrains.compose.resources.stringResource
 
 /**
  * Maps the live workout's header fields onto [RepzLiveWorkoutHeader] (DESIGN_SYSTEM §9, board
- * 09/14): the overflow menu is just Q2's "Discard workout" for now. TODO(REP-22): the
- * Filled-emphasis destructive confirm replaces
+ * 09/14): the overflow menu is just "Discard workout" for now. TODO(REP-22): the Filled-emphasis
+ * destructive confirm replaces
  * [com.repz.app.core.designsystem.component.RepzAlertDialog]'s `isConfirmDestructive` once it
  * exists, see [LiveWorkoutDiscardDialog]. Only `*Screen`/`*Content` may know [LiveWorkoutIntent]
  * (AGENTS.md §4, Konsist N8), so every callback is explicit.

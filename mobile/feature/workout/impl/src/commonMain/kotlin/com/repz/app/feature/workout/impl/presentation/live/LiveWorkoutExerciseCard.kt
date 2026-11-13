@@ -148,7 +148,7 @@ private fun ColumnScope.LiveWorkoutSetRows(
     }
 }
 
-/** One [LiveSetUi] row, keyed by [cardIndex]/[setIndex] for its test tags (§3.10, Muse review). */
+/** One [LiveSetUi] row, keyed by [cardIndex]/[setIndex] for its test tags. */
 @Composable
 private fun LiveWorkoutSetRow(
     cardIndex: Int,

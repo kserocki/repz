@@ -13,10 +13,11 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * Q2's destructive confirm (board 06): shown only once the workout has at least one completed
- * set (0 completed sets discards silently, per [LiveWorkoutLifecycleHandler.onDiscardClicked]).
- * TODO(REP-22): swap [RepzAlertDialog]'s `isConfirmDestructive` for the Filled-emphasis
- * destructive confirm component once it lands; this is the closest thing on this branch.
+ * The destructive discard confirm (board 06): shown only once the workout has at least one
+ * completed set (0 completed sets discards silently, per
+ * [LiveWorkoutLifecycleHandler.onDiscardClicked]). TODO(REP-22): swap [RepzAlertDialog]'s
+ * `isConfirmDestructive` for the Filled-emphasis destructive confirm component once it lands;
+ * this is the closest thing on this branch.
  */
 @Composable
 internal fun LiveWorkoutDiscardDialog(

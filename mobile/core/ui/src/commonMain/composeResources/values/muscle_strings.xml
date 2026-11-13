@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Muscle group labels (DESIGN_SYSTEM §9 Q8, ADR-0021's 12-muscle vocabulary): the exercise card
+<!-- Muscle group labels (DESIGN_SYSTEM §9, ADR-0021's 12-muscle vocabulary): the exercise card
      subtitle's "<primary muscle> · n of m done" and anywhere else a Muscle needs a display label.
      Keys mirror core:domain's Muscle enum constant names (com.repz.app.core.domain.model.Muscle). -->
 <resources>

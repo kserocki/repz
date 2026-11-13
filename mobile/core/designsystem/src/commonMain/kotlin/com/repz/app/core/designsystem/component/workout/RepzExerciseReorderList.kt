@@ -217,7 +217,7 @@ private fun <K : Any> ReorderRow(
                 .background(containerColor)
                 .padding(horizontal = RepzSpacing.lg)
                 // Merged into one accessible node (title + subtitle become its label) so the custom
-                // Move up/down actions are reachable regardless of which child last had focus (M2).
+                // Move up/down actions are reachable regardless of which child last had focus.
                 .semantics(mergeDescendants = true) { customActions = customActionList },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(RepzSpacing.md),

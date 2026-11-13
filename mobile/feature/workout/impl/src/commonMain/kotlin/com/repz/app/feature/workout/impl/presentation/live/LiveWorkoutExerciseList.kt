@@ -32,7 +32,7 @@ import org.jetbrains.compose.resources.stringResource
 
 /**
  * The live workout's card list (DESIGN_SYSTEM §9, board 09): 16 dp margins, 12 dp gaps between
- * cards (plan §3.10). [isEmpty] shows the empty state (board 09 §10a) instead. TODO(REP-22): use
+ * cards. [isEmpty] shows the empty state (board 09 §10a) instead. TODO(REP-22): use
  * the generic empty-state component once it lands. Only `*Screen`/`*Content` may know
  * [LiveWorkoutIntent] (AGENTS.md §4, Konsist N8), so every callback is explicit.
  */

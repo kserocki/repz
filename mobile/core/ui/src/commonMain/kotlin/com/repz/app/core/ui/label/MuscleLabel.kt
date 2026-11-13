@@ -17,7 +17,7 @@ import com.repz.app.core.ui.generated.resources.muscle_shoulders
 import com.repz.app.core.ui.generated.resources.muscle_triceps
 import org.jetbrains.compose.resources.stringResource
 
-/** The localized display label for a [Muscle] (DESIGN_SYSTEM §9 Q8): the exercise card subtitle's
+/** The localized display label for a [Muscle] (DESIGN_SYSTEM §9): the exercise card subtitle's
  * "<primary muscle> · n of m done" and anywhere else a muscle group needs showing to the user. */
 @Composable
 fun Muscle.label(): String =
