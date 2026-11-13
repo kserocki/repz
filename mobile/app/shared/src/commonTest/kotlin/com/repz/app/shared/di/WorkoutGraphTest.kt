@@ -4,9 +4,12 @@ import com.repz.app.feature.workout.impl.domain.ActiveWorkoutWriteLock
 import com.repz.app.feature.workout.impl.domain.AddExerciseToActiveWorkoutUseCase
 import com.repz.app.feature.workout.impl.domain.DiscardActiveWorkoutUseCase
 import com.repz.app.feature.workout.impl.domain.EditActiveWorkoutUseCase
+import com.repz.app.feature.workout.impl.domain.FinishLiveWorkoutUseCase
 import com.repz.app.feature.workout.impl.domain.ObserveLiveWorkoutUseCase
 import com.repz.app.feature.workout.impl.domain.ObservePickerExercisesUseCase
 import com.repz.app.feature.workout.impl.domain.ObserveTrainOverviewUseCase
+import com.repz.app.feature.workout.impl.domain.StartEmptyLiveWorkoutUseCase
+import com.repz.app.feature.workout.impl.domain.StartLiveWorkoutFromTemplateUseCase
 import com.repz.app.feature.workout.impl.presentation.live.LiveWorkoutViewModel
 import com.repz.app.feature.workout.impl.presentation.picker.ExercisePickerViewModel
 import com.repz.app.feature.workout.impl.presentation.train.TrainViewModel
@@ -45,6 +48,9 @@ class WorkoutGraphTest {
         assertNotSame(koin.get<EditActiveWorkoutUseCase>(), koin.get<EditActiveWorkoutUseCase>())
         assertNotSame(koin.get<AddExerciseToActiveWorkoutUseCase>(), koin.get<AddExerciseToActiveWorkoutUseCase>())
         assertNotSame(koin.get<DiscardActiveWorkoutUseCase>(), koin.get<DiscardActiveWorkoutUseCase>())
+        assertNotSame(koin.get<FinishLiveWorkoutUseCase>(), koin.get<FinishLiveWorkoutUseCase>())
+        assertNotSame(koin.get<StartEmptyLiveWorkoutUseCase>(), koin.get<StartEmptyLiveWorkoutUseCase>())
+        assertNotSame(koin.get<StartLiveWorkoutFromTemplateUseCase>(), koin.get<StartLiveWorkoutFromTemplateUseCase>())
         assertNotSame(koin.get<ObserveLiveWorkoutUseCase>(), koin.get<ObserveLiveWorkoutUseCase>())
         assertNotSame(koin.get<ObserveTrainOverviewUseCase>(), koin.get<ObserveTrainOverviewUseCase>())
         assertNotSame(koin.get<ObservePickerExercisesUseCase>(), koin.get<ObservePickerExercisesUseCase>())
