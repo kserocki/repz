@@ -500,7 +500,7 @@ The machine toolchain the mobile build is verified against (checked in REP-5):
 | iOS simulator runtime | 27.1 | |
 | Gradle | 9.8.2 | above Kotlin 2.4.21's tested 9.7.0 |
 | AGP | 9.4.0 | above Kotlin 2.4.21's tested 9.3.1; only the `Configuration.setVisible` deprecation observed |
-| Gradle daemon heap | `-Xmx6g` (`mobile/gradle.properties`) | raised from 4 GB in REP-28: a local iOS framework link OOM'd at 4 GB |
+| Gradle daemon heap | `-Xmx8g` (`mobile/gradle.properties`) | raised from 4 GB to 6 GB in REP-28, then to 8 GB in REP-34: a local iOS release framework link OOM'd at 6 GB as the codebase grew |
 
 ### CI runners
 
