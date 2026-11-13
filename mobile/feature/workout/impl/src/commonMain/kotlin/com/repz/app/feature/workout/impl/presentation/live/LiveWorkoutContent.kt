@@ -2,10 +2,12 @@ package com.repz.app.feature.workout.impl.presentation.live
 
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,8 +32,10 @@ import com.repz.app.core.designsystem.component.RepzSnackbarHostState
 import com.repz.app.core.designsystem.component.workout.RepzLiveWorkoutScaffold
 import com.repz.app.core.designsystem.theme.RepzSpacing
 import com.repz.app.core.domain.model.Rpe
+import com.repz.app.core.domain.model.SetType
 import com.repz.app.core.domain.model.UnitSystem
 import com.repz.app.core.domain.model.Weight
+import com.repz.app.core.domain.model.WorkoutExerciseId
 import com.repz.app.core.domain.model.WorkoutSetId
 import com.repz.app.core.domain.preferences.WeightStep
 import com.repz.app.core.ui.keypad.SetValueEdit
@@ -41,22 +45,21 @@ import com.repz.app.feature.workout.impl.generated.resources.Res
 import com.repz.app.feature.workout.impl.generated.resources.exercise_unknown
 import com.repz.app.feature.workout.impl.generated.resources.keypad_context
 import com.repz.app.feature.workout.impl.generated.resources.live_add_exercise
+import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
+import kotlin.time.Duration
 
 /**
- * The live workout (C10, board 09): [RepzLiveWorkoutScaffold] in normal mode, or
- * [LiveWorkoutReorderSection] while [LiveWorkoutUiState.isReordering]. The keypad
- * ([com.repz.app.core.ui.keypad.SetValueKeypad]) and the discard dialog both float above
- * everything else, as siblings of the scaffold in the outer [Box]. No MOT-xx animation ships here
- * (Q11-A).
+ * The live workout (board 09): [RepzLiveWorkoutScaffold] in normal mode, via
+ * [LiveWorkoutActiveSection] (which also floats the keypad above it), or
+ * [LiveWorkoutReorderSection] while [LiveWorkoutUiState.isReordering]. [LiveWorkoutOverlays] renders
+ * the discard confirmation and the back-press handling as siblings of that, since neither needs to
+ * sit inside the content [Box]. No MOT-xx animation ships here.
  *
  * This is the only composable allowed to know [LiveWorkoutIntent] (AGENTS.md §4, Konsist N8): it
  * translates every [state] field and [onIntent] call into the explicit values and present-tense
- * callbacks every other composable below it takes instead, which is why its own body stays one
- * long function rather than being split into named helpers that would each need `state`/`onIntent`
- * again.
+ * callbacks that [LiveWorkoutActiveSection] and [LiveWorkoutOverlays] take instead.
  */
-@Suppress("LongMethod")
 @Composable
 fun LiveWorkoutContent(
     state: LiveWorkoutUiState,
@@ -72,109 +75,332 @@ fun LiveWorkoutContent(
                 onMove = { fromIndex, toIndex -> onIntent(LiveWorkoutIntent.ExerciseMoved(fromIndex, toIndex)) },
             )
         } else {
-            val listState = rememberLazyListState()
-            val layoutDirection = LocalLayoutDirection.current
-            var keypadHeightPx by remember { mutableIntStateOf(0) }
-            val keypadHeightDp = with(LocalDensity.current) { keypadHeightPx.toDp() }
-            val isKeypadOpen = state.keypadTarget != null
-
-            LaunchedEffect(state.keypadTarget?.setId) {
-                val targetSetId = state.keypadTarget?.setId ?: return@LaunchedEffect
-                val exerciseIndex = state.exercises.indexOfFirst { exercise -> exercise.sets.any { it.id == targetSetId } }
-                if (exerciseIndex >= 0) listState.animateScrollToItem(exerciseIndex)
-            }
-
-            Box(modifier = Modifier.fillMaxSize()) {
-                RepzLiveWorkoutScaffold(
-                    header = {
-                        LiveWorkoutHeaderSection(
-                            name = state.workoutName,
-                            elapsedText = formatElapsed(state.elapsed),
-                            isFinishEnabled = state.canFinish && !state.isFinishing,
-                            isEditingName = state.isEditingName,
-                            onNameClick = { onIntent(LiveWorkoutIntent.NameClicked) },
-                            onNameChange = { name -> onIntent(LiveWorkoutIntent.NameChanged(name)) },
-                            onNameEditingFinish = { onIntent(LiveWorkoutIntent.NameEditingFinished) },
-                            onMinimizeClick = { onIntent(LiveWorkoutIntent.MinimizeClicked) },
-                            onFinishClick = { onIntent(LiveWorkoutIntent.FinishClicked) },
-                            onDiscardClick = { onIntent(LiveWorkoutIntent.DiscardClicked) },
-                        )
-                    },
-                    bottomBar = {
-                        if (!isKeypadOpen) {
-                            LiveWorkoutBottomBar(
-                                canAddExercise = state.canAddExercise,
-                                onAddExerciseClick = { onIntent(LiveWorkoutIntent.AddExerciseClicked) },
-                            )
-                        }
-                    },
-                    snackbarHost = { RepzSnackbarHost(state = snackbarHostState) },
-                ) { innerPadding ->
-                    LiveWorkoutExerciseList(
-                        isEmpty = state.isEmpty,
-                        exercises = state.exercises,
-                        unit = state.unit,
-                        editingField = state.editingField,
-                        onAddExercisesClick = { onIntent(LiveWorkoutIntent.AddExerciseClicked) },
-                        onReorderClick = { onIntent(LiveWorkoutIntent.ReorderStarted) },
-                        onNotesClick = { exerciseId -> onIntent(LiveWorkoutIntent.NotesClicked(exerciseId)) },
-                        onNotesChange = { exerciseId, notes -> onIntent(LiveWorkoutIntent.NotesChanged(exerciseId, notes)) },
-                        onNotesEditingFinish = { exerciseId -> onIntent(LiveWorkoutIntent.NotesEditingFinished(exerciseId)) },
-                        onRemoveClick = { exerciseId -> onIntent(LiveWorkoutIntent.ExerciseRemoved(exerciseId)) },
-                        onAddSetClick = { exerciseId -> onIntent(LiveWorkoutIntent.AddSetClicked(exerciseId)) },
-                        onSetFieldClick = { setId, field -> onIntent(LiveWorkoutIntent.SetFieldClicked(setId, field)) },
-                        onSetCompleteClick = { setId -> onIntent(LiveWorkoutIntent.SetCompletionToggled(setId)) },
-                        onSetDeleteClick = { setId -> onIntent(LiveWorkoutIntent.SetDeleted(setId)) },
-                        onSetTypeSelect = { setId, type -> onIntent(LiveWorkoutIntent.SetTypeSelected(setId, type)) },
-                        listState = listState,
-                        contentPadding = innerPadding.withExtraBottom(keypadHeightDp, layoutDirection),
-                    )
-                }
-
-                if (isKeypadOpen) {
-                    Box(
-                        modifier =
-                            Modifier
-                                .fillMaxSize()
-                                .pointerInput(Unit) { detectTapGestures(onTap = { onIntent(LiveWorkoutIntent.KeypadDismissed) }) },
-                    )
-                }
-
-                LiveWorkoutKeypad(
-                    keypadTarget = state.keypadTarget,
-                    unit = state.unit,
-                    weightStep = state.weightStep,
-                    onWeightEnter = { setId, weight -> onIntent(LiveWorkoutIntent.SetWeightEntered(setId, weight)) },
-                    onRepsEnter = { setId, reps -> onIntent(LiveWorkoutIntent.SetRepsEntered(setId, reps)) },
-                    onRpeEnter = { setId, rpe -> onIntent(LiveWorkoutIntent.SetRpeEntered(setId, rpe)) },
-                    onFieldSelect = { field -> onIntent(LiveWorkoutIntent.KeypadFieldSelected(field)) },
-                    onWeightStepChange = { step -> onIntent(LiveWorkoutIntent.WeightStepChanged(step)) },
-                    onNext = { onIntent(LiveWorkoutIntent.NextFieldRequested) },
-                    onDismiss = { onIntent(LiveWorkoutIntent.KeypadDismissed) },
-                    modifier =
-                        Modifier
-                            .align(Alignment.BottomCenter)
-                            .onSizeChanged { size -> keypadHeightPx = size.height },
-                )
-            }
-        }
-
-        state.discardConfirmation?.let { confirmation ->
-            LiveWorkoutDiscardDialog(
-                confirmation = confirmation,
-                onConfirm = { onIntent(LiveWorkoutIntent.DiscardConfirmed) },
-                onDismiss = { onIntent(LiveWorkoutIntent.DiscardDismissed) },
+            LiveWorkoutActiveSection(
+                workoutName = state.workoutName,
+                elapsed = state.elapsed,
+                isFinishEnabled = state.canFinish && !state.isFinishing,
+                isEditingName = state.isEditingName,
+                canAddExercise = state.canAddExercise,
+                isEmpty = state.isEmpty,
+                exercises = state.exercises,
+                unit = state.unit,
+                editingField = state.editingField,
+                keypadTarget = state.keypadTarget,
+                weightStep = state.weightStep,
+                snackbarHostState = snackbarHostState,
+                onNameClick = { onIntent(LiveWorkoutIntent.NameClicked) },
+                onNameChange = { name -> onIntent(LiveWorkoutIntent.NameChanged(name)) },
+                onNameEditingFinish = { onIntent(LiveWorkoutIntent.NameEditingFinished) },
+                onMinimizeClick = { onIntent(LiveWorkoutIntent.MinimizeClicked) },
+                onFinishClick = { onIntent(LiveWorkoutIntent.FinishClicked) },
+                onDiscardClick = { onIntent(LiveWorkoutIntent.DiscardClicked) },
+                onAddExerciseClick = { onIntent(LiveWorkoutIntent.AddExerciseClicked) },
+                onReorderClick = { onIntent(LiveWorkoutIntent.ReorderStarted) },
+                onNotesClick = { exerciseId -> onIntent(LiveWorkoutIntent.NotesClicked(exerciseId)) },
+                onNotesChange = { exerciseId, notes -> onIntent(LiveWorkoutIntent.NotesChanged(exerciseId, notes)) },
+                onNotesEditingFinish = { exerciseId -> onIntent(LiveWorkoutIntent.NotesEditingFinished(exerciseId)) },
+                onRemoveClick = { exerciseId -> onIntent(LiveWorkoutIntent.ExerciseRemoved(exerciseId)) },
+                onAddSetClick = { exerciseId -> onIntent(LiveWorkoutIntent.AddSetClicked(exerciseId)) },
+                onSetFieldClick = { setId, field -> onIntent(LiveWorkoutIntent.SetFieldClicked(setId, field)) },
+                onSetCompleteClick = { setId -> onIntent(LiveWorkoutIntent.SetCompletionToggled(setId)) },
+                onSetDeleteClick = { setId -> onIntent(LiveWorkoutIntent.SetDeleted(setId)) },
+                onSetTypeSelect = { setId, type -> onIntent(LiveWorkoutIntent.SetTypeSelected(setId, type)) },
+                onWeightEnter = { setId, weight -> onIntent(LiveWorkoutIntent.SetWeightEntered(setId, weight)) },
+                onRepsEnter = { setId, reps -> onIntent(LiveWorkoutIntent.SetRepsEntered(setId, reps)) },
+                onRpeEnter = { setId, rpe -> onIntent(LiveWorkoutIntent.SetRpeEntered(setId, rpe)) },
+                onKeypadFieldSelect = { field -> onIntent(LiveWorkoutIntent.KeypadFieldSelected(field)) },
+                onWeightStepChange = { step -> onIntent(LiveWorkoutIntent.WeightStepChanged(step)) },
+                onNextField = { onIntent(LiveWorkoutIntent.NextFieldRequested) },
+                onKeypadDismiss = { onIntent(LiveWorkoutIntent.KeypadDismissed) },
             )
         }
     }
 
-    LiveWorkoutBackHandling(
+    LiveWorkoutOverlays(
+        discardConfirmation = state.discardConfirmation,
         isKeypadOpen = state.keypadTarget != null,
         isReordering = state.isReordering,
+        onDiscardConfirm = { onIntent(LiveWorkoutIntent.DiscardConfirmed) },
+        onDiscardDismiss = { onIntent(LiveWorkoutIntent.DiscardDismissed) },
         onKeypadDismiss = { onIntent(LiveWorkoutIntent.KeypadDismissed) },
         onReorderExit = { onIntent(LiveWorkoutIntent.ReorderFinished) },
         onMinimize = { onIntent(LiveWorkoutIntent.MinimizeClicked) },
     )
+}
+
+/**
+ * The floating overlays that sit above either branch of [LiveWorkoutContent] regardless of
+ * [isReordering]: the discard confirmation (when [discardConfirmation] isn't `null`) and the
+ * system back-press handling. [RepzAlertDialog][com.repz.app.core.designsystem.component.RepzAlertDialog]
+ * renders in its own window, so this doesn't need to sit inside the content [Box] for layering.
+ */
+@Composable
+private fun LiveWorkoutOverlays(
+    discardConfirmation: DiscardConfirmationUi?,
+    isKeypadOpen: Boolean,
+    isReordering: Boolean,
+    onDiscardConfirm: () -> Unit,
+    onDiscardDismiss: () -> Unit,
+    onKeypadDismiss: () -> Unit,
+    onReorderExit: () -> Unit,
+    onMinimize: () -> Unit,
+) {
+    discardConfirmation?.let { confirmation ->
+        LiveWorkoutDiscardDialog(confirmation = confirmation, onConfirm = onDiscardConfirm, onDismiss = onDiscardDismiss)
+    }
+
+    LiveWorkoutBackHandling(
+        isKeypadOpen = isKeypadOpen,
+        isReordering = isReordering,
+        onKeypadDismiss = onKeypadDismiss,
+        onReorderExit = onReorderExit,
+        onMinimize = onMinimize,
+    )
+}
+
+/**
+ * [LiveWorkoutContent]'s non-reordering branch: the scaffold, the auto-scroll-to-editing-set
+ * effect and the floating keypad, all sized against the keypad's own measured height. Every
+ * parameter here is an explicit value or a present-tense callback, never [LiveWorkoutUiState] or
+ * [LiveWorkoutIntent] (AGENTS.md §4, Konsist N8).
+ */
+@Composable
+private fun LiveWorkoutActiveSection(
+    workoutName: String,
+    elapsed: Duration,
+    isFinishEnabled: Boolean,
+    isEditingName: Boolean,
+    canAddExercise: Boolean,
+    isEmpty: Boolean,
+    exercises: ImmutableList<LiveExerciseUi>,
+    unit: UnitSystem,
+    editingField: SetFieldRef?,
+    keypadTarget: LiveKeypadTargetUi?,
+    weightStep: WeightStep,
+    snackbarHostState: RepzSnackbarHostState,
+    onNameClick: () -> Unit,
+    onNameChange: (String) -> Unit,
+    onNameEditingFinish: () -> Unit,
+    onMinimizeClick: () -> Unit,
+    onFinishClick: () -> Unit,
+    onDiscardClick: () -> Unit,
+    onAddExerciseClick: () -> Unit,
+    onReorderClick: () -> Unit,
+    onNotesClick: (WorkoutExerciseId) -> Unit,
+    onNotesChange: (WorkoutExerciseId, String) -> Unit,
+    onNotesEditingFinish: (WorkoutExerciseId) -> Unit,
+    onRemoveClick: (WorkoutExerciseId) -> Unit,
+    onAddSetClick: (WorkoutExerciseId) -> Unit,
+    onSetFieldClick: (WorkoutSetId, SetField) -> Unit,
+    onSetCompleteClick: (WorkoutSetId) -> Unit,
+    onSetDeleteClick: (WorkoutSetId) -> Unit,
+    onSetTypeSelect: (WorkoutSetId, SetType) -> Unit,
+    onWeightEnter: (WorkoutSetId, Weight?) -> Unit,
+    onRepsEnter: (WorkoutSetId, Int?) -> Unit,
+    onRpeEnter: (WorkoutSetId, Rpe?) -> Unit,
+    onKeypadFieldSelect: (SetField) -> Unit,
+    onWeightStepChange: (WeightStep) -> Unit,
+    onNextField: () -> Unit,
+    onKeypadDismiss: () -> Unit,
+) {
+    val listState = rememberLazyListState()
+    val layoutDirection = LocalLayoutDirection.current
+    var keypadHeightPx by remember { mutableIntStateOf(0) }
+    val keypadHeightDp = with(LocalDensity.current) { keypadHeightPx.toDp() }
+    val isKeypadOpen = keypadTarget != null
+
+    LiveWorkoutAutoScrollEffect(targetSetId = keypadTarget?.setId, exercises = exercises, listState = listState)
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        LiveWorkoutScaffoldSection(
+            workoutName = workoutName,
+            elapsedText = formatElapsed(elapsed),
+            isFinishEnabled = isFinishEnabled,
+            isEditingName = isEditingName,
+            canAddExercise = canAddExercise,
+            isKeypadOpen = isKeypadOpen,
+            isEmpty = isEmpty,
+            exercises = exercises,
+            unit = unit,
+            editingField = editingField,
+            snackbarHostState = snackbarHostState,
+            listState = listState,
+            keypadHeightDp = keypadHeightDp,
+            layoutDirection = layoutDirection,
+            onNameClick = onNameClick,
+            onNameChange = onNameChange,
+            onNameEditingFinish = onNameEditingFinish,
+            onMinimizeClick = onMinimizeClick,
+            onFinishClick = onFinishClick,
+            onDiscardClick = onDiscardClick,
+            onAddExerciseClick = onAddExerciseClick,
+            onReorderClick = onReorderClick,
+            onNotesClick = onNotesClick,
+            onNotesChange = onNotesChange,
+            onNotesEditingFinish = onNotesEditingFinish,
+            onRemoveClick = onRemoveClick,
+            onAddSetClick = onAddSetClick,
+            onSetFieldClick = onSetFieldClick,
+            onSetCompleteClick = onSetCompleteClick,
+            onSetDeleteClick = onSetDeleteClick,
+            onSetTypeSelect = onSetTypeSelect,
+        )
+
+        LiveWorkoutKeypadOverlay(
+            isKeypadOpen = isKeypadOpen,
+            keypadTarget = keypadTarget,
+            unit = unit,
+            weightStep = weightStep,
+            onWeightEnter = onWeightEnter,
+            onRepsEnter = onRepsEnter,
+            onRpeEnter = onRpeEnter,
+            onFieldSelect = onKeypadFieldSelect,
+            onWeightStepChange = onWeightStepChange,
+            onNext = onNextField,
+            onDismiss = onKeypadDismiss,
+            onHeightChange = { heightPx -> keypadHeightPx = heightPx },
+        )
+    }
+}
+
+/**
+ * The floating keypad plus the full-size scrim that dismisses it on an outside tap, while
+ * [isKeypadOpen]. [onHeightChange] reports the keypad's own height so the scaffold's content can
+ * leave room for it.
+ */
+@Composable
+private fun BoxScope.LiveWorkoutKeypadOverlay(
+    isKeypadOpen: Boolean,
+    keypadTarget: LiveKeypadTargetUi?,
+    unit: UnitSystem,
+    weightStep: WeightStep,
+    onWeightEnter: (WorkoutSetId, Weight?) -> Unit,
+    onRepsEnter: (WorkoutSetId, Int?) -> Unit,
+    onRpeEnter: (WorkoutSetId, Rpe?) -> Unit,
+    onFieldSelect: (SetField) -> Unit,
+    onWeightStepChange: (WeightStep) -> Unit,
+    onNext: () -> Unit,
+    onDismiss: () -> Unit,
+    onHeightChange: (Int) -> Unit,
+) {
+    if (isKeypadOpen) {
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .pointerInput(Unit) { detectTapGestures(onTap = { onDismiss() }) },
+        )
+    }
+
+    LiveWorkoutKeypad(
+        keypadTarget = keypadTarget,
+        unit = unit,
+        weightStep = weightStep,
+        onWeightEnter = onWeightEnter,
+        onRepsEnter = onRepsEnter,
+        onRpeEnter = onRpeEnter,
+        onFieldSelect = onFieldSelect,
+        onWeightStepChange = onWeightStepChange,
+        onNext = onNext,
+        onDismiss = onDismiss,
+        modifier =
+            Modifier
+                .align(Alignment.BottomCenter)
+                .onSizeChanged { size -> onHeightChange(size.height) },
+    )
+}
+
+/** Scrolls to the exercise holding [targetSetId] (the set the keypad just opened for) once it changes. */
+@Composable
+private fun LiveWorkoutAutoScrollEffect(
+    targetSetId: WorkoutSetId?,
+    exercises: ImmutableList<LiveExerciseUi>,
+    listState: LazyListState,
+) {
+    LaunchedEffect(targetSetId) {
+        val setId = targetSetId ?: return@LaunchedEffect
+        val exerciseIndex = exercises.indexOfFirst { exercise -> exercise.sets.any { it.id == setId } }
+        if (exerciseIndex >= 0) listState.animateScrollToItem(exerciseIndex)
+    }
+}
+
+/** The header, bottom bar, snackbar host and exercise list inside [RepzLiveWorkoutScaffold]. */
+@Composable
+private fun LiveWorkoutScaffoldSection(
+    workoutName: String,
+    elapsedText: String,
+    isFinishEnabled: Boolean,
+    isEditingName: Boolean,
+    canAddExercise: Boolean,
+    isKeypadOpen: Boolean,
+    isEmpty: Boolean,
+    exercises: ImmutableList<LiveExerciseUi>,
+    unit: UnitSystem,
+    editingField: SetFieldRef?,
+    snackbarHostState: RepzSnackbarHostState,
+    listState: LazyListState,
+    keypadHeightDp: Dp,
+    layoutDirection: LayoutDirection,
+    onNameClick: () -> Unit,
+    onNameChange: (String) -> Unit,
+    onNameEditingFinish: () -> Unit,
+    onMinimizeClick: () -> Unit,
+    onFinishClick: () -> Unit,
+    onDiscardClick: () -> Unit,
+    onAddExerciseClick: () -> Unit,
+    onReorderClick: () -> Unit,
+    onNotesClick: (WorkoutExerciseId) -> Unit,
+    onNotesChange: (WorkoutExerciseId, String) -> Unit,
+    onNotesEditingFinish: (WorkoutExerciseId) -> Unit,
+    onRemoveClick: (WorkoutExerciseId) -> Unit,
+    onAddSetClick: (WorkoutExerciseId) -> Unit,
+    onSetFieldClick: (WorkoutSetId, SetField) -> Unit,
+    onSetCompleteClick: (WorkoutSetId) -> Unit,
+    onSetDeleteClick: (WorkoutSetId) -> Unit,
+    onSetTypeSelect: (WorkoutSetId, SetType) -> Unit,
+) {
+    RepzLiveWorkoutScaffold(
+        header = {
+            LiveWorkoutHeaderSection(
+                name = workoutName,
+                elapsedText = elapsedText,
+                isFinishEnabled = isFinishEnabled,
+                isEditingName = isEditingName,
+                onNameClick = onNameClick,
+                onNameChange = onNameChange,
+                onNameEditingFinish = onNameEditingFinish,
+                onMinimizeClick = onMinimizeClick,
+                onFinishClick = onFinishClick,
+                onDiscardClick = onDiscardClick,
+            )
+        },
+        bottomBar = {
+            if (!isKeypadOpen) {
+                LiveWorkoutBottomBar(canAddExercise = canAddExercise, onAddExerciseClick = onAddExerciseClick)
+            }
+        },
+        snackbarHost = { RepzSnackbarHost(state = snackbarHostState) },
+    ) { innerPadding ->
+        LiveWorkoutExerciseList(
+            isEmpty = isEmpty,
+            exercises = exercises,
+            unit = unit,
+            editingField = editingField,
+            onAddExercisesClick = onAddExerciseClick,
+            onReorderClick = onReorderClick,
+            onNotesClick = onNotesClick,
+            onNotesChange = onNotesChange,
+            onNotesEditingFinish = onNotesEditingFinish,
+            onRemoveClick = onRemoveClick,
+            onAddSetClick = onAddSetClick,
+            onSetFieldClick = onSetFieldClick,
+            onSetCompleteClick = onSetCompleteClick,
+            onSetDeleteClick = onSetDeleteClick,
+            onSetTypeSelect = onSetTypeSelect,
+            listState = listState,
+            contentPadding = innerPadding.withExtraBottom(keypadHeightDp, layoutDirection),
+        )
+    }
 }
 
 /** Adds [extraBottom] (the measured keypad height while it's open) on top of the scaffold's own

@@ -47,7 +47,6 @@ private fun RepzExerciseCardSample(notes: String? = null) {
     }
 }
 
-@Suppress("LongParameterList")
 @Composable
 private fun CardSetRow(
     badgeLabel: String,

@@ -18,7 +18,6 @@ private val TypeMenuItems =
         RepzMenuItem(label = "Failure", onClick = {}),
     )
 
-@Suppress("LongParameterList")
 @Composable
 private fun RepzSetRowSample(
     modifier: Modifier = Modifier,

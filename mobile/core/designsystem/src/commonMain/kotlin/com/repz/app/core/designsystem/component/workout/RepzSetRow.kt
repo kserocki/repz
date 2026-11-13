@@ -164,7 +164,6 @@ fun RepzSetRow(
     }
 }
 
-@Suppress("LongParameterList")
 @Composable
 private fun BoxWithConstraintsScope.SetRowLayout(
     isReflowed: Boolean,
@@ -265,7 +264,6 @@ private fun setRowMinHeight(fontScale: Float): Dp =
         else -> DefaultRowHeight
     }
 
-@Suppress("LongParameterList")
 @Composable
 private fun SetRowSingleLine(
     badgeLabel: String,
@@ -345,7 +343,6 @@ private fun SetRowSingleLine(
     }
 }
 
-@Suppress("LongParameterList")
 @Composable
 private fun SetRowReflowed(
     badgeLabel: String,
