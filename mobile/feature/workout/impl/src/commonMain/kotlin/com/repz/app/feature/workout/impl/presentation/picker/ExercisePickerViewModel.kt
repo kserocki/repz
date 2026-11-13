@@ -33,6 +33,8 @@ class ExercisePickerViewModel(
     private val mutableEffects = Channel<ExercisePickerEffect>(Channel.BUFFERED)
     val effects: Flow<ExercisePickerEffect> = mutableEffects.receiveAsFlow()
 
+    private var isAdding = false
+
     val state: StateFlow<ExercisePickerUiState> =
         observeExercises()
             .map(::toUiState)
@@ -58,6 +60,8 @@ class ExercisePickerViewModel(
     }
 
     private fun onExerciseClicked(id: ExerciseId) {
+        if (isAdding) return
+        isAdding = true
         viewModelScope.launch {
             addExerciseToActiveWorkout(id)
             sendEffect(ExercisePickerEffect.Close)

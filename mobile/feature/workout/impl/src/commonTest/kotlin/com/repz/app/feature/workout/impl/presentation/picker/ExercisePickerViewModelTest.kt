@@ -94,6 +94,27 @@ class ExercisePickerViewModelTest {
         }
 
     @Test
+    fun givenADoubleTapOnAnExercise_whenBothClicksAreHandled_thenItIsAddedOnlyOnce() =
+        runTest(dispatcher) {
+            val bench = testExercise(seed = 1, name = "Bench press")
+            val workouts = FakeWorkoutRepository(listOf(testActiveWorkout(exercises = emptyList())))
+            val viewModel = viewModel(exercises = FakeExerciseRepository(listOf(bench)), workouts = workouts)
+
+            viewModel.onIntent(ExercisePickerIntent.ExerciseClicked(bench.id))
+            viewModel.onIntent(ExercisePickerIntent.ExerciseClicked(bench.id))
+            dispatcher.scheduler.advanceUntilIdle()
+
+            assertEquals(
+                1,
+                workouts
+                    .observeActiveWorkout()
+                    .first()
+                    ?.exercises
+                    ?.size,
+            )
+        }
+
+    @Test
     fun givenBackClicked_whenHandled_thenCloseIsSent() =
         runTest(dispatcher) {
             val viewModel = viewModel()
