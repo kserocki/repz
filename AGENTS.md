@@ -61,6 +61,7 @@ design/     git-ignored local design export
 - **Naming over comments:** functions, variables and classes are named so precisely that comments are unnecessary. Extract a well-named function instead of writing a comment.
 - **Comments only for non-obvious logic:** 1–3 plain lines on what the code does and how it behaves, understandable to any developer. No essays.
 - **No ticket numbers in comments**, except `// TODO(REP-xx): …` pointing to an existing Linear issue.
+- **No process references anywhere in code, comments, previews, tests or docs:** no plan IDs (`Q3`, `T8`, `§3.4`), no review or QA rounds (`review-1`, `Bug B`), no history ("this used to…"). Decisions belong in DESIGN_SYSTEM §13, MOTION or an ADR. If a comment would need one, leave it out.
 - **Commits on branches:** Conventional Commits with the Linear key (`feat(workout): log set offline (REP-34)`).
 - **PR titles** (= the squash commit on `main`): `REP-xx <Summary>`, e.g. `REP-5 KMP Gradle scaffold, version catalog and convention plugins`.
 - **Workflow:** every Linear issue is implemented with the `implement` skill (plan → approval → implementation → manual test → review → PR).

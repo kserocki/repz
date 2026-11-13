@@ -58,3 +58,8 @@ Always:
 - start emulators, simulators and dev servers in the background and poll with a bounded loop (e.g. 60×5 s), never with bare `adb wait-for-device`, `gh run watch` without a Bash `timeout`, or an interactive wait;
 - run the narrowest task that proves the point, and keep full builds for the final check;
 - commit as soon as each logical piece is verified, so a stall loses little work.
+
+## Before you hand off (user rules, 2026-11-13)
+- **Gates while working:** run only the narrow module tasks you touched (`:<module>:allTests`, `ktlintCheck`, `detekt`, `:konsist-tests:test`). **Never run the full `./gradlew check build`** unless the orchestrator explicitly asks you for the final verify. One agent runs it once per round.
+- **Smoke-run your work (UI and app-facing packages):** install the debug app on one existing Android emulator in **dark mode** (pin `ANDROID_SERIAL`) and walk the plan's acceptance criteria for your package yourself: tap every new control, enter and leave edit modes, scroll, rotate if state matters. Fix what's broken before handing off. One variant only; no light mode, no iOS, no recordings. Mention in impl-log what you checked.
+- **Comments:** describe current behaviour in 1–3 plain lines, or write none. Never put process references in code, comments, previews, tests or docs: no plan IDs (`Q3`, `T8`, `U5`, `F2`, `§3.4`, `plan §…`), no review or QA references (`review-1`, `round-2`, `Bug B`, `Coach`, `Muse review`, `M1`…), no history ("this used to…", "fixed after…"). Decisions live in DESIGN_SYSTEM §13, MOTION or an ADR. If a comment would need such a reference, leave it out.

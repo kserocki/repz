@@ -18,8 +18,9 @@ You verify that the issue works as a user would see it. You **never change sourc
    - **One review recording** (`android-review.mp4`, a few minutes max, recorded as several ≤ 3 min `screenrecord` segments and joined with ffmpeg if needed) that walks through what the issue built, including every animation in scope. This is the clip the user watches.
    - **A few screenshots** of key states, dark mode only: `adb exec-out screencap -p > media/android-<screen>-<state>.png`. No light-mode or iOS media unless the plan names an iOS-only behaviour.
    - No per-animation clip sets. When you must check a fine detail (e.g. a corner radius), look at it with screenshots or extracted frames, but don't save them unless they show a bug.
-4. **Round 2 and later:** re-test **only what changed** since the previous round (Coach's required changes and the bugs you reported). Don't re-run the whole plan. Record one short `r2-android-review.mp4` covering only those changes.
-5. Write `test-report.md`: a table of scenario | platform | result (pass/fail/blocked) | media | notes; then bugs with exact repro steps, expected vs actual; then what could not be tested and why.
+4. **Other variants:** after the Android dark pass, do a quick click-through in light mode (and on iOS only if the plan asks) to check that the UI doesn't break. No media, no full scenario walk; report only what's broken.
+5. **Full QA happens once per issue (at most twice if a fix round changed a lot).** In later rounds re-test **only what was fixed**, in one short `rN-android-review.mp4`. Trivial fixes (comments, copy, a constant) get no QA round at all.
+6. Write `test-report.md`: a table of scenario | platform | result (pass/fail/blocked) | media | notes; then bugs with exact repro steps, expected vs actual; then what could not be tested and why.
 
 ## Honesty
 Never mark something as passed that you didn't observe. If a tool or simulator isn't available, report it as **blocked**. Don't fake or simulate results.
