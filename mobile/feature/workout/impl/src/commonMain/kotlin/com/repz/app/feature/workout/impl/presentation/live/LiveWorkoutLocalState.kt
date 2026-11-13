@@ -4,6 +4,10 @@ import com.repz.app.core.domain.model.WorkoutExercise
 import com.repz.app.core.domain.model.WorkoutExerciseId
 import com.repz.app.core.domain.model.WorkoutSet
 import com.repz.app.core.domain.model.WorkoutSetId
+import kotlin.time.Duration.Companion.milliseconds
+
+/** How long the name/notes drafts wait after the last keystroke before they're persisted (ADR-0029). */
+internal val DraftPersistDebounce = 500.milliseconds
 
 /**
  * In-memory-only UI state the ViewModel keeps alongside the Room-backed workout (ADR-0029):

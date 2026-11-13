@@ -14,6 +14,7 @@ import com.repz.app.core.testing.workout.FakeWorkoutRepository
 import com.repz.app.feature.workout.impl.domain.ActiveWorkoutWriteLock
 import com.repz.app.feature.workout.impl.domain.DiscardActiveWorkoutUseCase
 import com.repz.app.feature.workout.impl.domain.EditActiveWorkoutUseCase
+import com.repz.app.feature.workout.impl.domain.FinishLiveWorkoutUseCase
 import com.repz.app.feature.workout.impl.domain.ObserveLiveWorkoutUseCase
 import com.repz.app.feature.workout.impl.domain.SetWeightStepUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,6 +28,8 @@ import kotlin.time.Instant
  * [LiveWorkoutViewModelSetEditingTest] and [LiveWorkoutViewModelExerciseTest] (split from one test
  * class per Detekt's `LargeClass`). Subscribes [LiveWorkoutViewModel.state] on [TestScope]'s
  * `backgroundScope` and runs [dispatcher] once, so every test sees a populated first state.
+ * [backgroundScope] also stands in for the app-scoped `CoroutineScope` the real app injects for
+ * `onCleared`'s own flush (ADR-0029): both outlive `viewModelScope`.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 internal fun TestScope.liveWorkoutViewModel(
@@ -38,15 +41,22 @@ internal fun TestScope.liveWorkoutViewModel(
 ): LiveWorkoutViewModel {
     val findLastPerformance = FindLastPerformanceUseCase(workouts)
     val recalculate = RecalculatePersonalRecordsUseCase(workouts, FakePersonalRecordRepository(), FakeTransactionRunner())
+    val lock = ActiveWorkoutWriteLock()
     val viewModel =
         LiveWorkoutViewModel(
             observeLiveWorkout = ObserveLiveWorkoutUseCase(workouts, exercises, findLastPerformance, preferences),
-            editActiveWorkout = EditActiveWorkoutUseCase(workouts, ActiveWorkoutWriteLock()),
-            discardActiveWorkout = DiscardActiveWorkoutUseCase(workouts),
-            finishActiveWorkout = FinishActiveWorkoutUseCase(workouts, SaveFinishedWorkoutUseCase(workouts, recalculate), clock),
+            workouts = workouts,
+            editActiveWorkout = EditActiveWorkoutUseCase(workouts, lock),
+            discardActiveWorkout = DiscardActiveWorkoutUseCase(workouts, lock),
+            finishActiveWorkout =
+                FinishLiveWorkoutUseCase(
+                    FinishActiveWorkoutUseCase(workouts, SaveFinishedWorkoutUseCase(workouts, recalculate), clock),
+                    lock,
+                ),
             setWeightStep = SetWeightStepUseCase(preferences),
             idGenerator = SequentialIdGenerator(),
             clock = clock,
+            applicationScope = backgroundScope,
             languageTag = { "en" },
         )
     backgroundScope.launch { viewModel.state.collect {} }

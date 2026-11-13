@@ -83,7 +83,13 @@ internal class LiveWorkoutSetEditingHandler(
         val (exercise, index) = workout.findSet(setId) ?: return
         val set = exercise.sets[index]
 
-        localState.update { it.copy(pendingUndo = PendingUndo.DeletedSet(exercise.id, index, set)) }
+        localState.update { current ->
+            current.copy(
+                pendingUndo = PendingUndo.DeletedSet(exercise.id, index, set),
+                // The keypad's own target must not survive the set it points to, or Undo would reopen it.
+                editingField = current.editingField?.takeUnless { it.setId == setId },
+            )
+        }
         scope.launch { editActiveWorkout { it.withoutSet(setId) } }
         sendEffect(LiveWorkoutEffect.PlayRejectHaptic)
         sendEffect(LiveWorkoutEffect.ShowSetDeleted)

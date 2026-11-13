@@ -5,12 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import com.repz.app.core.common.id.IdGenerator
-import com.repz.app.core.domain.workout.FinishActiveWorkoutUseCase
+import com.repz.app.core.domain.workout.WorkoutRepository
 import com.repz.app.feature.workout.impl.domain.DiscardActiveWorkoutUseCase
 import com.repz.app.feature.workout.impl.domain.EditActiveWorkoutUseCase
+import com.repz.app.feature.workout.impl.domain.FinishLiveWorkoutUseCase
 import com.repz.app.feature.workout.impl.domain.LiveWorkoutSnapshot
 import com.repz.app.feature.workout.impl.domain.ObserveLiveWorkoutUseCase
 import com.repz.app.feature.workout.impl.domain.SetWeightStepUseCase
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -36,17 +38,21 @@ import kotlin.time.Duration.Companion.seconds
  * synchronously; only the elapsed-time ticker is tied to [state]'s own subscribers
  * (`WhileSubscribed`), so it stops ticking once nothing is observing the screen. Intent handling
  * is split by area into [LiveWorkoutLifecycleHandler], [LiveWorkoutSetEditingHandler] and
- * [LiveWorkoutExerciseHandler] (Detekt's per-class function-count limit).
+ * [LiveWorkoutExerciseHandler] (Detekt's per-class function-count limit). [applicationScope]
+ * outlives [viewModelScope] (which is already cancelled by the time [onCleared] runs), so it is
+ * the one used to flush a pending name/notes draft on cleanup.
  */
 @KoinViewModel
 class LiveWorkoutViewModel(
     observeLiveWorkout: ObserveLiveWorkoutUseCase,
+    private val workouts: WorkoutRepository,
     editActiveWorkout: EditActiveWorkoutUseCase,
     discardActiveWorkout: DiscardActiveWorkoutUseCase,
-    finishActiveWorkout: FinishActiveWorkoutUseCase,
+    finishActiveWorkout: FinishLiveWorkoutUseCase,
     setWeightStep: SetWeightStepUseCase,
     idGenerator: IdGenerator,
     clock: Clock,
+    private val applicationScope: CoroutineScope,
     languageTag: () -> String = { Locale.current.toLanguageTag() },
     logger: Logger = Logger.withTag("LiveWorkout"),
 ) : ViewModel() {
@@ -58,11 +64,14 @@ class LiveWorkoutViewModel(
     private val mutableEffects = Channel<LiveWorkoutEffect>(Channel.BUFFERED)
     val effects: Flow<LiveWorkoutEffect> = mutableEffects.receiveAsFlow()
 
+    private val exerciseHandler =
+        LiveWorkoutExerciseHandler(editActiveWorkout, viewModelScope, localState, snapshotFlow, ::sendEffect)
     private val lifecycleHandler =
         LiveWorkoutLifecycleHandler(
             editActiveWorkout,
             discardActiveWorkout,
             finishActiveWorkout,
+            exerciseHandler::flushNotesDraft,
             logger,
             viewModelScope,
             localState,
@@ -80,8 +89,6 @@ class LiveWorkoutViewModel(
             snapshotFlow,
             ::sendEffect,
         )
-    private val exerciseHandler =
-        LiveWorkoutExerciseHandler(editActiveWorkout, viewModelScope, localState, snapshotFlow, ::sendEffect)
     private val uiStateMapper = LiveWorkoutUiStateMapper(languageTag, clock)
 
     val state: StateFlow<LiveWorkoutUiState> =
@@ -89,11 +96,18 @@ class LiveWorkoutViewModel(
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LiveWorkoutUiState())
 
     init {
-        // Opened with no active workout at all (discarded elsewhere, a restored stack);
-        // later null emissions (Finish/Discard) close through their own intent handlers instead.
+        // Opened with no active workout at all (discarded elsewhere, a restored stack); a plain
+        // repository read is enough here, so this doesn't pay for observeLiveWorkout()'s own
+        // exercise/last-performance lookup a second time. Later null emissions (Finish/Discard)
+        // close through their own intent handlers instead.
         viewModelScope.launch {
-            if (observeLiveWorkout().first() == null) sendEffect(LiveWorkoutEffect.Close)
+            if (workouts.observeActiveWorkout().first() == null) sendEffect(LiveWorkoutEffect.Close)
         }
+    }
+
+    /** viewModelScope is already cancelled by the time this runs, so the flush uses [applicationScope] instead. */
+    override fun onCleared() {
+        applicationScope.launch { lifecycleHandler.flushDrafts() }
     }
 
     fun onIntent(intent: LiveWorkoutIntent) {

@@ -1,6 +1,7 @@
 package com.repz.app.feature.workout.impl.presentation.live
 
 import app.cash.turbine.test
+import com.repz.app.core.domain.validation.ValidationLimits
 import com.repz.app.core.testing.workout.FakeWorkoutRepository
 import com.repz.app.feature.workout.impl.testActiveWorkout
 import com.repz.app.feature.workout.impl.testWorkoutExercise
@@ -107,6 +108,54 @@ class LiveWorkoutViewModelLifecycleTest {
         }
 
     @Test
+    fun givenANameLongerThanTheLimit_whenChanged_thenItIsTruncatedToTheLimit() =
+        runTest(dispatcher) {
+            val workout = testActiveWorkout(name = "Old name")
+            val viewModel = liveWorkoutViewModel(dispatcher, workouts = FakeWorkoutRepository(listOf(workout)))
+            val tooLong = "x".repeat(ValidationLimits.NAME_MAX_LENGTH + 50)
+
+            viewModel.onIntent(LiveWorkoutIntent.NameClicked)
+            viewModel.onIntent(LiveWorkoutIntent.NameChanged(tooLong))
+            dispatcher.scheduler.runCurrent()
+
+            assertEquals(ValidationLimits.NAME_MAX_LENGTH, viewModel.state.value.workoutName.length)
+        }
+
+    @Test
+    fun givenANameEdit_whenTheDebounceElapses_thenItIsPersistedWithoutEndingEditing() =
+        runTest(dispatcher) {
+            val workout = testActiveWorkout(name = "Old name")
+            val workouts = FakeWorkoutRepository(listOf(workout))
+            val viewModel = liveWorkoutViewModel(dispatcher, workouts = workouts)
+
+            viewModel.onIntent(LiveWorkoutIntent.NameClicked)
+            viewModel.onIntent(LiveWorkoutIntent.NameChanged("New name"))
+            dispatcher.scheduler.advanceTimeBy(DraftPersistDebounce)
+            dispatcher.scheduler.runCurrent()
+
+            assertEquals("New name", workouts.observeActiveWorkout().first()?.name)
+            assertTrue(viewModel.state.value.isEditingName)
+        }
+
+    @Test
+    fun givenANameEditNotYetDebounced_whenMinimizeClicked_thenItIsFlushedBeforeClosing() =
+        runTest(dispatcher) {
+            val workout = testActiveWorkout(name = "Old name")
+            val workouts = FakeWorkoutRepository(listOf(workout))
+            val viewModel = liveWorkoutViewModel(dispatcher, workouts = workouts)
+
+            viewModel.onIntent(LiveWorkoutIntent.NameClicked)
+            viewModel.onIntent(LiveWorkoutIntent.NameChanged("New name"))
+
+            viewModel.effects.test {
+                viewModel.onIntent(LiveWorkoutIntent.MinimizeClicked)
+
+                assertEquals(LiveWorkoutEffect.Close, awaitItem())
+            }
+            assertEquals("New name", workouts.observeActiveWorkout().first()?.name)
+        }
+
+    @Test
     fun givenACompletedSet_whenFinishClicked_thenItSucceedsAndCloses() =
         runTest(dispatcher) {
             val completedSet = testWorkoutSet(seed = 1, completedAt = Instant.fromEpochSeconds(10))
@@ -118,6 +167,26 @@ class LiveWorkoutViewModelLifecycleTest {
 
                 assertEquals(LiveWorkoutEffect.Close, awaitItem())
             }
+        }
+
+    @Test
+    fun givenANameEditNotYetDebounced_whenFinishClicked_thenItIsFlushedBeforeFinishing() =
+        runTest(dispatcher) {
+            val completedSet = testWorkoutSet(seed = 1, completedAt = Instant.fromEpochSeconds(10))
+            val workout =
+                testActiveWorkout(name = "Old name", exercises = listOf(testWorkoutExercise(seed = 1, sets = listOf(completedSet))))
+            val workouts = FakeWorkoutRepository(listOf(workout))
+            val viewModel = liveWorkoutViewModel(dispatcher, workouts = workouts)
+
+            viewModel.onIntent(LiveWorkoutIntent.NameClicked)
+            viewModel.onIntent(LiveWorkoutIntent.NameChanged("New name"))
+
+            viewModel.effects.test {
+                viewModel.onIntent(LiveWorkoutIntent.FinishClicked)
+
+                assertEquals(LiveWorkoutEffect.Close, awaitItem())
+            }
+            assertEquals("New name", workouts.findWorkoutIncludingDeleted(workout.id)?.name)
         }
 
     @Test

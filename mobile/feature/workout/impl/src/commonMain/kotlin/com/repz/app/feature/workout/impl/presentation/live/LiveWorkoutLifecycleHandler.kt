@@ -2,13 +2,16 @@ package com.repz.app.feature.workout.impl.presentation.live
 
 import co.touchlab.kermit.Logger
 import com.repz.app.core.domain.result.DomainResult
-import com.repz.app.core.domain.workout.FinishActiveWorkoutUseCase
+import com.repz.app.core.domain.validation.ValidationLimits
 import com.repz.app.core.domain.workout.completedSetCount
 import com.repz.app.core.domain.workout.renamed
 import com.repz.app.feature.workout.impl.domain.DiscardActiveWorkoutUseCase
 import com.repz.app.feature.workout.impl.domain.EditActiveWorkoutUseCase
+import com.repz.app.feature.workout.impl.domain.FinishLiveWorkoutUseCase
 import com.repz.app.feature.workout.impl.domain.LiveWorkoutSnapshot
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -18,15 +21,21 @@ import kotlinx.coroutines.launch
 internal class LiveWorkoutLifecycleHandler(
     private val editActiveWorkout: EditActiveWorkoutUseCase,
     private val discardActiveWorkout: DiscardActiveWorkoutUseCase,
-    private val finishActiveWorkout: FinishActiveWorkoutUseCase,
+    private val finishActiveWorkout: FinishLiveWorkoutUseCase,
+    private val flushNotesDraft: suspend () -> Unit,
     private val logger: Logger,
     private val scope: CoroutineScope,
     private val localState: MutableStateFlow<LocalState>,
     private val snapshotFlow: StateFlow<LiveWorkoutSnapshot?>,
     private val sendEffect: (LiveWorkoutEffect) -> Unit,
 ) {
+    private var nameDebounceJob: Job? = null
+
     fun onMinimizeClicked() {
-        closeAndClearTransientState()
+        scope.launch {
+            flushDrafts()
+            closeAndClearTransientState()
+        }
     }
 
     fun onNameClicked() {
@@ -36,10 +45,18 @@ internal class LiveWorkoutLifecycleHandler(
 
     fun onNameChanged(name: String) {
         if (localState.value.nameDraft == null) return
-        localState.update { it.copy(nameDraft = name) }
+        localState.update { it.copy(nameDraft = name.take(ValidationLimits.NAME_MAX_LENGTH)) }
+        nameDebounceJob?.cancel()
+        nameDebounceJob =
+            scope.launch {
+                delay(DraftPersistDebounce)
+                persistNameDraft()
+            }
     }
 
     fun onNameEditingFinished() {
+        nameDebounceJob?.cancel()
+        nameDebounceJob = null
         val draft = localState.value.nameDraft ?: return
         localState.update { it.copy(nameDraft = null) }
         if (draft.isNotBlank()) {
@@ -51,6 +68,7 @@ internal class LiveWorkoutLifecycleHandler(
         if (localState.value.isFinishing) return
         localState.update { it.copy(isFinishing = true) }
         scope.launch {
+            flushDrafts()
             when (val result = finishActiveWorkout()) {
                 is DomainResult.Success -> {
                     closeAndClearTransientState()
@@ -86,6 +104,19 @@ internal class LiveWorkoutLifecycleHandler(
 
     fun onDiscardDismissed() {
         localState.update { it.copy(discardConfirmation = null) }
+    }
+
+    /** Persists any in-flight debounced name/notes draft immediately (Minimize, Finish, onCleared). */
+    suspend fun flushDrafts() {
+        nameDebounceJob?.cancel()
+        nameDebounceJob = null
+        persistNameDraft()
+        flushNotesDraft()
+    }
+
+    private suspend fun persistNameDraft() {
+        val draft = localState.value.nameDraft ?: return
+        if (draft.isNotBlank()) editActiveWorkout { it.renamed(draft) }
     }
 
     private fun closeAndClearTransientState() {

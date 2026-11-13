@@ -9,7 +9,10 @@ import com.repz.app.core.testing.id.SequentialIdGenerator
 import com.repz.app.core.testing.template.FakeWorkoutTemplateRepository
 import com.repz.app.core.testing.time.MutableClock
 import com.repz.app.core.testing.workout.FakeWorkoutRepository
+import com.repz.app.feature.workout.impl.domain.ActiveWorkoutWriteLock
 import com.repz.app.feature.workout.impl.domain.ObserveTrainOverviewUseCase
+import com.repz.app.feature.workout.impl.domain.StartEmptyLiveWorkoutUseCase
+import com.repz.app.feature.workout.impl.domain.StartLiveWorkoutFromTemplateUseCase
 import com.repz.app.feature.workout.impl.testActiveWorkout
 import com.repz.app.feature.workout.impl.testWorkoutTemplate
 import kotlinx.coroutines.Dispatchers
@@ -51,14 +54,21 @@ class TrainViewModelTest {
     ): TrainViewModel =
         TrainViewModel(
             observeTrainOverview = ObserveTrainOverviewUseCase(workouts, templates),
-            startEmptyWorkout = StartEmptyWorkoutUseCase(workouts, MutableClock(wednesday), SequentialIdGenerator()),
+            startEmptyWorkout =
+                StartEmptyLiveWorkoutUseCase(
+                    StartEmptyWorkoutUseCase(workouts, MutableClock(wednesday), SequentialIdGenerator()),
+                    ActiveWorkoutWriteLock(),
+                ),
             startWorkoutFromTemplate =
-                StartWorkoutFromTemplateUseCase(
-                    workouts,
-                    templates,
-                    FindLastPerformanceUseCase(workouts),
-                    MutableClock(wednesday),
-                    SequentialIdGenerator(),
+                StartLiveWorkoutFromTemplateUseCase(
+                    StartWorkoutFromTemplateUseCase(
+                        workouts,
+                        templates,
+                        FindLastPerformanceUseCase(workouts),
+                        MutableClock(wednesday),
+                        SequentialIdGenerator(),
+                    ),
+                    ActiveWorkoutWriteLock(),
                 ),
             clock = MutableClock(wednesday),
             timeZone = { TimeZone.UTC },

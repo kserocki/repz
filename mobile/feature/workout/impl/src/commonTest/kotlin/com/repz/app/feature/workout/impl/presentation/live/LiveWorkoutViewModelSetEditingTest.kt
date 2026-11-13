@@ -226,6 +226,51 @@ class LiveWorkoutViewModelSetEditingTest {
         }
 
     @Test
+    fun givenTheKeypadTargetsTheDeletedSet_whenDeleted_thenTheTargetIsClearedAndUndoDoesNotReopenTheKeypad() =
+        runTest(dispatcher) {
+            val keptSet = testWorkoutSet(seed = 1)
+            val deletedSet = testWorkoutSet(seed = 2)
+            val exercise = testWorkoutExercise(seed = 1, sets = listOf(keptSet, deletedSet))
+            val workout = testActiveWorkout(exercises = listOf(exercise))
+            val workouts = FakeWorkoutRepository(listOf(workout))
+            val viewModel = liveWorkoutViewModel(dispatcher, workouts = workouts)
+
+            viewModel.onIntent(LiveWorkoutIntent.SetFieldClicked(deletedSet.id, SetField.Weight))
+            dispatcher.scheduler.runCurrent()
+            assertEquals(SetFieldRef(deletedSet.id, SetField.Weight), viewModel.state.value.editingField)
+
+            viewModel.onIntent(LiveWorkoutIntent.SetDeleted(deletedSet.id))
+            dispatcher.scheduler.runCurrent()
+            assertNull(viewModel.state.value.editingField)
+            assertNull(viewModel.state.value.keypadTarget)
+
+            viewModel.onIntent(LiveWorkoutIntent.SetDeletionUndone)
+            dispatcher.scheduler.runCurrent()
+
+            assertNull(viewModel.state.value.editingField)
+            assertNull(viewModel.state.value.keypadTarget)
+        }
+
+    @Test
+    fun givenTheKeypadTargetsAnotherSet_whenADifferentSetIsDeleted_thenTheTargetIsUnaffected() =
+        runTest(dispatcher) {
+            val keptSet = testWorkoutSet(seed = 1)
+            val deletedSet = testWorkoutSet(seed = 2)
+            val exercise = testWorkoutExercise(seed = 1, sets = listOf(keptSet, deletedSet))
+            val workout = testActiveWorkout(exercises = listOf(exercise))
+            val workouts = FakeWorkoutRepository(listOf(workout))
+            val viewModel = liveWorkoutViewModel(dispatcher, workouts = workouts)
+
+            viewModel.onIntent(LiveWorkoutIntent.SetFieldClicked(keptSet.id, SetField.Weight))
+            dispatcher.scheduler.runCurrent()
+
+            viewModel.onIntent(LiveWorkoutIntent.SetDeleted(deletedSet.id))
+            dispatcher.scheduler.runCurrent()
+
+            assertEquals(SetFieldRef(keptSet.id, SetField.Weight), viewModel.state.value.editingField)
+        }
+
+    @Test
     fun givenASetFieldClicked_whenHandled_thenEditingFieldIsSetAndKeypadTargetIsDerived() =
         runTest(dispatcher) {
             val set = testWorkoutSet(seed = 1, weight = Weight.fromKilograms(82.5), reps = 8)
