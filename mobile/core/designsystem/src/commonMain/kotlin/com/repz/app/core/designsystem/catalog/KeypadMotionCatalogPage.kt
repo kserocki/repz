@@ -46,14 +46,13 @@ private val DEMO_DIGITS = listOf(1, 0, 2)
 
 /**
  * `keypad-motion`: auto-plays every [MOTION_LOOP_INTERVAL_MILLIS] since `simctl`/instrumentation
- * can't synthesize real touches (F2's established catalog pattern, [rememberAutoPlayState]). The
- * real [NumberKeypadSheet] slides in and out for real (its own `AnimatedVisibility`/spring); the
- * key-press morph+flash and the ± long-press repeat are demonstrated on standalone instances of the
- * exact same [DigitKey]/[PlusMinusButton] composables the sheet's own grid uses, each driven by a
- * real [PressInteraction] on an externally held [MutableInteractionSource] (plan §3.8's "presses …
- * via PressInteraction on the internal keys") — the sheet's own grid keys aren't reachable from
- * outside its public `request`/callback surface, so this proves the identical key composable
- * instead of reaching into the live grid.
+ * can't synthesize real touches ([rememberAutoPlayState]). The real [NumberKeypadSheet] slides in
+ * and out for real (its own `AnimatedVisibility`/spring); the key-press morph+flash and the ±
+ * long-press repeat are demonstrated on standalone instances of the exact same
+ * [DigitKey]/[PlusMinusButton] composables the sheet's own grid uses, each driven by a real
+ * [PressInteraction] on an externally held [MutableInteractionSource] — the sheet's own grid keys
+ * aren't reachable from outside its public `request`/callback surface, so this proves the
+ * identical key composable instead of reaching into the live grid.
  */
 private fun motionRequest(
     visible: Boolean,

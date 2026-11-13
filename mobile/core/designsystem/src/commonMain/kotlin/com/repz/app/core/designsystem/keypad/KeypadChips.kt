@@ -72,7 +72,7 @@ private fun KeypadChip(
 }
 
 /** "Same as last · {value}": `primaryContainer`/`onPrimaryContainer`, the `history` icon. Shown
- * only when the caller passes a value for the current field (plan §3.4 T9). */
+ * only when the caller passes a value for the current field. */
 @Composable
 internal fun SameAsLastChip(
     value: FixedDecimal,
@@ -119,8 +119,8 @@ internal fun QuickValueChip(
     )
 }
 
-/** "Step {value}": outlined, the `tune` icon; a tap cycles [NumberKeypadRequest.stepOptions]
- * (U3 option A). Weight mode only; hidden when the caller passes no step options. */
+/** "Step {value}": outlined, the `tune` icon; a tap cycles [NumberKeypadRequest.stepOptions].
+ * Weight mode only; hidden when the caller passes no step options. */
 @Composable
 internal fun StepChip(
     step: FixedDecimal,

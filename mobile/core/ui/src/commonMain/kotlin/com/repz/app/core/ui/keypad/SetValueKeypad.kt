@@ -7,10 +7,9 @@ import com.repz.app.core.domain.preferences.WeightStep
 import com.repz.app.core.ui.format.weightUnitLabel
 
 /**
- * The workout feature's keypad entry point (plan §8.1): resolves the unit label and maps
- * [request] to [com.repz.app.core.designsystem.keypad.NumberKeypadRequest], then renders
- * [NumberKeypadSheet]. The caller never sees
- * [com.repz.app.core.designsystem.format.FixedDecimal] or the sheet itself.
+ * The workout feature's keypad entry point: resolves the unit label and maps [request] to
+ * [com.repz.app.core.designsystem.keypad.NumberKeypadRequest], then renders [NumberKeypadSheet].
+ * The caller never sees [com.repz.app.core.designsystem.format.FixedDecimal] or the sheet itself.
  */
 @Composable
 fun SetValueKeypad(

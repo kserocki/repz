@@ -16,12 +16,12 @@ import com.repz.app.core.designsystem.format.FixedDecimal
 import com.repz.app.core.designsystem.format.RepzNumberSymbols
 
 // Digit positions 1-9 (row-major, left to right, top to bottom); RPE mode's 9 choices replace them
-// in the same positions (U2 option a).
+// in the same positions.
 private val DIGIT_ROWS: List<List<Int>> = listOf(listOf(1, 2, 3), listOf(4, 5, 6), listOf(7, 8, 9))
 private const val RPE_CHOICES_PER_ROW = 3
 
 /** A floor of [KeypadKeySize], stretched to match whichever key its [KeyRow] grows to, e.g. a
- * wrapped "Wyczyść" at 200% PL (plan §3.5 "keys keep 52 dp minimum and grow"). */
+ * wrapped "Wyczyść" at 200% PL — keys keep a 52 dp minimum and grow from there. */
 private fun Modifier.gridKeyHeight(): Modifier = heightIn(min = KeypadKeySize).fillMaxHeight()
 
 /** A row whose own height is the tallest of its keys' min-intrinsic heights, so a key that needs
@@ -73,7 +73,7 @@ private fun RowScope.TwoRowKeyColumn(
 }
 
 /**
- * Weight/reps rows (DESIGN_SYSTEM §9, plan §3.5; row-major "1 2 3 backspace / 4 5 6 Clear / 7 8 9
+ * Weight/reps rows (DESIGN_SYSTEM §9; row-major "1 2 3 backspace / 4 5 6 Clear / 7 8 9
  * Next / . 0 keyboard_hide"): rows 1-2 each share one [KeyRow] height with their rail key
  * (Backspace, then Clear); row 3-4 sit in a two-row column next to Next, inside one more [KeyRow]
  * so Next's height always matches that column's.
@@ -143,10 +143,10 @@ private fun DigitKeyRows(
 }
 
 /**
- * RPE mode's rows (U2 option a): the 9 [KeypadField.choices] replace digits 1-9 in the same 3x3
- * positions; row 4 becomes a full-width hide key. The rail is a taller Clear (rows 1-2, no
- * Backspace in RPE mode) and Next (row 3 + the hide row), each matching its own two-row column's
- * height the same way [DigitKeyRows] does.
+ * RPE mode's rows: the 9 [KeypadField.choices] replace digits 1-9 in the same 3x3 positions; row 4
+ * becomes a full-width hide key. The rail is a taller Clear (rows 1-2, no Backspace in RPE mode)
+ * and Next (row 3 + the hide row), each matching its own two-row column's height the same way
+ * [DigitKeyRows] does.
  */
 @Composable
 private fun RpeKeyRows(
@@ -190,9 +190,9 @@ private fun RpeKeyRows(
 }
 
 /**
- * The 4x4 key grid (DESIGN_SYSTEM §9, plan §3.5; exact placement per boards 05 §7 and 09 state 11):
- * [DigitKeyRows] for Weight/Reps, [RpeKeyRows] for RPE (U2 option a). The grid's total height is
- * identical in every mode (U2 option a "nothing jumps"). Digits/separator/backspace are ignored in
+ * The 4x4 key grid (DESIGN_SYSTEM §9; exact placement per boards 05 §7 and 09 state 11):
+ * [DigitKeyRows] for Weight/Reps, [RpeKeyRows] for RPE. The grid's total height is identical in
+ * every mode, so nothing jumps when the mode switches. Digits/separator/backspace are ignored in
  * RPE mode (reachable only via a hardware keyboard).
  */
 @Composable

@@ -21,8 +21,8 @@ private val ALL_MODES = NON_RPE_MODES + KeypadMode.Rpe
 
 /**
  * Pure mapping from the workout feature's [SetValueKeypadRequest] to the sheet's domain-free
- * [NumberKeypadRequest] (plan §3.6/§8). [weightUnitLabel] is resolved by the caller
- * ([SetValueKeypad], a composable) so this function stays plain Kotlin and unit-testable.
+ * [NumberKeypadRequest]. [weightUnitLabel] is resolved by the caller ([SetValueKeypad], a
+ * composable) so this function stays plain Kotlin and unit-testable.
  */
 internal fun SetValueKeypadRequest.toNumberKeypadRequest(weightUnitLabel: String): NumberKeypadRequest =
     NumberKeypadRequest(
@@ -56,7 +56,8 @@ private fun SetValueKeypadRequest.weightField(): KeypadField {
         step = step,
         fractionDigits = WEIGHT_FRACTION_DIGITS,
         sameAsLast = sameAsLast,
-        // T8: base is the Same-as-last value, else the current value, else none.
+        // The base for quick-value suggestions is the Same-as-last value, else the current
+        // value, else none.
         quickValues = KeypadQuickValues.weightSuggestions(base = sameAsLast ?: value, step = step, min = min, max = max),
         choices = emptyList(),
     )

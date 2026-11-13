@@ -122,7 +122,7 @@ internal fun catalogRpeField(
     )
 
 /** The last 3 lines a catalog page shows: the last emitted value, the last mode switch, and the
- * last Next/Dismiss/Step event (plan §3.8). */
+ * last Next/Dismiss/Step event. */
 internal class CatalogEventLog {
     var lastValue by mutableStateOf("value: (none yet)")
     var lastMode by mutableStateOf("mode: (unchanged)")

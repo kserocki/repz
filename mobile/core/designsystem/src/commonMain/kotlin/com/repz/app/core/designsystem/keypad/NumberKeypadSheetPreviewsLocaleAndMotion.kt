@@ -3,7 +3,7 @@ package com.repz.app.core.designsystem.keypad
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 
-/** PL strings on RPE mode (K13 pairs `keypad-weight`/`keypad-rpe` for the PL/font-scale checks). */
+/** PL strings on RPE mode, pairing `keypad-weight`/`keypad-rpe` for the PL/font-scale checks. */
 @Preview(locale = "pl")
 @Composable
 private fun RpePlLightPreview() {

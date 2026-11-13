@@ -3,7 +3,7 @@ package com.repz.app.core.designsystem.keypad
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 
-/** Weight mode with no "Same as last" chip (the caller passed no last value, plan §3.4 T9). */
+/** Weight mode with no "Same as last" chip (the caller passed no last value). */
 @Preview
 @Composable
 private fun WeightNoHistoryLightPreview() {

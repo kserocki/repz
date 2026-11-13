@@ -161,7 +161,7 @@ internal fun KeypadRepsCatalogPage() {
     InteractiveKeypadCatalogPage(initialMode = KeypadMode.Reps, showUnitToggle = false)
 }
 
-/** `keypad-rpe`: sample last 82.5 x 8 @ RPE 8 (plan §3.8), the 9 RPE choices as keys (U2 option a). */
+/** `keypad-rpe`: sample last 82.5 x 8 @ RPE 8, the 9 RPE choices as keys. */
 @Composable
 internal fun KeypadRpeCatalogPage() {
     InteractiveKeypadCatalogPage(initialMode = KeypadMode.Rpe, showUnitToggle = false)

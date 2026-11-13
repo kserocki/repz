@@ -8,7 +8,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 
-/** A sheet-level action a hardware key can trigger, as opposed to a [KeypadInput] edit (plan §3.5). */
+/** A sheet-level action a hardware key can trigger, as opposed to a [KeypadInput] edit. */
 internal enum class KeypadHardwareAction { Next, Dismiss }
 
 private val DIGIT_KEYS =
@@ -38,7 +38,7 @@ private val DIGIT_KEYS =
 private val DECIMAL_KEYS = setOf(Key.Period, Key.Comma, Key.NumPadDot)
 
 /**
- * Maps a hardware key-down to the [KeypadInput] it represents (plan §3.5): digits, the decimal
+ * Maps a hardware key-down to the [KeypadInput] it represents: digits, the decimal
  * separator (locale-independent: both `.` and `,` are accepted), Backspace, Delete → Clear, DPad
  * Up/Down → ±. [KeypadRules] already ignores digits/the separator/Backspace in RPE mode, so this
  * mapping doesn't need to know the current mode.
@@ -69,9 +69,9 @@ internal fun KeyEvent.toKeypadHardwareActionOrNull(): KeypadHardwareAction? {
 
 /**
  * Routes a hardware key-down to [onInput] (an edit, [KeypadInput]) or to [onNext]/[onDismiss] (a
- * sheet-level [KeypadHardwareAction]), per plan §3.5 (K11: digits, the decimal separator,
- * Backspace, Delete → Clear, Enter → Next, Escape → dismiss, DPad Up/Down → ±). Kept outside
- * `NumberKeypadSheetStateless` so that composable's body stays a plain layout assembly.
+ * sheet-level [KeypadHardwareAction]): digits, the decimal separator, Backspace, Delete → Clear,
+ * Enter → Next, Escape → dismiss, DPad Up/Down → ±. Kept outside `NumberKeypadSheetStateless` so
+ * that composable's body stays a plain layout assembly.
  */
 internal fun Modifier.keypadHardwareKeys(
     onInput: (KeypadInput) -> Boolean,

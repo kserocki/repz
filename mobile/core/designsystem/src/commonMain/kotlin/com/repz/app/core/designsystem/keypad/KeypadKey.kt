@@ -199,8 +199,8 @@ internal fun HideKey(
     }
 }
 
-/** Spans rows 3-4 (DESIGN_SYSTEM §9): `primary`/`onPrimary`, an icon over the destination label
- * (U1 "the Next key shows its destination label"), which wraps to 2 lines rather than truncating. */
+/** Spans rows 3-4 (DESIGN_SYSTEM §9): `primary`/`onPrimary`, an icon over the destination label,
+ * which wraps to 2 lines rather than truncating. */
 @Composable
 internal fun NextKey(
     label: String,
@@ -224,7 +224,7 @@ internal fun NextKey(
     }
 }
 
-/** One RPE choice (U2 option a): same key shape as a digit, selected value tinted
+/** One RPE choice: same key shape as a digit, selected value tinted
  * `secondaryContainer`/`onSecondaryContainer` and exposed as [selected] for accessibility. */
 @Composable
 internal fun RpeChoiceKey(
@@ -255,7 +255,7 @@ internal fun RpeChoiceKey(
  * one step from `clickable`'s own `onClick`; [didRepeatFire] suppresses that `onClick` once the
  * repeat loop has already taken over, so a long hold never double-counts its final step.
  * [contentDescription] replaces the merged announcement of [label] with the fuller "Increase/
- * decrease by …" text (U1); `clickable`'s own accessibility action reuses the same [onStep].
+ * decrease by …" text; `clickable`'s own accessibility action reuses the same [onStep].
  * [interactionSource] defaults to a private one; the `keypad-motion` catalog page passes its own so
  * holding a real `PressInteraction.Press` drives this exact composable's repeat loop.
  */

@@ -5,9 +5,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.repz.app.core.designsystem.format.FixedDecimal
 import com.repz.app.core.designsystem.theme.RepzTheme
 
-// Sample data only, mirroring plan §3.8's catalog sample (last 82.5 x 8 @ RPE 8, step 2.5,
-// context "Bench Press - Set 3") so every preview and the keypad-weight/-reps/-rpe catalog pages
-// agree on what a "typical" set looks like.
+// Sample data only, mirroring the catalog sample (last 82.5 x 8 @ RPE 8, step 2.5, context
+// "Bench Press - Set 3") so every preview and the keypad-weight/-reps/-rpe catalog pages agree on
+// what a "typical" set looks like.
 private val SAMPLE_WEIGHT = FixedDecimal(8250)
 private val WEIGHT_MAX = FixedDecimal.ofWhole(1000)
 private val WEIGHT_STEP = FixedDecimal(250)
@@ -123,8 +123,8 @@ internal fun KeypadPreview(
 /**
  * Renders [NumberKeypadSheetStateless] directly with a forced [buffer]/[showLimitError], so a
  * preview can show a frame [NumberKeypadSheet] itself would only reach through real typing (a
- * mid-type buffer, or the context line just after a refusal) without touching the public, frozen
- * §8 signature (Atlas, 2026-11-06).
+ * mid-type buffer, or the context line just after a refusal) without touching
+ * [NumberKeypadSheet]'s own public signature.
  */
 @Composable
 internal fun KeypadPreviewStateless(
@@ -162,8 +162,8 @@ private fun WeightWithChipsDarkPreview() {
 
 /**
  * Weight mode mid-type: the buffer reads "82." (a touched, not-yet-complete fraction), shown as
- * "82,|" once the PL locale substitutes the decimal separator (plan §3.8). Forced directly through
- * [KeypadPreviewStateless] since this exact buffer only otherwise arises from real typing (T6).
+ * "82,|" once the PL locale substitutes the decimal separator. Forced directly through
+ * [KeypadPreviewStateless] since this exact buffer only otherwise arises from real typing.
  */
 @Preview(locale = "pl")
 @Composable
@@ -186,7 +186,7 @@ private fun WeightPlMidTypeDarkPreview() {
 }
 
 /** Over-max: the context line swaps to the "Weight must be 0-1000 kg" limit message in `error`
- * after a refused keystroke (U5); the buffer stays at the last accepted value, 1000. */
+ * after a refused keystroke; the buffer stays at the last accepted value, 1000. */
 @Preview
 @Composable
 private fun WeightOverMaxErrorLightPreview() {

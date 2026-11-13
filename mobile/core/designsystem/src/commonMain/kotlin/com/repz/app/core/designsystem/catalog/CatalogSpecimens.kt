@@ -18,7 +18,7 @@ internal object CatalogSpecimens {
     const val PLAY_ALL_LABEL = "Play all"
     const val LOADER_DESCRIPTION = "Loading"
 
-    // The keypad catalog pages' sample exercise/set context (plan §3.8); the live workout feature
-    // supplies the real one.
+    // The keypad catalog pages' sample exercise/set context; the live workout feature supplies
+    // the real one.
     const val KEYPAD_CONTEXT_LABEL = "Bench Press · Set 3"
 }

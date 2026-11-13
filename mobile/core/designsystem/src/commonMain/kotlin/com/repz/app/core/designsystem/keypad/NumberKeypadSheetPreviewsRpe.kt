@@ -6,7 +6,7 @@ import com.repz.app.core.designsystem.format.FixedDecimal
 
 private val RPE_SELECTED_SAMPLE = FixedDecimal(800)
 
-/** RPE mode, 8.0 selected: tinted `secondaryContainer` among the 9 choices (U2 option a). */
+/** RPE mode, 8.0 selected: tinted `secondaryContainer` among the 9 choices. */
 @Preview
 @Composable
 private fun RpeSelectedLightPreview() {

@@ -7,10 +7,10 @@ import com.repz.app.core.domain.model.UnitSystem
 import com.repz.app.core.domain.model.Weight
 import com.repz.app.core.domain.preferences.WeightStep
 
-/** The three fields a workout set's keypad can edit (plan §8.1). */
+/** The three fields a workout set's keypad can edit. */
 enum class SetValueField { WEIGHT, REPS, RPE }
 
-/** A set's values, in domain types; `null` means empty (plan §8.1). */
+/** A set's values, in domain types; `null` means empty. */
 @Immutable
 data class SetValues(
     val weight: Weight?,
@@ -20,8 +20,8 @@ data class SetValues(
 
 /**
  * What the caller (a workout ViewModel) asks [SetValueKeypad] to render: the field currently being
- * edited plus everything needed to build its [com.repz.app.core.designsystem.keypad.KeypadField]
- * (plan §8.1, a frozen contract for the workout feature).
+ * edited plus everything needed to build its [com.repz.app.core.designsystem.keypad.KeypadField],
+ * a frozen contract for the workout feature.
  */
 @Immutable
 data class SetValueKeypadRequest(
@@ -42,7 +42,7 @@ data class SetValueKeypadRequest(
     val nextAction: KeypadNextAction,
 )
 
-/** One accepted change, emitted live as the user types (plan §8.1). */
+/** One accepted change, emitted live as the user types. */
 sealed interface SetValueEdit {
     data class Weight(
         val weight: com.repz.app.core.domain.model.Weight?,

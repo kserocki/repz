@@ -3,15 +3,15 @@ package com.repz.app.core.designsystem.keypad
 import androidx.compose.runtime.Immutable
 import com.repz.app.core.designsystem.format.FixedDecimal
 
-/** The three fields `NumberKeypadSheet` can edit (plan §3.4). */
+/** The three fields `NumberKeypadSheet` can edit. */
 enum class KeypadMode { Weight, Reps, Rpe }
 
 /** What the Next key does for the field currently shown, decided by the caller. */
 enum class KeypadNextAction { Reps, Rpe, NextSet, Done }
 
 /**
- * What one mode edits, in display units (plan §3.4). `core:ui`'s `SetValueKeypadMapping` builds
- * this from domain values; the sheet never sees `Weight`/`Rpe`.
+ * What one mode edits, in display units. `core:ui`'s `SetValueKeypadMapping` builds this from
+ * domain values; the sheet never sees `Weight`/`Rpe`.
  */
 @Immutable
 data class KeypadField(
@@ -34,7 +34,7 @@ data class KeypadField(
     val choices: List<FixedDecimal>,
 )
 
-/** Everything `NumberKeypadSheet` needs to render one mode of one target (plan §3.4). */
+/** Everything `NumberKeypadSheet` needs to render one mode of one target. */
 @Immutable
 data class NumberKeypadRequest(
     /** A new key resets the edit buffer. */
@@ -81,8 +81,8 @@ sealed interface KeypadInput {
 }
 
 /**
- * Why [KeypadRules.apply] refused an input (DESIGN_SYSTEM §13, U5): [OutOfRange] is the only
- * reason the limit message replaces the context line; [Format] (an extra fraction digit, a second
+ * Why [KeypadRules.apply] refused an input (DESIGN_SYSTEM §13): [OutOfRange] is the only reason
+ * the limit message replaces the context line; [Format] (an extra fraction digit, a second
  * separator, Backspace on empty, a reps separator reachable only from a hardware keyboard) just
  * stops the keystroke and its haptic without implying the value left `min..max`.
  */
