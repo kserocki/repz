@@ -63,12 +63,15 @@ private val KeypadBufferSaver: Saver<KeypadBuffer, Any> =
         restore = { KeypadBuffer(it[0] as String, it[1] as Boolean) },
     )
 
+internal val RetargetKeySaver: Saver<LatestValueHolder<String>, String> =
+    Saver(save = { it.value }, restore = { LatestValueHolder(it) })
+
 /**
- * The non-modal bottom sheet that edits one set's weight, reps or RPE (DESIGN_SYSTEM §9, plan
- * §3.5): mode segmented control, numeric display + ± with a context line (or the limit message
- * after a refused keystroke, U5), the chip row, the 4x4 key grid, hardware keys and MOT-10.
- * [request] `null` hides it; the exit animation keeps rendering the last non-null request (the
- * `AnimatedVisibility` risk noted in the plan), driven only by whether [request] is `null`.
+ * The non-modal bottom sheet that edits one set's weight, reps or RPE (DESIGN_SYSTEM §9): mode
+ * segmented control, numeric display + ± with a context line (or the limit message after a
+ * refused keystroke), the chip row, the 4x4 key grid, hardware keys and MOT-10.
+ * [request] `null` hides it; the exit animation keeps rendering the last non-null request while
+ * it plays out, driven only by whether [request] is `null`.
  */
 @Composable
 fun NumberKeypadSheet(
@@ -102,8 +105,8 @@ fun NumberKeypadSheet(
 
 /** A plain (non-state) holder for the latest non-null value seen so far: [rememberLatestNonNull]
  * only needs a fresh value within the same composition pass that updates it, so a `mutableStateOf`
- * isn't needed here. */
-private class LatestValueHolder<T>(
+ * isn't needed here. Internal (not private) so [RetargetKeySaver] is directly unit-testable. */
+internal class LatestValueHolder<T>(
     var value: T,
 )
 
@@ -147,10 +150,13 @@ private fun rememberKeypadDispatchState(
     }
     var showLimitError by rememberSaveable { mutableStateOf(false) }
 
-    // A plain (non-state) holder, not a MutableState: retargetKey is pure bookkeeping, always
-    // re-derivable from `request`, so comparing and updating it here doesn't read-then-write a
-    // snapshot state the same composition depends on.
-    val retargetKey = remember { LatestValueHolder(retargetKeyOf(request)) }
+    // A plain (non-state) holder, not a MutableState: retargetKey is pure bookkeeping, so
+    // comparing and updating it here doesn't read-then-write a snapshot state the same
+    // composition depends on. It's still restored via rememberSaveable, alongside buffer and
+    // showLimitError, so a configuration change or process death can't strand it on the request
+    // it started with: without that, a caller restoring a different request (a different target
+    // or mode) would go undetected and the old buffer would be edited as if it were the new one.
+    val retargetKey = rememberSaveable(saver = RetargetKeySaver) { LatestValueHolder(retargetKeyOf(request)) }
     val currentRetargetKey = retargetKeyOf(request)
     if (currentRetargetKey != retargetKey.value) {
         retargetKey.value = currentRetargetKey
@@ -170,7 +176,7 @@ private fun rememberKeypadDispatchState(
                 val changed = edit.buffer != buffer
                 buffer = edit.buffer
                 when (edit.rejection) {
-                    // Only an out-of-range refusal shows the limit message (DESIGN_SYSTEM §13, U5).
+                    // Only an out-of-range refusal shows the limit message (DESIGN_SYSTEM §13).
                     // A malformed keystroke (an extra fraction digit, a second separator, backspace
                     // on empty) still rejects and fires the same haptic, but was never out of range.
                     KeypadRejection.OutOfRange -> {
@@ -192,7 +198,7 @@ private fun rememberKeypadDispatchState(
                             if (newValue != previousValue) currentOnValueChange.value(newValue)
                             true
                         } else {
-                            // Ignored (e.g. a hardware digit in RPE mode, plan §3.4): no haptic, no change.
+                            // Ignored (e.g. a hardware digit in RPE mode): no haptic, no change.
                             true
                         }
                     }
@@ -320,7 +326,7 @@ internal fun NumberKeypadSheetStateless(
     }
 }
 
-/** The 32×4 `outline` drag handle (visual only, no drag-to-dismiss in v1, plan T16). */
+/** The 32×4 `outline` drag handle (visual only; the sheet has no drag-to-dismiss yet). */
 @Composable
 private fun KeypadDragHandle(modifier: Modifier = Modifier) {
     Box(
@@ -358,6 +364,6 @@ private fun KeypadNextAction.contentDescription(): String =
 
         KeypadNextAction.NextSet -> stringResource(Res.string.keypad_next_description_next_set)
 
-        // "Done" is already self-descriptive; there is no destination to name (plan U1).
+        // "Done" is already self-descriptive; there is no destination to name.
         KeypadNextAction.Done -> stringResource(Res.string.keypad_next_done)
     }

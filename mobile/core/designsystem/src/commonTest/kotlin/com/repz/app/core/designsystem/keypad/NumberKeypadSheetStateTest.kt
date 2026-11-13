@@ -1,5 +1,6 @@
 package com.repz.app.core.designsystem.keypad
 
+import androidx.compose.runtime.saveable.SaverScope
 import com.repz.app.core.designsystem.format.FixedDecimal
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -66,5 +67,17 @@ class NumberKeypadSheetStateTest {
         val second = requestFor("catalog-reps", KeypadMode.Reps)
 
         assertNotEquals(retargetKeyOf(first), retargetKeyOf(second))
+    }
+
+    @Test
+    fun givenARetargetKeyHolder_whenSavedThenRestored_thenTheValueSurvives() {
+        val request = requestFor("catalog-weight:Kg", KeypadMode.Weight)
+        val original = LatestValueHolder(retargetKeyOf(request))
+        val scope = SaverScope { true }
+
+        val saved = requireNotNull(with(RetargetKeySaver) { scope.save(original) })
+        val restored = requireNotNull(RetargetKeySaver.restore(saved))
+
+        assertEquals(original.value, restored.value)
     }
 }
