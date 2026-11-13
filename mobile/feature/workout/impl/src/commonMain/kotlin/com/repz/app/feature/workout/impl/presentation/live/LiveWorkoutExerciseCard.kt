@@ -5,14 +5,24 @@ import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.IntSize
 import com.repz.app.core.designsystem.component.workout.RepzExerciseCard
 import com.repz.app.core.designsystem.component.workout.RepzMenuItem
 import com.repz.app.core.designsystem.component.workout.RepzSetColumnLabels
 import com.repz.app.core.designsystem.component.workout.RepzSetRow
+import com.repz.app.core.designsystem.theme.RepzSpacing
 import com.repz.app.core.domain.model.SetType
 import com.repz.app.core.domain.model.UnitSystem
 import com.repz.app.core.domain.model.WorkoutSetId
@@ -43,9 +53,8 @@ import org.jetbrains.compose.resources.stringResource
 
 /**
  * One [LiveExerciseUi] card (DESIGN_SYSTEM §9 `ExerciseCard`, board 05/09): maps the UI model onto
- * [RepzExerciseCard], keyed by [index] for its test tags (§3.10). Only `*Screen`/`*Content` may know
- * [LiveWorkoutIntent] (AGENTS.md §4, Konsist N8), so every callback here is explicit and present
- * tense; [LiveWorkoutExerciseList] binds [exercise]'s own id into them before calling this.
+ * [RepzExerciseCard], keyed by [index] for its test tags. [LiveWorkoutExerciseList] binds
+ * [exercise]'s own id into every callback before calling this.
  */
 @Composable
 internal fun LiveWorkoutExerciseCard(
@@ -53,6 +62,7 @@ internal fun LiveWorkoutExerciseCard(
     exercise: LiveExerciseUi,
     unit: UnitSystem,
     editingField: SetFieldRef?,
+    keypadHeightPx: Int,
     onReorderClick: () -> Unit,
     onNotesClick: () -> Unit,
     onNotesChange: (String) -> Unit,
@@ -98,12 +108,14 @@ internal fun LiveWorkoutExerciseCard(
         menuButtonModifier = Modifier.testTag("card_${index}_menu"),
         notesModifier = Modifier.testTag("card_${index}_notes"),
         addSetModifier = Modifier.testTag("card_${index}_add_set"),
-    ) {
+    ) { isPreviousColumnVisible ->
         LiveWorkoutSetRows(
             cardIndex = index,
             sets = exercise.sets,
             unit = unit,
             editingField = editingField,
+            isPreviousColumnVisible = isPreviousColumnVisible,
+            keypadHeightPx = keypadHeightPx,
             onSetFieldClick = onSetFieldClick,
             onSetCompleteClick = onSetCompleteClick,
             onSetDeleteClick = onSetDeleteClick,
@@ -130,6 +142,8 @@ private fun ColumnScope.LiveWorkoutSetRows(
     sets: ImmutableList<LiveSetUi>,
     unit: UnitSystem,
     editingField: SetFieldRef?,
+    isPreviousColumnVisible: Boolean,
+    keypadHeightPx: Int,
     onSetFieldClick: (WorkoutSetId, SetField) -> Unit,
     onSetCompleteClick: (WorkoutSetId) -> Unit,
     onSetDeleteClick: (WorkoutSetId) -> Unit,
@@ -143,6 +157,8 @@ private fun ColumnScope.LiveWorkoutSetRows(
                 set = set,
                 unit = unit,
                 editingField = if (editingField?.setId == set.id) editingField.field else null,
+                isPreviousColumnVisible = isPreviousColumnVisible,
+                keypadHeightPx = keypadHeightPx,
                 onFieldClick = onSetFieldClick,
                 onCompleteClick = onSetCompleteClick,
                 onDeleteClick = onSetDeleteClick,
@@ -153,9 +169,11 @@ private fun ColumnScope.LiveWorkoutSetRows(
 }
 
 /** One [LiveSetUi] row, keyed by [cardIndex]/[setIndex] for its test tags. While [editingField] is
- * non-null (this row is the keypad's current target), [BringIntoViewRequester] asks the LazyColumn
- * to scroll so the row clears the keypad, which already reserves its own height as bottom content
- * padding (AC6, board 09 frame 11) — this also fires on retargeting and on Next. */
+ * non-null (this row is the keypad's current target), [BringIntoViewRequester] scrolls the row's
+ * bottom to the keypad's top (plus a token gap), once [keypadHeightPx] is actually measured — the
+ * request's own height is padded by [keypadHeightPx] so the LazyColumn, whose reported viewport
+ * extends behind the overlaid keypad, scrolls far enough instead of thinking the row is already
+ * clear. Fires again on retargeting and on Next; does nothing once the row is already clear. */
 @Composable
 private fun LiveWorkoutSetRow(
     cardIndex: Int,
@@ -163,6 +181,8 @@ private fun LiveWorkoutSetRow(
     set: LiveSetUi,
     unit: UnitSystem,
     editingField: SetField?,
+    isPreviousColumnVisible: Boolean,
+    keypadHeightPx: Int,
     onFieldClick: (WorkoutSetId, SetField) -> Unit,
     onCompleteClick: (WorkoutSetId) -> Unit,
     onDeleteClick: (WorkoutSetId) -> Unit,
@@ -173,9 +193,13 @@ private fun LiveWorkoutSetRow(
     val weightText = set.weight?.let { formatSetWeight(it, unit) }.orEmpty()
     val repsText = set.reps?.toString().orEmpty()
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
+    var rowSizePx by remember { mutableStateOf(IntSize.Zero) }
+    val gapPx = with(LocalDensity.current) { RepzSpacing.lg.roundToPx() }
 
-    LaunchedEffect(editingField) {
-        if (editingField != null) bringIntoViewRequester.bringIntoView()
+    LaunchedEffect(editingField, keypadHeightPx, rowSizePx) {
+        if (editingField == null || keypadHeightPx <= 0 || rowSizePx == IntSize.Zero) return@LaunchedEffect
+        val clearedHeight = rowSizePx.height + keypadHeightPx + gapPx
+        bringIntoViewRequester.bringIntoView(Rect(Offset.Zero, Size(rowSizePx.width.toFloat(), clearedHeight.toFloat())))
     }
 
     RepzSetRow(
@@ -189,6 +213,7 @@ private fun LiveWorkoutSetRow(
         isPrefilled = set.isPrefilled,
         editingField = editingField.toRepzSetField(),
         isCompleted = set.isCompleted,
+        isPreviousColumnVisible = isPreviousColumnVisible,
         typeMenuItems = typeMenuItems(set.type) { type -> onTypeSelect(set.id, type) },
         onWeightClick = { onFieldClick(set.id, SetField.Weight) },
         onRepsClick = { onFieldClick(set.id, SetField.Reps) },
@@ -204,7 +229,11 @@ private fun LiveWorkoutSetRow(
         weightContentDescription = stringResource(Res.string.set_weight, badgeLabel),
         repsContentDescription = stringResource(Res.string.set_reps, badgeLabel),
         badgeContentDescription = stringResource(Res.string.set_badge, badgeLabel),
-        modifier = modifier.testTag("set_${cardIndex}_$setIndex").bringIntoViewRequester(bringIntoViewRequester),
+        modifier =
+            modifier
+                .testTag("set_${cardIndex}_$setIndex")
+                .onSizeChanged { size -> rowSizePx = size }
+                .bringIntoViewRequester(bringIntoViewRequester),
         badgeModifier = Modifier.testTag("set_${cardIndex}_${setIndex}_badge"),
         weightModifier = Modifier.testTag("set_${cardIndex}_${setIndex}_weight"),
         repsModifier = Modifier.testTag("set_${cardIndex}_${setIndex}_reps"),

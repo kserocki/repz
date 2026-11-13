@@ -33,9 +33,7 @@ import org.jetbrains.compose.resources.stringResource
 /**
  * Reorder mode (board 09 §10b, menu or a card header long-press): the header is replaced by a
  * plain [RepzTopAppBar] with a text "Done" action, and the card list by [RepzExerciseReorderList]
- * wrapped in its own scroll (the list itself doesn't scroll). Only `*Screen`/
- * `*Content` may know [LiveWorkoutIntent] (AGENTS.md §4, Konsist N8), so every callback here is
- * explicit.
+ * wrapped in its own scroll (the list itself doesn't scroll).
  */
 @Composable
 internal fun LiveWorkoutReorderSection(

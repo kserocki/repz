@@ -85,8 +85,8 @@ fun LiveWorkoutContent(
                 onNameClick = { onIntent(LiveWorkoutIntent.NameClicked) },
                 onNameChange = { name -> onIntent(LiveWorkoutIntent.NameChanged(name)) },
                 onNameEditingFinish = { onIntent(LiveWorkoutIntent.NameEditingFinished) },
-                onMinimizeClick = { onIntent(LiveWorkoutIntent.MinimizeClicked) },
-                onFinishClick = { onIntent(LiveWorkoutIntent.FinishClicked) },
+                onMinimizeClick = rememberEndingFieldEditing { onIntent(LiveWorkoutIntent.MinimizeClicked) },
+                onFinishClick = rememberEndingFieldEditing { onIntent(LiveWorkoutIntent.FinishClicked) },
                 onDiscardClick = { onIntent(LiveWorkoutIntent.DiscardClicked) },
                 onAddExerciseClick = { onIntent(LiveWorkoutIntent.AddExerciseClicked) },
                 onReorderClick = { onIntent(LiveWorkoutIntent.ReorderStarted) },
@@ -118,7 +118,7 @@ fun LiveWorkoutContent(
         onDiscardDismiss = { onIntent(LiveWorkoutIntent.DiscardDismissed) },
         onKeypadDismiss = { onIntent(LiveWorkoutIntent.KeypadDismissed) },
         onReorderExit = { onIntent(LiveWorkoutIntent.ReorderFinished) },
-        onMinimize = { onIntent(LiveWorkoutIntent.MinimizeClicked) },
+        onMinimize = rememberEndingFieldEditing { onIntent(LiveWorkoutIntent.MinimizeClicked) },
     )
 }
 
@@ -199,9 +199,9 @@ private fun LiveWorkoutActiveSection(
     val listState = rememberLazyListState()
     val layoutDirection = LocalLayoutDirection.current
     var keypadHeightPx by remember { mutableIntStateOf(0) }
-    val keypadHeightDp = with(LocalDensity.current) { keypadHeightPx.toDp() }
     val isKeypadOpen = keypadTarget != null
 
+    LiveWorkoutKeypadFocusEffect(isKeypadOpen)
     LiveWorkoutAutoScrollEffect(targetSetId = keypadTarget?.setId, exercises = exercises, listState = listState)
 
     Box(modifier = Modifier.fillMaxSize().dismissKeypadOnOutsideTap(isKeypadOpen, onKeypadDismiss)) {
@@ -218,7 +218,7 @@ private fun LiveWorkoutActiveSection(
             editingField = editingField,
             snackbarHostState = snackbarHostState,
             listState = listState,
-            keypadHeightDp = keypadHeightDp,
+            keypadHeightPx = keypadHeightPx,
             layoutDirection = layoutDirection,
             onNameClick = onNameClick,
             onNameChange = onNameChange,
@@ -253,6 +253,7 @@ private fun LiveWorkoutActiveSection(
             modifier =
                 Modifier
                     .align(Alignment.BottomCenter)
+                    .consumeUnhandledTapsInsideSheet()
                     .onSizeChanged { size -> keypadHeightPx = size.height },
         )
     }
@@ -261,8 +262,9 @@ private fun LiveWorkoutActiveSection(
 /**
  * Dismisses by calling [onDismiss] on a tap that nothing else consumes (board 09 frame 11: the
  * keypad sheet is non-modal, so a field, button or scroll drag underneath wins the gesture first).
- * Attached to an ancestor of both the content and the keypad, so descendants' own Main-pass
- * handlers always run before this one sees whether the gesture was consumed.
+ * Attached to an ancestor of both the content and the keypad; [consumeUnhandledTapsInsideSheet] on
+ * the keypad itself consumes a blank-area tap there first, so only a tap truly outside it arrives
+ * here still unconsumed.
  */
 private fun Modifier.dismissOnUnconsumedTap(onDismiss: () -> Unit): Modifier =
     pointerInput(onDismiss) {
@@ -272,15 +274,31 @@ private fun Modifier.dismissOnUnconsumedTap(onDismiss: () -> Unit): Modifier =
         }
     }
 
+/**
+ * Consumes any tap that reaches the keypad sheet itself unhandled — a gap between keys, the
+ * display, the drag handle — before it can bubble up to [dismissOnUnconsumedTap]'s ancestor; only a
+ * tap that lands outside the sheet's own bounds should dismiss it.
+ */
+private fun Modifier.consumeUnhandledTapsInsideSheet(): Modifier =
+    pointerInput(Unit) {
+        awaitEachGesture {
+            awaitFirstDown(requireUnconsumed = false)
+            waitForUpOrCancellation()?.consume()
+        }
+    }
+
 /** Only attaches [dismissOnUnconsumedTap] while [isKeypadOpen]; a closed keypad needs no dismiss gesture. */
 private fun Modifier.dismissKeypadOnOutsideTap(
     isKeypadOpen: Boolean,
     onDismiss: () -> Unit,
 ): Modifier = if (isKeypadOpen) dismissOnUnconsumedTap(onDismiss) else this
 
-/** Scrolls the exercise holding [targetSetId] into the viewport once it changes, so a card the user
- * hasn't scrolled to yet (e.g. Next reaching the next card) composes; LiveWorkoutSetRow's own
- * BringIntoViewRequester then fine-positions the exact row above the keypad. */
+/** The coarse half of the row-above-keypad scroll (the other half is
+ * [LiveWorkoutSetRow][com.repz.app.feature.workout.impl.presentation.live.LiveWorkoutExerciseCard]'s
+ * own `BringIntoViewRequester`): a card the user hasn't scrolled to yet isn't composed at all, so a
+ * `BringIntoViewRequester` attached to one of its rows can't act on it yet. This jumps there once,
+ * instantly, only when the card isn't already visible; the row's own effect then does the one
+ * animated, keypad-aware positioning the user actually sees, so the two never fight over the scroll. */
 @Composable
 private fun LiveWorkoutAutoScrollEffect(
     targetSetId: WorkoutSetId?,
@@ -290,7 +308,8 @@ private fun LiveWorkoutAutoScrollEffect(
     LaunchedEffect(targetSetId) {
         val setId = targetSetId ?: return@LaunchedEffect
         val exerciseIndex = exercises.indexOfFirst { exercise -> exercise.sets.any { it.id == setId } }
-        if (exerciseIndex >= 0) listState.animateScrollToItem(exerciseIndex)
+        val isAlreadyVisible = listState.layoutInfo.visibleItemsInfo.any { it.index == exerciseIndex }
+        if (exerciseIndex >= 0 && !isAlreadyVisible) listState.scrollToItem(exerciseIndex)
     }
 }
 
@@ -309,7 +328,7 @@ private fun LiveWorkoutScaffoldSection(
     editingField: SetFieldRef?,
     snackbarHostState: RepzSnackbarHostState,
     listState: LazyListState,
-    keypadHeightDp: Dp,
+    keypadHeightPx: Int,
     layoutDirection: LayoutDirection,
     onNameClick: () -> Unit,
     onNameChange: (String) -> Unit,
@@ -329,6 +348,7 @@ private fun LiveWorkoutScaffoldSection(
     onSetDeleteClick: (WorkoutSetId) -> Unit,
     onSetTypeSelect: (WorkoutSetId, SetType) -> Unit,
 ) {
+    val keypadHeightDp = with(LocalDensity.current) { keypadHeightPx.toDp() }
     RepzLiveWorkoutScaffold(
         header = {
             LiveWorkoutHeaderSection(
@@ -356,6 +376,7 @@ private fun LiveWorkoutScaffoldSection(
             exercises = exercises,
             unit = unit,
             editingField = editingField,
+            keypadHeightPx = keypadHeightPx,
             onAddExercisesClick = onAddExerciseClick,
             onReorderClick = onReorderClick,
             onNotesClick = onNotesClick,
@@ -399,9 +420,8 @@ private fun LiveWorkoutBottomBar(
     )
 }
 
-/** Maps [keypadTarget] to [SetValueKeypad]'s own request; `null` hides the sheet. Only
- * `*Screen`/`*Content` may know [LiveWorkoutIntent] (AGENTS.md §4, Konsist N8), so every callback
- * here takes the affected [WorkoutSetId] explicitly instead. */
+/** Maps [keypadTarget] to [SetValueKeypad]'s own request; `null` hides the sheet. Every callback
+ * here takes the affected [WorkoutSetId] explicitly instead of the set's own intent. */
 @Composable
 private fun LiveWorkoutKeypad(
     keypadTarget: LiveKeypadTargetUi?,

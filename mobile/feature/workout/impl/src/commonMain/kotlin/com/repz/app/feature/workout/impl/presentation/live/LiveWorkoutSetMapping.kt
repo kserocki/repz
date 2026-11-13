@@ -95,9 +95,7 @@ internal fun completeContentDescription(
         pluralStringResource(Res.plurals.set_complete, reps, badgeLabel, weightWithUnit, reps)
     }
 
-/** The badge menu's four rows: tapping one calls [onTypeSelect]. Only `*Screen`/`*Content`
- * composables may know [LiveWorkoutIntent] (AGENTS.md §4, Konsist N8), so this and every other
- * helper here take plain values and present-tense callbacks instead. */
+/** The badge menu's four rows (board 18): tapping one calls [onTypeSelect]. */
 @Composable
 internal fun typeMenuItems(
     currentType: SetType,
