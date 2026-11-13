@@ -199,9 +199,24 @@ private fun ExerciseCardNotesField(
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     var hasBeenFocused by remember { mutableStateOf(false) }
+    // Local echo of `notes`, seeded once on entering edit mode: keystrokes land here immediately
+    // instead of waiting on the upstream combine/stateIn value, which can lag a character behind.
+    var editedNotes by remember { mutableStateOf(notes) }
+    val endEditing = {
+        focusManager.clearFocus(force = true)
+        keyboardController?.hide()
+    }
     BasicTextField(
-        value = notes,
-        onValueChange = onNotesChange,
+        value = editedNotes,
+        onValueChange = { newValue ->
+            val hasLineBreak = newValue.any { it == '\n' || it == '\r' }
+            val sanitized = if (hasLineBreak) newValue.filterNot { it == '\n' || it == '\r' } else newValue
+            editedNotes = sanitized
+            onNotesChange(sanitized)
+            // A line break can only arrive from iOS Return, a hardware Enter or a paste, since
+            // singleLine = false otherwise just wraps; route it through the same end-editing path as Done.
+            if (hasLineBreak) endEditing()
+        },
         modifier =
             modifier
                 .focusRequester(focusRequester)
@@ -215,20 +230,14 @@ private fun ExerciseCardNotesField(
                     }
                 },
         textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface),
-        singleLine = true,
+        singleLine = false,
         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         // Clearing focus (not calling onNotesEditingFinish directly) routes Done through the same
         // focused-to-unfocused path above, so editing ends exactly once however it happens.
-        keyboardActions =
-            KeyboardActions(
-                onDone = {
-                    focusManager.clearFocus(force = true)
-                    keyboardController?.hide()
-                },
-            ),
+        keyboardActions = KeyboardActions(onDone = { endEditing() }),
         decorationBox = { innerTextField ->
-            if (notes.isEmpty()) {
+            if (editedNotes.isEmpty()) {
                 Text(text = notesLabel, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             innerTextField()

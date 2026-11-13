@@ -15,12 +15,15 @@ private val CardMenuItems =
 private val TypeMenuItemsForCard = persistentListOf(RepzMenuItem(label = "Normal", onClick = {}, isChecked = true))
 
 @Composable
-private fun RepzExerciseCardSample(notes: String? = null) {
+private fun RepzExerciseCardSample(
+    notes: String? = null,
+    isEditingNotes: Boolean = false,
+) {
     RepzExerciseCard(
         name = "Bench Press",
         subtitle = "Chest · 3 of 4 done",
         notes = notes,
-        isEditingNotes = false,
+        isEditingNotes = isEditingNotes,
         notesLabel = "Notes",
         onNotesClick = {},
         onNotesChange = {},
@@ -127,6 +130,28 @@ private fun RepzExerciseCardWithNotesLightPreview() {
 @Composable
 private fun RepzExerciseCardWithNotesDarkPreview() {
     RepzTheme(darkTheme = true) { RepzExerciseCardSample(notes = "Pause on chest in the last set.") }
+}
+
+@Preview
+@Composable
+private fun RepzExerciseCardEditingLongNoteLightPreview() {
+    RepzTheme(darkTheme = false) {
+        RepzExerciseCardSample(
+            notes = "Pause on chest for a full two count then drive hard through the floor on every rep, keep elbows tucked in.",
+            isEditingNotes = true,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun RepzExerciseCardEditingLongNoteDarkPreview() {
+    RepzTheme(darkTheme = true) {
+        RepzExerciseCardSample(
+            notes = "Pause on chest for a full two count then drive hard through the floor on every rep, keep elbows tucked in.",
+            isEditingNotes = true,
+        )
+    }
 }
 
 @Preview(fontScale = 2f)
