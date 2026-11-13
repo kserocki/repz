@@ -81,10 +81,9 @@ private val CheckedCornerRadius = 10.dp
 private val CheckboxBorderWidth = 2.5.dp
 private val EditingRingWidth = 2.dp
 
-// DESIGN_SYSTEM §9 SetRow: a value field stays on one line from "8" to the longest lb conversion of
-// the domain's 1000 kg max ("2204.62"), from a 320 dp window up. `numericLarge` (32 sp) is kept
-// wherever it fits; TextAutoSize.StepBased only steps it down, in the same technique (and the same
-// font-scale ceiling) as the keypad's hero value.
+// DESIGN_SYSTEM §9 SetRow: a value field stays on one line from "8" to "2204.62" (1000 kg in lb)
+// from 320 dp up. TextAutoSize.StepBased keeps 32 sp where it fits and only steps down from there,
+// the same technique and font-scale ceiling as the keypad's hero value.
 private val SetValueMaxFontSize = 32.sp
 private val SetValueMinFontSize = 14.sp
 private val SetValueStepSize = 1.sp
