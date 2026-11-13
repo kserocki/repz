@@ -17,7 +17,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-/** Exercise notes, Remove exercise with undo (Q10) and reorder mode. */
+/** Exercise notes, Remove exercise with undo and reorder mode. */
 @OptIn(ExperimentalCoroutinesApi::class)
 class LiveWorkoutViewModelExerciseTest {
     private val dispatcher = StandardTestDispatcher()

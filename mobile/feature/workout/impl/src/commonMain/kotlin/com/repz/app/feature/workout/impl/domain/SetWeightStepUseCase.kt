@@ -4,7 +4,7 @@ import com.repz.app.core.domain.preferences.UserPreferencesRepository
 import com.repz.app.core.domain.preferences.WeightStep
 import org.koin.core.annotation.Factory
 
-/** Persists the keypad's Step chip choice (keypad plan §8.2): device-wide, for `step.unitSystem` only. */
+/** Persists the keypad's Step chip choice device-wide, for `step.unitSystem` only. */
 @Factory
 class SetWeightStepUseCase(
     private val preferences: UserPreferencesRepository,

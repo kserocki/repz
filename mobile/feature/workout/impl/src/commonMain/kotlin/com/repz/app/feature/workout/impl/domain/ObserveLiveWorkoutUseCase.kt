@@ -27,7 +27,7 @@ data class LiveWorkoutSnapshot(
 
 /**
  * Observes the active workout together with its exercises - including tombstones, so a soft-deleted
- * custom exercise still resolves a name (T9) - and each exercise's last performance. The exercise
+ * custom exercise still resolves a name - and each exercise's last performance. The exercise
  * lookup and the last-performance read only re-run when the workout's set of exercise ids changes,
  * not on every set edit.
  */

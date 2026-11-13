@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
 
-/** Adding/editing/completing/deleting a set and the keypad's own field navigation (T12, Q5). */
+/** Adding/editing/completing/deleting a set and the keypad's own field navigation. */
 internal class LiveWorkoutSetEditingHandler(
     private val editActiveWorkout: EditActiveWorkoutUseCase,
     private val setWeightStep: SetWeightStepUseCase,
@@ -57,7 +57,8 @@ internal class LiveWorkoutSetEditingHandler(
             }
 
             set.reps == 0 -> {
-                // Q5: nothing is saved; the reps field of this set becomes the editing field instead.
+                // An untouched set (reps still 0) can't be completed: nothing is saved, and the
+                // reps field of this set becomes the editing field instead.
                 localState.update { it.copy(editingField = SetFieldRef(setId, SetField.Reps)) }
                 sendEffect(LiveWorkoutEffect.PlayRejectHaptic)
             }
@@ -131,7 +132,7 @@ internal class LiveWorkoutSetEditingHandler(
         localState.update { it.copy(editingField = current.copy(field = field)) }
     }
 
-    /** The keypad's Step chip (keypad plan §8.2); persisted device-wide, for `step.unitSystem` only. */
+    /** The keypad's Step chip; persisted device-wide, for `step.unitSystem` only. */
     fun onWeightStepChanged(step: WeightStep) {
         scope.launch { setWeightStep(step) }
     }

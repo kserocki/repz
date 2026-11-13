@@ -6,7 +6,7 @@ import com.repz.app.core.domain.model.WorkoutSet
 import com.repz.app.core.domain.model.WorkoutSetId
 
 /**
- * In-memory-only UI state the ViewModel keeps alongside the Room-backed workout (ADR-0029 T3):
+ * In-memory-only UI state the ViewModel keeps alongside the Room-backed workout (ADR-0029):
  * none of this is a Room column, so a process death loses it (a prefilled value then just shows
  * as a normal one).
  */

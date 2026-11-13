@@ -20,7 +20,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Instant
 
-/** Loading/T10, Minimize, workout name editing, Finish (Q1-A) and Discard (Q2). */
+/** Loading, Minimize, workout name editing, Finish and Discard. */
 @OptIn(ExperimentalCoroutinesApi::class)
 class LiveWorkoutViewModelLifecycleTest {
     private val dispatcher = StandardTestDispatcher()

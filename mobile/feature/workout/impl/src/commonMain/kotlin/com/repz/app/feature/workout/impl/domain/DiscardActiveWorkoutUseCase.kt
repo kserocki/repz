@@ -4,7 +4,7 @@ import com.repz.app.core.domain.workout.WorkoutRepository
 import kotlinx.coroutines.flow.first
 import org.koin.core.annotation.Factory
 
-/** Discards the active workout (Q2): a hard delete, since it never entered the outbox. No-op if there is none. */
+/** Discards the active workout: a hard delete, since it never entered the outbox. No-op if there is none. */
 @Factory
 class DiscardActiveWorkoutUseCase(
     private val workouts: WorkoutRepository,

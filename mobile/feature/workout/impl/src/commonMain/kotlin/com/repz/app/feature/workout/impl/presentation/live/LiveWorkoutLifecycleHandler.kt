@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/** Minimize, workout name editing, Finish (Q1-A) and Discard (Q2). */
+/** Minimize, workout name editing, Finish and Discard. */
 internal class LiveWorkoutLifecycleHandler(
     private val editActiveWorkout: EditActiveWorkoutUseCase,
     private val discardActiveWorkout: DiscardActiveWorkoutUseCase,

@@ -7,7 +7,7 @@ import org.koin.core.annotation.Factory
 
 /**
  * Applies [edit] to the latest active workout draft and saves it whole, under
- * [ActiveWorkoutWriteLock] (ADR-0029 T4); every other edit in this feature goes through this use
+ * [ActiveWorkoutWriteLock] (ADR-0029); every other edit in this feature goes through this use
  * case rather than [WorkoutRepository.saveActiveWorkout] directly.
  */
 @Factory

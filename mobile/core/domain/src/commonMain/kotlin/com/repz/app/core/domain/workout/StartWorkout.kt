@@ -22,7 +22,7 @@ sealed interface StartWorkoutError : DomainError {
     data object TemplateNotFound : StartWorkoutError
 }
 
-/** Starts an empty active workout named [name] (T13: already the localized weekday name); fails if one is already active (T7). */
+/** Starts an empty active workout named [name] (the caller passes the localized weekday name); fails if one is already active. */
 class StartEmptyWorkoutUseCase(
     private val workouts: WorkoutRepository,
     private val clock: Clock,
@@ -49,7 +49,7 @@ class StartEmptyWorkoutUseCase(
 
 /**
  * Starts an active workout from [templateId]: name, exercises and sets per the template
- * (ADR-0029); fails if one is already active (T7) or the template is unknown.
+ * (ADR-0029); fails if one is already active or the template is unknown.
  */
 class StartWorkoutFromTemplateUseCase(
     private val workouts: WorkoutRepository,

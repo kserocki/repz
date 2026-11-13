@@ -8,7 +8,7 @@ import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-/** The predicate [RepzAppShell]'s `SignedInAppShellScaffold` feeds `AppShellScaffold.isNavigationBarVisible` with (T1). */
+/** The set [RepzAppShell]'s `SignedInAppShellScaffold` feeds `AppShellScaffold.isNavigationBarVisible` with. */
 class FullScreenNavKeysTest {
     @Test
     fun givenTheLiveWorkoutRoute_whenChecked_thenItIsFullScreen() {

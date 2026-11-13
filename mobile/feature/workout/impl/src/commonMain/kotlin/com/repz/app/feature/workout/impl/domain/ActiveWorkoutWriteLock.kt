@@ -5,7 +5,7 @@ import kotlinx.coroutines.sync.withLock
 import org.koin.core.annotation.Single
 
 /**
- * Serializes every write to the active workout draft (ADR-0029 T4): two edits reading the latest
+ * Serializes every write to the active workout draft (ADR-0029): two edits reading the latest
  * Room value and writing it back whole must never race, or the second write would silently discard
  * the first's change.
  */

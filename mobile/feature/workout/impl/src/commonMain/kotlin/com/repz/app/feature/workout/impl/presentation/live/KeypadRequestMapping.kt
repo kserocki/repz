@@ -8,7 +8,7 @@ import com.repz.app.core.ui.keypad.SetValueKeypadRequest
 import com.repz.app.core.ui.keypad.SetValues
 
 /**
- * Builds the number keypad's request from this screen's own target (keypad plan §8, ADR-0029 T12):
+ * Builds the number keypad's request from this screen's own target (ADR-0029):
  * [contextLabel] and [unit]/[weightStep] (the current preferences) are resolved by the caller, a
  * composable. RPE is off until a setting exists, so [SetValueKeypadRequest.isRpeEnabled] is always
  * `false` here.
@@ -32,14 +32,14 @@ fun LiveKeypadTargetUi.toKeypadRequest(
 
 private fun LiveSetValuesUi.toSetValues(): SetValues = SetValues(weight = weight, reps = reps, rpe = rpe)
 
-/** T12: Weight -> Reps; Reps (or Rpe, once enabled) -> the next set, or Done on the workout's last field. */
+/** Weight -> Reps; Reps (or Rpe, once enabled) -> the next set, or Done on the workout's last field. */
 private fun SetField.nextActionTowards(isLastSetOfWorkout: Boolean): KeypadNextAction =
     when (this) {
         SetField.Weight -> KeypadNextAction.Reps
         SetField.Reps, SetField.Rpe -> if (isLastSetOfWorkout) KeypadNextAction.Done else KeypadNextAction.NextSet
     }
 
-/** The feature's own field identity, as the keypad's [SetValueField] (§8.1). */
+/** The feature's own field identity, as the keypad's [SetValueField]. */
 fun SetField.toSetValueField(): SetValueField =
     when (this) {
         SetField.Weight -> SetValueField.WEIGHT

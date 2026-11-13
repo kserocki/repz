@@ -77,12 +77,12 @@ sealed interface LiveWorkoutIntent {
         val field: SetField,
     ) : LiveWorkoutIntent
 
-    /** The keypad's Step chip (keypad plan §8.2): persisted device-wide via `SetWeightStepUseCase`. */
+    /** The keypad's Step chip: persisted device-wide via `SetWeightStepUseCase`. */
     data class WeightStepChanged(
         val step: WeightStep,
     ) : LiveWorkoutIntent
 
-    /** T12: Weight -> Reps of the same set -> Weight of the next set -> Weight of the next card's first set; Done on the last field. */
+    /** Weight -> Reps of the same set -> Weight of the next set -> Weight of the next card's first set; Done on the last field. */
     data object NextFieldRequested : LiveWorkoutIntent
 
     /** Keypad hide key, Back/predictive back, or a tap outside the sheet. */

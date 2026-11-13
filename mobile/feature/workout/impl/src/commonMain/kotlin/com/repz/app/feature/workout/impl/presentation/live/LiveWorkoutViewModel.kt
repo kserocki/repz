@@ -29,9 +29,9 @@ import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * [languageTag] is a defaulted constructor parameter rather than injected (T9), so tests pass a
+ * [languageTag] is a defaulted constructor parameter rather than injected, so tests pass a
  * fixed one. [LocalState] (touched sets, editing field, reorder mode, name/notes drafts, the
- * single pending undo) is kept in memory only (T3/ADR-0029). [snapshotFlow] stays eagerly shared
+ * single pending undo) is kept in memory only (ADR-0029). [snapshotFlow] stays eagerly shared
  * for the lifetime of the ViewModel so every intent handler can read the latest workout
  * synchronously; only the elapsed-time ticker is tied to [state]'s own subscribers
  * (`WhileSubscribed`), so it stops ticking once nothing is observing the screen. Intent handling
@@ -89,7 +89,7 @@ class LiveWorkoutViewModel(
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LiveWorkoutUiState())
 
     init {
-        // T10: opened with no active workout at all (discarded elsewhere, a restored stack);
+        // Opened with no active workout at all (discarded elsewhere, a restored stack);
         // later null emissions (Finish/Discard) close through their own intent handlers instead.
         viewModelScope.launch {
             if (observeLiveWorkout().first() == null) sendEffect(LiveWorkoutEffect.Close)

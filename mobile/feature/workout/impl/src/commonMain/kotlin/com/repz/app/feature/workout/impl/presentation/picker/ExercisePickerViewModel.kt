@@ -21,7 +21,7 @@ import org.koin.core.annotation.KoinViewModel
 
 /**
  * v0: a plain list sorted by localized name. TODO(REP-37): adds search, filters, multi-select,
- * create custom. [languageTag] is a defaulted constructor parameter rather than injected (T9),
+ * create custom. [languageTag] is a defaulted constructor parameter rather than injected,
  * so tests pass a fixed one.
  */
 @KoinViewModel

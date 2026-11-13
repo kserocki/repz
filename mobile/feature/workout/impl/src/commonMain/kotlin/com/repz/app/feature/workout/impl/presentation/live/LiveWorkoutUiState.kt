@@ -13,8 +13,8 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlin.time.Duration
 
 /**
- * [keypadTarget] is derived from [editingField] (a `null` target hides the keypad and shows the
- * bottom bar, §8). [isEmpty] distinguishes the empty state (board 09 §10a) from still loading.
+ * [keypadTarget] is derived from [editingField]: a `null` target hides the keypad and shows the
+ * bottom bar. [isEmpty] distinguishes the empty state (board 09) from still loading.
  */
 data class LiveWorkoutUiState(
     val isLoading: Boolean = true,
@@ -35,7 +35,7 @@ data class LiveWorkoutUiState(
     val isEmpty: Boolean get() = !isLoading && exercises.isEmpty()
 }
 
-/** [name] is `null` when the exercise is missing even with tombstones (T9: "Unknown exercise"). */
+/** [name] is `null` when the exercise is missing even with tombstones (shown as "Unknown exercise"). */
 data class LiveExerciseUi(
     val id: WorkoutExerciseId,
     val name: String?,
@@ -48,9 +48,9 @@ data class LiveExerciseUi(
 )
 
 /**
- * [normalSetNumber] is 1-based among this exercise's Normal sets, `null` for Warm-up/Drop/Failure
- * (Q3). [weight]/[reps] are `null` when the set is untouched and still at its zero value (blank
- * field); [isPrefilled] marks a value copied in by Q4's prefill rules, shown muted until touched.
+ * [normalSetNumber] is 1-based among this exercise's Normal sets, `null` for Warm-up/Drop/Failure.
+ * [weight]/[reps] are `null` when the set is untouched and still at its zero value (blank
+ * field); [isPrefilled] marks a value copied in by the prefill rules, shown muted until touched.
  */
 data class LiveSetUi(
     val id: WorkoutSetId,
@@ -80,7 +80,7 @@ data class LiveSetValuesUi(
 )
 
 /**
- * The number keypad's target for the field in [editingField] (§8). [last] is "Same as last" (T12): the
+ * The number keypad's target for the field in [editingField]. [last] is "Same as last": the
  * previous set of the same exercise in this workout, or the Previous-column set for the first one;
  * `null` hides the chip. [isLastSetOfWorkout] makes Next hide the keypad on the workout's last field.
  */

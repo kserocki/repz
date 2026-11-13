@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.first
 import org.koin.core.annotation.Factory
 
 /**
- * Adds [ExerciseId] to the active workout, prefilled from its last performance (ADR-0029 Q4),
+ * Adds [ExerciseId] to the active workout, prefilled from its last performance (ADR-0029),
  * under [ActiveWorkoutWriteLock].
  */
 @Factory

@@ -32,7 +32,7 @@ private fun target(
     isLastSetOfWorkout = isLastSetOfWorkout,
 )
 
-/** [LiveKeypadTargetUi.toKeypadRequest] and the [SetField]/[SetValueField] round trip (keypad plan §8). */
+/** [LiveKeypadTargetUi.toKeypadRequest] and the [SetField]/[SetValueField] round trip. */
 class KeypadRequestMappingTest {
     @Test
     fun givenAKeypadTarget_whenMapped_thenTheRequestCarriesTheSetIdFieldAndContext() {

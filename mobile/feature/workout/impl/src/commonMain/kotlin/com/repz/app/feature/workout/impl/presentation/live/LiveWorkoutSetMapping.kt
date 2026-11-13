@@ -33,7 +33,7 @@ import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
-/** The badge letter/number shown and read out for a set (Q3, board 05): numbers count only Normal
+/** The badge letter/number shown and read out for a set (board 05): numbers count only Normal
  * sets, letters identify Warm-up/Drop/Failure. Shared by [LiveSetUi] and the keypad's own target,
  * which carries the same [SetType]/`normalSetNumber` pair without a full [LiveSetUi]. */
 @Composable
@@ -59,7 +59,7 @@ internal fun SetType.toRepzSetType(): RepzSetType =
         SetType.FAILURE -> RepzSetType.Failure
     }
 
-/** `null` if there's no editing target or it's RPE (off while RPE mode is disabled, T12). */
+/** `null` if there's no editing target or it's RPE (off while RPE mode is disabled). */
 internal fun SetField?.toRepzSetField(): RepzSetField? =
     when (this) {
         SetField.Weight -> RepzSetField.Weight
@@ -79,7 +79,7 @@ internal fun lastLineText(
     unit: UnitSystem,
 ): String? = previous?.let { stringResource(Res.string.set_last_line, formatSetWeight(it.weight, unit), it.reps) }
 
-/** The complete/uncomplete check's content description (§12 example): describes what tapping it
+/** The complete/uncomplete check's content description: describes what tapping it
  * will do next, not the set's current state. */
 @Composable
 internal fun completeContentDescription(
@@ -95,7 +95,7 @@ internal fun completeContentDescription(
         pluralStringResource(Res.plurals.set_complete, reps, badgeLabel, weightWithUnit, reps)
     }
 
-/** The badge menu's four rows (Q3-A): tapping one calls [onTypeSelect]. Only `*Screen`/`*Content`
+/** The badge menu's four rows: tapping one calls [onTypeSelect]. Only `*Screen`/`*Content`
  * composables may know [LiveWorkoutIntent] (AGENTS.md §4, Konsist N8), so this and every other
  * helper here take plain values and present-tense callbacks instead. */
 @Composable
@@ -126,7 +126,7 @@ internal fun typeMenuItems(
         ),
     )
 
-/** "Delete set" plus "Mark as …" for every type other than [currentType] (§12, board 18). */
+/** "Delete set" plus "Mark as …" for every type other than [currentType] (board 18). */
 @Composable
 internal fun setAccessibilityActions(
     currentType: SetType,

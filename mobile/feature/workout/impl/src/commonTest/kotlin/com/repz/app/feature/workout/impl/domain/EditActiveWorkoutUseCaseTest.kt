@@ -40,7 +40,7 @@ class EditActiveWorkoutUseCaseTest {
             assertEquals("New name", workouts.findWorkoutIncludingDeleted(workout.id)?.name)
         }
 
-    /** The lock (ADR-0029 T4) must serialize two concurrent edits so the second reads the first's write instead of a stale copy. */
+    /** The lock (ADR-0029) must serialize two concurrent edits so the second reads the first's write instead of a stale copy. */
     @Test
     fun givenTwoConcurrentEdits_whenBothRun_thenBothChangesArePreserved() =
         runTest {

@@ -31,7 +31,7 @@ import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
-/** Add exercise/set, set completion (Q5), set type, delete/undo, keypad targeting/entry, Next field (T12) and the elapsed ticker. */
+/** Add exercise/set, set completion, set type, delete/undo, keypad targeting/entry, Next field and the elapsed ticker. */
 @OptIn(ExperimentalCoroutinesApi::class)
 class LiveWorkoutViewModelSetEditingTest {
     private val dispatcher = StandardTestDispatcher()
@@ -328,7 +328,7 @@ class LiveWorkoutViewModelSetEditingTest {
                     ?.single()
                     ?.weight,
             )
-            // Touched and 0: shown as an actual zero, not blank (only untouched zero is blank, Q4).
+            // Touched and 0: shown as an actual zero, not blank (only untouched zero is blank).
             assertEquals(
                 Weight.ZERO,
                 viewModel.state.value.exercises

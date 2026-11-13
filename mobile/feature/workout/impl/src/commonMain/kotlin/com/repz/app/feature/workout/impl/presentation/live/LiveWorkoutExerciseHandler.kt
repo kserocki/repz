@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/** Exercise notes and Remove exercise with undo (Q10). */
+/** Exercise notes and Remove exercise with undo. */
 internal class LiveWorkoutExerciseHandler(
     private val editActiveWorkout: EditActiveWorkoutUseCase,
     private val scope: CoroutineScope,

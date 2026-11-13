@@ -115,7 +115,7 @@ private fun normalSetNumberAt(
     position: Int,
 ): Int? = if (sets[position].type != SetType.NORMAL) null else sets.take(position + 1).count { it.type == SetType.NORMAL }
 
-/** T12's "Same as last": the previous set of the same exercise in this workout, else the Previous-column set, else `null`. */
+/** "Same as last": the previous set of the same exercise in this workout, else the Previous-column set, else `null`. */
 private fun sameAsLast(
     setsInExercise: List<WorkoutSet>,
     position: Int,
@@ -132,13 +132,13 @@ private fun isLastSetOfWorkout(
     index: Int,
 ): Boolean = index == exercise.sets.lastIndex && workout.exercises.lastOrNull()?.id == exercise.id
 
-/** `null` = blank (untouched and 0, Q4). */
+/** `null` = blank (untouched and 0). */
 private fun displayWeight(
     set: WorkoutSet,
     isTouched: Boolean,
 ): Weight? = if (!isTouched && set.weight == Weight.ZERO) null else set.weight
 
-/** `null` = blank (untouched and 0, Q4). */
+/** `null` = blank (untouched and 0). */
 private fun displayReps(
     set: WorkoutSet,
     isTouched: Boolean,

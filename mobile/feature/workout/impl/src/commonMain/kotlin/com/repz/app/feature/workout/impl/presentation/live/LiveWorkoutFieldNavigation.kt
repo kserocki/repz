@@ -3,7 +3,7 @@ package com.repz.app.feature.workout.impl.presentation.live
 import com.repz.app.core.domain.model.Workout
 import com.repz.app.core.domain.workout.findSet
 
-/** T12: Weight -> Reps of the same set -> Weight of the next set -> Weight of the next card's first set; `null` on the last field. */
+/** Weight -> Reps of the same set -> Weight of the next set -> Weight of the next card's first set; `null` on the last field. */
 internal fun nextFieldAfter(
     workout: Workout,
     current: SetFieldRef,

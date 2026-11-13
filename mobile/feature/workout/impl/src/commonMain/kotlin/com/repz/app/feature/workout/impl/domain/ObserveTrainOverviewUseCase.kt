@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import org.koin.core.annotation.Factory
 
-/** The Train tab v0's data: the active workout, if any, plus every template (T7). */
+/** The Train tab v0's data: the active workout, if any (at most one can exist), plus every template. */
 data class TrainOverview(
     val activeWorkout: Workout?,
     val templates: List<WorkoutTemplate>,

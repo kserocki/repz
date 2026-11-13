@@ -7,9 +7,9 @@ import kotlinx.datetime.DayOfWeek
 
 /**
  * The Train tab's v0 root (TODO(REP-32): the real home screen). [today] is already resolved by the
- * ViewModel (T13: via an injected `Clock`/`TimeZone`), so `TrainContent` only looks up its string.
+ * ViewModel (via an injected `Clock`/`TimeZone`), so `TrainContent` only looks up its string.
  * [activeWorkoutName] non-null shows "Workout in progress · Resume" instead of the Start button
- * (T7: at most one active workout).
+ * (at most one active workout can exist).
  */
 data class TrainUiState(
     val isLoading: Boolean = true,
