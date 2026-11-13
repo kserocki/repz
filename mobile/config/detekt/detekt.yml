@@ -24,6 +24,10 @@ complexity:
   LongParameterList:
     active: true
     ignoreDefaultParameters: true
+    # Composables take explicit values and present-tense callbacks, never an XUiState-wide
+    # parameter (AGENTS.md §4), so a long parameter list is expected for them, not a smell.
+    # LongMethod stays enforced; this is user-approved (2026-11-06), not a per-file suppression.
+    ignoreAnnotated: ['Composable']
   CyclomaticComplexMethod:
     active: true
     # RepzDesignSystemCatalog's `when` is one `RepzCatalogPage -> FooCatalogPage()` branch per

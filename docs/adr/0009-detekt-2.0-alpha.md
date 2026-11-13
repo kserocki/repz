@@ -37,3 +37,10 @@ match in the S1 and N4 Konsist rules (ARCH §12.2). Accepted gap (user, 2026-10-
 `UnusedPrivateFunction` implements `RequiresAnalysisApi`, so it needs type resolution and is
 inactive in the plain `detekt` gate today regardless of its `ignoreAnnotated` config — a private
 `@Preview` function is simply never checked for being unused; revisit when Detekt 2.0 is stable.
+
+## Amendment (2026-11-06, REP-35)
+`LongParameterList` also gets `ignoreAnnotated: ['Composable']`, alongside its existing
+`ignoreDefaultParameters: true`. Composables take explicit values and present-tense callbacks
+rather than an `XUiState`-wide parameter (AGENTS.md §4), so a long parameter list is expected for
+them, not a smell; `LongMethod` stays enforced. This is a user decision (2026-11-06), not an
+implementer's call.

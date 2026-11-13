@@ -41,7 +41,7 @@ class UserPreferencesDataSourceTest {
 
             val stored = dataSource.preferences.first()
 
-            assertEquals(StoredUserPreferences(null, null, null, null, null, null), stored)
+            assertEquals(StoredUserPreferences(null, null, null, null, null, null, null, null), stored)
         }
 
     @Test
@@ -55,6 +55,8 @@ class UserPreferencesDataSourceTest {
             dataSource.setDefaultRestSeconds(90)
             dataSource.setHapticsEnabled(false)
             dataSource.setWeeklyWorkoutGoal(5)
+            dataSource.setWeightStepKg("KG_1_25")
+            dataSource.setWeightStepLb("LB_2_5")
 
             val stored = dataSource.preferences.first()
 
@@ -66,6 +68,8 @@ class UserPreferencesDataSourceTest {
                     defaultRestSeconds = 90,
                     hapticsEnabled = false,
                     weeklyWorkoutGoal = 5,
+                    weightStepKg = "KG_1_25",
+                    weightStepLb = "LB_2_5",
                 ),
                 stored,
             )

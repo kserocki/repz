@@ -7,6 +7,7 @@ import com.repz.app.core.domain.model.UnitSystem
 import com.repz.app.core.domain.preferences.ThemeMode
 import com.repz.app.core.domain.preferences.UserPreferences
 import com.repz.app.core.domain.preferences.UserPreferencesRepository
+import com.repz.app.core.domain.preferences.WeightStep
 import com.repz.app.core.domain.result.DomainResult
 import com.repz.app.core.domain.result.ValidationError
 import com.repz.app.core.domain.validation.ValidationLimits
@@ -71,4 +72,11 @@ class OfflineFirstUserPreferencesRepository(
                 validation
             }
         }
+
+    override suspend fun setWeightStep(step: WeightStep) {
+        when (step.unitSystem) {
+            UnitSystem.KG -> dataSource.setWeightStepKg(step.toWireText())
+            UnitSystem.LB -> dataSource.setWeightStepLb(step.toWireText())
+        }
+    }
 }

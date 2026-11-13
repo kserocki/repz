@@ -165,6 +165,13 @@ Haptics respect the in-app "Haptics" setting (F23) through `RepzTheme(hapticsEna
 - **Haptic:** Tick per key / step
 - **Reduced motion:** Sheet appears without slide
 
+**Landed (REP-35):** `core:designsystem`'s `keypad` package (ADR-0028), the sheet half only — "then row scrolls into view" is REP-34's half (it owns the `SetRow`/scroll). The open questions MOT-10 left were decided as:
+- **(a) Key press:** corner radius `16.dp` → `28.dp` on `RepzMotion.springs.pressMorph()`; container `surfaceContainerHighest` (or the key's own rest colour) → `primaryContainer`, content → `onPrimaryContainer` on `RepzMotion.effectsSprings.effectsFast()`; no `0.96` scale (MOT-10 doesn't list one). Reduced motion needs no extra code: both spring/effects tokens already snap/crossfade (150 ms) under `LocalReducedMotion`.
+- **(b) ± buttons:** `PlusMinusButton` shares the identical press morph/flash, from its own rest radius `20.dp` (`shapes.largeIncreased`) to `28.dp`; the long-press repeat runs every 250 ms until held 1 s, then every 60 ms, and stops the instant a step is refused or the finger lifts — a plain tap still yields exactly one step.
+- **(c) Exit:** mirrors the entry — `slideOutVertically` on `spatialDefault`; reduced motion disappears without a slide (same automatic snap as entry).
+- **(d) The display never animates,** nor do ± / the chips / "Same as last" (no MOT-09 roll): every value swap is instant, matching §1's rule.
+- **(e) Haptics:** `RepzHaptics.current.tick()` on every accepted key, every ± step (including each repeat), every chip, mode switch and Next; `reject()` on a refused input; Hide sends no haptic.
+
 ### MOT-11 · Add exercise
 - **Trigger:** Add (n) in picker
 - **Animates:** New card height 0 → auto (spatialDefault), neighbours push (spatialDefault), auto-scroll to card (spatialSlow)
