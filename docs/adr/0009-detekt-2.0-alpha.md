@@ -43,4 +43,4 @@ inactive in the plain `detekt` gate today regardless of its `ignoreAnnotated` co
 `ignoreDefaultParameters: true`. Composables take explicit values and present-tense callbacks
 rather than an `XUiState`-wide parameter (AGENTS.md §4), so a long parameter list is expected for
 them, not a smell; `LongMethod` stays enforced. This is a user decision (2026-11-06), not an
-implementer's call — see `.claude/work/REP-35/questions.md`.
+implementer's call.
