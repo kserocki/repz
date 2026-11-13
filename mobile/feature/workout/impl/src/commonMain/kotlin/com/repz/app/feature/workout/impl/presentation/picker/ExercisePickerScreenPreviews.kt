@@ -49,6 +49,10 @@ private fun ExercisePickerLoadingLightPreview() = ExercisePickerPreview(darkThem
 
 @Preview
 @Composable
+private fun ExercisePickerLoadingDarkPreview() = ExercisePickerPreview(darkTheme = true, state = ExercisePickerLoadingState)
+
+@Preview
+@Composable
 private fun ExercisePickerListLightPreview() = ExercisePickerPreview(darkTheme = false, state = ExercisePickerListState)
 
 @Preview

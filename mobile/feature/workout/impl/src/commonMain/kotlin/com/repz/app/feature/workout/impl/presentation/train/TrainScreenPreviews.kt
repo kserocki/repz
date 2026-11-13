@@ -49,6 +49,10 @@ private fun TrainLoadingLightPreview() = TrainPreview(darkTheme = false, state =
 
 @Preview
 @Composable
+private fun TrainLoadingDarkPreview() = TrainPreview(darkTheme = true, state = TrainLoadingState)
+
+@Preview
+@Composable
 private fun TrainStartLightPreview() = TrainPreview(darkTheme = false, state = TrainStartState)
 
 @Preview

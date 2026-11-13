@@ -21,7 +21,7 @@
     <string name="workout_default_name_sunday">Trening niedzielny</string>
 
     <string name="live_minimize">Zminimalizuj trening</string>
-    <string name="live_edit_name">Edytuj nazwę treningu</string>
+    <string name="live_name_edit">%1$s. Edytuj nazwę treningu</string>
     <string name="live_more_options">Opcje treningu</string>
     <string name="live_finish">Zakończ</string>
     <string name="live_discard">Odrzuć trening</string>

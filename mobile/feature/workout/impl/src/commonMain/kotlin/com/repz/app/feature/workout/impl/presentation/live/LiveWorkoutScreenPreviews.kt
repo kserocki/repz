@@ -18,8 +18,8 @@ import kotlin.uuid.Uuid
 
 private const val PREVIEW_UUID_SEED_DIGITS = 12
 
-/** Shared by this file and `LiveWorkoutScreenPreviews2.kt` (both in this package, `internal` so no
- * import is needed); `LiveWorkoutScreen.kt` keeps its own single preview for Konsist N4. */
+/** Shared by this file and `LiveWorkoutKeypadAndDialogPreviews.kt` (both in this package, `internal`
+ * so no import is needed); `LiveWorkoutScreen.kt` keeps its own single preview for Konsist N4. */
 @Composable
 internal fun LiveWorkoutPreview(
     darkTheme: Boolean,

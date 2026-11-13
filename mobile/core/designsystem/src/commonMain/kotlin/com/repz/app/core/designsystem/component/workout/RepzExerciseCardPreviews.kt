@@ -104,3 +104,9 @@ private fun RepzExerciseCardWithNotesLightPreview() {
 private fun RepzExerciseCardWithNotesDarkPreview() {
     RepzTheme(darkTheme = true) { RepzExerciseCardSample(notes = "Pause on chest in the last set.") }
 }
+
+@Preview(fontScale = 2f)
+@Composable
+private fun RepzExerciseCardFontScale2Preview() {
+    RepzTheme(darkTheme = false) { RepzExerciseCardSample() }
+}

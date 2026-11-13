@@ -7,12 +7,9 @@ import androidx.navigationevent.compose.rememberNavigationEventState
 
 /**
  * System Back and predictive back: dismisses the keypad while it's open, otherwise exits reorder
- * mode while reordering, otherwise minimizes (board 09's only other Back target). Exactly one of
- * [isKeypadOpen]/[isReordering] is true at a time, so precedence between the three handlers never
- * matters; each needs its own hoisted [androidx.navigationevent.NavigationEventState] (one handler
- * per state, per `NavigationEventHandler`'s own contract). Only `*Screen`/`*Content` may know
- * [LiveWorkoutIntent] (AGENTS.md §4, Konsist N8), so this takes plain flags and present-tense
- * callbacks.
+ * mode, otherwise minimizes (board 09's only other Back target). [isKeypadOpen]/[isReordering] are
+ * mutually exclusive, so the three handlers never compete; each needs its own hoisted state per
+ * `NavigationEventHandler`'s contract.
  */
 @Composable
 internal fun LiveWorkoutBackHandling(

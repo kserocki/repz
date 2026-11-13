@@ -33,6 +33,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import com.repz.app.core.designsystem.generated.resources.Res
 import com.repz.app.core.designsystem.generated.resources.symbol_add
 import com.repz.app.core.designsystem.generated.resources.symbol_more_vert
@@ -46,18 +47,11 @@ import org.jetbrains.compose.resources.painterResource
 private const val DISABLED_CONTENT_ALPHA = 0.38f
 
 /**
- * One exercise's card in the live workout (DESIGN_SYSTEM §9 `ExerciseCard`, board 05/09):
- * `shapes.large` (16 dp), `surfaceContainer` (level2) container. [name]/[subtitle] and the overflow
- * menu ([menuItems]: Reorder · Notes · Remove) sit in the header; a long press anywhere on the
- * header calls [onHeaderLongClick] to enter reorder mode (board 09 §10b). [notes] is `null` to hide
- * the notes row entirely, or a (possibly empty, while [isEditingNotes]) string to show it inline
- * under the header — these are the exercise's own notes, not workout-level notes, which this card
- * has no UI for. [columnLabels] labels the columns above [sets], which are [RepzSetRow]s supplied
- * by the caller.
- *
- * [menuButtonModifier], [notesModifier] and [addSetModifier] tag those three elements individually
- * (the same precedent as `RepzTopAppBar`'s `backButtonModifier`), since [modifier] lands on the
- * whole card.
+ * One exercise's card (DESIGN_SYSTEM §9 `ExerciseCard`, board 05/09): header with an overflow menu
+ * (Reorder · Notes · Remove, a header long-press also calls [onHeaderLongClick] to reorder), an
+ * optional notes row ([notes] `null` hides it; a non-null, possibly empty, string shows it,
+ * editable while [isEditingNotes]), the column header and [sets]. [menuButtonModifier]/
+ * [notesModifier]/[addSetModifier] tag those elements individually since [modifier] lands on the card.
  */
 @Composable
 fun RepzExerciseCard(
@@ -193,13 +187,22 @@ private fun ExerciseCardNotesField(
     modifier: Modifier = Modifier,
 ) {
     val focusRequester = remember { FocusRequester() }
+    var hasBeenFocused by remember { mutableStateOf(false) }
     BasicTextField(
         value = notes,
         onValueChange = onNotesChange,
         modifier =
             modifier
                 .focusRequester(focusRequester)
-                .onFocusChanged { focusState -> if (!focusState.isFocused) onNotesEditingFinish() },
+                .onFocusChanged { focusState ->
+                    // onFocusChanged fires once on attach with the initial unfocused state, before
+                    // requestFocus() below runs; only a real focused-to-unfocused transition ends editing.
+                    if (focusState.isFocused) {
+                        hasBeenFocused = true
+                    } else if (hasBeenFocused) {
+                        onNotesEditingFinish()
+                    }
+                },
         textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface),
         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
         decorationBox = { innerTextField ->
@@ -212,8 +215,23 @@ private fun ExerciseCardNotesField(
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
 }
 
+/** Mirrors [RepzSetRow]'s own reflow at [REFLOW_FONT_SCALE_THRESHOLD] (board 14): below it, the
+ * single-line Set/Prev/weight/Reps header; at or above it, Prev drops (merged into each row's own
+ * last-line text) and the badge column's label drops too, matching the reflowed row's bare badge. */
 @Composable
 private fun ExerciseCardColumnHeader(
+    labels: RepzSetColumnLabels,
+    modifier: Modifier = Modifier,
+) {
+    if (LocalDensity.current.fontScale >= REFLOW_FONT_SCALE_THRESHOLD) {
+        ExerciseCardColumnHeaderReflowed(labels, modifier)
+    } else {
+        ExerciseCardColumnHeaderSingleLine(labels, modifier)
+    }
+}
+
+@Composable
+private fun ExerciseCardColumnHeaderSingleLine(
     labels: RepzSetColumnLabels,
     modifier: Modifier = Modifier,
 ) {
@@ -223,6 +241,22 @@ private fun ExerciseCardColumnHeader(
     ) {
         ColumnHeaderLabel(text = labels.set, modifier = Modifier.width(SetBadgeColumnWidth))
         ColumnHeaderLabel(text = labels.previous, modifier = Modifier.width(SetPreviousColumnWidth))
+        ColumnHeaderLabel(text = labels.weight, modifier = Modifier.weight(1f))
+        ColumnHeaderLabel(text = labels.reps, modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.width(SetCheckColumnWidth))
+    }
+}
+
+@Composable
+private fun ExerciseCardColumnHeaderReflowed(
+    labels: RepzSetColumnLabels,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth().padding(start = SetRowStartPadding, end = RepzSpacing.sm),
+        horizontalArrangement = Arrangement.spacedBy(SetColumnGap),
+    ) {
+        Spacer(modifier = Modifier.width(SetBadgeColumnWidth))
         ColumnHeaderLabel(text = labels.weight, modifier = Modifier.weight(1f))
         ColumnHeaderLabel(text = labels.reps, modifier = Modifier.weight(1f))
         Spacer(modifier = Modifier.width(SetCheckColumnWidth))

@@ -2,6 +2,7 @@ package com.repz.app.core.designsystem.component
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -19,13 +20,15 @@ import androidx.compose.ui.Modifier
 class RepzSnackbarHostState internal constructor(
     internal val delegate: SnackbarHostState,
 ) {
-    /** Shows [message] with an [actionLabel] action; returns `true` only if that action was tapped
-     * (M3's own default duration and dismiss behaviour apply). */
+    /** Shows [message] with an [actionLabel] action; returns `true` only if that action was tapped.
+     * [SnackbarDuration.Indefinite] is passed explicitly (M3's own default for an action-bearing
+     * snackbar already resolves to this, review-1) so a caller wrapping this in its own timeout
+     * (e.g. an undo window) is the only thing that can end it early, regardless of M3's own default. */
     suspend fun showWithAction(
         message: String,
         actionLabel: String,
     ): Boolean {
-        val result = delegate.showSnackbar(message = message, actionLabel = actionLabel)
+        val result = delegate.showSnackbar(message = message, actionLabel = actionLabel, duration = SnackbarDuration.Indefinite)
         return result == SnackbarResult.ActionPerformed
     }
 

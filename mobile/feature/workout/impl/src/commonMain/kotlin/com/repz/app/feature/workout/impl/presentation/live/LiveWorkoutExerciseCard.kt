@@ -1,8 +1,12 @@
 package com.repz.app.feature.workout.impl.presentation.live
 
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import com.repz.app.core.designsystem.component.workout.RepzExerciseCard
@@ -148,7 +152,10 @@ private fun ColumnScope.LiveWorkoutSetRows(
     }
 }
 
-/** One [LiveSetUi] row, keyed by [cardIndex]/[setIndex] for its test tags. */
+/** One [LiveSetUi] row, keyed by [cardIndex]/[setIndex] for its test tags. While [editingField] is
+ * non-null (this row is the keypad's current target), [BringIntoViewRequester] asks the LazyColumn
+ * to scroll so the row clears the keypad, which already reserves its own height as bottom content
+ * padding (AC6, board 09 frame 11) — this also fires on retargeting and on Next. */
 @Composable
 private fun LiveWorkoutSetRow(
     cardIndex: Int,
@@ -165,6 +172,11 @@ private fun LiveWorkoutSetRow(
     val badgeLabel = set.badgeLabel()
     val weightText = set.weight?.let { formatSetWeight(it, unit) }.orEmpty()
     val repsText = set.reps?.toString().orEmpty()
+    val bringIntoViewRequester = remember { BringIntoViewRequester() }
+
+    LaunchedEffect(editingField) {
+        if (editingField != null) bringIntoViewRequester.bringIntoView()
+    }
 
     RepzSetRow(
         badgeLabel = badgeLabel,
@@ -192,7 +204,7 @@ private fun LiveWorkoutSetRow(
         weightContentDescription = stringResource(Res.string.set_weight, badgeLabel),
         repsContentDescription = stringResource(Res.string.set_reps, badgeLabel),
         badgeContentDescription = stringResource(Res.string.set_badge, badgeLabel),
-        modifier = modifier.testTag("set_${cardIndex}_$setIndex"),
+        modifier = modifier.testTag("set_${cardIndex}_$setIndex").bringIntoViewRequester(bringIntoViewRequester),
         badgeModifier = Modifier.testTag("set_${cardIndex}_${setIndex}_badge"),
         weightModifier = Modifier.testTag("set_${cardIndex}_${setIndex}_weight"),
         repsModifier = Modifier.testTag("set_${cardIndex}_${setIndex}_reps"),

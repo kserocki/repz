@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 
 /**
  * A set's type (DESIGN_SYSTEM §9, board 05): badge letters W / numbered / D / F. Colours come from
- * `RepzTheme.colors.setX`/`onSetX`/`setXContainer`/`onSetXContainer` (§3.2).
+ * `RepzTheme.colors.setX`/`onSetX`/`setXContainer`/`onSetXContainer`.
  */
 enum class RepzSetType { Warmup, Normal, Drop, Failure }
 

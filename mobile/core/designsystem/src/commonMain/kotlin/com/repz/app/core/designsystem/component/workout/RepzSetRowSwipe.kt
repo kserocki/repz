@@ -39,17 +39,11 @@ import kotlin.math.roundToInt
 private const val SWIPE_DELETE_THRESHOLD_FRACTION = 0.4f
 
 /**
- * [RepzSetRow]'s drag-to-delete behaviour: [content] follows the finger 1:1 while dragging (no
- * spring — this ships only MOT-12's documented reduced-motion end state, since this issue adds no
- * MOT-xx animation) and [onDelete] fires once past 40 % of the row's own width on release, playing
- * a Tick haptic the moment the drag crosses that threshold in either direction (MOT-12, MOTION §3).
- * After it fires, the content is held fully off-screen (not snapped back) so the row reads as
- * already gone until the caller actually removes it from the list, instead of flashing visible
- * again for one frame first. This depends on the caller keying each row by a stable id (e.g. the
- * set's own id): without it, Compose would reuse this composable's instance — and its held-off-
- * screen state — for whatever row ends up at the same position next, instead of disposing it along
- * with the row it belonged to. A start-to-end drag (or, in RTL layouts, an end-to-start one) is
- * clamped to 0 and does nothing.
+ * [RepzSetRow]'s drag-to-delete behaviour: [content] follows the finger 1:1, [onDelete] fires past
+ * 40 % of the row's width on release (a Tick haptic on crossing), and the content then holds fully
+ * off-screen until the caller removes the row, instead of snapping back and flashing visible again.
+ * The caller must key each row by a stable id or Compose will reuse this held-off-screen state for
+ * whatever row lands at the same position next.
  *
  * TODO(REP-46): replace the instant reveal/commit with MOT-12's real spring and the errorContainer
  * reveal/row-collapse choreography.

@@ -7,10 +7,10 @@ import com.repz.app.core.designsystem.component.workout.RepzLiveWorkoutHeader
 import com.repz.app.core.designsystem.component.workout.RepzMenuItem
 import com.repz.app.feature.workout.impl.generated.resources.Res
 import com.repz.app.feature.workout.impl.generated.resources.live_discard
-import com.repz.app.feature.workout.impl.generated.resources.live_edit_name
 import com.repz.app.feature.workout.impl.generated.resources.live_finish
 import com.repz.app.feature.workout.impl.generated.resources.live_minimize
 import com.repz.app.feature.workout.impl.generated.resources.live_more_options
+import com.repz.app.feature.workout.impl.generated.resources.live_name_edit
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
 
@@ -57,7 +57,7 @@ internal fun LiveWorkoutHeaderSection(
                 ),
             ),
         minimizeContentDescription = stringResource(Res.string.live_minimize),
-        editNameContentDescription = stringResource(Res.string.live_edit_name),
+        nameContentDescription = stringResource(Res.string.live_name_edit, name),
         moreOptionsContentDescription = stringResource(Res.string.live_more_options),
         modifier = modifier,
         minimizeButtonModifier = Modifier.testTag("live_minimize"),

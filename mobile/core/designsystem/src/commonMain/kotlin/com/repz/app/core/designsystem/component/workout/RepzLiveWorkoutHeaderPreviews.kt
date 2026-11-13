@@ -22,7 +22,7 @@ private fun RepzLiveWorkoutHeaderSample(isFinishEnabled: Boolean = true) {
         onFinishClick = {},
         overflowItems = OverflowItems,
         minimizeContentDescription = "Minimize workout",
-        editNameContentDescription = "Edit workout name",
+        nameContentDescription = "Push A. Edit workout name",
         moreOptionsContentDescription = "Workout options",
     )
 }
@@ -42,7 +42,7 @@ private fun RepzLiveWorkoutHeaderEditingSample() {
         onFinishClick = {},
         overflowItems = OverflowItems,
         minimizeContentDescription = "Minimize workout",
-        editNameContentDescription = "Edit workout name",
+        nameContentDescription = "Push A. Edit workout name",
         moreOptionsContentDescription = "Workout options",
     )
 }

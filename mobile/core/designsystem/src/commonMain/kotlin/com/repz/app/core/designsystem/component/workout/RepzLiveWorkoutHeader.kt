@@ -55,15 +55,11 @@ private val HeaderMinHeight = 92.dp
 private const val WIDE_FINISH_ROW_FONT_SCALE_THRESHOLD = 1.5f
 
 /**
- * The live workout's header (DESIGN_SYSTEM §9 `LiveWorkoutHeader`, board 09/14): `surfaceContainerLow`
- * (level1) container, minimize chevron, an inline-editable [name] with elapsed time below it, the
- * [finishLabel] action and an overflow menu ([overflowItems], e.g. "Discard workout"). [elapsedText]
- * renders in `RepzTheme.typography.numericLarge` and is never announced per-tick (DESIGN_SYSTEM
- * §12): the caller is responsible for not wrapping it in a live region.
- *
- * [minimizeButtonModifier], [nameModifier], [finishButtonModifier] and [overflowButtonModifier]
- * tag these four elements individually (the same precedent as `RepzTopAppBar`'s
- * `backButtonModifier`), since [modifier] lands on the whole header.
+ * The live workout's header (DESIGN_SYSTEM §9 `LiveWorkoutHeader`, board 09/14): minimize chevron,
+ * an inline-editable [name] with elapsed time below it, [finishLabel] and an overflow menu.
+ * [elapsedText] is never announced per-tick (DESIGN_SYSTEM §12) — the caller must not wrap it in a
+ * live region. [minimizeButtonModifier]/[nameModifier]/[finishButtonModifier]/
+ * [overflowButtonModifier] tag those elements individually since [modifier] lands on the header.
  */
 @Composable
 fun RepzLiveWorkoutHeader(
@@ -79,7 +75,7 @@ fun RepzLiveWorkoutHeader(
     onFinishClick: () -> Unit,
     overflowItems: ImmutableList<RepzMenuItem>,
     minimizeContentDescription: String,
-    editNameContentDescription: String,
+    nameContentDescription: String,
     moreOptionsContentDescription: String,
     modifier: Modifier = Modifier,
     minimizeButtonModifier: Modifier = Modifier,
@@ -115,7 +111,7 @@ fun RepzLiveWorkoutHeader(
                 onNameClick = onNameClick,
                 onNameChange = onNameChange,
                 onNameEditingFinish = onNameEditingFinish,
-                editNameContentDescription = editNameContentDescription,
+                nameContentDescription = nameContentDescription,
                 modifier = Modifier.weight(1f),
                 nameModifier = nameModifier,
             )
@@ -164,7 +160,7 @@ private fun RepzLiveWorkoutHeaderTitle(
     onNameClick: () -> Unit,
     onNameChange: (String) -> Unit,
     onNameEditingFinish: () -> Unit,
-    editNameContentDescription: String,
+    nameContentDescription: String,
     modifier: Modifier = Modifier,
     nameModifier: Modifier = Modifier,
 ) {
@@ -172,12 +168,11 @@ private fun RepzLiveWorkoutHeaderTitle(
         if (isEditingName) {
             RepzLiveWorkoutNameField(name, onNameChange, onNameEditingFinish, modifier = nameModifier)
         } else {
-            val nameRowDescription = nameRowContentDescription(name, editNameContentDescription)
             Row(
                 modifier =
                     nameModifier
                         .clickable(onClick = onNameClick)
-                        .semantics(mergeDescendants = true) { contentDescription = nameRowDescription },
+                        .semantics(mergeDescendants = true) { contentDescription = nameContentDescription },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(RepzSpacing.xs),
             ) {
@@ -194,14 +189,6 @@ private fun RepzLiveWorkoutHeaderTitle(
     }
 }
 
-// Built outside the `semantics { contentDescription = … }` block so a Konsist heuristic reading
-// for hard-coded user-facing text doesn't mistake this accessibility-label composition (two already
-// localized strings) for one.
-private fun nameRowContentDescription(
-    name: String,
-    editNameContentDescription: String,
-): String = "$name. $editNameContentDescription"
-
 @Composable
 private fun RepzLiveWorkoutNameField(
     name: String,
@@ -210,6 +197,7 @@ private fun RepzLiveWorkoutNameField(
     modifier: Modifier = Modifier,
 ) {
     val focusRequester = remember { FocusRequester() }
+    var hasBeenFocused by remember { mutableStateOf(false) }
     val textColor = MaterialTheme.colorScheme.onSurface
     BasicTextField(
         value = name,
@@ -218,7 +206,15 @@ private fun RepzLiveWorkoutNameField(
             modifier
                 .fillMaxWidth()
                 .focusRequester(focusRequester)
-                .onFocusChanged { focusState -> if (!focusState.isFocused) onNameEditingFinish() },
+                .onFocusChanged { focusState ->
+                    // onFocusChanged fires once on attach with the initial unfocused state, before
+                    // requestFocus() below runs; only a real focused-to-unfocused transition ends editing.
+                    if (focusState.isFocused) {
+                        hasBeenFocused = true
+                    } else if (hasBeenFocused) {
+                        onNameEditingFinish()
+                    }
+                },
         textStyle = MaterialTheme.typography.titleLarge.copy(color = textColor),
         singleLine = true,
         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),

@@ -20,7 +20,7 @@
     <string name="workout_default_name_sunday">Sunday workout</string>
 
     <string name="live_minimize">Minimize workout</string>
-    <string name="live_edit_name">Edit workout name</string>
+    <string name="live_name_edit">%1$s. Edit workout name</string>
     <string name="live_more_options">Workout options</string>
     <string name="live_finish">Finish</string>
     <string name="live_discard">Discard workout</string>

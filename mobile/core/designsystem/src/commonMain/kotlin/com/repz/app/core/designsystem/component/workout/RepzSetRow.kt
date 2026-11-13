@@ -50,7 +50,10 @@ private val DefaultRowHeight = 56.dp
 private val TallRowHeight = 64.dp
 private val ReflowRowMinHeight = 72.dp
 private const val TALL_ROW_FONT_SCALE_THRESHOLD = 1.3f
-private const val REFLOW_FONT_SCALE_THRESHOLD = 1.5f
+
+// internal: ExerciseCardColumnHeader (RepzExerciseCard.kt) reflows its own layout at the same
+// threshold so the header always matches the rows beneath it.
+internal const val REFLOW_FONT_SCALE_THRESHOLD = 1.5f
 
 // Columns: badge 38 · previous 68 · weight 1fr · reps 1fr · check 50; start padding 8, gap 6
 // (board 18, component-internal exact board measurements, same precedent as elsewhere here).

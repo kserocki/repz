@@ -1,8 +1,9 @@
 package com.repz.app.feature.workout.impl.presentation.live
 
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -24,11 +25,9 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
-import com.repz.app.core.designsystem.component.RepzButton
-import com.repz.app.core.designsystem.component.RepzButtonSize
-import com.repz.app.core.designsystem.component.RepzButtonStyle
 import com.repz.app.core.designsystem.component.RepzSnackbarHost
 import com.repz.app.core.designsystem.component.RepzSnackbarHostState
+import com.repz.app.core.designsystem.component.workout.RepzLiveWorkoutBottomBar
 import com.repz.app.core.designsystem.component.workout.RepzLiveWorkoutScaffold
 import com.repz.app.core.designsystem.theme.RepzSpacing
 import com.repz.app.core.domain.model.Rpe
@@ -52,13 +51,8 @@ import kotlin.time.Duration
 /**
  * The live workout (board 09): [RepzLiveWorkoutScaffold] in normal mode, via
  * [LiveWorkoutActiveSection] (which also floats the keypad above it), or
- * [LiveWorkoutReorderSection] while [LiveWorkoutUiState.isReordering]. [LiveWorkoutOverlays] renders
- * the discard confirmation and the back-press handling as siblings of that, since neither needs to
- * sit inside the content [Box]. No MOT-xx animation ships here.
- *
- * This is the only composable allowed to know [LiveWorkoutIntent] (AGENTS.md §4, Konsist N8): it
- * translates every [state] field and [onIntent] call into the explicit values and present-tense
- * callbacks that [LiveWorkoutActiveSection] and [LiveWorkoutOverlays] take instead.
+ * [LiveWorkoutReorderSection] while [LiveWorkoutUiState.isReordering]; [LiveWorkoutOverlays] layers
+ * the discard confirmation and back-press handling over either branch. No MOT-xx animation ships here.
  */
 @Composable
 fun LiveWorkoutContent(
@@ -129,10 +123,9 @@ fun LiveWorkoutContent(
 }
 
 /**
- * The floating overlays that sit above either branch of [LiveWorkoutContent] regardless of
- * [isReordering]: the discard confirmation (when [discardConfirmation] isn't `null`) and the
- * system back-press handling. [RepzAlertDialog][com.repz.app.core.designsystem.component.RepzAlertDialog]
- * renders in its own window, so this doesn't need to sit inside the content [Box] for layering.
+ * The discard confirmation (while [discardConfirmation] isn't `null`) and system back-press
+ * handling, both rendered as siblings of the content [Box] since
+ * [RepzAlertDialog][com.repz.app.core.designsystem.component.RepzAlertDialog] draws in its own window.
  */
 @Composable
 private fun LiveWorkoutOverlays(
@@ -160,9 +153,9 @@ private fun LiveWorkoutOverlays(
 
 /**
  * [LiveWorkoutContent]'s non-reordering branch: the scaffold, the auto-scroll-to-editing-set
- * effect and the floating keypad, all sized against the keypad's own measured height. Every
- * parameter here is an explicit value or a present-tense callback, never [LiveWorkoutUiState] or
- * [LiveWorkoutIntent] (AGENTS.md §4, Konsist N8).
+ * effect and the floating keypad, all sized against the keypad's own measured height. While the
+ * keypad is open, a tap that reaches nothing else (board 09 frame 11's "tapping outside closes")
+ * dismisses it instead of a blocking scrim, so fields, buttons and scrolling underneath still work.
  */
 @Composable
 private fun LiveWorkoutActiveSection(
@@ -211,7 +204,7 @@ private fun LiveWorkoutActiveSection(
 
     LiveWorkoutAutoScrollEffect(targetSetId = keypadTarget?.setId, exercises = exercises, listState = listState)
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().dismissKeypadOnOutsideTap(isKeypadOpen, onKeypadDismiss)) {
         LiveWorkoutScaffoldSection(
             workoutName = workoutName,
             elapsedText = formatElapsed(elapsed),
@@ -246,8 +239,7 @@ private fun LiveWorkoutActiveSection(
             onSetTypeSelect = onSetTypeSelect,
         )
 
-        LiveWorkoutKeypadOverlay(
-            isKeypadOpen = isKeypadOpen,
+        LiveWorkoutKeypad(
             keypadTarget = keypadTarget,
             unit = unit,
             weightStep = weightStep,
@@ -258,59 +250,37 @@ private fun LiveWorkoutActiveSection(
             onWeightStepChange = onWeightStepChange,
             onNext = onNextField,
             onDismiss = onKeypadDismiss,
-            onHeightChange = { heightPx -> keypadHeightPx = heightPx },
+            modifier =
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .onSizeChanged { size -> keypadHeightPx = size.height },
         )
     }
 }
 
 /**
- * The floating keypad plus the full-size scrim that dismisses it on an outside tap, while
- * [isKeypadOpen]. [onHeightChange] reports the keypad's own height so the scaffold's content can
- * leave room for it.
+ * Dismisses by calling [onDismiss] on a tap that nothing else consumes (board 09 frame 11: the
+ * keypad sheet is non-modal, so a field, button or scroll drag underneath wins the gesture first).
+ * Attached to an ancestor of both the content and the keypad, so descendants' own Main-pass
+ * handlers always run before this one sees whether the gesture was consumed.
  */
-@Composable
-private fun BoxScope.LiveWorkoutKeypadOverlay(
-    isKeypadOpen: Boolean,
-    keypadTarget: LiveKeypadTargetUi?,
-    unit: UnitSystem,
-    weightStep: WeightStep,
-    onWeightEnter: (WorkoutSetId, Weight?) -> Unit,
-    onRepsEnter: (WorkoutSetId, Int?) -> Unit,
-    onRpeEnter: (WorkoutSetId, Rpe?) -> Unit,
-    onFieldSelect: (SetField) -> Unit,
-    onWeightStepChange: (WeightStep) -> Unit,
-    onNext: () -> Unit,
-    onDismiss: () -> Unit,
-    onHeightChange: (Int) -> Unit,
-) {
-    if (isKeypadOpen) {
-        Box(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .pointerInput(Unit) { detectTapGestures(onTap = { onDismiss() }) },
-        )
+private fun Modifier.dismissOnUnconsumedTap(onDismiss: () -> Unit): Modifier =
+    pointerInput(onDismiss) {
+        awaitEachGesture {
+            awaitFirstDown(requireUnconsumed = false)
+            if (waitForUpOrCancellation() != null) onDismiss()
+        }
     }
 
-    LiveWorkoutKeypad(
-        keypadTarget = keypadTarget,
-        unit = unit,
-        weightStep = weightStep,
-        onWeightEnter = onWeightEnter,
-        onRepsEnter = onRepsEnter,
-        onRpeEnter = onRpeEnter,
-        onFieldSelect = onFieldSelect,
-        onWeightStepChange = onWeightStepChange,
-        onNext = onNext,
-        onDismiss = onDismiss,
-        modifier =
-            Modifier
-                .align(Alignment.BottomCenter)
-                .onSizeChanged { size -> onHeightChange(size.height) },
-    )
-}
+/** Only attaches [dismissOnUnconsumedTap] while [isKeypadOpen]; a closed keypad needs no dismiss gesture. */
+private fun Modifier.dismissKeypadOnOutsideTap(
+    isKeypadOpen: Boolean,
+    onDismiss: () -> Unit,
+): Modifier = if (isKeypadOpen) dismissOnUnconsumedTap(onDismiss) else this
 
-/** Scrolls to the exercise holding [targetSetId] (the set the keypad just opened for) once it changes. */
+/** Scrolls the exercise holding [targetSetId] into the viewport once it changes, so a card the user
+ * hasn't scrolled to yet (e.g. Next reaching the next card) composes; LiveWorkoutSetRow's own
+ * BringIntoViewRequester then fine-positions the exact row above the keypad. */
 @Composable
 private fun LiveWorkoutAutoScrollEffect(
     targetSetId: WorkoutSetId?,
@@ -421,13 +391,11 @@ private fun LiveWorkoutBottomBar(
     canAddExercise: Boolean,
     onAddExerciseClick: () -> Unit,
 ) {
-    RepzButton(
-        text = stringResource(Res.string.live_add_exercise),
-        onClick = onAddExerciseClick,
-        modifier = Modifier.testTag("live_add_exercise"),
-        style = RepzButtonStyle.Filled,
-        size = RepzButtonSize.Medium,
-        enabled = canAddExercise,
+    RepzLiveWorkoutBottomBar(
+        addExerciseLabel = stringResource(Res.string.live_add_exercise),
+        isAddExerciseEnabled = canAddExercise,
+        onAddExerciseClick = onAddExerciseClick,
+        addExerciseButtonModifier = Modifier.testTag("live_add_exercise"),
     )
 }
 
