@@ -6,10 +6,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 
-/** Clears whatever notes/rename field has focus and hides the IME: called on Minimize, on Finish
- * and when the keypad opens, since none of those destinations has room for a field's keyboard to
- * stay up underneath them — also what keeps the live workout's header reachable on iOS, where the
- * platform otherwise pans the whole screen up to keep a focused field above the keyboard. */
+/** Clears whatever notes/rename field has focus and hides the IME: called on Minimize, Finish and
+ * keypad-open, none of which leaves room for a focused field's keyboard, and keeps the live
+ * workout's header reachable on iOS instead of the OS panning the whole screen up. */
 @Composable
 internal fun rememberEndFieldEditing(): () -> Unit {
     val focusManager = LocalFocusManager.current

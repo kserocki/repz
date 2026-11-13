@@ -293,12 +293,8 @@ private fun Modifier.dismissKeypadOnOutsideTap(
     onDismiss: () -> Unit,
 ): Modifier = if (isKeypadOpen) dismissOnUnconsumedTap(onDismiss) else this
 
-/** The coarse half of the row-above-keypad scroll (the other half is
- * [LiveWorkoutSetRow][com.repz.app.feature.workout.impl.presentation.live.LiveWorkoutExerciseCard]'s
- * own `BringIntoViewRequester`): a card the user hasn't scrolled to yet isn't composed at all, so a
- * `BringIntoViewRequester` attached to one of its rows can't act on it yet. This jumps there once,
- * instantly, only when the card isn't already visible; the row's own effect then does the one
- * animated, keypad-aware positioning the user actually sees, so the two never fight over the scroll. */
+/** Jumps, without animation, to the target set's card only when it isn't composed yet; the row's
+ * own `bringIntoView` then positions it above the keypad. */
 @Composable
 private fun LiveWorkoutAutoScrollEffect(
     targetSetId: WorkoutSetId?,

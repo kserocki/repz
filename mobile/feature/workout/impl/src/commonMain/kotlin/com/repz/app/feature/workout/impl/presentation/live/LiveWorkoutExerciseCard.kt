@@ -169,11 +169,8 @@ private fun ColumnScope.LiveWorkoutSetRows(
 }
 
 /** One [LiveSetUi] row, keyed by [cardIndex]/[setIndex] for its test tags. While [editingField] is
- * non-null (this row is the keypad's current target), [BringIntoViewRequester] scrolls the row's
- * bottom to the keypad's top (plus a token gap), once [keypadHeightPx] is actually measured — the
- * request's own height is padded by [keypadHeightPx] so the LazyColumn, whose reported viewport
- * extends behind the overlaid keypad, scrolls far enough instead of thinking the row is already
- * clear. Fires again on retargeting and on Next; does nothing once the row is already clear. */
+ * non-null, [BringIntoViewRequester] scrolls the row's bottom to just above the keypad once
+ * [keypadHeightPx] is measured; fires again on retargeting and on Next, does nothing once clear. */
 @Composable
 private fun LiveWorkoutSetRow(
     cardIndex: Int,
