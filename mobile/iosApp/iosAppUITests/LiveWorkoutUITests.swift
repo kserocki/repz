@@ -96,7 +96,7 @@ final class LiveWorkoutUITests: XCTestCase {
         XCTAssertTrue(liveFinish.isEnabled, "Finish should enable once a set is completed")
 
         // Full keypad entry on set 0 - digits, the decimal separator, Next (Weight -> Reps), then
-        // dismiss by tapping outside the sheet instead of following Next into the other set.
+        // dismiss with the sheet's hide key instead of following Next into the other set.
         scrollToElement(identifier: "set_0_0_weight", reason: "set_0_0_weight not found").tap()
         XCTAssertFalse(element(identifier: "live_add_exercise").exists, "Keypad should hide the bottom bar")
         tap(label: "8")
@@ -105,8 +105,8 @@ final class LiveWorkoutUITests: XCTestCase {
         tap(label: "5")
         tap(containingLabel: "Next: repetitions")
         tap(label: "8")
-        tapOutsideKeypad()
-        XCTAssertTrue(element(identifier: "live_add_exercise").waitForExistence(timeout: 5), "Tap-outside did not dismiss the keypad")
+        tap(label: "Hide keypad")
+        XCTAssertTrue(element(identifier: "live_add_exercise").waitForExistence(timeout: 5), "Hide keypad did not dismiss the keypad")
 
         let set00Check = scrollToElement(identifier: "set_0_0_check", reason: "set_0_0_check not found")
         // "82.5\u{00A0}kg": formatSetWeightWithUnit joins the value and the unit with a non-breaking
@@ -347,13 +347,6 @@ final class LiveWorkoutUITests: XCTestCase {
             discardConfirm.tap()
         }
         XCTAssertTrue(element(identifier: "train_start_empty").waitForExistence(timeout: 10), "Could not clear the leftover active workout")
-    }
-
-    /// Taps a point above where the keypad sheet sits (it only covers roughly the bottom half), to
-    /// hit the transparent full-screen overlay `LiveWorkoutContent` places beneath it
-    /// (`LiveWorkoutIntent.KeypadDismissed`).
-    private func tapOutsideKeypad() {
-        app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.12)).tap()
     }
 
     /// Clears a focused text field by sending one delete keystroke per existing character (plus a
