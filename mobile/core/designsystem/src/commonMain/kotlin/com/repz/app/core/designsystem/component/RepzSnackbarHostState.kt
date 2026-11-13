@@ -21,9 +21,8 @@ class RepzSnackbarHostState internal constructor(
     internal val delegate: SnackbarHostState,
 ) {
     /** Shows [message] with an [actionLabel] action; returns `true` only if that action was tapped.
-     * [SnackbarDuration.Indefinite] is passed explicitly (M3's own default for an action-bearing
-     * snackbar already resolves to this, review-1) so a caller wrapping this in its own timeout
-     * (e.g. an undo window) is the only thing that can end it early, regardless of M3's own default. */
+     * [SnackbarDuration.Indefinite] is explicit here (M3's own default for an action-bearing
+     * snackbar already resolves to it) so only the caller's own timeout, not M3, can end it early. */
     suspend fun showWithAction(
         message: String,
         actionLabel: String,

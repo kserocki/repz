@@ -30,6 +30,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
@@ -197,6 +199,8 @@ private fun RepzLiveWorkoutNameField(
     modifier: Modifier = Modifier,
 ) {
     val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
     var hasBeenFocused by remember { mutableStateOf(false) }
     val textColor = MaterialTheme.colorScheme.onSurface
     BasicTextField(
@@ -219,7 +223,15 @@ private fun RepzLiveWorkoutNameField(
         singleLine = true,
         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(onDone = { onNameEditingFinish() }),
+        // Clearing focus (not calling onNameEditingFinish directly) routes Done through the same
+        // focused-to-unfocused path above, so editing ends exactly once however it happens.
+        keyboardActions =
+            KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus(force = true)
+                    keyboardController?.hide()
+                },
+            ),
     )
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
 }
