@@ -393,8 +393,12 @@ final class LiveWorkoutUITests: XCTestCase {
     /// `waitForWelcomeReady` already uses, applied per scroll step here. The same bridge quirk also
     /// makes a card that's barely past the hittability threshold (not comfortably settled) an
     /// unreliable tap target even once `isHittable` reports true, so a short settle pause follows
-    /// before handing the element back. Only for a "this should exist" check: never call it where the
-    /// element is expected to be absent, since it would otherwise scroll the whole list hunting for it.
+    /// before handing the element back. If `direction` doesn't find it within `maxSwipes`, tries the
+    /// opposite direction before giving up: an app-side auto-scroll (for example the keypad's own,
+    /// which keeps the edited row above the sheet) can leave an earlier row further off-screen than
+    /// `direction`'s caller assumed, in whichever direction that auto-scroll happened to go. Only for
+    /// a "this should exist" check: never call it where the element is expected to be absent, since
+    /// it would otherwise scroll the whole list hunting for it.
     @discardableResult
     private func scrollToElement(
         identifier: String,
@@ -405,27 +409,32 @@ final class LiveWorkoutUITests: XCTestCase {
     ) -> XCUIElement {
         let el = element(identifier: identifier)
         let isReady = NSPredicate(format: "exists == true AND isHittable == true")
-        for _ in 0..<maxSwipes {
+        func isReadyNow() -> Bool {
             let expectation = XCTNSPredicateExpectation(predicate: isReady, object: el)
-            if XCTWaiter().wait(for: [expectation], timeout: stepTimeout) == .completed {
-                waitUntilFrameSettles(el)
-                return el
-            }
+            guard XCTWaiter().wait(for: [expectation], timeout: stepTimeout) == .completed else { return false }
+            waitUntilFrameSettles(el)
+            return true
+        }
+        func swipe(_ direction: ScrollDirection) {
             switch direction {
             case .down: app.swipeUp()
             case .up: app.swipeDown()
             }
         }
-        let finalExpectation = XCTNSPredicateExpectation(predicate: isReady, object: el)
-        let finalResult = XCTWaiter().wait(for: [finalExpectation], timeout: stepTimeout)
-        if finalResult != .completed {
-            print("DEBUG_SCROLL_TARGET_MISSING(\(identifier)):\n\(app.debugDescription)")
+
+        if isReadyNow() { return el }
+        for _ in 0..<maxSwipes {
+            swipe(direction)
+            if isReadyNow() { return el }
         }
-        XCTAssertEqual(
-            finalResult,
-            .completed,
-            reason.isEmpty ? "\(identifier) not hittable, even after scrolling" : reason
-        )
+        let reversed: ScrollDirection = direction == .down ? .up : .down
+        for _ in 0..<maxSwipes {
+            swipe(reversed)
+            if isReadyNow() { return el }
+        }
+
+        print("DEBUG_SCROLL_TARGET_MISSING(\(identifier)):\n\(app.debugDescription)")
+        XCTFail(reason.isEmpty ? "\(identifier) not hittable, even after scrolling both ways" : reason)
         return el
     }
 
