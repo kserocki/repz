@@ -11,9 +11,13 @@ import com.repz.app.core.designsystem.motion.RepzMorphs
 import com.repz.app.core.designsystem.motion.RepzMotion
 import com.repz.app.core.designsystem.theme.RepzSpacing
 
-// Q1 (set checkbox) and Q2 (FAB rest radius), both at the catalog's CatalogTileSize demo size.
+// Q1 (set checkbox), at the catalog's CatalogTileSize demo size.
 private val CheckboxCornerRadius = 10.dp
-private val FabCornerRadius = 16.dp
+
+// T1 (FAB rest radius): the real FAB's own 20 dp / 64 dp ratio (was 16/56), stretched here to the
+// catalog's smaller CatalogTileSize demo tile like every other morph on this page.
+private val FabCornerRadius = 20.dp
+private val FabRestSize = 64.dp
 
 /** `motion-morphs` (DESIGN_SYSTEM §5): the 7 morph pairs, each looping with `pressMorph` except
  * `circleToBurst`, which uses `celebrate` (board 15) — fitting one iPhone Duo screen. */
@@ -21,7 +25,7 @@ private val FabCornerRadius = 16.dp
 @Composable
 internal fun MotionMorphsCatalogPage() {
     val checkboxMorph = remember { RepzMorphs.circleToRoundedSquare(CheckboxCornerRadius, CatalogTileSize) }
-    val fabMorph = remember { RepzMorphs.roundedSquareToCookie4Sided(FabCornerRadius, CatalogTileSize) }
+    val fabMorph = remember { RepzMorphs.roundedSquareToCookie4Sided(FabCornerRadius, FabRestSize) }
 
     Column(verticalArrangement = Arrangement.spacedBy(RepzSpacing.md)) {
         ReducedMotionHeader()
@@ -35,7 +39,7 @@ internal fun MotionMorphsCatalogPage() {
             MorphTile("circleToFlower", RepzMorphs.circleToFlower, RepzMotion.springs.pressMorph())
             MorphTile("flowerToCookie9Sided", RepzMorphs.flowerToCookie9Sided, RepzMotion.springs.pressMorph())
             MorphTile("circleToRoundedSquare(10)", checkboxMorph, RepzMotion.springs.pressMorph())
-            MorphTile("roundedSquareToCookie4(16)", fabMorph, RepzMotion.springs.pressMorph())
+            MorphTile("roundedSquareToCookie4(20)", fabMorph, RepzMotion.springs.pressMorph())
         }
     }
 }

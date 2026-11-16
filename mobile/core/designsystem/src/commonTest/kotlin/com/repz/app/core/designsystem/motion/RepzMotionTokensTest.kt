@@ -22,6 +22,7 @@ class RepzMotionTokensTest {
         assertEquals(1500.milliseconds, RepzDurations.celebrationMax)
         assertEquals(1200.milliseconds, RepzDurations.shimmer)
         assertEquals(150.milliseconds, RepzDurations.reducedMotionFade)
+        assertEquals(150.milliseconds, RepzDurations.skeletonDelay)
     }
 
     @Test

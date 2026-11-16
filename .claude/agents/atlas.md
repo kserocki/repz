@@ -13,8 +13,19 @@ Read the issue (`.claude/work/REP-xx/issue.md`), `AGENTS.md`, the relevant docs,
 2. **Open questions:** product questions go to Captain, technical ones you resolve yourself (or with a consultant). Unresolved questions block approval.
 3. **Design:** modules and files, public signatures, data flow, MOT-xx and tokens, ADR impact (a new ADR if a decision changes).
 4. **Work packages:** a table with `id | owner (Forge/Flex/Bolt/Swift/Iron) | paths | steps | tests | depends_on | parallel group`. Owners only touch their paths (see their agent files). Interfaces between packages (e.g. UiState for Flex, DTOs for Iron↔Forge) are spelled out so packages can run in parallel.
-5. **Manual test plan** for Spotter: platforms, scenarios, required screenshots, and **recordings for every animation**.
+5. **Manual test plan** for Spotter: **Android, dark mode** for every scenario, with one review recording that shows every animation in scope. Other variants (light mode, iOS, PL, 200 % font) get only a quick click-through to check the UI doesn't break, with no media. Don't plan iOS UI test (XCUITest) packages unless the behaviour exists only on iOS.
 6. **Acceptance criteria:** concrete and checkable.
+
+### Precision (user rule, 2026-11-13)
+Implementers follow the plan literally, so every UI behaviour must be specified so it can't be built wrong. For each screen and component, spell out:
+- **Interaction:** what each tap, long-press, swipe and back does; which overlays are modal or non-modal and which taps reach the content behind them.
+- **Text input:** single-line vs multi-line, what Done/Enter does, when focus is cleared and the keyboard hidden (e.g. before minimize, finish, opening another sheet), and when an edit is persisted (debounce, flush).
+- **Layout limits:** behaviour at 200 % font, at narrow widths (state whether a threshold refers to the window or the component), long values and long PL strings (wrap, shrink or truncate; never clip).
+- **Scroll and visibility:** what scrolls into view and where (e.g. above a sheet), and stable keys for list items.
+- **State:** who owns each piece of state, what survives process death and configuration changes (`rememberSaveable`), and what must read the latest value (`rememberUpdatedState`).
+- **Concurrency:** which writes share a lock, what a double tap does.
+- **Test tags and accessibility actions** the tests and QA rely on.
+Each acceptance criterion must be something the implementer can check on the emulator in under a minute.
 
 Keep it as small as the issue allows. If the issue is too big, propose a split into new issues.
 

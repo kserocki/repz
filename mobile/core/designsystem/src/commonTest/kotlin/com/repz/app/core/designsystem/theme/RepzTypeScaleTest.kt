@@ -36,6 +36,23 @@ class RepzTypeScaleTest {
     }
 
     @Test
+    fun given_heroLabelStyle_whenReadingSpec_thenMatchesU1() {
+        assertSpec(
+            ExpectedTypeSpec(
+                "heroLabel",
+                RepzTypeScale.heroLabel,
+                RepzFontFile.Archivo,
+                750,
+                105f,
+                null,
+                22f,
+                28f,
+                0f,
+            ),
+        )
+    }
+
+    @Test
     fun given_materialTypography_whenBuilt_thenEveryStyleUsesTheRequestedFamilyAndTabularFiguresOnlyOnNumeric() {
         val fakeFamilies = FakeRepzFontFamilies()
 

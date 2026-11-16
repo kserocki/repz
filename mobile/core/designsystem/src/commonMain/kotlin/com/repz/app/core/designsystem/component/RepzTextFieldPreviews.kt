@@ -58,3 +58,49 @@ private fun RepzTextFieldLightPreview() {
 private fun RepzTextFieldDarkPreview() {
     RepzTheme(darkTheme = true) { RepzTextFieldShowcase() }
 }
+
+// DESIGN_SYSTEM §9, board 04 §21: the filled style, every state the outlined showcase above covers.
+@Composable
+private fun RepzFilledTextFieldShowcase() {
+    Column(verticalArrangement = Arrangement.spacedBy(RepzSpacing.lg)) {
+        RepzTextField(value = "", onValueChange = {}, label = "Email", style = RepzTextFieldStyle.Filled)
+        RepzTextField(
+            value = "alex@repz.app",
+            onValueChange = {},
+            label = "Email",
+            style = RepzTextFieldStyle.Filled,
+        )
+        Column(verticalArrangement = Arrangement.spacedBy(RepzSpacing.xs)) {
+            RepzTextField(
+                value = "not-an-email",
+                onValueChange = {},
+                label = "Email",
+                isError = true,
+                style = RepzTextFieldStyle.Filled,
+            )
+            RepzFieldError("Enter a valid email, like name@example.com", modifier = Modifier.padding(start = RepzSpacing.lg))
+        }
+
+        var hiddenFilled by remember { mutableStateOf(true) }
+        RepzPasswordField(
+            value = "hunter2",
+            onValueChange = {},
+            label = "Password",
+            isPasswordVisible = !hiddenFilled,
+            onPasswordVisibilityToggle = { hiddenFilled = !hiddenFilled },
+            style = RepzTextFieldStyle.Filled,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun RepzFilledTextFieldLightPreview() {
+    RepzTheme(darkTheme = false) { RepzFilledTextFieldShowcase() }
+}
+
+@Preview
+@Composable
+private fun RepzFilledTextFieldDarkPreview() {
+    RepzTheme(darkTheme = true) { RepzFilledTextFieldShowcase() }
+}
