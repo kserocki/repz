@@ -85,13 +85,13 @@
 
     <string name="discard_dialog_title">Discard workout?</string>
     <plurals name="discard_dialog_body">
-        <item quantity="one">%1$s has %2$d logged set. Discarding removes them from this device. This can\'t be undone.</item>
-        <item quantity="other">%1$s has %2$d logged sets. Discarding removes them from this device. This can\'t be undone.</item>
+        <item quantity="one">%1$s has %2$d logged set. Discarding removes them from this device. This can't be undone.</item>
+        <item quantity="other">%1$s has %2$d logged sets. Discarding removes them from this device. This can't be undone.</item>
     </plurals>
     <string name="discard_dialog_confirm">Discard</string>
     <string name="discard_dialog_cancel">Keep training</string>
 
-    <string name="finish_failed">Couldn\'t finish the workout. Try again.</string>
+    <string name="finish_failed">Couldn't finish the workout. Try again.</string>
 
     <string name="picker_title">Add exercise</string>
     <string name="keypad_context">%1$s · Set %2$s</string>
