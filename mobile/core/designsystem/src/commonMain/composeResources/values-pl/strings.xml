@@ -5,4 +5,6 @@
     <string name="designsystem_hide_password">Ukryj hasło</string>
     <string name="designsystem_logo_description">Repz</string>
     <string name="designsystem_loading">Wczytywanie</string>
+    <string name="designsystem_close_menu">Zamknij menu</string>
+    <string name="designsystem_remove_item">Usuń %1$s</string>
 </resources>

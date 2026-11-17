@@ -20,6 +20,7 @@ object RepzDurations {
     val celebrationMax: Duration = 1500.milliseconds
     val shimmer: Duration = 1200.milliseconds
     val reducedMotionFade: Duration = 150.milliseconds
+    val skeletonDelay: Duration = 150.milliseconds
 }
 
 /** MOTION.md §2's easing curves. */

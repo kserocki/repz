@@ -12,9 +12,11 @@ private fun RepzBannerShowcase() {
     val titleOnly = "You need a connection to create an account"
     val withBodyTitle = "You're offline"
     val withBody = "Logging in needs a connection. Once you're in, Repz works offline."
+    val neutralStrip = "Offline — everything still works. We'll sync later."
     Column(verticalArrangement = Arrangement.spacedBy(RepzSpacing.md)) {
         RepzBanner(icon = RepzIcon.CloudOff, title = titleOnly)
         RepzBanner(icon = RepzIcon.CloudOff, title = withBodyTitle, body = withBody)
+        RepzBanner(icon = RepzIcon.CloudOff, title = neutralStrip, style = RepzBannerStyle.Neutral)
     }
 }
 

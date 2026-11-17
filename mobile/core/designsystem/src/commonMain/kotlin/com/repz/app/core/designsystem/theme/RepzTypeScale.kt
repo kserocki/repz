@@ -148,7 +148,13 @@ internal object RepzTypeScale {
 
     val numeric: List<RepzTypeSpec> = listOf(numericHero, numericLarge, numericMedium, numericSmall)
 
-    val all: List<RepzTypeSpec> = baselineAndEmphasized + numeric
+    // U1 (2026-11-06, orchestrator): RepzHeroStartButton's label, Archivo 22/28 wght 750 wdth 105 —
+    // the one place outside the numeric styles that the brand display face is used directly.
+    val heroLabel = archivoStyle(weight = 750, sizeSp = 22f, lineHeightSp = 28f, trackingSp = 0f, width = 105f)
+
+    val extra: List<RepzTypeSpec> = listOf(heroLabel)
+
+    val all: List<RepzTypeSpec> = baselineAndEmphasized + numeric + extra
 
     val distinctFontSpecs: List<RepzFontSpec> = all.map { it.font }.distinct()
 }
@@ -204,9 +210,10 @@ internal fun repzMaterialTypography(families: RepzFontFamilies): Typography {
     )
 }
 
-/** Builds the 4 numeric styles (DESIGN_SYSTEM §4) from [families]. Numbers are a display-category
- * use of Archivo (DESIGN_SYSTEM §4 intro), so every numeric style resolves against the M3 default
- * `displayLarge` base; the default trims it carries are identical across every M3 style. */
+/** Builds [RepzTypography] (the 4 numeric styles plus [RepzTypeScale.heroLabel], DESIGN_SYSTEM
+ * §4/§9 U1) from [families]. Numbers and the hero label are both a display-category use of Archivo
+ * (DESIGN_SYSTEM §4 intro), so every style here resolves against the M3 default `displayLarge`
+ * base; the default trims it carries are identical across every M3 style. */
 internal fun repzNumericTypography(families: RepzFontFamilies): RepzTypography {
     val base = Typography().displayLarge
     return RepzTypography(
@@ -214,5 +221,6 @@ internal fun repzNumericTypography(families: RepzFontFamilies): RepzTypography {
         numericLarge = RepzTypeScale.numericLarge.resolve(base, families),
         numericMedium = RepzTypeScale.numericMedium.resolve(base, families),
         numericSmall = RepzTypeScale.numericSmall.resolve(base, families),
+        heroLabel = RepzTypeScale.heroLabel.resolve(base, families),
     )
 }

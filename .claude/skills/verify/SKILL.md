@@ -13,6 +13,8 @@ This also covers failures: if a gate fails for a reason you don't understand, or
 
 ## 1. Run what is affected
 
+**While working:** run only the narrow tasks for the modules you touched (`:<module>:allTests`, `ktlintCheck`, `detekt`, `:konsist-tests:test`). The full `./gradlew check build` (5–25 min) runs **once per round**, by one agent, after all packages are done, and again only in the round expected to be approved.
+
 **Mobile** (from `mobile/`):
 ```bash
 ./gradlew check      # ktlint, Detekt + Compose rules, Konsist architecture tests, Android lint, unit tests

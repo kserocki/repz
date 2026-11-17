@@ -40,3 +40,13 @@ Sources, in this order: `docs/DESIGN_SYSTEM.md` (committed truth) → `design/bo
 - [ ] no hard-coded strings; plurals/placeholders used; PL strings don't truncate (buttons wrap; headlines may compress to wdth 88)
 - [ ] 200 % font scale doesn't break the layout
 - [ ] reduced motion path works
+
+## Known Compose pitfalls (found in REP-22/34/35 reviews)
+- **Focus:** `onFocusChanged` fires once on first layout with `isFocused = false`. End editing only after the field was focused and then lost focus. Clear focus and hide the keyboard (`focusManager.clearFocus()`, `keyboardController?.hide()`) before minimize, finish or opening another sheet. On iOS an open keyboard pushes the whole screen up.
+- **Overlays:** a full-screen tap-to-dismiss layer swallows every tap behind it. For a non-modal sheet, detect outside taps without consuming them, and consume blank taps inside the sheet itself.
+- **Stale closures:** a handler remembered once captures old values. Read changing inputs through `rememberUpdatedState`, and keep one state object identity instead of recreating it under a new `remember` key.
+- **Saved state:** anything that must survive rotation or process death uses `rememberSaveable` (with a `Saver` for custom types). A plain `remember` resets.
+- **Sizing:** `Modifier.heightIn(min)` on a `Box` doesn't reach its children; use `propagateMinConstraints = true` or `matchParentSize()`. Segmented controls share one height via `Row(Modifier.height(IntrinsicSize.Min))` + `fillMaxHeight()`; two stacked rows next to a tall item each need `weight(1f)`. Pill radii come from the measured height, not the minimum.
+- **Text:** `TextAutoSize` shrinks only on overflow and can't prevent a mid-word break; numbers use `maxLines = 1` + auto-size with a floor, and a font-scale cap where the design allows. Use a short-label fallback for long words.
+- **Lists:** key every item (`key(id)`), bring the edited row into view accounting for overlays (e.g. a keypad sheet), and use one scroll mechanism at a time.
+- **Thresholds:** state whether a breakpoint refers to the window (`LocalWindowInfo`) or the component's own width, and let related components (header + rows) take the decision from one place.
