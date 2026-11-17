@@ -16,8 +16,7 @@ import org.jetbrains.compose.resources.stringResource
 
 /**
  * Maps the live workout's header fields onto [RepzLiveWorkoutHeader] (DESIGN_SYSTEM §9, board
- * 09/14): the overflow menu is just "Discard workout" for now. TODO(REP-22): swap it for the
- * Filled-emphasis destructive confirm once [LiveWorkoutDiscardDialog]'s dialog supports it.
+ * 09/14): the overflow menu is just "Discard workout" for now.
  */
 @Composable
 internal fun LiveWorkoutHeaderSection(

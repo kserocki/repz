@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import com.repz.app.core.designsystem.component.RepzAlertDialog
+import com.repz.app.core.designsystem.component.RepzDialogConfirmEmphasis
+import com.repz.app.core.designsystem.component.RepzIcon
 import com.repz.app.feature.workout.impl.generated.resources.Res
 import com.repz.app.feature.workout.impl.generated.resources.discard_dialog_body
 import com.repz.app.feature.workout.impl.generated.resources.discard_dialog_cancel
@@ -15,9 +17,8 @@ import org.jetbrains.compose.resources.stringResource
 /**
  * The destructive discard confirm (board 06): shown only once the workout has at least one
  * completed set (0 completed sets discards silently, per
- * [LiveWorkoutLifecycleHandler.onDiscardClicked]). TODO(REP-22): swap [RepzAlertDialog]'s
- * `isConfirmDestructive` for the Filled-emphasis destructive confirm component once it lands;
- * this is the closest thing on this branch.
+ * [LiveWorkoutLifecycleHandler.onDiscardClicked]). A centred [RepzIcon.DeleteForever] and a
+ * Filled-emphasis destructive confirm button, per board 06.
  */
 @Composable
 internal fun LiveWorkoutDiscardDialog(
@@ -38,7 +39,9 @@ internal fun LiveWorkoutDiscardDialog(
         onConfirm = onConfirm,
         dismissText = stringResource(Res.string.discard_dialog_cancel),
         onDismissRequest = onDismiss,
+        icon = RepzIcon.DeleteForever,
         isConfirmDestructive = true,
+        confirmEmphasis = RepzDialogConfirmEmphasis.Filled,
         confirmButtonModifier = Modifier.testTag("discard_confirm"),
         dismissButtonModifier = Modifier.testTag("discard_cancel"),
     )
