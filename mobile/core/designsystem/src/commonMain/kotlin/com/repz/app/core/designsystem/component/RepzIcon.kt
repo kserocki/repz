@@ -13,6 +13,7 @@ import com.repz.app.core.designsystem.generated.resources.symbol_backspace
 import com.repz.app.core.designsystem.generated.resources.symbol_check
 import com.repz.app.core.designsystem.generated.resources.symbol_close
 import com.repz.app.core.designsystem.generated.resources.symbol_cloud_off
+import com.repz.app.core.designsystem.generated.resources.symbol_delete_forever
 import com.repz.app.core.designsystem.generated.resources.symbol_error
 import com.repz.app.core.designsystem.generated.resources.symbol_fitness_center
 import com.repz.app.core.designsystem.generated.resources.symbol_history
@@ -32,7 +33,8 @@ import org.jetbrains.compose.resources.painterResource
  * separately and the remaining icon set arrives later. [FitnessCenter] and [Trophy] double as
  * Welcome's backdrop placeholder icons until its live illustrations ship. New entries land after
  * [Logout] (DESIGN_SYSTEM §8) so later feature work can append without reordering. [History],
- * [Backspace], [KeyboardHide], [ArrowForward] and [Tune] are `NumberKeypadSheet`'s icon set. */
+ * [Backspace], [KeyboardHide], [ArrowForward] and [Tune] are `NumberKeypadSheet`'s icon set.
+ * [DeleteForever] is the discard-workout dialog's centred icon (board 06). */
 enum class RepzIcon {
     ArrowBack,
     Visibility,
@@ -53,6 +55,7 @@ enum class RepzIcon {
     KeyboardHide,
     ArrowForward,
     Tune,
+    DeleteForever,
 }
 
 /** One Material Symbols Rounded icon at its intrinsic 24 dp size unless [modifier] overrides it
@@ -95,4 +98,5 @@ private val RepzIcon.drawableResource: DrawableResource
             RepzIcon.KeyboardHide -> Res.drawable.symbol_keyboard_hide
             RepzIcon.ArrowForward -> Res.drawable.symbol_arrow_forward
             RepzIcon.Tune -> Res.drawable.symbol_tune
+            RepzIcon.DeleteForever -> Res.drawable.symbol_delete_forever
         }
