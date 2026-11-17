@@ -1,23 +1,21 @@
 package com.repz.app.feature.workout.impl.presentation.live
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.style.TextAlign
 import com.repz.app.core.designsystem.component.RepzButton
 import com.repz.app.core.designsystem.component.RepzButtonSize
 import com.repz.app.core.designsystem.component.RepzButtonStyle
+import com.repz.app.core.designsystem.component.RepzEmptyState
 import com.repz.app.core.designsystem.theme.RepzSpacing
 import com.repz.app.core.domain.model.SetType
 import com.repz.app.core.domain.model.UnitSystem
@@ -96,29 +94,19 @@ private fun LiveWorkoutEmptyState(
     onAddExercisesClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier.padding(RepzSpacing.xl),
-        verticalArrangement = Arrangement.spacedBy(RepzSpacing.md, Alignment.CenterVertically),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(
-            text = stringResource(Res.string.live_empty_title),
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.Center,
-        )
-        Text(
-            text = stringResource(Res.string.live_empty_body),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
-        RepzButton(
-            text = stringResource(Res.string.live_empty_add_exercises),
-            onClick = onAddExercisesClick,
-            modifier = Modifier.testTag("live_empty_add_exercises"),
-            style = RepzButtonStyle.Filled,
-            size = RepzButtonSize.Medium,
-        )
+    Box(modifier = modifier.padding(RepzSpacing.xl), contentAlignment = Alignment.Center) {
+        RepzEmptyState(
+            title = stringResource(Res.string.live_empty_title),
+            body = stringResource(Res.string.live_empty_body),
+            illustration = null,
+        ) {
+            RepzButton(
+                text = stringResource(Res.string.live_empty_add_exercises),
+                onClick = onAddExercisesClick,
+                modifier = Modifier.testTag("live_empty_add_exercises"),
+                style = RepzButtonStyle.Filled,
+                size = RepzButtonSize.Medium,
+            )
+        }
     }
 }

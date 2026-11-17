@@ -25,8 +25,9 @@ private val EmptyStateBackdropSize = 150.dp
 
 /**
  * The centred empty-state pattern (DESIGN_SYSTEM §9, boards 11/12): [illustration] centred on a
- * `cookie4Sided`/`surfaceContainerHigh` backdrop, then [title]/[body] (U6d:
- * `headlineSmallEmphasized`/`bodyLarge`, both centred and wrapping) and a caller-built [actions] slot
+ * `cookie4Sided`/`surfaceContainerHigh` backdrop (omitted entirely when [illustration] is `null`,
+ * board 09's empty workout), then [title]/[body] (`headlineSmallEmphasized`/`bodyLarge`, both
+ * centred and wrapping) and a caller-built [actions] slot
  * (e.g. a single `RepzHeroStartButton` or `RepzButton`). Only the centred layout ships here; board
  * 06's horizontal card variant waits for a screen that needs it.
  *
@@ -37,7 +38,7 @@ private val EmptyStateBackdropSize = 150.dp
 fun RepzEmptyState(
     title: String,
     body: String,
-    illustration: @Composable () -> Unit,
+    illustration: (@Composable () -> Unit)?,
     modifier: Modifier = Modifier,
     actions: @Composable ColumnScope.() -> Unit = {},
 ) {
@@ -46,15 +47,17 @@ fun RepzEmptyState(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(RepzSpacing.md),
     ) {
-        Box(
-            modifier =
-                Modifier
-                    .size(EmptyStateBackdropSize)
-                    .clip(RepzShapes.cookie4Sided.toShape())
-                    .background(MaterialTheme.colorScheme.surfaceContainerHigh),
-            contentAlignment = Alignment.Center,
-        ) {
-            illustration()
+        if (illustration != null) {
+            Box(
+                modifier =
+                    Modifier
+                        .size(EmptyStateBackdropSize)
+                        .clip(RepzShapes.cookie4Sided.toShape())
+                        .background(MaterialTheme.colorScheme.surfaceContainerHigh),
+                contentAlignment = Alignment.Center,
+            ) {
+                illustration()
+            }
         }
         Text(
             text = title,
