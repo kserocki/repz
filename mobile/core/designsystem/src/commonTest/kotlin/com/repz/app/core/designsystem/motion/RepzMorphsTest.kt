@@ -30,7 +30,8 @@ class RepzMorphsTest {
 
     @Test
     fun given_fabRadiusAndSize_whenBuildingRoundedSquareToCookie4Sided_thenItBuildsAndStaysInsideTheUnitSquare() {
-        val morph = RepzMorphs.roundedSquareToCookie4Sided(cornerRadius = 16.dp, size = 56.dp)
+        // T1: the FAB's rest shape is a 20 dp corner radius on its 64 dp square.
+        val morph = RepzMorphs.roundedSquareToCookie4Sided(cornerRadius = 20.dp, size = 64.dp)
 
         assertHasCubicsAtBothEnds(morph)
         assertBoundsInsideUnitSquare(morph, progress = 0f)

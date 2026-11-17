@@ -4,12 +4,14 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,6 +29,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
 import com.repz.app.core.designsystem.generated.resources.Res
 import com.repz.app.core.designsystem.generated.resources.designsystem_hide_password
 import com.repz.app.core.designsystem.generated.resources.designsystem_show_password
@@ -43,7 +46,8 @@ import org.jetbrains.compose.resources.stringResource
  * [isError] draws the error outline and M3's own generic `error(...)` TalkBack semantics; the error
  * *message* is a separate concern, deliberately not this field's `supportingText` or any other
  * parameter here: render a [RepzFieldError] below it instead (see its doc for why). [onFocusLoss]
- * fires only after the field has gained focus at least once.
+ * fires only after the field has gained focus at least once. [style] is
+ * [RepzTextFieldStyle.Outlined] unless the caller asks for the board 04 §21 filled box.
  */
 @Composable
 fun RepzTextField(
@@ -57,6 +61,7 @@ fun RepzTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     onFocusLoss: (() -> Unit)? = null,
+    style: RepzTextFieldStyle = RepzTextFieldStyle.Outlined,
 ) {
     RepzBaseTextField(
         value = value,
@@ -71,6 +76,7 @@ fun RepzTextField(
         onFocusLoss = onFocusLoss,
         visualTransformation = VisualTransformation.None,
         trailingIcon = null,
+        style = style,
     )
 }
 
@@ -89,6 +95,7 @@ fun RepzPasswordField(
     keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     onFocusLoss: (() -> Unit)? = null,
+    style: RepzTextFieldStyle = RepzTextFieldStyle.Outlined,
 ) {
     RepzBaseTextField(
         value = value,
@@ -112,6 +119,7 @@ fun RepzPasswordField(
                 RepzIcon(icon = icon, contentDescription = description)
             }
         },
+        style = style,
     )
 }
 
@@ -127,32 +135,56 @@ private fun RepzBaseTextField(
     keyboardActions: KeyboardActions,
     onFocusLoss: (() -> Unit)?,
     visualTransformation: VisualTransformation,
+    style: RepzTextFieldStyle,
     modifier: Modifier = Modifier,
     trailingIcon: (@Composable () -> Unit)?,
 ) {
     var wasFocused by remember { mutableStateOf(false) }
+    val focusModifier =
+        modifier.onFocusChanged { focusState ->
+            if (!focusState.isFocused && wasFocused) {
+                onFocusLoss?.invoke()
+            }
+            wasFocused = focusState.isFocused
+        }
 
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier =
-            modifier.onFocusChanged { focusState ->
-                if (!focusState.isFocused && wasFocused) {
-                    onFocusLoss?.invoke()
-                }
-                wasFocused = focusState.isFocused
-            },
-        enabled = enabled,
-        label = { Text(label) },
-        supportingText = supportingText?.let { { Text(it) } },
-        isError = isError,
-        visualTransformation = visualTransformation,
-        keyboardOptions = keyboardOptions,
-        keyboardActions = keyboardActions,
-        trailingIcon = trailingIcon,
-        singleLine = true,
-        shape = MaterialTheme.shapes.small,
-    )
+    when (style) {
+        RepzTextFieldStyle.Outlined -> {
+            OutlinedTextField(
+                value = value,
+                onValueChange = onValueChange,
+                modifier = focusModifier,
+                enabled = enabled,
+                label = { Text(label) },
+                supportingText = supportingText?.let { { Text(it) } },
+                isError = isError,
+                visualTransformation = visualTransformation,
+                keyboardOptions = keyboardOptions,
+                keyboardActions = keyboardActions,
+                trailingIcon = trailingIcon,
+                singleLine = true,
+                shape = MaterialTheme.shapes.small,
+            )
+        }
+
+        RepzTextFieldStyle.Filled -> {
+            TextField(
+                value = value,
+                onValueChange = onValueChange,
+                modifier = focusModifier,
+                enabled = enabled,
+                label = { Text(label) },
+                supportingText = supportingText?.let { { Text(it) } },
+                isError = isError,
+                visualTransformation = visualTransformation,
+                keyboardOptions = keyboardOptions,
+                keyboardActions = keyboardActions,
+                trailingIcon = trailingIcon,
+                singleLine = true,
+                shape = MaterialTheme.shapes.small.copy(bottomStart = CornerSize(0.dp), bottomEnd = CornerSize(0.dp)),
+            )
+        }
+    }
 }
 
 /**

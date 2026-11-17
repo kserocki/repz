@@ -6,15 +6,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.repz.app.core.designsystem.generated.resources.Res
+import com.repz.app.core.designsystem.generated.resources.symbol_add
 import com.repz.app.core.designsystem.generated.resources.symbol_arrow_back
 import com.repz.app.core.designsystem.generated.resources.symbol_arrow_forward
 import com.repz.app.core.designsystem.generated.resources.symbol_backspace
+import com.repz.app.core.designsystem.generated.resources.symbol_check
+import com.repz.app.core.designsystem.generated.resources.symbol_close
 import com.repz.app.core.designsystem.generated.resources.symbol_cloud_off
 import com.repz.app.core.designsystem.generated.resources.symbol_error
 import com.repz.app.core.designsystem.generated.resources.symbol_fitness_center
 import com.repz.app.core.designsystem.generated.resources.symbol_history
+import com.repz.app.core.designsystem.generated.resources.symbol_keyboard_arrow_down
 import com.repz.app.core.designsystem.generated.resources.symbol_keyboard_hide
+import com.repz.app.core.designsystem.generated.resources.symbol_list_alt
 import com.repz.app.core.designsystem.generated.resources.symbol_logout
+import com.repz.app.core.designsystem.generated.resources.symbol_play_arrow_filled
 import com.repz.app.core.designsystem.generated.resources.symbol_trophy
 import com.repz.app.core.designsystem.generated.resources.symbol_tune
 import com.repz.app.core.designsystem.generated.resources.symbol_visibility
@@ -24,9 +30,9 @@ import org.jetbrains.compose.resources.painterResource
 
 /** The auth subset of Material Symbols Rounded (DESIGN_SYSTEM §8); the 4 nav-bar icons ship
  * separately and the remaining icon set arrives later. [FitnessCenter] and [Trophy] double as
- * Welcome's backdrop placeholder icons until its live illustrations ship. [History], [Backspace],
- * [KeyboardHide], [ArrowForward] and [Tune] are `NumberKeypadSheet`'s icon set; [History] reuses
- * the drawable the nav bar's History tab already ships instead of a duplicate. */
+ * Welcome's backdrop placeholder icons until its live illustrations ship. New entries land after
+ * [Logout] (DESIGN_SYSTEM §8) so later feature work can append without reordering. [History],
+ * [Backspace], [KeyboardHide], [ArrowForward] and [Tune] are `NumberKeypadSheet`'s icon set. */
 enum class RepzIcon {
     ArrowBack,
     Visibility,
@@ -36,6 +42,12 @@ enum class RepzIcon {
     FitnessCenter,
     Trophy,
     Logout,
+    Add,
+    Close,
+    Check,
+    PlayArrowFilled,
+    ListAlt,
+    KeyboardArrowDown,
     History,
     Backspace,
     KeyboardHide,
@@ -72,6 +84,12 @@ private val RepzIcon.drawableResource: DrawableResource
             RepzIcon.FitnessCenter -> Res.drawable.symbol_fitness_center
             RepzIcon.Trophy -> Res.drawable.symbol_trophy
             RepzIcon.Logout -> Res.drawable.symbol_logout
+            RepzIcon.Add -> Res.drawable.symbol_add
+            RepzIcon.Close -> Res.drawable.symbol_close
+            RepzIcon.Check -> Res.drawable.symbol_check
+            RepzIcon.PlayArrowFilled -> Res.drawable.symbol_play_arrow_filled
+            RepzIcon.ListAlt -> Res.drawable.symbol_list_alt
+            RepzIcon.KeyboardArrowDown -> Res.drawable.symbol_keyboard_arrow_down
             RepzIcon.History -> Res.drawable.symbol_history
             RepzIcon.Backspace -> Res.drawable.symbol_backspace
             RepzIcon.KeyboardHide -> Res.drawable.symbol_keyboard_hide
