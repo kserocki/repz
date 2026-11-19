@@ -42,3 +42,30 @@ private fun RepzEmptyStateLightPreview() {
 private fun RepzEmptyStateDarkPreview() {
     RepzTheme(darkTheme = true) { RepzEmptyStateSample() }
 }
+
+@Composable
+private fun RepzEmptyStateWithoutIllustrationSample() {
+    val emptyStateTitle = "Add your first exercise"
+    val emptyStateBody = "The timer is already running. Pick exercises and your last numbers fill in automatically."
+    RepzEmptyState(
+        title = emptyStateTitle,
+        body = emptyStateBody,
+        illustration = null,
+        modifier = Modifier.fillMaxWidth(),
+        actions = {
+            RepzButton("Add exercises", onClick = {}, style = RepzButtonStyle.Filled, size = RepzButtonSize.Medium)
+        },
+    )
+}
+
+@Preview
+@Composable
+private fun RepzEmptyStateWithoutIllustrationLightPreview() {
+    RepzTheme(darkTheme = false) { RepzEmptyStateWithoutIllustrationSample() }
+}
+
+@Preview
+@Composable
+private fun RepzEmptyStateWithoutIllustrationDarkPreview() {
+    RepzTheme(darkTheme = true) { RepzEmptyStateWithoutIllustrationSample() }
+}

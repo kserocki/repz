@@ -9,7 +9,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -20,7 +19,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.repz.app.core.designsystem.format.FixedDecimal.Companion.HUNDREDTHS_PER_UNIT
@@ -39,6 +37,7 @@ import com.repz.app.core.designsystem.generated.resources.keypad_value_descripti
 import com.repz.app.core.designsystem.generated.resources.keypad_weight_limit
 import com.repz.app.core.designsystem.theme.RepzSpacing
 import com.repz.app.core.designsystem.theme.RepzTheme
+import com.repz.app.core.designsystem.theme.rememberCappedFontScaleDensity
 import org.jetbrains.compose.resources.stringResource
 
 // The hero stays on one line from "" to "2204.62", at up to 200% font, on a 360 dp-wide screen, so
@@ -160,15 +159,6 @@ private fun rememberKeypadDisplayStrings(
     )
 }
 
-/** Caps the hero's own font scale at [HERO_MAX_FONT_SCALE] without affecting any other text. */
-@Composable
-private fun rememberHeroDensity(): Density {
-    val ambientDensity = LocalDensity.current
-    return remember(ambientDensity) {
-        Density(density = ambientDensity.density, fontScale = ambientDensity.fontScale.coerceAtMost(HERO_MAX_FONT_SCALE))
-    }
-}
-
 /** ± (60 dp) either side of the numeric display (`numericHero` 52 sp); the display never animates
  * (MOTION.md §1). The context line swaps to the limit message in `error` after a refusal. */
 @Composable
@@ -202,7 +192,7 @@ internal fun KeypadDisplayRow(
                     letterSpacing = HeroLetterSpacing,
                     lineHeightStyle = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.None),
                 )
-            CompositionLocalProvider(LocalDensity provides rememberHeroDensity()) {
+            CompositionLocalProvider(LocalDensity provides rememberCappedFontScaleDensity(HERO_MAX_FONT_SCALE)) {
                 Text(
                     text = strings.displayText,
                     style = heroStyle,
