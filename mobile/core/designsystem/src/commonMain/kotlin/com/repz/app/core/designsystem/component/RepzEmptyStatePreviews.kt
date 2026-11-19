@@ -45,9 +45,11 @@ private fun RepzEmptyStateDarkPreview() {
 
 @Composable
 private fun RepzEmptyStateWithoutIllustrationSample() {
+    val emptyStateTitle = "Add your first exercise"
+    val emptyStateBody = "The timer is already running. Pick exercises and your last numbers fill in automatically."
     RepzEmptyState(
-        title = "Add your first exercise",
-        body = "The timer is already running. Pick exercises and your last numbers fill in automatically.",
+        title = emptyStateTitle,
+        body = emptyStateBody,
         illustration = null,
         modifier = Modifier.fillMaxWidth(),
         actions = {
