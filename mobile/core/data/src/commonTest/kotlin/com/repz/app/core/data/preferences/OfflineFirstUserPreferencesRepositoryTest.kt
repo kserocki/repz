@@ -9,6 +9,7 @@ import com.repz.app.core.database.buildRepzDatabase
 import com.repz.app.core.domain.model.UnitSystem
 import com.repz.app.core.domain.preferences.ThemeMode
 import com.repz.app.core.domain.preferences.UserPreferences
+import com.repz.app.core.domain.preferences.WeightStep
 import com.repz.app.core.domain.result.DomainResult
 import com.repz.app.core.domain.result.ValidationError
 import kotlinx.coroutines.Dispatchers
@@ -68,6 +69,8 @@ class OfflineFirstUserPreferencesRepositoryTest {
             val restResult = repository.setDefaultRest(90.seconds)
             repository.setHapticsEnabled(false)
             val goalResult = repository.setWeeklyWorkoutGoal(5)
+            repository.setWeightStep(WeightStep.KG_1_25)
+            repository.setWeightStep(WeightStep.LB_2_5)
 
             assertEquals(DomainResult.Success(Unit), restResult)
             assertEquals(DomainResult.Success(Unit), goalResult)
@@ -77,6 +80,8 @@ class OfflineFirstUserPreferencesRepositoryTest {
             assertEquals(90.seconds, preferences.defaultRest)
             assertEquals(false, preferences.hapticsEnabled)
             assertEquals(5, preferences.weeklyWorkoutGoal)
+            assertEquals(WeightStep.KG_1_25, preferences.weightStepKg)
+            assertEquals(WeightStep.LB_2_5, preferences.weightStepLb)
         }
 
     @Test
@@ -113,6 +118,37 @@ class OfflineFirstUserPreferencesRepositoryTest {
             dataSource.setUnitSystem("stone")
 
             assertEquals(UnitSystem.KG, repository.observePreferences().first().unitSystem)
+        }
+
+    @Test
+    fun givenTheKgWeightStepIsSet_whenPreferencesRead_thenTheLbStepStaysAtItsDefault() =
+        runTest {
+            repository.setWeightStep(WeightStep.KG_5)
+
+            val preferences = repository.observePreferences().first()
+            assertEquals(WeightStep.KG_5, preferences.weightStepKg)
+            assertEquals(UserPreferences.DEFAULT.weightStepLb, preferences.weightStepLb)
+        }
+
+    @Test
+    fun givenAnUnknownStoredWeightStepText_whenPreferencesRead_thenFallsBackToTheDefault() =
+        runTest {
+            dataSource.setWeightStepKg("KG_100")
+            dataSource.setWeightStepLb("KG_2_5")
+
+            val preferences = repository.observePreferences().first()
+            assertEquals(UserPreferences.DEFAULT.weightStepKg, preferences.weightStepKg)
+            assertEquals(UserPreferences.DEFAULT.weightStepLb, preferences.weightStepLb)
+        }
+
+    @Test
+    fun givenAWeightStepSet_whenLoggingOutClearsTheUnit_thenTheWeightStepSurvives() =
+        runTest {
+            repository.setWeightStep(WeightStep.KG_1_25)
+
+            dataSource.setUnitSystem(null)
+
+            assertEquals(WeightStep.KG_1_25, repository.observePreferences().first().weightStepKg)
         }
 
     private fun userEntity(unitSystem: String) =

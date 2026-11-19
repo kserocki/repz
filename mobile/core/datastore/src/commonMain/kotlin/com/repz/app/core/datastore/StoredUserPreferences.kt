@@ -11,4 +11,6 @@ data class StoredUserPreferences(
     val defaultRestSeconds: Int?,
     val hapticsEnabled: Boolean?,
     val weeklyWorkoutGoal: Int?,
+    val weightStepKg: String?,
+    val weightStepLb: String?,
 )

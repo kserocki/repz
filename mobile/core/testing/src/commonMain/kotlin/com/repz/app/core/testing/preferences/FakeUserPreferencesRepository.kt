@@ -4,6 +4,7 @@ import com.repz.app.core.domain.model.UnitSystem
 import com.repz.app.core.domain.preferences.ThemeMode
 import com.repz.app.core.domain.preferences.UserPreferences
 import com.repz.app.core.domain.preferences.UserPreferencesRepository
+import com.repz.app.core.domain.preferences.WeightStep
 import com.repz.app.core.domain.result.DomainResult
 import com.repz.app.core.domain.result.ValidationError
 import kotlinx.coroutines.flow.Flow
@@ -51,5 +52,14 @@ class FakeUserPreferencesRepository(
         setWeeklyWorkoutGoalResult?.let { return it }
         preferences.update { it.copy(weeklyWorkoutGoal = goal) }
         return DomainResult.Success(Unit)
+    }
+
+    override suspend fun setWeightStep(step: WeightStep) {
+        preferences.update {
+            when (step.unitSystem) {
+                UnitSystem.KG -> it.copy(weightStepKg = step)
+                UnitSystem.LB -> it.copy(weightStepLb = step)
+            }
+        }
     }
 }

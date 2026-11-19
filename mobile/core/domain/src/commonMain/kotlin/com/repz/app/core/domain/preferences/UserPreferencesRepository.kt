@@ -25,4 +25,7 @@ interface UserPreferencesRepository {
     suspend fun setHapticsEnabled(enabled: Boolean)
 
     suspend fun setWeeklyWorkoutGoal(goal: Int): DomainResult<Unit, ValidationError.WeeklyWorkoutGoalOutOfRange>
+
+    /** Writes the step for `step.unitSystem` only; the other unit's step is untouched. */
+    suspend fun setWeightStep(step: WeightStep)
 }

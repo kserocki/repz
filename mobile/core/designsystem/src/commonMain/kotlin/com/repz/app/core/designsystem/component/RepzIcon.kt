@@ -8,6 +8,8 @@ import androidx.compose.ui.graphics.Color
 import com.repz.app.core.designsystem.generated.resources.Res
 import com.repz.app.core.designsystem.generated.resources.symbol_add
 import com.repz.app.core.designsystem.generated.resources.symbol_arrow_back
+import com.repz.app.core.designsystem.generated.resources.symbol_arrow_forward
+import com.repz.app.core.designsystem.generated.resources.symbol_backspace
 import com.repz.app.core.designsystem.generated.resources.symbol_check
 import com.repz.app.core.designsystem.generated.resources.symbol_close
 import com.repz.app.core.designsystem.generated.resources.symbol_cloud_off
@@ -15,10 +17,12 @@ import com.repz.app.core.designsystem.generated.resources.symbol_error
 import com.repz.app.core.designsystem.generated.resources.symbol_fitness_center
 import com.repz.app.core.designsystem.generated.resources.symbol_history
 import com.repz.app.core.designsystem.generated.resources.symbol_keyboard_arrow_down
+import com.repz.app.core.designsystem.generated.resources.symbol_keyboard_hide
 import com.repz.app.core.designsystem.generated.resources.symbol_list_alt
 import com.repz.app.core.designsystem.generated.resources.symbol_logout
 import com.repz.app.core.designsystem.generated.resources.symbol_play_arrow_filled
 import com.repz.app.core.designsystem.generated.resources.symbol_trophy
+import com.repz.app.core.designsystem.generated.resources.symbol_tune
 import com.repz.app.core.designsystem.generated.resources.symbol_visibility
 import com.repz.app.core.designsystem.generated.resources.symbol_visibility_off
 import org.jetbrains.compose.resources.DrawableResource
@@ -27,7 +31,8 @@ import org.jetbrains.compose.resources.painterResource
 /** The auth subset of Material Symbols Rounded (DESIGN_SYSTEM §8); the 4 nav-bar icons ship
  * separately and the remaining icon set arrives later. [FitnessCenter] and [Trophy] double as
  * Welcome's backdrop placeholder icons until its live illustrations ship. New entries land after
- * [Logout] (DESIGN_SYSTEM §8) so later feature work can append without reordering. */
+ * [Logout] (DESIGN_SYSTEM §8) so later feature work can append without reordering. [History],
+ * [Backspace], [KeyboardHide], [ArrowForward] and [Tune] are `NumberKeypadSheet`'s icon set. */
 enum class RepzIcon {
     ArrowBack,
     Visibility,
@@ -44,6 +49,10 @@ enum class RepzIcon {
     ListAlt,
     KeyboardArrowDown,
     History,
+    Backspace,
+    KeyboardHide,
+    ArrowForward,
+    Tune,
 }
 
 /** One Material Symbols Rounded icon at its intrinsic 24 dp size unless [modifier] overrides it
@@ -82,4 +91,8 @@ private val RepzIcon.drawableResource: DrawableResource
             RepzIcon.ListAlt -> Res.drawable.symbol_list_alt
             RepzIcon.KeyboardArrowDown -> Res.drawable.symbol_keyboard_arrow_down
             RepzIcon.History -> Res.drawable.symbol_history
+            RepzIcon.Backspace -> Res.drawable.symbol_backspace
+            RepzIcon.KeyboardHide -> Res.drawable.symbol_keyboard_hide
+            RepzIcon.ArrowForward -> Res.drawable.symbol_arrow_forward
+            RepzIcon.Tune -> Res.drawable.symbol_tune
         }

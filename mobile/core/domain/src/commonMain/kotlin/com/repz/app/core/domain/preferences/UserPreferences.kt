@@ -18,7 +18,16 @@ data class UserPreferences(
     val defaultRest: Duration,
     val hapticsEnabled: Boolean,
     val weeklyWorkoutGoal: Int,
+    val weightStepKg: WeightStep,
+    val weightStepLb: WeightStep,
 ) {
+    /** The keypad's +/- step for [unitSystem], device-wide and surviving logout. */
+    fun weightStepFor(unitSystem: UnitSystem): WeightStep =
+        when (unitSystem) {
+            UnitSystem.KG -> weightStepKg
+            UnitSystem.LB -> weightStepLb
+        }
+
     companion object {
         val DEFAULT =
             UserPreferences(
@@ -28,6 +37,8 @@ data class UserPreferences(
                 defaultRest = 150.seconds,
                 hapticsEnabled = true,
                 weeklyWorkoutGoal = 4,
+                weightStepKg = WeightStep.defaultFor(UnitSystem.KG),
+                weightStepLb = WeightStep.defaultFor(UnitSystem.LB),
             )
     }
 }

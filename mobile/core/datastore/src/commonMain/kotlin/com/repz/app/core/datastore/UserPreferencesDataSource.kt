@@ -19,6 +19,8 @@ private val DYNAMIC_COLOR_ENABLED_KEY = booleanPreferencesKey("dynamic_color_ena
 private val DEFAULT_REST_SECONDS_KEY = intPreferencesKey("default_rest_seconds")
 private val HAPTICS_ENABLED_KEY = booleanPreferencesKey("haptics_enabled")
 private val WEEKLY_WORKOUT_GOAL_KEY = intPreferencesKey("weekly_workout_goal")
+private val WEIGHT_STEP_KG_KEY = stringPreferencesKey("weight_step_kg")
+private val WEIGHT_STEP_LB_KEY = stringPreferencesKey("weight_step_lb")
 
 private const val LOG_TAG = "UserPreferencesDataSource"
 
@@ -78,6 +80,14 @@ class UserPreferencesDataSource(
     suspend fun setWeeklyWorkoutGoal(goal: Int) {
         dataStore.edit { preferences -> preferences[WEEKLY_WORKOUT_GOAL_KEY] = goal }
     }
+
+    suspend fun setWeightStepKg(value: String) {
+        dataStore.edit { preferences -> preferences[WEIGHT_STEP_KG_KEY] = value }
+    }
+
+    suspend fun setWeightStepLb(value: String) {
+        dataStore.edit { preferences -> preferences[WEIGHT_STEP_LB_KEY] = value }
+    }
 }
 
 private fun Preferences.toStoredUserPreferences() =
@@ -88,4 +98,6 @@ private fun Preferences.toStoredUserPreferences() =
         defaultRestSeconds = this[DEFAULT_REST_SECONDS_KEY],
         hapticsEnabled = this[HAPTICS_ENABLED_KEY],
         weeklyWorkoutGoal = this[WEEKLY_WORKOUT_GOAL_KEY],
+        weightStepKg = this[WEIGHT_STEP_KG_KEY],
+        weightStepLb = this[WEIGHT_STEP_LB_KEY],
     )

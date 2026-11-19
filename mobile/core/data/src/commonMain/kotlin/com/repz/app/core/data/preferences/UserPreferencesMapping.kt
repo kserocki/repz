@@ -6,6 +6,7 @@ import com.repz.app.core.datastore.StoredUserPreferences
 import com.repz.app.core.domain.model.UnitSystem
 import com.repz.app.core.domain.preferences.ThemeMode
 import com.repz.app.core.domain.preferences.UserPreferences
+import com.repz.app.core.domain.preferences.WeightStep
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -26,6 +27,8 @@ internal fun StoredUserPreferences.toDomain(
         defaultRest = defaultRestSeconds?.seconds ?: UserPreferences.DEFAULT.defaultRest,
         hapticsEnabled = hapticsEnabled ?: UserPreferences.DEFAULT.hapticsEnabled,
         weeklyWorkoutGoal = weeklyWorkoutGoal ?: UserPreferences.DEFAULT.weeklyWorkoutGoal,
+        weightStepKg = weightStepKg?.toWeightStepOrNull(UnitSystem.KG, logger) ?: UserPreferences.DEFAULT.weightStepKg,
+        weightStepLb = weightStepLb?.toWeightStepOrNull(UnitSystem.LB, logger) ?: UserPreferences.DEFAULT.weightStepLb,
     )
 }
 
@@ -43,6 +46,16 @@ private fun String.toUnitSystemOrNull(logger: Logger): UnitSystem? =
             logger.e { "Unknown unit_system value: $this" }
             null
         }
+    }
+
+/** Matches the stored enum name against [WeightStep]'s values for [unitSystem]; anything else is unknown. */
+private fun String.toWeightStepOrNull(
+    unitSystem: UnitSystem,
+    logger: Logger,
+): WeightStep? =
+    WeightStep.entries.firstOrNull { it.name == this && it.unitSystem == unitSystem } ?: run {
+        logger.e { "Unknown weight_step value for $unitSystem: $this" }
+        null
     }
 
 private fun String.toThemeModeOrNull(logger: Logger): ThemeMode? =
@@ -77,3 +90,6 @@ internal fun ThemeMode.toWireText(): String =
         ThemeMode.LIGHT -> "light"
         ThemeMode.DARK -> "dark"
     }
+
+/** Stored as the enum's own name, unlike [UnitSystem]/[ThemeMode]'s hand-written vocabulary text. */
+internal fun WeightStep.toWireText(): String = name

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ui_unit_kg">kg</string>
+    <string name="ui_unit_lb">lb</string>
+    <string name="ui_unit_reps">powt.</string>
+    <string name="ui_weight_with_unit">%1$s %2$s</string>
+</resources>

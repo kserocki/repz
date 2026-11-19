@@ -37,6 +37,10 @@ enum class RepzCatalogPage(
     ComponentsStates("components-states"),
     Logo("logo"),
     LogoLoader("logo-loader"),
+    KeypadWeight("keypad-weight"),
+    KeypadReps("keypad-reps"),
+    KeypadRpe("keypad-rpe"),
+    KeypadMotion("keypad-motion"),
     ;
 
     companion object {
