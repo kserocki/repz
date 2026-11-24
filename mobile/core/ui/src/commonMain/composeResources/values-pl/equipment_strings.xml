@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="equipment_barbell">Sztanga</string>
+    <string name="equipment_dumbbell">Hantle</string>
+    <string name="equipment_kettlebell">Kettlebell</string>
+    <string name="equipment_machine">Maszyna</string>
+    <string name="equipment_cable">Wyciąg</string>
+    <string name="equipment_bodyweight">Masa ciała</string>
+    <string name="equipment_band">Guma</string>
+    <string name="equipment_other">Inne</string>
+</resources>
