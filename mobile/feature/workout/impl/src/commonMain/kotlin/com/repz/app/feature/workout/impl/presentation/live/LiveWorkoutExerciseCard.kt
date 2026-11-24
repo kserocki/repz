@@ -37,6 +37,7 @@ import com.repz.app.feature.workout.impl.generated.resources.card_column_set
 import com.repz.app.feature.workout.impl.generated.resources.card_menu_notes
 import com.repz.app.feature.workout.impl.generated.resources.card_menu_remove
 import com.repz.app.feature.workout.impl.generated.resources.card_menu_reorder
+import com.repz.app.feature.workout.impl.generated.resources.card_menu_replace
 import com.repz.app.feature.workout.impl.generated.resources.card_notes_label
 import com.repz.app.feature.workout.impl.generated.resources.card_options
 import com.repz.app.feature.workout.impl.generated.resources.card_progress
@@ -67,6 +68,7 @@ internal fun LiveWorkoutExerciseCard(
     onNotesClick: () -> Unit,
     onNotesChange: (String) -> Unit,
     onNotesEditingFinish: () -> Unit,
+    onReplaceClick: () -> Unit,
     onRemoveClick: () -> Unit,
     onAddSetClick: () -> Unit,
     onSetFieldClick: (WorkoutSetId, SetField) -> Unit,
@@ -91,7 +93,7 @@ internal fun LiveWorkoutExerciseCard(
         onNotesClick = onNotesClick,
         onNotesChange = onNotesChange,
         onNotesEditingFinish = onNotesEditingFinish,
-        menuItems = cardMenuItems(onReorderClick, onNotesClick, onRemoveClick),
+        menuItems = cardMenuItems(onReorderClick, onReplaceClick, onNotesClick, onRemoveClick),
         menuContentDescription = stringResource(Res.string.card_options),
         onHeaderLongClick = onReorderClick,
         columnLabels =
@@ -127,11 +129,13 @@ internal fun LiveWorkoutExerciseCard(
 @Composable
 private fun cardMenuItems(
     onReorderClick: () -> Unit,
+    onReplaceClick: () -> Unit,
     onNotesClick: () -> Unit,
     onRemoveClick: () -> Unit,
 ): ImmutableList<RepzMenuItem> =
     persistentListOf(
         RepzMenuItem(label = stringResource(Res.string.card_menu_reorder), onClick = onReorderClick),
+        RepzMenuItem(label = stringResource(Res.string.card_menu_replace), onClick = onReplaceClick),
         RepzMenuItem(label = stringResource(Res.string.card_menu_notes), onClick = onNotesClick),
         RepzMenuItem(label = stringResource(Res.string.card_menu_remove), onClick = onRemoveClick, isDestructive = true),
     )

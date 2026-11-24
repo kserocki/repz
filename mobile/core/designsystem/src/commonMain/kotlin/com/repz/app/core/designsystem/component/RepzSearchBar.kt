@@ -38,9 +38,11 @@ private const val MAX_QUERY_LENGTH = 100
  * Input is capped at [MAX_QUERY_LENGTH] characters (truncated, not refused). The component holds
  * no query state of its own: the caller keeps [query] in its own state (local `remember`, not a
  * ViewModel flow, to avoid the "async state drops keystrokes" gotcha) and forwards it here.
- * [fieldModifier] lands on the `BasicTextField` itself (e.g. a test tag), [modifier] on the bar.
- * [leadingContentDescription] is required when [onLeadingClick] is non-null; a `null`
- * [onLeadingClick] renders a purely decorative icon with no content description.
+ * [fieldModifier] lands on the `BasicTextField` itself (e.g. a test tag), [leadingModifier] and
+ * [trailingModifier] on the leading/clear icon buttons individually (the same precedent as
+ * `RepzTopAppBar`'s `backButtonModifier`), [modifier] on the bar. [leadingContentDescription] is
+ * required when [onLeadingClick] is non-null; a `null` [onLeadingClick] renders a purely decorative
+ * icon with no content description.
  */
 @Composable
 fun RepzSearchBar(
@@ -50,6 +52,8 @@ fun RepzSearchBar(
     clearContentDescription: String,
     modifier: Modifier = Modifier,
     fieldModifier: Modifier = Modifier,
+    leadingModifier: Modifier = Modifier,
+    trailingModifier: Modifier = Modifier,
     leadingIcon: RepzIcon = RepzIcon.Search,
     onLeadingClick: (() -> Unit)? = null,
     leadingContentDescription: String? = null,
@@ -66,7 +70,12 @@ fun RepzSearchBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(RepzSpacing.sm),
     ) {
-        SearchBarLeading(icon = leadingIcon, onClick = onLeadingClick, contentDescription = leadingContentDescription)
+        SearchBarLeading(
+            icon = leadingIcon,
+            onClick = onLeadingClick,
+            contentDescription = leadingContentDescription,
+            modifier = leadingModifier,
+        )
 
         BasicTextField(
             value = query,
@@ -96,6 +105,7 @@ fun RepzSearchBar(
                     onQueryChange("")
                     focusRequester.requestFocus()
                 },
+                modifier = trailingModifier,
             ) {
                 RepzIcon(
                     icon = RepzIcon.Cancel,
@@ -112,13 +122,14 @@ private fun SearchBarLeading(
     icon: RepzIcon,
     onClick: (() -> Unit)?,
     contentDescription: String?,
+    modifier: Modifier = Modifier,
 ) {
     if (onClick != null) {
-        IconButton(onClick = onClick) {
+        IconButton(onClick = onClick, modifier = modifier) {
             RepzIcon(icon = icon, contentDescription = contentDescription, tint = MaterialTheme.colorScheme.onSurface)
         }
     } else {
-        Box(modifier = Modifier.size(RepzSpacing.xxxl), contentAlignment = Alignment.Center) {
+        Box(modifier = modifier.size(RepzSpacing.xxxl), contentAlignment = Alignment.Center) {
             RepzIcon(icon = icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface)
         }
     }

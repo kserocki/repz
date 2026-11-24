@@ -31,6 +31,7 @@
 
     <string name="card_options">Exercise options</string>
     <string name="card_menu_reorder">Reorder</string>
+    <string name="card_menu_replace">Replace</string>
     <string name="card_menu_notes">Notes</string>
     <string name="card_menu_remove">Remove</string>
     <plurals name="card_progress">
@@ -93,7 +94,42 @@
 
     <string name="finish_failed">Couldn't finish the workout. Try again.</string>
 
-    <string name="picker_title">Add exercise</string>
     <string name="keypad_context">%1$s · Set %2$s</string>
-    <string name="picker_back">Back</string>
+
+    <string name="picker_search_placeholder">Search exercises</string>
+    <string name="picker_close">Close picker</string>
+    <string name="picker_clear_search">Clear search</string>
+    <string name="picker_section_recent">Recent</string>
+    <string name="picker_section_all">All exercises</string>
+    <string name="picker_section_results">All results · %1$d</string>
+    <string name="picker_exercise_meta">%1$s · %2$s</string>
+    <string name="picker_exercise_meta_recent">%1$s · %2$s · %3$s</string>
+    <string name="picker_last_used_today">Today</string>
+    <string name="picker_last_used_yesterday">Yesterday</string>
+    <plurals name="picker_last_used_days_ago">
+        <item quantity="one">%1$d day ago</item>
+        <item quantity="other">%1$d days ago</item>
+    </plurals>
+    <plurals name="picker_selected_count">
+        <item quantity="one">%1$d selected</item>
+        <item quantity="other">%1$d selected</item>
+    </plurals>
+    <string name="picker_add_selected">Add (%1$d)</string>
+    <string name="picker_no_match_title">No match for “%1$s”</string>
+    <string name="picker_no_match_body">Check the spelling.</string>
+    <string name="picker_no_filter_match_title">No exercises match these filters</string>
+    <string name="picker_clear_filters">Clear filters (%1$d)</string>
+    <string name="picker_no_exercises_title">No exercises yet</string>
+    <string name="picker_no_exercises_body">Your exercise library downloads the next time you’re online.</string>
+    <plurals name="picker_selection_limit">
+        <item quantity="one">A workout can have up to %1$d exercise</item>
+        <item quantity="other">A workout can have up to %1$d exercises</item>
+    </plurals>
+    <string name="picker_replace_dialog_title">Replace %1$s?</string>
+    <plurals name="picker_replace_dialog_body">
+        <item quantity="one">Its %1$d logged set will be removed.</item>
+        <item quantity="other">Its %1$d logged sets will be removed.</item>
+    </plurals>
+    <string name="picker_replace_confirm">Replace</string>
+    <string name="picker_replace_cancel">Cancel</string>
 </resources>
