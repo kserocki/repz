@@ -4,7 +4,6 @@ import androidx.room3.Room
 import app.cash.turbine.test
 import com.repz.app.core.database.RepzDatabase
 import com.repz.app.core.database.buildRepzDatabase
-import com.repz.app.core.database.exercise.ExerciseEntity
 import com.repz.app.core.database.testUuid
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -285,177 +284,9 @@ class WorkoutDaoTest {
             assertEquals(listOf(newerFinishedId, olderFinishedId), found.map { it.workout.id })
         }
 
-    @Test
-    fun givenAFinishedWorkoutUsingAnExercise_whenRecentlyUsedExercisesObserved_thenItAppearsWithTheWorkoutsStartedAt() =
-        runTest {
-            val exerciseId = testUuid("1")
-            database.exerciseDao().saveSyncedExercise(exercise(exerciseId), emptyList())
-            val startedAt = Instant.parse("2024-01-01T10:00:00Z")
-            workoutDao.saveSyncedWorkout(
-                workout(testUuid("2"), startedAt = startedAt, finishedAt = Instant.parse("2024-01-01T11:00:00Z")),
-                listOf(workoutExercise(testUuid("3"), testUuid("2"), 0, exerciseId)),
-                emptyList(),
-            )
-
-            workoutDao.observeRecentlyUsedExercises(limit = 5).test {
-                assertEquals(listOf(RecentExerciseUseRow(exerciseId, startedAt)), awaitItem())
-            }
-        }
-
-    @Test
-    fun givenAnActiveWorkoutUsingAnExercise_whenRecentlyUsedExercisesObserved_thenItIsExcluded() =
-        runTest {
-            val exerciseId = testUuid("1")
-            database.exerciseDao().saveSyncedExercise(exercise(exerciseId), emptyList())
-            workoutDao.saveSyncedWorkout(
-                workout(testUuid("2"), finishedAt = null),
-                listOf(workoutExercise(testUuid("3"), testUuid("2"), 0, exerciseId)),
-                emptyList(),
-            )
-
-            workoutDao.observeRecentlyUsedExercises(limit = 5).test {
-                assertTrue(awaitItem().isEmpty())
-            }
-        }
-
-    @Test
-    fun givenADeletedFinishedWorkoutUsingAnExercise_whenRecentlyUsedExercisesObserved_thenItIsExcluded() =
-        runTest {
-            val exerciseId = testUuid("1")
-            database.exerciseDao().saveSyncedExercise(exercise(exerciseId), emptyList())
-            workoutDao.saveSyncedWorkout(
-                workout(testUuid("2"), isDeleted = true),
-                listOf(workoutExercise(testUuid("3"), testUuid("2"), 0, exerciseId)),
-                emptyList(),
-            )
-
-            workoutDao.observeRecentlyUsedExercises(limit = 5).test {
-                assertTrue(awaitItem().isEmpty())
-            }
-        }
-
-    @Test
-    fun givenAFinishedWorkoutUsingADeletedExercise_whenRecentlyUsedExercisesObserved_thenItIsExcluded() =
-        runTest {
-            val exerciseId = testUuid("1")
-            database.exerciseDao().saveSyncedExercise(exercise(exerciseId), emptyList())
-            database.exerciseDao().setDeleted(exerciseId, isDeleted = true, updatedAt = Instant.parse("2024-01-02T00:00:00Z"))
-            workoutDao.saveSyncedWorkout(
-                workout(testUuid("2")),
-                listOf(workoutExercise(testUuid("3"), testUuid("2"), 0, exerciseId)),
-                emptyList(),
-            )
-
-            workoutDao.observeRecentlyUsedExercises(limit = 5).test {
-                assertTrue(awaitItem().isEmpty())
-            }
-        }
-
-    @Test
-    fun givenTheSameExerciseUsedInTwoFinishedWorkouts_whenRecentlyUsedExercisesObserved_thenTheLaterStartedAtWins() =
-        runTest {
-            val exerciseId = testUuid("1")
-            database.exerciseDao().saveSyncedExercise(exercise(exerciseId), emptyList())
-            val olderStartedAt = Instant.parse("2024-01-01T10:00:00Z")
-            val newerStartedAt = Instant.parse("2024-01-03T10:00:00Z")
-            workoutDao.saveSyncedWorkout(
-                workout(testUuid("2"), startedAt = olderStartedAt, finishedAt = Instant.parse("2024-01-01T11:00:00Z")),
-                listOf(workoutExercise(testUuid("3"), testUuid("2"), 0, exerciseId)),
-                emptyList(),
-            )
-            workoutDao.saveSyncedWorkout(
-                workout(testUuid("4"), startedAt = newerStartedAt, finishedAt = Instant.parse("2024-01-03T11:00:00Z")),
-                listOf(workoutExercise(testUuid("5"), testUuid("4"), 0, exerciseId)),
-                emptyList(),
-            )
-
-            workoutDao.observeRecentlyUsedExercises(limit = 5).test {
-                assertEquals(listOf(RecentExerciseUseRow(exerciseId, newerStartedAt)), awaitItem())
-            }
-        }
-
-    @Test
-    fun givenExercisesLastUsedAtDifferentTimes_whenRecentlyUsedExercisesObserved_thenNewestFirst() =
-        runTest {
-            val olderExerciseId = testUuid("1")
-            val newerExerciseId = testUuid("2")
-            database.exerciseDao().saveSyncedExercise(exercise(olderExerciseId), emptyList())
-            database.exerciseDao().saveSyncedExercise(exercise(newerExerciseId), emptyList())
-            workoutDao.saveSyncedWorkout(
-                workout(
-                    testUuid("3"),
-                    startedAt = Instant.parse("2024-01-01T10:00:00Z"),
-                    finishedAt = Instant.parse("2024-01-01T11:00:00Z"),
-                ),
-                listOf(workoutExercise(testUuid("4"), testUuid("3"), 0, olderExerciseId)),
-                emptyList(),
-            )
-            workoutDao.saveSyncedWorkout(
-                workout(
-                    testUuid("5"),
-                    startedAt = Instant.parse("2024-01-02T10:00:00Z"),
-                    finishedAt = Instant.parse("2024-01-02T11:00:00Z"),
-                ),
-                listOf(workoutExercise(testUuid("6"), testUuid("5"), 0, newerExerciseId)),
-                emptyList(),
-            )
-
-            workoutDao.observeRecentlyUsedExercises(limit = 5).test {
-                assertEquals(listOf(newerExerciseId, olderExerciseId), awaitItem().map { it.exerciseId })
-            }
-        }
-
-    @Test
-    fun givenTwoExercisesLastUsedAtTheSameTime_whenRecentlyUsedExercisesObserved_thenExerciseIdBreaksTheTieAscending() =
-        runTest {
-            val higherExerciseId = testUuid("2")
-            val lowerExerciseId = testUuid("1")
-            database.exerciseDao().saveSyncedExercise(exercise(higherExerciseId), emptyList())
-            database.exerciseDao().saveSyncedExercise(exercise(lowerExerciseId), emptyList())
-            val startedAt = Instant.parse("2024-01-01T10:00:00Z")
-            workoutDao.saveSyncedWorkout(
-                workout(testUuid("3"), startedAt = startedAt, finishedAt = Instant.parse("2024-01-01T11:00:00Z")),
-                listOf(workoutExercise(testUuid("4"), testUuid("3"), 0, higherExerciseId)),
-                emptyList(),
-            )
-            workoutDao.saveSyncedWorkout(
-                workout(testUuid("5"), startedAt = startedAt, finishedAt = Instant.parse("2024-01-01T11:00:00Z")),
-                listOf(workoutExercise(testUuid("6"), testUuid("5"), 0, lowerExerciseId)),
-                emptyList(),
-            )
-
-            workoutDao.observeRecentlyUsedExercises(limit = 5).test {
-                assertEquals(listOf(lowerExerciseId, higherExerciseId), awaitItem().map { it.exerciseId })
-            }
-        }
-
-    @Test
-    fun givenMoreRecentlyUsedExercisesThanTheLimit_whenObserved_thenOnlyTheLimitIsReturned() =
-        runTest {
-            val exerciseIds = listOf(testUuid("1"), testUuid("2"), testUuid("3"))
-            exerciseIds.forEach { database.exerciseDao().saveSyncedExercise(exercise(it), emptyList()) }
-            exerciseIds.forEachIndexed { index, exerciseId ->
-                val workoutId = testUuid((10 + index).toString())
-                workoutDao.saveSyncedWorkout(
-                    workout(
-                        workoutId,
-                        startedAt = Instant.parse("2024-01-0${index + 1}T10:00:00Z"),
-                        finishedAt = Instant.parse("2024-01-0${index + 1}T11:00:00Z"),
-                    ),
-                    listOf(workoutExercise(testUuid((20 + index).toString()), workoutId, 0, exerciseId)),
-                    emptyList(),
-                )
-            }
-
-            workoutDao.observeRecentlyUsedExercises(limit = 2).test {
-                assertEquals(2, awaitItem().size)
-            }
-        }
-
     private fun workout(
         id: Uuid,
         templateId: Uuid? = null,
-        startedAt: Instant = Instant.parse("2024-01-01T10:00:00Z"),
         finishedAt: Instant? = Instant.parse("2024-01-01T11:00:00Z"),
         serverVersion: Long? = null,
         isDeleted: Boolean = false,
@@ -464,29 +295,12 @@ class WorkoutDaoTest {
         templateId = templateId,
         name = "Push day",
         notes = "",
-        startedAt = startedAt,
+        startedAt = Instant.parse("2024-01-01T10:00:00Z"),
         finishedAt = finishedAt,
         updatedAt = Instant.parse("2024-01-01T11:00:00Z"),
         serverVersion = serverVersion,
         isDeleted = isDeleted,
     )
-
-    private fun exercise(id: Uuid) =
-        ExerciseEntity(
-            id = id,
-            name = "Bench press",
-            primaryMuscle = "chest",
-            secondaryMuscles = emptyList(),
-            equipment = "barbell",
-            isCustom = false,
-            imageUrl = null,
-            license = null,
-            author = null,
-            sourceUrl = null,
-            updatedAt = Instant.parse("2024-01-01T11:00:00Z"),
-            serverVersion = null,
-            isDeleted = false,
-        )
 
     private fun workoutExercise(
         id: Uuid,

@@ -1,7 +1,6 @@
 package com.repz.app.core.data.workout
 
 import co.touchlab.kermit.Logger
-import com.repz.app.core.database.workout.RecentExerciseUseRow
 import com.repz.app.core.database.workout.WorkoutAggregate
 import com.repz.app.core.database.workout.WorkoutEntity
 import com.repz.app.core.database.workout.WorkoutExerciseEntity
@@ -19,7 +18,6 @@ import com.repz.app.core.domain.model.WorkoutSet
 import com.repz.app.core.domain.model.WorkoutSetId
 import com.repz.app.core.domain.model.WorkoutTemplateId
 import com.repz.app.core.domain.result.DomainResult
-import com.repz.app.core.domain.workout.RecentExerciseUse
 import kotlin.time.Instant
 
 /** A corrupt row (R5) is logged and dropped: `null` here, filtered out of a list by the caller. */
@@ -41,10 +39,6 @@ internal fun WorkoutAggregate.toDomainOrNull(logger: Logger): Workout? {
 }
 
 internal fun List<WorkoutAggregate>.toDomainList(logger: Logger): List<Workout> = mapNotNull { it.toDomainOrNull(logger) }
-
-internal fun RecentExerciseUseRow.toDomain(): RecentExerciseUse = RecentExerciseUse(ExerciseId(exerciseId), lastUsedAt)
-
-internal fun List<RecentExerciseUseRow>.toDomainList(): List<RecentExerciseUse> = map { it.toDomain() }
 
 private fun WorkoutExerciseWithSets.toDomainOrNull(logger: Logger): WorkoutExercise? {
     val orderedSets = sets.sortedBy { it.position }.map { it.toDomainOrNull(logger) }

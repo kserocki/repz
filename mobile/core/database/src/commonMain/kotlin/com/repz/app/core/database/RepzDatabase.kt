@@ -12,6 +12,7 @@ import com.repz.app.core.database.exercise.ExerciseDao
 import com.repz.app.core.database.exercise.ExerciseEntity
 import com.repz.app.core.database.exercise.ExerciseRawDao
 import com.repz.app.core.database.exercise.ExerciseTranslationEntity
+import com.repz.app.core.database.exercise.ExerciseUsageDao
 import com.repz.app.core.database.record.PersonalRecordDao
 import com.repz.app.core.database.record.PersonalRecordEntity
 import com.repz.app.core.database.sync.OutboxDao
@@ -58,6 +59,8 @@ abstract class RepzDatabase : RoomDatabase() {
     abstract fun templateDao(): TemplateDao
 
     abstract fun exerciseDao(): ExerciseDao
+
+    abstract fun exerciseUsageDao(): ExerciseUsageDao
 
     abstract fun personalRecordDao(): PersonalRecordDao
 

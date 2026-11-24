@@ -37,19 +37,13 @@ complexity:
     ignoreSimpleWhenEntries: true
   TooManyFunctions:
     active: true
-    # `WorkoutRepository` (ADR-0023/0026/0029) has 13 methods: 7 reads (including the exercise
-    # picker's recently-used-exercises read) plus the save, delete, undo and confirm lifecycle for
-    # both the active and the finished workout, one method per operation on purpose (no
-    # WorkoutReader/WorkoutWriter split, ARCH §3's SOLID table). Its `OfflineFirstWorkoutRepository`
-    # implementation, `FakeWorkoutRepository` fake and `WorkoutDao` all implement or mirror every
-    # method, so they need the same threshold. A standing exception, not a one-off bump.
-    allowedFunctionsPerInterface: 13
-    allowedFunctionsPerClass: 13
-    # `ActiveWorkoutEdits.kt` (ADR-0029) has 12: one pure, total edit per active-workout operation
-    # (append, replace, insert, remove, move, rename notes, set append/insert/remove/update, find,
-    # plus the completed-set-count property), kept together as one file of small, same-shape edits
-    # rather than split by operation. A standing exception, not a one-off bump.
-    allowedFunctionsPerFile: 12
+    # `WorkoutRepository` (ADR-0023/0026) has 12 methods: 6 reads plus the save, delete,
+    # undo and confirm lifecycle for both the active and the finished workout, one method per
+    # operation on purpose (no WorkoutReader/WorkoutWriter split, ARCH §3's SOLID table). Its
+    # `OfflineFirstWorkoutRepository` implementation and `FakeWorkoutRepository` fake both implement
+    # every method, so they need the same threshold. A standing exception, not a one-off bump.
+    allowedFunctionsPerInterface: 12
+    allowedFunctionsPerClass: 12
 
 naming:
   TopLevelPropertyNaming:
