@@ -1,12 +1,14 @@
 package com.repz.app.shared.di
 
 import com.repz.app.core.data.exercise.OfflineFirstExerciseRepository
+import com.repz.app.core.data.exercise.OfflineFirstExerciseUsageRepository
 import com.repz.app.core.data.preferences.OfflineFirstUserPreferencesRepository
 import com.repz.app.core.data.record.OfflineFirstPersonalRecordRepository
 import com.repz.app.core.data.template.OfflineFirstWorkoutTemplateRepository
 import com.repz.app.core.data.transaction.RoomTransactionRunner
 import com.repz.app.core.data.workout.OfflineFirstWorkoutRepository
 import com.repz.app.core.domain.exercise.ExerciseRepository
+import com.repz.app.core.domain.exercise.ExerciseUsageRepository
 import com.repz.app.core.domain.preferences.UserPreferencesRepository
 import com.repz.app.core.domain.record.PersonalRecordRepository
 import com.repz.app.core.domain.template.WorkoutTemplateRepository
@@ -78,6 +80,22 @@ class RepositoryGraphTest {
         val koin = KoinPlatformTools.defaultContext().get()
 
         assertSame(koin.get<ExerciseRepository>(), koin.get<OfflineFirstExerciseRepository>())
+    }
+
+    @Test
+    fun givenRepzApp_whenStarted_thenExerciseUsageRepositoryIsASingleton() {
+        startKoin<RepzApp> { platformTestDeclaration() }
+        val koin = KoinPlatformTools.defaultContext().get()
+
+        assertSame(koin.get<ExerciseUsageRepository>(), koin.get<ExerciseUsageRepository>())
+    }
+
+    @Test
+    fun givenRepzApp_whenStarted_thenExerciseUsageRepositoryIsTheSameInstanceAsOfflineFirstExerciseUsageRepository() {
+        startKoin<RepzApp> { platformTestDeclaration() }
+        val koin = KoinPlatformTools.defaultContext().get()
+
+        assertSame(koin.get<ExerciseUsageRepository>(), koin.get<OfflineFirstExerciseUsageRepository>())
     }
 
     @Test
