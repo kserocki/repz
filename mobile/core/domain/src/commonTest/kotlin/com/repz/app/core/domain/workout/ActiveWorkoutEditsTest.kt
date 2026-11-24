@@ -29,6 +29,28 @@ class ActiveWorkoutEditsTest {
     }
 
     @Test
+    fun givenAWorkout_whenExerciseReplaced_thenTheReplacementTakesItsPosition() {
+        val first = testWorkoutExercise(seed = 1)
+        val second = testWorkoutExercise(seed = 2)
+        val replacement = testWorkoutExercise(seed = 3)
+        val workout = testActiveWorkout(exercises = listOf(first, second))
+
+        val result = workout.withExerciseReplaced(first.id, replacement)
+
+        assertEquals(listOf(replacement, second), result.exercises)
+    }
+
+    @Test
+    fun givenAnUnknownExerciseId_whenReplaced_thenTheWorkoutIsUnchanged() {
+        val workout = testActiveWorkout(exercises = listOf(testWorkoutExercise(seed = 1)))
+        val replacement = testWorkoutExercise(seed = 2)
+
+        val result = workout.withExerciseReplaced(WorkoutExerciseId(testUuid(99)), replacement)
+
+        assertEquals(workout, result)
+    }
+
+    @Test
     fun givenAnOutOfRangeIndex_whenExerciseInserted_thenItIsClampedToTheEnd() {
         val first = testWorkoutExercise(seed = 1)
         val reinserted = testWorkoutExercise(seed = 2)

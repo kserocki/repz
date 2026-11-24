@@ -5,6 +5,7 @@ import com.repz.app.core.domain.model.Workout
 import com.repz.app.core.domain.model.WorkoutId
 import com.repz.app.core.domain.result.DomainResult
 import com.repz.app.core.domain.result.ValidationError
+import com.repz.app.core.domain.workout.RecentExerciseUse
 import com.repz.app.core.domain.workout.WorkoutRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,6 +42,18 @@ class FakeWorkoutRepository(
                 .filter { it.workout.isFinished && !it.isDeleted }
                 .map { it.workout }
                 .sortedByDescending { it.startedAt }
+        }
+
+    /** Knows nothing about exercise tombstones (the ViewModel drops recents whose exercise isn't in the exercise list anyway). */
+    override fun observeRecentlyUsedExercises(limit: Int): Flow<List<RecentExerciseUse>> =
+        entries.map { current ->
+            current.values
+                .filter { it.workout.isFinished && !it.isDeleted }
+                .flatMap { entry -> entry.workout.exercises.map { exercise -> exercise.exerciseId to entry.workout.startedAt } }
+                .groupBy({ it.first }, { it.second })
+                .map { (exerciseId, startedAts) -> RecentExerciseUse(exerciseId, startedAts.max()) }
+                .sortedWith(compareByDescending<RecentExerciseUse> { it.lastUsedAt }.thenBy { it.exerciseId.value.toString() })
+                .take(limit)
         }
 
     override fun observeWorkout(id: WorkoutId): Flow<Workout?> =

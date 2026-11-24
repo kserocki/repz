@@ -18,6 +18,12 @@ interface WorkoutRepository {
     /** Newest first (`started_at` descending). */
     fun observeFinishedWorkouts(): Flow<List<Workout>>
 
+    /**
+     * Exercises in finished, non-deleted workouts whose exercise isn't deleted, most recently used
+     * first (by the workout's `startedAt`), at most [limit].
+     */
+    fun observeRecentlyUsedExercises(limit: Int): Flow<List<RecentExerciseUse>>
+
     fun observeWorkout(id: WorkoutId): Flow<Workout?>
 
     /** Includes a tombstoned workout, so it can still be resolved during its undo window. */

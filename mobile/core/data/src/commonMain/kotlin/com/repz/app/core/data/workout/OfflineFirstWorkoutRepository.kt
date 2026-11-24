@@ -15,6 +15,7 @@ import com.repz.app.core.domain.result.ValidationError
 import com.repz.app.core.domain.sync.DELETE_UNDO_WINDOW
 import com.repz.app.core.domain.sync.SyncScheduler
 import com.repz.app.core.domain.validation.validateFinishedWorkout
+import com.repz.app.core.domain.workout.RecentExerciseUse
 import com.repz.app.core.domain.workout.WorkoutRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -43,6 +44,9 @@ class OfflineFirstWorkoutRepository(
     override fun observeActiveWorkout(): Flow<Workout?> = workoutDao.observeActiveWorkout().map { it?.toDomainOrNull(logger) }
 
     override fun observeFinishedWorkouts(): Flow<List<Workout>> = workoutDao.observeFinishedWorkouts().map { it.toDomainList(logger) }
+
+    override fun observeRecentlyUsedExercises(limit: Int): Flow<List<RecentExerciseUse>> =
+        workoutDao.observeRecentlyUsedExercises(limit).map { it.toDomainList() }
 
     override fun observeWorkout(id: WorkoutId): Flow<Workout?> = workoutDao.observeWorkout(id.value).map { it?.toDomainOrNull(logger) }
 

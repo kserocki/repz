@@ -5,6 +5,7 @@ import com.repz.app.core.data.TestClock
 import com.repz.app.core.data.testUuid
 import com.repz.app.core.database.RepzDatabase
 import com.repz.app.core.database.buildRepzDatabase
+import com.repz.app.core.database.exercise.ExerciseEntity
 import com.repz.app.core.database.sync.OutboxOperation
 import com.repz.app.core.database.sync.SyncEntityType
 import com.repz.app.core.database.workout.WorkoutEntity
@@ -23,6 +24,7 @@ import com.repz.app.core.domain.model.WorkoutSetId
 import com.repz.app.core.domain.result.DomainResult
 import com.repz.app.core.domain.result.ValidationError
 import com.repz.app.core.domain.sync.DELETE_UNDO_WINDOW
+import com.repz.app.core.domain.workout.RecentExerciseUse
 import com.repz.app.core.testing.sync.FakeSyncScheduler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -253,6 +255,35 @@ class OfflineFirstWorkoutRepositoryTest {
             assertNull(repository.observeWorkout(WorkoutId(workoutId)).first())
             assertNull(repository.findWorkoutIncludingDeleted(WorkoutId(workoutId)))
         }
+
+    @Test
+    fun givenAFinishedWorkoutUsingAnExercise_whenRecentlyUsedExercisesObserved_thenTheRowMapsToDomain() =
+        runTest {
+            database.exerciseDao().saveSyncedExercise(exercise(testUuid("3")), emptyList())
+            val workout = finishedWorkout()
+            repository.saveFinishedWorkout(workout)
+
+            val recent = repository.observeRecentlyUsedExercises(limit = 5).first()
+
+            assertEquals(listOf(RecentExerciseUse(ExerciseId(testUuid("3")), workout.startedAt)), recent)
+        }
+
+    private fun exercise(id: Uuid) =
+        ExerciseEntity(
+            id = id,
+            name = "Bench press",
+            primaryMuscle = "chest",
+            secondaryMuscles = emptyList(),
+            equipment = "barbell",
+            isCustom = false,
+            imageUrl = null,
+            license = null,
+            author = null,
+            sourceUrl = null,
+            updatedAt = Instant.parse("2024-01-01T11:00:00Z"),
+            serverVersion = null,
+            isDeleted = false,
+        )
 
     private fun finishedWorkout(
         id: Uuid = testUuid("1"),

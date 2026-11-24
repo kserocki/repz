@@ -17,6 +17,12 @@ fun Workout.renamed(name: String): Workout = copy(name = name)
 
 fun Workout.withExercisesAppended(exercises: List<WorkoutExercise>): Workout = copy(exercises = this.exercises + exercises)
 
+/** Puts [replacement] where [id] is; unchanged if [id] is unknown. */
+fun Workout.withExerciseReplaced(
+    id: WorkoutExerciseId,
+    replacement: WorkoutExercise,
+): Workout = copy(exercises = exercises.map { exercise -> if (exercise.id == id) replacement else exercise })
+
 /** Re-inserts a removed exercise at [index] (undo of [withoutExercise]); [index] is clamped into range. */
 fun Workout.withExerciseInserted(
     index: Int,
