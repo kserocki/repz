@@ -130,6 +130,105 @@ class ExercisePickerViewModelTest {
         }
 
     @Test
+    fun givenAMuscleFilterWithABlankQuery_whenLoaded_thenOnlyMatchingRecentAndResultsRemainWithAResultsHeader() =
+        runTest(dispatcher) {
+            val bench = testExercise(seed = 1, name = "Bench press", primaryMuscle = Muscle.CHEST)
+            val squat = testExercise(seed = 2, name = "Air squat", primaryMuscle = Muscle.QUADRICEPS)
+            val recent =
+                FakeExerciseUsageRepository(
+                    listOf(RecentExerciseUse(bench.id, clock.instant), RecentExerciseUse(squat.id, clock.instant)),
+                )
+            val viewModel = viewModel(exercises = FakeExerciseRepository(listOf(bench, squat)), exerciseUsage = recent)
+            dispatcher.scheduler.advanceUntilIdle()
+
+            viewModel.onIntent(ExercisePickerIntent.MuscleFilterToggled(Muscle.CHEST))
+            dispatcher.scheduler.advanceUntilIdle()
+
+            val state = viewModel.state.value
+            assertEquals(listOf("Bench press"), state.recent.map { it.name })
+            assertEquals(listOf("Bench press"), state.results.map { it.name })
+            assertEquals(PickerResultsHeader.Results(1), state.resultsHeader)
+            assertEquals(1, state.activeFilterCount)
+        }
+
+    @Test
+    fun givenAnActiveFilter_whenFiltersCleared_thenAllExercisesHeaderAndEveryRowReturn() =
+        runTest(dispatcher) {
+            val bench = testExercise(seed = 1, name = "Bench press", primaryMuscle = Muscle.CHEST)
+            val squat = testExercise(seed = 2, name = "Air squat", primaryMuscle = Muscle.QUADRICEPS)
+            val viewModel = viewModel(exercises = FakeExerciseRepository(listOf(bench, squat)))
+            dispatcher.scheduler.advanceUntilIdle()
+            viewModel.onIntent(ExercisePickerIntent.MuscleFilterToggled(Muscle.CHEST))
+            dispatcher.scheduler.advanceUntilIdle()
+            assertEquals(PickerResultsHeader.Results(1), viewModel.state.value.resultsHeader)
+
+            viewModel.onIntent(ExercisePickerIntent.FiltersCleared)
+            dispatcher.scheduler.advanceUntilIdle()
+
+            val state = viewModel.state.value
+            assertEquals(PickerResultsHeader.AllExercises, state.resultsHeader)
+            assertEquals(0, state.activeFilterCount)
+            assertEquals(listOf("Air squat", "Bench press"), state.results.map { it.name })
+        }
+
+    @Test
+    fun givenNoExercisesAtAll_whenAQueryAndAFilterAreActive_thenNoExercisesWinsOverThem() =
+        runTest(dispatcher) {
+            val viewModel = viewModel(exercises = FakeExerciseRepository(emptyList()))
+            dispatcher.scheduler.advanceUntilIdle()
+
+            viewModel.onIntent(ExercisePickerIntent.QueryChanged("bench"))
+            viewModel.onIntent(ExercisePickerIntent.MuscleFilterToggled(Muscle.CHEST))
+            dispatcher.scheduler.advanceUntilIdle()
+
+            assertEquals(PickerEmptyState.NoExercises, viewModel.state.value.emptyState)
+        }
+
+    @Test
+    fun givenAQueryAndAFilterThatMatchNothing_whenLoaded_thenNoMatchForQueryCarriesTheTrimmedQueryAndFilterCount() =
+        runTest(dispatcher) {
+            val bench = testExercise(seed = 1, name = "Bench press", primaryMuscle = Muscle.CHEST)
+            val viewModel = viewModel(exercises = FakeExerciseRepository(listOf(bench)))
+            dispatcher.scheduler.advanceUntilIdle()
+
+            viewModel.onIntent(ExercisePickerIntent.MuscleFilterToggled(Muscle.CHEST))
+            viewModel.onIntent(ExercisePickerIntent.QueryChanged("  zzz  "))
+            dispatcher.scheduler.advanceUntilIdle()
+
+            assertEquals(PickerEmptyState.NoMatchForQuery("zzz", activeFilterCount = 1), viewModel.state.value.emptyState)
+        }
+
+    @Test
+    fun givenABlankQueryAndAFilterThatMatchesNothing_whenLoaded_thenNoMatchForFiltersShows() =
+        runTest(dispatcher) {
+            val bench = testExercise(seed = 1, name = "Bench press", primaryMuscle = Muscle.CHEST)
+            val viewModel = viewModel(exercises = FakeExerciseRepository(listOf(bench)))
+            dispatcher.scheduler.advanceUntilIdle()
+
+            viewModel.onIntent(ExercisePickerIntent.MuscleFilterToggled(Muscle.QUADRICEPS))
+            dispatcher.scheduler.advanceUntilIdle()
+
+            assertEquals(PickerEmptyState.NoMatchForFilters(activeFilterCount = 1), viewModel.state.value.emptyState)
+        }
+
+    @Test
+    fun givenARecentExerciseAlsoInResults_whenSelected_thenBothItsRecentAndResultRowShowSelected() =
+        runTest(dispatcher) {
+            val bench = testExercise(seed = 1, name = "Bench press")
+            val squat = testExercise(seed = 2, name = "Air squat")
+            val recent = FakeExerciseUsageRepository(listOf(RecentExerciseUse(bench.id, clock.instant)))
+            val viewModel = viewModel(exercises = FakeExerciseRepository(listOf(bench, squat)), exerciseUsage = recent)
+            dispatcher.scheduler.advanceUntilIdle()
+
+            viewModel.onIntent(ExercisePickerIntent.ExerciseClicked(bench.id))
+            dispatcher.scheduler.advanceUntilIdle()
+
+            val state = viewModel.state.value
+            assertEquals(true, state.recent.single { it.id == bench.id }.isSelected)
+            assertEquals(true, state.results.single { it.id == bench.id }.isSelected)
+        }
+
+    @Test
     fun givenExercisesClickedInOrder_whenOneIsDeselectedAndReselected_thenAddUsesTheReorderedPickOrder() =
         runTest(dispatcher) {
             val a = testExercise(seed = 1, name = "A")

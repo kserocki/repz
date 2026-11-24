@@ -65,7 +65,7 @@ sealed interface PickerEmptyState {
     ) : PickerEmptyState
 }
 
-/** [replacedExerciseName] is `null` when the card's exercise is missing even with tombstones. */
+/** [replacedExerciseName] is `null` when the card's exercise isn't among the non-deleted exercises. */
 data class ReplaceConfirmationUi(
     val replacedExerciseName: String?,
     val completedSetCount: Int,
