@@ -30,6 +30,10 @@ sealed interface LiveWorkoutIntent {
 
     data object AddExerciseClicked : LiveWorkoutIntent
 
+    data class ReplaceExerciseClicked(
+        val exerciseId: WorkoutExerciseId,
+    ) : LiveWorkoutIntent
+
     data class AddSetClicked(
         val exerciseId: WorkoutExerciseId,
     ) : LiveWorkoutIntent

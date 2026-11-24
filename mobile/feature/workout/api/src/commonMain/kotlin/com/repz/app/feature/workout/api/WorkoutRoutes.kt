@@ -12,9 +12,11 @@ data object TrainRoute : NavKey
 @Serializable
 data object LiveWorkoutRoute : NavKey
 
-/** Adds an exercise to the active workout. TODO(REP-37): grows into the full exercise picker (C13). */
+/** Adds exercises to the active workout, or replaces [replacingWorkoutExerciseId]'s exercise when set (a `WorkoutExerciseId`). */
 @Serializable
-data object ExercisePickerRoute : NavKey
+data class ExercisePickerRoute(
+    val replacingWorkoutExerciseId: String? = null,
+) : NavKey
 
 val workoutNavKeySerializers =
     navKeySerializers {
