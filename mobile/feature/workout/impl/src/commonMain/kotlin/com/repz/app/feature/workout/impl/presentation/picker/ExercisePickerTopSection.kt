@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import com.repz.app.core.designsystem.component.RepzFilterChip
+import com.repz.app.core.designsystem.component.RepzIcon
 import com.repz.app.core.designsystem.component.RepzSearchBar
 import com.repz.app.core.designsystem.theme.RepzSpacing
 import com.repz.app.core.domain.model.Equipment
@@ -55,6 +56,7 @@ internal fun ExercisePickerTopSection(
             onQueryChange = onQueryChange,
             placeholder = stringResource(Res.string.picker_search_placeholder),
             clearContentDescription = stringResource(Res.string.picker_clear_search),
+            leadingIcon = RepzIcon.Close,
             onLeadingClick = onCloseClick,
             leadingContentDescription = stringResource(Res.string.picker_close),
             onSearch = onSearch,
