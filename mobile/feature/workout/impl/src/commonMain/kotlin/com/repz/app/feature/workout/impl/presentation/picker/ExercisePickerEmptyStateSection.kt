@@ -23,7 +23,7 @@ import com.repz.app.feature.workout.impl.generated.resources.picker_no_match_bod
 import com.repz.app.feature.workout.impl.generated.resources.picker_no_match_title
 import org.jetbrains.compose.resources.stringResource
 
-/** The picker's empty states (DESIGN_SYSTEM §9, §4.1): a vertically scrollable, centred
+/** The picker's empty states (DESIGN_SYSTEM §9): a vertically scrollable, centred
  * [RepzEmptyState] instead of the list, so +30 %/PL/200 % font never clips. */
 @Composable
 internal fun ExercisePickerEmptyStateSection(

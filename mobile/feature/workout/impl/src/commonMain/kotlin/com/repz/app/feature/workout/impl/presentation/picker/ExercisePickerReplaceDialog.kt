@@ -14,7 +14,7 @@ import com.repz.app.feature.workout.impl.generated.resources.picker_replace_dial
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
-/** Replace's destructive confirmation (DESIGN_SYSTEM §9, approved decision Q1-A): shown only when
+/** Replace's destructive confirmation (DESIGN_SYSTEM §9): shown only when
  * the replaced card already has a completed set; [RepzAlertDialog]'s Filled-emphasis confirm, no icon. */
 @Composable
 internal fun ExercisePickerReplaceDialog(
