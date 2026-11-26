@@ -10,6 +10,7 @@ import com.repz.app.core.designsystem.generated.resources.symbol_add
 import com.repz.app.core.designsystem.generated.resources.symbol_arrow_back
 import com.repz.app.core.designsystem.generated.resources.symbol_arrow_forward
 import com.repz.app.core.designsystem.generated.resources.symbol_backspace
+import com.repz.app.core.designsystem.generated.resources.symbol_cancel
 import com.repz.app.core.designsystem.generated.resources.symbol_check
 import com.repz.app.core.designsystem.generated.resources.symbol_close
 import com.repz.app.core.designsystem.generated.resources.symbol_cloud_off
@@ -22,6 +23,7 @@ import com.repz.app.core.designsystem.generated.resources.symbol_keyboard_hide
 import com.repz.app.core.designsystem.generated.resources.symbol_list_alt
 import com.repz.app.core.designsystem.generated.resources.symbol_logout
 import com.repz.app.core.designsystem.generated.resources.symbol_play_arrow_filled
+import com.repz.app.core.designsystem.generated.resources.symbol_search
 import com.repz.app.core.designsystem.generated.resources.symbol_trophy
 import com.repz.app.core.designsystem.generated.resources.symbol_tune
 import com.repz.app.core.designsystem.generated.resources.symbol_visibility
@@ -34,7 +36,8 @@ import org.jetbrains.compose.resources.painterResource
  * Welcome's backdrop placeholder icons until its live illustrations ship. New entries land after
  * [Logout] (DESIGN_SYSTEM §8) so later feature work can append without reordering. [History],
  * [Backspace], [KeyboardHide], [ArrowForward] and [Tune] are `NumberKeypadSheet`'s icon set.
- * [DeleteForever] is the discard-workout dialog's centred icon (board 06). */
+ * [DeleteForever] is the discard-workout dialog's centred icon (board 06). [Search] and [Cancel]
+ * are `RepzSearchBar`'s leading/trailing icons. */
 enum class RepzIcon {
     ArrowBack,
     Visibility,
@@ -56,6 +59,8 @@ enum class RepzIcon {
     ArrowForward,
     Tune,
     DeleteForever,
+    Search,
+    Cancel,
 }
 
 /** One Material Symbols Rounded icon at its intrinsic 24 dp size unless [modifier] overrides it
@@ -99,4 +104,6 @@ private val RepzIcon.drawableResource: DrawableResource
             RepzIcon.ArrowForward -> Res.drawable.symbol_arrow_forward
             RepzIcon.Tune -> Res.drawable.symbol_tune
             RepzIcon.DeleteForever -> Res.drawable.symbol_delete_forever
+            RepzIcon.Search -> Res.drawable.symbol_search
+            RepzIcon.Cancel -> Res.drawable.symbol_cancel
         }

@@ -3,6 +3,7 @@ package com.repz.app.core.data
 import com.repz.app.core.database.RepzDatabase
 import com.repz.app.core.database.account.CurrentUserDao
 import com.repz.app.core.database.exercise.ExerciseDao
+import com.repz.app.core.database.exercise.ExerciseUsageDao
 import com.repz.app.core.database.record.PersonalRecordDao
 import com.repz.app.core.database.sync.OutboxDao
 import com.repz.app.core.database.sync.SyncMetaDao
@@ -16,7 +17,7 @@ import org.koin.core.annotation.Single
 /**
  * `core:data`'s one `@Module` (ARCH §9, konsist D3). Every repository is an annotated
  * `@Single class OfflineFirst*Repository` picked up by the scan below; the providers left are the
- * Room-generated DAO accessors (`core:database` is Koin-free, ADR-0008). All eight DAOs are
+ * Room-generated DAO accessors (`core:database` is Koin-free, ADR-0008). All nine DAOs are
  * provided here, including [syncMetaDao]/[syncRejectionDao] that this module's own repositories
  * don't consume, so the future `core:sync` module never declares a DAO provider of its own (D5).
  */
@@ -34,6 +35,9 @@ class DataModule {
 
     @Single
     fun exerciseDao(database: RepzDatabase): ExerciseDao = database.exerciseDao()
+
+    @Single
+    fun exerciseUsageDao(database: RepzDatabase): ExerciseUsageDao = database.exerciseUsageDao()
 
     @Single
     fun personalRecordDao(database: RepzDatabase): PersonalRecordDao = database.personalRecordDao()

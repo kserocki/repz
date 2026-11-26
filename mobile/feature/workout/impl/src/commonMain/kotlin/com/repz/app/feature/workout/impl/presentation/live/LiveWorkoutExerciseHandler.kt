@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/** Exercise notes and Remove exercise with undo. */
+/** Exercise notes, Remove exercise with undo, and opening the Replace picker. */
 internal class LiveWorkoutExerciseHandler(
     private val editActiveWorkout: EditActiveWorkoutUseCase,
     private val scope: CoroutineScope,
@@ -88,6 +88,12 @@ internal class LiveWorkoutExerciseHandler(
         toIndex: Int,
     ) {
         scope.launch { editActiveWorkout { it.withExerciseMoved(fromIndex, toIndex) } }
+    }
+
+    /** The keypad's own target must not survive the exercise it's about to leave. */
+    fun onReplaceExerciseClicked(exerciseId: WorkoutExerciseId) {
+        localState.update { it.copy(editingField = null) }
+        sendEffect(LiveWorkoutEffect.OpenExerciseReplacement(exerciseId))
     }
 
     /** Persists any in-flight debounced notes draft immediately (Minimize, Finish, onCleared). */

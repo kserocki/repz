@@ -218,6 +218,27 @@ class LiveWorkoutViewModelExerciseTest {
         }
 
     @Test
+    fun givenTheKeypadTargetsASetInTheCardBeingReplaced_whenReplaceExerciseClicked_thenTheTargetIsClearedAndReplacementOpens() =
+        runTest(dispatcher) {
+            val targetedSet = testWorkoutSet(seed = 10)
+            val exercise = testWorkoutExercise(seed = 1, sets = listOf(targetedSet))
+            val workout = testActiveWorkout(exercises = listOf(exercise))
+            val workouts = FakeWorkoutRepository(listOf(workout))
+            val viewModel = liveWorkoutViewModel(dispatcher, workouts = workouts)
+
+            viewModel.onIntent(LiveWorkoutIntent.SetFieldClicked(targetedSet.id, SetField.Weight))
+            dispatcher.scheduler.runCurrent()
+            assertEquals(SetFieldRef(targetedSet.id, SetField.Weight), viewModel.state.value.editingField)
+
+            viewModel.effects.test {
+                viewModel.onIntent(LiveWorkoutIntent.ReplaceExerciseClicked(exercise.id))
+
+                assertEquals(LiveWorkoutEffect.OpenExerciseReplacement(exercise.id), awaitItem())
+            }
+            assertNull(viewModel.state.value.editingField)
+        }
+
+    @Test
     fun givenReorderStarted_whenExerciseMovedAndFinished_thenTheOrderPersistsAndReorderModeEnds() =
         runTest(dispatcher) {
             val first = testWorkoutExercise(seed = 1)

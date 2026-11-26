@@ -121,6 +121,7 @@ class LiveWorkoutViewModel(
             LiveWorkoutIntent.DiscardConfirmed -> lifecycleHandler.onDiscardConfirmed()
             LiveWorkoutIntent.DiscardDismissed -> lifecycleHandler.onDiscardDismissed()
             LiveWorkoutIntent.AddExerciseClicked -> sendEffect(LiveWorkoutEffect.OpenExercisePicker)
+            is LiveWorkoutIntent.ReplaceExerciseClicked -> exerciseHandler.onReplaceExerciseClicked(intent.exerciseId)
             is LiveWorkoutIntent.AddSetClicked -> setEditingHandler.onAddSetClicked(intent.exerciseId)
             is LiveWorkoutIntent.SetCompletionToggled -> setEditingHandler.onSetCompletionToggled(intent.setId)
             is LiveWorkoutIntent.SetTypeSelected -> setEditingHandler.onSetTypeSelected(intent.setId, intent.type)

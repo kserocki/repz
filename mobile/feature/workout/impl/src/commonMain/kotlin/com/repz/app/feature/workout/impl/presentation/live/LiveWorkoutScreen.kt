@@ -49,7 +49,11 @@ fun LiveWorkoutScreen(
                 }
 
                 LiveWorkoutEffect.OpenExercisePicker -> {
-                    navigator.navigate(ExercisePickerRoute)
+                    navigator.navigate(ExercisePickerRoute())
+                }
+
+                is LiveWorkoutEffect.OpenExerciseReplacement -> {
+                    navigator.navigate(ExercisePickerRoute(effect.exerciseId.value.toString()))
                 }
 
                 LiveWorkoutEffect.ShowSetDeleted -> {

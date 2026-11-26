@@ -69,44 +69,7 @@ fun LiveWorkoutContent(
                 onMove = { fromIndex, toIndex -> onIntent(LiveWorkoutIntent.ExerciseMoved(fromIndex, toIndex)) },
             )
         } else {
-            LiveWorkoutActiveSection(
-                workoutName = state.workoutName,
-                elapsed = state.elapsed,
-                isFinishEnabled = state.canFinish && !state.isFinishing,
-                isEditingName = state.isEditingName,
-                canAddExercise = state.canAddExercise,
-                isEmpty = state.isEmpty,
-                exercises = state.exercises,
-                unit = state.unit,
-                editingField = state.editingField,
-                keypadTarget = state.keypadTarget,
-                weightStep = state.weightStep,
-                snackbarHostState = snackbarHostState,
-                onNameClick = { onIntent(LiveWorkoutIntent.NameClicked) },
-                onNameChange = { name -> onIntent(LiveWorkoutIntent.NameChanged(name)) },
-                onNameEditingFinish = { onIntent(LiveWorkoutIntent.NameEditingFinished) },
-                onMinimizeClick = rememberEndingFieldEditing { onIntent(LiveWorkoutIntent.MinimizeClicked) },
-                onFinishClick = rememberEndingFieldEditing { onIntent(LiveWorkoutIntent.FinishClicked) },
-                onDiscardClick = { onIntent(LiveWorkoutIntent.DiscardClicked) },
-                onAddExerciseClick = { onIntent(LiveWorkoutIntent.AddExerciseClicked) },
-                onReorderClick = { onIntent(LiveWorkoutIntent.ReorderStarted) },
-                onNotesClick = { exerciseId -> onIntent(LiveWorkoutIntent.NotesClicked(exerciseId)) },
-                onNotesChange = { exerciseId, notes -> onIntent(LiveWorkoutIntent.NotesChanged(exerciseId, notes)) },
-                onNotesEditingFinish = { exerciseId -> onIntent(LiveWorkoutIntent.NotesEditingFinished(exerciseId)) },
-                onRemoveClick = { exerciseId -> onIntent(LiveWorkoutIntent.ExerciseRemoved(exerciseId)) },
-                onAddSetClick = { exerciseId -> onIntent(LiveWorkoutIntent.AddSetClicked(exerciseId)) },
-                onSetFieldClick = { setId, field -> onIntent(LiveWorkoutIntent.SetFieldClicked(setId, field)) },
-                onSetCompleteClick = { setId -> onIntent(LiveWorkoutIntent.SetCompletionToggled(setId)) },
-                onSetDeleteClick = { setId -> onIntent(LiveWorkoutIntent.SetDeleted(setId)) },
-                onSetTypeSelect = { setId, type -> onIntent(LiveWorkoutIntent.SetTypeSelected(setId, type)) },
-                onWeightEnter = { setId, weight -> onIntent(LiveWorkoutIntent.SetWeightEntered(setId, weight)) },
-                onRepsEnter = { setId, reps -> onIntent(LiveWorkoutIntent.SetRepsEntered(setId, reps)) },
-                onRpeEnter = { setId, rpe -> onIntent(LiveWorkoutIntent.SetRpeEntered(setId, rpe)) },
-                onKeypadFieldSelect = { field -> onIntent(LiveWorkoutIntent.KeypadFieldSelected(field)) },
-                onWeightStepChange = { step -> onIntent(LiveWorkoutIntent.WeightStepChanged(step)) },
-                onNextField = { onIntent(LiveWorkoutIntent.NextFieldRequested) },
-                onKeypadDismiss = { onIntent(LiveWorkoutIntent.KeypadDismissed) },
-            )
+            LiveWorkoutActiveSectionContent(state = state, onIntent = onIntent, snackbarHostState = snackbarHostState)
         }
     }
 
@@ -119,6 +82,55 @@ fun LiveWorkoutContent(
         onKeypadDismiss = { onIntent(LiveWorkoutIntent.KeypadDismissed) },
         onReorderExit = { onIntent(LiveWorkoutIntent.ReorderFinished) },
         onMinimize = rememberEndingFieldEditing { onIntent(LiveWorkoutIntent.MinimizeClicked) },
+    )
+}
+
+/** [LiveWorkoutContent]'s non-reordering branch, with [state] and [onIntent] mapped onto
+ * [LiveWorkoutActiveSection]'s explicit values and present-tense callbacks. */
+@Composable
+private fun LiveWorkoutActiveSectionContent(
+    state: LiveWorkoutUiState,
+    onIntent: (LiveWorkoutIntent) -> Unit,
+    snackbarHostState: RepzSnackbarHostState,
+) {
+    LiveWorkoutActiveSection(
+        workoutName = state.workoutName,
+        elapsed = state.elapsed,
+        isFinishEnabled = state.canFinish && !state.isFinishing,
+        isEditingName = state.isEditingName,
+        canAddExercise = state.canAddExercise,
+        isEmpty = state.isEmpty,
+        exercises = state.exercises,
+        unit = state.unit,
+        editingField = state.editingField,
+        keypadTarget = state.keypadTarget,
+        weightStep = state.weightStep,
+        snackbarHostState = snackbarHostState,
+        onNameClick = { onIntent(LiveWorkoutIntent.NameClicked) },
+        onNameChange = { name -> onIntent(LiveWorkoutIntent.NameChanged(name)) },
+        onNameEditingFinish = { onIntent(LiveWorkoutIntent.NameEditingFinished) },
+        onMinimizeClick = rememberEndingFieldEditing { onIntent(LiveWorkoutIntent.MinimizeClicked) },
+        onFinishClick = rememberEndingFieldEditing { onIntent(LiveWorkoutIntent.FinishClicked) },
+        onDiscardClick = { onIntent(LiveWorkoutIntent.DiscardClicked) },
+        onAddExerciseClick = { onIntent(LiveWorkoutIntent.AddExerciseClicked) },
+        onReorderClick = { onIntent(LiveWorkoutIntent.ReorderStarted) },
+        onNotesClick = { exerciseId -> onIntent(LiveWorkoutIntent.NotesClicked(exerciseId)) },
+        onNotesChange = { exerciseId, notes -> onIntent(LiveWorkoutIntent.NotesChanged(exerciseId, notes)) },
+        onNotesEditingFinish = { exerciseId -> onIntent(LiveWorkoutIntent.NotesEditingFinished(exerciseId)) },
+        onReplaceClick = { exerciseId -> onIntent(LiveWorkoutIntent.ReplaceExerciseClicked(exerciseId)) },
+        onRemoveClick = { exerciseId -> onIntent(LiveWorkoutIntent.ExerciseRemoved(exerciseId)) },
+        onAddSetClick = { exerciseId -> onIntent(LiveWorkoutIntent.AddSetClicked(exerciseId)) },
+        onSetFieldClick = { setId, field -> onIntent(LiveWorkoutIntent.SetFieldClicked(setId, field)) },
+        onSetCompleteClick = { setId -> onIntent(LiveWorkoutIntent.SetCompletionToggled(setId)) },
+        onSetDeleteClick = { setId -> onIntent(LiveWorkoutIntent.SetDeleted(setId)) },
+        onSetTypeSelect = { setId, type -> onIntent(LiveWorkoutIntent.SetTypeSelected(setId, type)) },
+        onWeightEnter = { setId, weight -> onIntent(LiveWorkoutIntent.SetWeightEntered(setId, weight)) },
+        onRepsEnter = { setId, reps -> onIntent(LiveWorkoutIntent.SetRepsEntered(setId, reps)) },
+        onRpeEnter = { setId, rpe -> onIntent(LiveWorkoutIntent.SetRpeEntered(setId, rpe)) },
+        onKeypadFieldSelect = { field -> onIntent(LiveWorkoutIntent.KeypadFieldSelected(field)) },
+        onWeightStepChange = { step -> onIntent(LiveWorkoutIntent.WeightStepChanged(step)) },
+        onNextField = { onIntent(LiveWorkoutIntent.NextFieldRequested) },
+        onKeypadDismiss = { onIntent(LiveWorkoutIntent.KeypadDismissed) },
     )
 }
 
@@ -182,6 +194,7 @@ private fun LiveWorkoutActiveSection(
     onNotesClick: (WorkoutExerciseId) -> Unit,
     onNotesChange: (WorkoutExerciseId, String) -> Unit,
     onNotesEditingFinish: (WorkoutExerciseId) -> Unit,
+    onReplaceClick: (WorkoutExerciseId) -> Unit,
     onRemoveClick: (WorkoutExerciseId) -> Unit,
     onAddSetClick: (WorkoutExerciseId) -> Unit,
     onSetFieldClick: (WorkoutSetId, SetField) -> Unit,
@@ -200,9 +213,7 @@ private fun LiveWorkoutActiveSection(
     val layoutDirection = LocalLayoutDirection.current
     var keypadHeightPx by remember { mutableIntStateOf(0) }
     val isKeypadOpen = keypadTarget != null
-
-    LiveWorkoutKeypadFocusEffect(isKeypadOpen)
-    LiveWorkoutAutoScrollEffect(targetSetId = keypadTarget?.setId, exercises = exercises, listState = listState)
+    LiveWorkoutKeypadFocusAndScrollEffects(isKeypadOpen, keypadTarget?.setId, exercises, listState)
 
     Box(modifier = Modifier.fillMaxSize().dismissKeypadOnOutsideTap(isKeypadOpen, onKeypadDismiss)) {
         LiveWorkoutScaffoldSection(
@@ -231,6 +242,7 @@ private fun LiveWorkoutActiveSection(
             onNotesClick = onNotesClick,
             onNotesChange = onNotesChange,
             onNotesEditingFinish = onNotesEditingFinish,
+            onReplaceClick = onReplaceClick,
             onRemoveClick = onRemoveClick,
             onAddSetClick = onAddSetClick,
             onSetFieldClick = onSetFieldClick,
@@ -293,22 +305,6 @@ private fun Modifier.dismissKeypadOnOutsideTap(
     onDismiss: () -> Unit,
 ): Modifier = if (isKeypadOpen) dismissOnUnconsumedTap(onDismiss) else this
 
-/** Jumps, without animation, to the target set's card only when it isn't composed yet; the row's
- * own `bringIntoView` then positions it above the keypad. */
-@Composable
-private fun LiveWorkoutAutoScrollEffect(
-    targetSetId: WorkoutSetId?,
-    exercises: ImmutableList<LiveExerciseUi>,
-    listState: LazyListState,
-) {
-    LaunchedEffect(targetSetId) {
-        val setId = targetSetId ?: return@LaunchedEffect
-        val exerciseIndex = exercises.indexOfFirst { exercise -> exercise.sets.any { it.id == setId } }
-        val isAlreadyVisible = listState.layoutInfo.visibleItemsInfo.any { it.index == exerciseIndex }
-        if (exerciseIndex >= 0 && !isAlreadyVisible) listState.scrollToItem(exerciseIndex)
-    }
-}
-
 /** The header, bottom bar, snackbar host and exercise list inside [RepzLiveWorkoutScaffold]. */
 @Composable
 private fun LiveWorkoutScaffoldSection(
@@ -337,6 +333,7 @@ private fun LiveWorkoutScaffoldSection(
     onNotesClick: (WorkoutExerciseId) -> Unit,
     onNotesChange: (WorkoutExerciseId, String) -> Unit,
     onNotesEditingFinish: (WorkoutExerciseId) -> Unit,
+    onReplaceClick: (WorkoutExerciseId) -> Unit,
     onRemoveClick: (WorkoutExerciseId) -> Unit,
     onAddSetClick: (WorkoutExerciseId) -> Unit,
     onSetFieldClick: (WorkoutSetId, SetField) -> Unit,
@@ -378,6 +375,7 @@ private fun LiveWorkoutScaffoldSection(
             onNotesClick = onNotesClick,
             onNotesChange = onNotesChange,
             onNotesEditingFinish = onNotesEditingFinish,
+            onReplaceClick = onReplaceClick,
             onRemoveClick = onRemoveClick,
             onAddSetClick = onAddSetClick,
             onSetFieldClick = onSetFieldClick,

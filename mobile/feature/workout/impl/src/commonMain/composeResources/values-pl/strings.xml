@@ -32,6 +32,7 @@
 
     <string name="card_options">Opcje ćwiczenia</string>
     <string name="card_menu_reorder">Zmień kolejność</string>
+    <string name="card_menu_replace">Zamień</string>
     <string name="card_menu_notes">Notatki</string>
     <string name="card_menu_remove">Usuń</string>
     <plurals name="card_progress">
@@ -102,7 +103,50 @@
 
     <string name="finish_failed">Nie udało się zakończyć treningu. Spróbuj ponownie.</string>
 
-    <string name="picker_title">Dodaj ćwiczenie</string>
     <string name="keypad_context">%1$s · Seria %2$s</string>
-    <string name="picker_back">Wstecz</string>
+
+    <string name="picker_search_placeholder">Szukaj ćwiczeń</string>
+    <string name="picker_close">Zamknij wybór ćwiczeń</string>
+    <string name="picker_clear_search">Wyczyść wyszukiwanie</string>
+    <string name="picker_section_recent">Ostatnie</string>
+    <string name="picker_section_all">Wszystkie ćwiczenia</string>
+    <string name="picker_section_results">Wszystkie wyniki · %1$d</string>
+    <string name="picker_exercise_meta">%1$s · %2$s</string>
+    <string name="picker_exercise_meta_recent">%1$s · %2$s · %3$s</string>
+    <string name="picker_last_used_today">Dziś</string>
+    <string name="picker_last_used_yesterday">Wczoraj</string>
+    <plurals name="picker_last_used_days_ago">
+        <item quantity="one">%1$d dzień temu</item>
+        <item quantity="few">%1$d dni temu</item>
+        <item quantity="many">%1$d dni temu</item>
+        <item quantity="other">%1$d dni temu</item>
+    </plurals>
+    <plurals name="picker_selected_count">
+        <item quantity="one">Wybrano: %1$d</item>
+        <item quantity="few">Wybrano: %1$d</item>
+        <item quantity="many">Wybrano: %1$d</item>
+        <item quantity="other">Wybrano: %1$d</item>
+    </plurals>
+    <string name="picker_add_selected">Dodaj (%1$d)</string>
+    <string name="picker_no_match_title">Brak wyników dla „%1$s”</string>
+    <string name="picker_no_match_body">Sprawdź pisownię.</string>
+    <string name="picker_no_filter_match_title">Żadne ćwiczenie nie pasuje do filtrów</string>
+    <string name="picker_clear_filters">Wyczyść filtry (%1$d)</string>
+    <string name="picker_no_exercises_title">Brak ćwiczeń</string>
+    <string name="picker_no_exercises_body">Biblioteka ćwiczeń pobierze się, gdy będziesz online.</string>
+    <plurals name="picker_selection_limit">
+        <item quantity="one">Trening może mieć najwyżej %1$d ćwiczenie</item>
+        <item quantity="few">Trening może mieć najwyżej %1$d ćwiczenia</item>
+        <item quantity="many">Trening może mieć najwyżej %1$d ćwiczeń</item>
+        <item quantity="other">Trening może mieć najwyżej %1$d ćwiczenia</item>
+    </plurals>
+    <string name="picker_replace_dialog_title">Zamienić %1$s?</string>
+    <plurals name="picker_replace_dialog_body">
+        <item quantity="one">%1$d zapisana seria zostanie usunięta.</item>
+        <item quantity="few">%1$d zapisane serie zostaną usunięte.</item>
+        <item quantity="many">%1$d zapisanych serii zostanie usuniętych.</item>
+        <item quantity="other">%1$d zapisanej serii zostanie usunięte.</item>
+    </plurals>
+    <string name="picker_replace_confirm">Zamień</string>
+    <string name="picker_replace_cancel">Anuluj</string>
 </resources>

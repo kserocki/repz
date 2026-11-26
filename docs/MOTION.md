@@ -180,6 +180,11 @@ Haptics respect the in-app "Haptics" setting (F23) through `RepzTheme(hapticsEna
 - **Haptic:** Confirm
 - **Reduced motion:** Instant insert + scroll
 
+**Landed (REP-37), reduced-motion end state only:** the picker (`feature:workout:impl`) and `RepzExerciseListItem` (`core:designsystem`) ship every end state MOT-09/MOT-11 and the row's own selection disc describe, with no animation yet:
+- MOT-09: the bottom bar's "n selected" count swaps instantly (Confirm haptic still fires on Add/Replace per MOTION §3). `TODO(REP-49)` plays the digit roll.
+- MOT-11: `AddExercisesToActiveWorkoutUseCase` appends every picked card in pick order in one write, and the live workout's list shows them in their final position and height immediately — no height/push animation, no auto-scroll to the new cards. `TODO(REP-46)` animates it.
+- The row's own Circle → Check disc morph (`RepzExerciseListItem`) swaps instantly. `TODO(REP-46)` tracks it alongside MOT-11.
+
 ### MOT-12 · Swipe delete / reorder
 - **Trigger:** Horizontal drag on set / long-press drag
 - **Animates:** Swipe: errorContainer revealed, delete icon scale 0.6→1.2 with progress, threshold 40 %; Reorder: lift scale 1.03 + containerHighest + shadow (spatialFast), neighbours slide (spatialDefault)

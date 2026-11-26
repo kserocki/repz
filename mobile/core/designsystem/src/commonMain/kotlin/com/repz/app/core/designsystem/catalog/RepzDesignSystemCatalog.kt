@@ -65,6 +65,7 @@ fun RepzDesignSystemCatalog(
             RepzCatalogPage.ComponentsControls -> ComponentsControlsCatalogPage()
             RepzCatalogPage.ComponentsFeedback -> ComponentsFeedbackCatalogPage()
             RepzCatalogPage.ComponentsStates -> ComponentsStatesCatalogPage()
+            RepzCatalogPage.ComponentsSearch -> ComponentsSearchCatalogPage()
             RepzCatalogPage.Logo -> LogoCatalogPage()
             RepzCatalogPage.LogoLoader -> LogoLoaderCatalogPage()
             RepzCatalogPage.KeypadWeight -> KeypadWeightCatalogPage()

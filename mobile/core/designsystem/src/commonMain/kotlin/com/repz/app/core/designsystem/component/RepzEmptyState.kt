@@ -27,9 +27,9 @@ private val EmptyStateBackdropSize = 150.dp
  * The centred empty-state pattern (DESIGN_SYSTEM §9, boards 11/12): [illustration] centred on a
  * `cookie4Sided`/`surfaceContainerHigh` backdrop (omitted entirely when [illustration] is `null`,
  * board 09's empty workout), then [title]/[body] (`headlineSmallEmphasized`/`bodyLarge`, both
- * centred and wrapping) and a caller-built [actions] slot
- * (e.g. a single `RepzHeroStartButton` or `RepzButton`). Only the centred layout ships here; board
- * 06's horizontal card variant waits for a screen that needs it.
+ * centred and wrapping; a `null` [body] omits the line entirely, for a title-only state) and a
+ * caller-built [actions] slot (e.g. a single `RepzHeroStartButton` or `RepzButton`). Only the
+ * centred layout ships here; board 06's horizontal card variant waits for a screen that needs it.
  *
  * TODO(REP-49): MOT-23's idle loop on the illustration.
  */
@@ -37,7 +37,7 @@ private val EmptyStateBackdropSize = 150.dp
 @Composable
 fun RepzEmptyState(
     title: String,
-    body: String,
+    body: String?,
     illustration: (@Composable () -> Unit)?,
     modifier: Modifier = Modifier,
     actions: @Composable ColumnScope.() -> Unit = {},
@@ -66,13 +66,15 @@ fun RepzEmptyState(
             style = MaterialTheme.typography.headlineSmallEmphasized,
             color = MaterialTheme.colorScheme.onSurface,
         )
-        Text(
-            text = body,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        if (body != null) {
+            Text(
+                text = body,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
         actions()
     }
 }

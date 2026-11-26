@@ -15,5 +15,5 @@ import com.repz.app.feature.workout.impl.presentation.train.TrainScreen
 fun EntryProviderScope<NavKey>.workoutEntries(navigator: Navigator) {
     entry<TrainRoute> { TrainScreen(navigator) }
     entry<LiveWorkoutRoute> { LiveWorkoutScreen(navigator) }
-    entry<ExercisePickerRoute> { ExercisePickerScreen(navigator) }
+    entry<ExercisePickerRoute> { route -> ExercisePickerScreen(navigator, route) }
 }

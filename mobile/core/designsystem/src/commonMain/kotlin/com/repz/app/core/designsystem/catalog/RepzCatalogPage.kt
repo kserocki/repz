@@ -35,6 +35,7 @@ enum class RepzCatalogPage(
     ComponentsControls("components-controls"),
     ComponentsFeedback("components-feedback"),
     ComponentsStates("components-states"),
+    ComponentsSearch("components-search"),
     Logo("logo"),
     LogoLoader("logo-loader"),
     KeypadWeight("keypad-weight"),
